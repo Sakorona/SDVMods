@@ -12,7 +12,7 @@ namespace ClimatesOfFerngill
 
         public string Name { get; } = "Climates of Ferngill";
         public string Author { get; } = "KoihimeNakamura";
-        public string Version { get; } = "0.6 beta";
+        public string Version { get; } = "0.7.0";
         public string Description { get; } = "Creates a more complex weather system";
         
         public override void Entry(params object[] objects)
@@ -48,6 +48,20 @@ namespace ClimatesOfFerngill
                 return;
             }
 
+            //sanity check - festival
+            if (Utility.isFestivalDay(Game1.dayOfMonth + 1, Game1.currentSeason))
+            {
+                Game1.weatherForTomorrow = 4;
+                Game1.questOfTheDay = null;
+                return;
+            }
+
+            if (Game1.weatherForTomorrow == Game1.weather_festival)
+            {
+                LogEvent("A festival!");
+                return;
+            }
+
             //rain totem
             if (weatherAtStartDay != Game1.weatherForTomorrow)
             {
@@ -58,11 +72,31 @@ namespace ClimatesOfFerngill
                 }
             }
 
+            //TV forces.
+            if (Game1.currentSeason == "spring" && Game1.year == 1 && Game1.dayOfMonth == 3)
+            {
+                Game1.weatherForTomorrow = Game1.weather_rain;
+                return;
+            }
+
+            if (Game1.currentSeason == "summer" && Game1.dayOfMonth == 12)
+            {
+                Game1.weatherForTomorrow = Game1.weather_lightning;
+                return;
+            }
+
+            if (Game1.currentSeason == "summer" && Game1.dayOfMonth == 24)
+            {
+                Game1.weatherForTomorrow = Game1.weather_lightning;
+                return;
+            }
+
+            //now on to the main program
 
             Random rng = new Random(Guid.NewGuid().GetHashCode());
             double genNumber = rng.NextDouble();
 
-           switch (Game1.currentSeason)
+            switch (Game1.currentSeason)
             {
                 case "spring":
                     if (genNumber < (ModConfig.spgBaseRainChance + (ModConfig.spgRainChanceIncrease * Game1.dayOfMonth)))
