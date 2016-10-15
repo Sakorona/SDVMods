@@ -21,7 +21,7 @@ namespace ClimatesOfFerngill
           StardewModdingAPI.Events.PlayerEvents.LoadedGame += PlayerEvents_LoadedGame;
           StardewModdingAPI.Events.TimeEvents.DayOfMonthChanged += TimeEvents_DayOfMonthChanged;
           
-          Log.SyncColour("Climates of Ferngill v.6 by KoihimeNakamura but based off of Alpha_Omegasis's More Rain", ConsoleColor.Cyan);
+          Log.SyncColour(Name + " " + Version+ " by KoihimeNakamura but based off of Alpha_Omegasis's More Rain", ConsoleColor.Cyan);
         }
 
         private void LogEvent(string msg)
