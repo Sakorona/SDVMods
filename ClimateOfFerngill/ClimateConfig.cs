@@ -42,6 +42,7 @@ namespace ClimatesOfFerngill
 
         public bool SuppressLog { get; set; }
         public bool AllowSnowOnFall28 { get; set; }
+        public bool AllowStormsFirstSpring { get; set; }
 
         public override T GenerateDefaultConfig<T>()
         {
@@ -98,6 +99,7 @@ namespace ClimatesOfFerngill
             winSnowChanceIncrease = .005;
 
             AllowSnowOnFall28 = true;
+            AllowStormsFirstSpring = false;
             SuppressLog = false;
             return this as T;
         }

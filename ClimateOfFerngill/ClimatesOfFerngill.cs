@@ -54,14 +54,14 @@ namespace ClimatesOfFerngill
                         LogEvent("It is rainy outside.");
                         Game1.weatherForTomorrow = Game1.weather_rain;
                         genNumber = rng.NextDouble();
-                        if (genNumber < ModConfig.spgConvRainToStorm)
+                        if (genNumber < ModConfig.spgConvRainToStorm && (ModConfig.AllowStormsFirstSpring && Game1.year == 1))
                         {
                             LogEvent("Well, it turns out it's quite stormy outside...");
                             Game1.weatherForTomorrow = Game1.weather_lightning;
                         }
                     }
 
-                    if (genNumber < (ModConfig.spgBaseStormChance + (ModConfig.spgStormChanceIncrease * Game1.dayOfMonth)))
+                    if (genNumber < (ModConfig.spgBaseStormChance + (ModConfig.spgStormChanceIncrease * Game1.dayOfMonth)) && (ModConfig.AllowStormsFirstSpring && Game1.year == 1))
                     {
                         LogEvent("It is stormy outside.");
                         Game1.weatherForTomorrow = Game1.weather_lightning;
