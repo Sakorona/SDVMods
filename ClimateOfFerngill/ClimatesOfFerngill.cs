@@ -7,14 +7,21 @@ namespace ClimatesOfFerngill
     public class ClimatesOfFerngill : Mod
     {
         public ClimateConfig ModConfig { get; private set; } 
-        bool gameloaded;
+        bool gameloaded { get; set; }
+        public int weatherAtStartDay { get; set; }
 
+        public string Name { get; } = "Climates of Ferngill";
+        public string Author { get; } = "KoihimeNakamura";
+        public string Version { get; } = "0.6 beta";
+        public string Description { get; } = "Creates a more complex weather system";
+        
         public override void Entry(params object[] objects)
         {
           ModConfig = new ClimateConfig().InitializeConfig(BaseConfigPath);
           StardewModdingAPI.Events.PlayerEvents.LoadedGame += PlayerEvents_LoadedGame;
           StardewModdingAPI.Events.TimeEvents.DayOfMonthChanged += TimeEvents_DayOfMonthChanged;
-          Log.SyncColour("Climates of Ferngill rev20161014 by KoihimeNakamura but based off of Alpha_Omegasis's More Rain", ConsoleColor.Cyan);
+          
+          Log.SyncColour("Climates of Ferngill v.6 by KoihimeNakamura but based off of Alpha_Omegasis's More Rain", ConsoleColor.Cyan);
         }
 
         private void LogEvent(string msg)
@@ -31,9 +38,7 @@ namespace ClimatesOfFerngill
         public void PlayerEvents_LoadedGame(object sender, StardewModdingAPI.Events.EventArgsLoadedGameChanged e)
         {
             gameloaded = true;
-            UpdateWeather();
         }
-
 
         void UpdateWeather(){
             //sanity check - wedding
@@ -42,6 +47,17 @@ namespace ClimatesOfFerngill
                 LogEvent("There is no Alanis Morissetting here. Enjoy your wedding.");
                 return;
             }
+
+            //rain totem
+            if (weatherAtStartDay != Game1.weatherForTomorrow)
+            {
+                if (Game1.weatherForTomorrow == Game1.weather_rain)
+                {
+                    LogEvent("Rain totem used, aborting weather change");
+                    return;
+                }
+            }
+
 
             Random rng = new Random(Guid.NewGuid().GetHashCode());
             double genNumber = rng.NextDouble();
@@ -146,6 +162,7 @@ namespace ClimatesOfFerngill
             }
 
             overrideWeather();
+            weatherAtStartDay = Game1.weatherForTomorrow;
         }
 
         private void overrideWeather()
