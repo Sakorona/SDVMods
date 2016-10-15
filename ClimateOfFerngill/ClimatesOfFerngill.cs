@@ -70,14 +70,14 @@ namespace ClimatesOfFerngill
                         LogEvent("It is rainy outside.");
                         Game1.weatherForTomorrow = Game1.weather_rain;
                         genNumber = rng.NextDouble();
-                        if (genNumber < ModConfig.spgConvRainToStorm && (ModConfig.AllowStormsFirstSpring && Game1.year == 1))
+                        if (genNumber < ModConfig.spgConvRainToStorm && CanWeStorm())
                         {
                             LogEvent("Well, it turns out it's quite stormy outside...");
                             Game1.weatherForTomorrow = Game1.weather_lightning;
                         }
                     }
 
-                    if (genNumber < (ModConfig.spgBaseStormChance + (ModConfig.spgStormChanceIncrease * Game1.dayOfMonth)) && (ModConfig.AllowStormsFirstSpring && Game1.year == 1))
+                    if (genNumber < (ModConfig.spgBaseStormChance + (ModConfig.spgStormChanceIncrease * Game1.dayOfMonth)) && CanWeStorm())
                     {
                         LogEvent("It is stormy outside.");
                         Game1.weatherForTomorrow = Game1.weather_lightning;
@@ -163,6 +163,12 @@ namespace ClimatesOfFerngill
 
             overrideWeather();
             weatherAtStartDay = Game1.weatherForTomorrow;
+        }
+
+        private bool CanWeStorm()
+        {
+            if (Game1.year == 1 && Game1.currentSeason == "spring") return ModConfig.AllowStormsFirstSpring;
+            else return true;
         }
 
         private void overrideWeather()
