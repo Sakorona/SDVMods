@@ -52,7 +52,7 @@
   <ItemGroup>
     <Compile Include="ClimatesOfFerngill.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="RainConfig.cs" />
+    <Compile Include="ClimateConfig.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="manifest.json" />
