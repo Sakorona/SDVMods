@@ -1,0 +1,14 @@
+{
+  "Name": "More_Rain",
+  "Authour": "Alpha_Omegasis",
+  "Version": {
+    "MajorVersion": 0,
+    "MinorVersion": 0,
+    "PatchVersion": 4,
+    "Build": ""
+  },
+  "Description": "Change how much it rains in the game.",
+  "UniqueID": "4108e859-333c-4fec-a1a7-d2e18c1019fe",
+  "PerSaveConfigs": false,
+  "EntryDll": "Stardew_More_Rain.dll"
+}
