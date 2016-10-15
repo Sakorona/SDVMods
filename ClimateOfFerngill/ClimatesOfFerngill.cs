@@ -17,9 +17,9 @@ namespace ClimatesOfFerngill
           Log.SyncColour("Climates of Ferngill rev20161014 by KoihimeNakamura but based off of Alpha_Omegasis's More Rain", ConsoleColor.Cyan);
         }
 
-        private void LogEvent(string msg, bool logAllowed = false)
+        private void LogEvent(string msg)
         {
-            if (logAllowed) Log.Debug("[Climate] " + msg);
+            if (ModConfig.SuppressLog) Log.Debug("[Climate] " + msg);
         }
 
         public void TimeEvents_DayOfMonthChanged(object sender, StardewModdingAPI.Events.EventArgsIntChanged e)
@@ -38,7 +38,7 @@ namespace ClimatesOfFerngill
             //sanity check - not entirely neccesary. 
             if (Game1.weatherForTomorrow == Game1.weather_wedding)
             {
-                if (!ModConfig.SuppressLog) Log.Info("[MoreRain] There is no Alanis Morissetting here. Enjoy your wedding.");
+                LogEvent("[MoreRain] There is no Alanis Morissetting here. Enjoy your wedding.");
                 return;
             }
          
