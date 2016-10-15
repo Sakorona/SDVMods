@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Linq;
 using StardewModdingAPI;
 using StardewValley;
 
@@ -20,7 +19,7 @@ namespace ClimatesOfFerngill
 
         private void LogEvent(string msg)
         {
-            if (ModConfig.SuppressLog) Log.Debug("[Climate] " + msg);
+            if (ModConfig.SuppressLog) Log.Info("[Climate] " + msg);
         }
 
         public void TimeEvents_DayOfMonthChanged(object sender, StardewModdingAPI.Events.EventArgsIntChanged e)
@@ -97,12 +96,6 @@ namespace ClimatesOfFerngill
                         genNumber = rng.NextDouble();
                     }
 
-                    if (genNumber < (ModConfig.smrBaseWindChance + (ModConfig.smrWindChanceIncrease * Game1.dayOfMonth)))
-                    {
-                        LogEvent("It is windy out. Hey, is that Dorothy?");
-                        Game1.weatherForTomorrow = Game1.weather_debris;
-                    }
-
                     break;
                 case "fall":
                     if (genNumber < (ModConfig.falBaseRainChance + (ModConfig.falRainChanceIncrease * Game1.dayOfMonth)))
@@ -131,9 +124,6 @@ namespace ClimatesOfFerngill
                         Game1.weatherForTomorrow = Game1.weather_debris;
                     }
 
-                    if (Game1.dayOfMonth == 28)
-                        Game1.weatherForTomorrow = Game1.weather_snow; //it now snows on Fall 28.
-
                     break;
                 case "winter":
 
@@ -155,13 +145,15 @@ namespace ClimatesOfFerngill
                     break;
             }
 
-            //overrides
-            Game1.weatherForTomorrow = Game1.weather_debris;
-
-           
-            
-
+            overrideWeather();
         }
+
+        private void overrideWeather()
+        {
+            if (Game1.dayOfMonth == 28 && Game1.currentSeason == "fall" && ModConfig.AllowSnowOnFall28)
+                Game1.weatherForTomorrow = Game1.weather_snow; //it now snows on Fall 28.
+        }
+
     }
 }
 

@@ -7,8 +7,8 @@
     <ProjectGuid>{D0F25EF3-15F0-4CC6-849A-C2E9B1BBAAB1}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>MoreRain</RootNamespace>
-    <AssemblyName>MoreRain</AssemblyName>
+    <RootNamespace>ClimateOfFerngill</RootNamespace>
+    <AssemblyName>ClimateOfFerngill</AssemblyName>
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
   </PropertyGroup>

@@ -41,6 +41,7 @@ namespace ClimatesOfFerngill
         public double winSnowChanceIncrease { get; set; }
 
         public bool SuppressLog { get; set; }
+        public bool AllowSnowOnFall28 { get; set; }
 
         public override T GenerateDefaultConfig<T>()
         {
@@ -75,9 +76,6 @@ namespace ClimatesOfFerngill
             smrBaseStormChance = .006;
             smrStormChanceIncrease = .0099;
 
-            smrBaseWindChance = .005;
-            smrWindChanceIncrease = .0085;
-
             smrConvRainToStorm = .5000; //half chance for rain to become storm.
 
             //set defaults for autumn weather
@@ -99,6 +97,7 @@ namespace ClimatesOfFerngill
             winBaseSnowChance = .766;
             winSnowChanceIncrease = .005;
 
+            AllowSnowOnFall28 = true;
             SuppressLog = false;
             return this as T;
         }
