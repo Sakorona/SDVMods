@@ -1,5 +1,6 @@
 ﻿using System;
 using StardewModdingAPI;
+using StardewModdingAPI.Events;
 using StardewValley;
 
 namespace ClimatesOfFerngill
@@ -8,25 +9,62 @@ namespace ClimatesOfFerngill
     {
         public ClimateConfig ModConfig { get; private set; } 
         bool gameloaded { get; set; }
-        public int weatherAtStartDay { get; set; }
+        int weatherAtStartDay { get; set; }
+        FerngillWeather currWeather { get; set; } = FerngillWeather.None;
 
-        public string Name { get; } = "Climates of Ferngill";
-        public string Author { get; } = "KoihimeNakamura";
-        public string Version { get; } = "0.7.0";
-        public string Description { get; } = "Creates a more complex weather system";
-        
-        public override void Entry(params object[] objects)
+        /// <summary>Initialise the mod.</summary>
+        /// <param name="helper">Provides methods for interacting with the mod directory, such as read/writing a config file or custom JSON files.</param>
+        public override void Entry(ModHelper helper)
         {
-          ModConfig = new ClimateConfig().InitializeConfig(BaseConfigPath);
-          StardewModdingAPI.Events.PlayerEvents.LoadedGame += PlayerEvents_LoadedGame;
-          StardewModdingAPI.Events.TimeEvents.DayOfMonthChanged += TimeEvents_DayOfMonthChanged;
-          
-          Log.SyncColour(Name + " " + Version+ " by KoihimeNakamura but based off of Alpha_Omegasis's More Rain", ConsoleColor.Cyan);
+
+          ModConfig = helper.ReadConfig<ClimateConfig>();
+          PlayerEvents.LoadedGame += PlayerEvents_LoadedGame;
+          TimeEvents.DayOfMonthChanged += TimeEvents_DayOfMonthChanged;
+          TimeEvents.TimeOfDayChanged += TimeEvents_TimeOfDayChanged;
         }
 
         private void LogEvent(string msg)
         {
             if (ModConfig.SuppressLog) Log.Info("[Climate] " + msg);
+        }
+
+        public string descWeatherHUD()
+        {
+            //simple description
+            if (Game1.isDebrisWeather) return " very windy outside.";
+            if (Game1.isRaining && !Game1.isLightning) return " raining outside";
+            if (Game1.isSnowing) return " snowing outside";
+            if (Game1.isLightning) return " very stormy outside";
+
+            return " sunny outside"; 
+        }
+
+        public void checkForDangerousWeather(bool hud = true)
+        {
+            if (currWeather == FerngillWeather.Blizzard) {
+                Game1.hudMessages.Add(new HUDMessage("There's a dangerous blizzard out today. Be careful!"));
+                return;
+            }
+
+            if (currWeather == FerngillWeather.Heatwave)
+            {
+                Game1.hudMessages.Add(new HUDMessage("A massive heatwave is sweeping the valley. Stay hydrated!"));
+                return;
+            }
+
+            Game1.hudMessages.Add(new HUDMessage("No abnormally dangerous weather.",2));
+        }
+
+        public void TimeEvents_TimeOfDayChanged(object sender, EventArgsIntChanged e)
+        {
+            //get weather.
+            string weatherMsg = "The weather is" + descWeatherHUD();
+            if (Game1.timeOfDay == 620 && ModConfig.HUDDescription)
+            {
+                Game1.hudMessages.Add(new HUDMessage(weatherMsg, 2));
+                //SOON: checkForDangerousWeather();  
+                Game1.playSound("yoba");           
+            }
         }
 
         public void TimeEvents_DayOfMonthChanged(object sender, StardewModdingAPI.Events.EventArgsIntChanged e)
@@ -51,7 +89,7 @@ namespace ClimatesOfFerngill
             //sanity check - festival
             if (Utility.isFestivalDay(Game1.dayOfMonth + 1, Game1.currentSeason))
             {
-                Game1.weatherForTomorrow = 4;
+                Game1.weatherForTomorrow = Game1.weather_festival;
                 Game1.questOfTheDay = null;
                 return;
             }
@@ -73,23 +111,7 @@ namespace ClimatesOfFerngill
             }
 
             //TV forces.
-            if (Game1.currentSeason == "spring" && Game1.year == 1 && Game1.dayOfMonth == 3)
-            {
-                Game1.weatherForTomorrow = Game1.weather_rain;
-                return;
-            }
-
-            if (Game1.currentSeason == "summer" && Game1.dayOfMonth == 12)
-            {
-                Game1.weatherForTomorrow = Game1.weather_lightning;
-                return;
-            }
-
-            if (Game1.currentSeason == "summer" && Game1.dayOfMonth == 24)
-            {
-                Game1.weatherForTomorrow = Game1.weather_lightning;
-                return;
-            }
+            fixTV();
 
             //now on to the main program
 
@@ -203,6 +225,21 @@ namespace ClimatesOfFerngill
         {
             if (Game1.year == 1 && Game1.currentSeason == "spring") return ModConfig.AllowStormsFirstSpring;
             else return true;
+        }
+
+        private void fixTV()
+        {
+            if (Game1.currentSeason == "spring" && Game1.year == 1 && Game1.dayOfMonth == 3)
+            {
+                Game1.weatherForTomorrow = Game1.weather_rain;
+                return;
+            }
+
+            if (Game1.currentSeason == "summer" && Game1.dayOfMonth == 25)
+            {
+                Game1.weatherForTomorrow = Game1.weather_lightning;
+                return;
+            }
         }
 
         private void overrideWeather()
