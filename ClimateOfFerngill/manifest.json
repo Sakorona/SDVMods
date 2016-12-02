@@ -1,11 +1,11 @@
 {
   "Name": "Climates of Ferngill",
-  "Authour": "KoihimeNakamura",
+  "Author": "KoihimeNakamura",
   "Version": {
     "MajorVersion": 0,
     "MinorVersion": 7,
-    "PatchVersion": 12,
-    "Build": "20161105"
+    "PatchVersion": 15,
+    "Build": "20161202"
   },
   "Description": "Create a unique climate system",
   "UniqueID": "4108e859-333c-4fec-a1a7-d2e18c1019fe",
