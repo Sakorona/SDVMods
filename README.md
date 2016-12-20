@@ -1,8 +1,8 @@
-#  Climate of Ferngill
+# Climate of Ferngill
 
 This mod alters the weather of Stardew Valley by creating a climate system. It adds temperature and may add hostile weather events down the line.  
 
-The current version is __0.7.19.20161219__ 
+The current version is __0.7.19 rev 20161219__ 
 
 ## Features
 * Custom TV dialogue (English only)
@@ -14,3 +14,15 @@ The current version is __0.7.19.20161219__
 ## Requirements
 * Stardew Valley: __1.11__ or greater
 * SMAPI: __1.2__ or greater
+
+## Configuration Options
+
+TBA
+
+## FAQ
+
+TBA
+
+## License
+
+GNU LGPLv3
