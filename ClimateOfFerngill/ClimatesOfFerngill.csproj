@@ -64,6 +64,9 @@
     </None>
     <None Include="packages.config" />
   </ItemGroup>
+  <ItemGroup>
+    <Content Include="LICENSE.txt" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Import Project="..\packages\Pathoschild.Stardew.ModBuildConfig.1.2.0\build\Pathoschild.Stardew.ModBuildConfig.targets" Condition="Exists('..\packages\Pathoschild.Stardew.ModBuildConfig.1.2.0\build\Pathoschild.Stardew.ModBuildConfig.targets')" />
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">

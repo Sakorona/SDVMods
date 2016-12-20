@@ -49,7 +49,7 @@ Storm conversions are still likely.
 ### Variants:
 
 * Arid - Dry fall. Rain 5%. Wind 30%. Temps are +2C.
-* Dry - Rain chances at 25%, 30%, 30%. Wind 30%. No temp changes.
+* Dry - Rain chances at 20%, 25%, 25%. Wind 30%. No temp changes.
 * Wet - Increase rain chances by 5%
 * Monsoon - Rain chances should increase from 10% to 90%, wind decreasing in proportion. No temp changes.
 
