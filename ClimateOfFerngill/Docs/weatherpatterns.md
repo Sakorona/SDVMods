@@ -43,7 +43,7 @@ Storm conversions are still likely.
 * In autumn, have storm conversions flat 33%.
 
 * In the first nine days, temperatures are falling from 22C to 16C. Lows can have a larger variance, so we should use rand(4,10). Rain chances are increasing from 30% to 40%. Windy 0% rising to 40%.
-* In the second nine days, windy - 40% rising to 50%. Rainy the rest of the time. Temps falling from 16C to 9C. Lows should strictly stay above 2C. 
+* In the second nine days, windy - 40% rising to 60%. Rainy the rest of the time. Temps falling from 16C to 9C. Lows should strictly stay above 2C. 
 * In the third nine days, wind falling from 50% to 10%. Rain steady at 50%. Temps now at 9C to 6C. Lows capping at 1C. If snow is enabled on Fall 28, set the temp to 2C, low -1C.
 
 ### Variants:
@@ -65,7 +65,6 @@ Wet. Very wet. Cold. High capped at 6C, and minimally -1C, with lows no more tha
 * In the second nine days, temperatures drop from -2C to -12C. Snow chance is 75%. 
 
 * In the third nine days, temperatures rise from -12C to -1C high. Snow chance is 60%.
-
 
 ### Variants:
 

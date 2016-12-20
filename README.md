@@ -24,6 +24,8 @@ The current version is __0.7.19 rev 20161219__
 * _AllowSnowOnFall28_ is a feature that will allow the possiblity of snow on the 28th of Fall. (Currently, 100%.) It can be set to __true__ or __false__ Default: __true__
 * _AllowStormsFirstSpring_ allows storms the first spring. In the base game this is disabled. It can be set to __false__ or __true__.  Default: __false__
 * _HarshWeather_ allows the hazards. It can be set to __false__ or __true__. Default: __false__        
+* _NoLongerDisplayToday_ is a setting that says after this point: don't display today's weather. The valid setting is: 0600 - 0200. Default: _false_
+* _ClimateType_ is a setting that lets you control the type of climate. The options are: __arid__, __dry__, __normal__, __wet__, __monsoon__. Default: __normal__
 
 ## FAQ
 
@@ -35,6 +37,9 @@ Q. What happened to the extensive setting options in previous versions?
 
 A. There were too many, honestly. I may set up something in the future to allow for a json parser
 
+Q. I don't want the TV to display today's weather at all.
+
+A. Set it to 0600.
 
 ## License
 
