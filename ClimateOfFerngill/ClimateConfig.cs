@@ -6,7 +6,6 @@ namespace ClimatesOfFerngill
     {
         public bool SuppressLog { get; set; }
         public bool AllowSnowOnFall28 { get; set; }
-        public bool HUDDescription { get; set; }
         public bool AllowStormsFirstSpring { get; set; }
 
         //Future time!
@@ -19,7 +18,6 @@ namespace ClimatesOfFerngill
  
             AllowSnowOnFall28 = true;
             AllowStormsFirstSpring = false;
-            HUDDescription = true;
             SuppressLog = false;
 
             HarshWeather = false; //by default, turn the harsh events off. 

@@ -11,17 +11,31 @@ The current version is __0.7.19 rev 20161219__
 ## Planned Features
 * Hostile weather events (Heatwaves, Floods, Frosts)
 
+## Maybe features?
+* Specifying climate options via json file
+
 ## Requirements
 * Stardew Valley: __1.11__ or greater
 * SMAPI: __1.2__ or greater
 
 ## Configuration Options
 
-TBA
+* _SuppressLog_ can be set to __false__ or __true__  If true, the game will not log any events to the console.
+** Default: __false__
+* _AllowSnowOnFall28_ is a feature that will allow the possiblity of snow on the 28th of Fall. (Currently, 100%.) It can be set to __true__ or __false__
+** Default: __true__
+* _AllowStormsFirstSpring_ allows storms the first spring. In the base game this is disabled. It can be set to __false__ or __true__. 
+** Default: __false__
+* _HarshWeather_ allows the hazards. It can be set to __false__ or __true__. Default: __false__        
 
 ## FAQ
 
-TBA
+Q. Why are you setting the mod to spam the console?
+A. I am currently targetting .9 to change the default behavior of this option, or if I feel I have sufficently tested .8
+
+Q. What happened to the extensive setting options in previous versions?
+A. There were too many, honestly. I may set up something in the future to allow for a json parser
+
 
 ## License
 
