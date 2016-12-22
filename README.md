@@ -13,6 +13,7 @@ The current version is __0.7.21 rev 20161220__
 
 ## Maybe features?
 * Specifying climate options via json file
+* Making all strings able to be translated
 
 ## Requirements
 * Stardew Valley: __1.11__ or greater
