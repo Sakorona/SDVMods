@@ -78,12 +78,20 @@ namespace ClimatesOfFerngill
         }
         public string GetWeatherForecast()
         {
+            string tvText = "";
+            string[] springRainText = new string[] {};
+            
+            
             // Your custom weather channel string is created by this method
             int noLonger = VerifyValidTime(config.NoLongerDisplayToday) ? config.NoLongerDisplayToday : 1700;
-            if (Game1.timeOfDay> noLonger) //don't display today's weather
-                return "";
-            else
-                return "";
+            if (Game1.timeOfDay> noLonger){ //don't display today's weather
+                tvText = "The high for today is " + currWeather.todayHigh + " C, with the low being " + currWeather.todayLow;
+                
+                }
+            else{
+                tvText = "";
+                }
+            return tvText;
         }
 
         private bool VerifyValidTime(int time)
