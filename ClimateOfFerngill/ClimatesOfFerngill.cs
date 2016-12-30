@@ -80,17 +80,31 @@ namespace ClimatesOfFerngill
         {
             string tvText = "";
             string[] springRainText = new string[] {};
-            
-            
+            string[] springStormText = new string[] { };
+            string[] springWindText = new string[] { };
+
+            string[] summerRainText = new string[] { };
+            string[] summerStormText = new string[] { };
+
+            string[] fallRainText = new string[] { };
+            string[] fallStormText = new string[] { };
+            string[] fallWindText = new string[] { };
+
+            string[] winterSnowText = new string[] { };
+
+            string[] festivalWeather = new string[] { };
+            string[] springClearWeather = new string[] { };
+            string[] summerClearWeather = new string[] { };
+            string[] fallClearWeather = new string[] { };
+            string[] winterClearWeather = new string[] { };
+
+
             // Your custom weather channel string is created by this method
             int noLonger = VerifyValidTime(config.NoLongerDisplayToday) ? config.NoLongerDisplayToday : 1700;
-            if (Game1.timeOfDay> noLonger){ //don't display today's weather
-                tvText = "The high for today is " + currWeather.todayHigh + " C, with the low being " + currWeather.todayLow;
-                
-                }
-            else{
-                tvText = "";
-                }
+            if (Game1.timeOfDay> noLonger) //don't display today's weather
+                tvText = "The high for today is " + currWeather.todayHigh + " C, with the low being " + currWeather.todayLow + "."+ Environment.NewLine;
+
+            
             return tvText;
         }
 
