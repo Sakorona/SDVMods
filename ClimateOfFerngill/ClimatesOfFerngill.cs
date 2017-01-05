@@ -79,32 +79,95 @@ namespace ClimatesOfFerngill
         public string GetWeatherForecast()
         {
             string tvText = "";
-            string[] springRainText = new string[] {};
-            string[] springStormText = new string[] { };
-            string[] springWindText = new string[] { };
+            string[] springRainText = new string[] { "It'll be a rainy day outside! Make sure to bring your coat.", "It'll be a wet day outside.", "It'll be a misty, wet day - make sure to pause when you can and enjoy it!"};
+            string[] springStormText = new string[] { "Early showers bring summer flowers! It'll be stormy outside tommorow.", "Expect some lightning tomorrow!", "A storm front is blowing over the region, and it'll be here tommorrow." };
+            string[] springWindText = new string[] { "It'll be a blustery day outside tommorow.", "A cold front is blowing through - if you have allergies, be careful.", "The wind will be blowing through tommorow" };
 
-            string[] summerRainText = new string[] { };
-            string[] summerStormText = new string[] { };
+            string[] summerRainText = new string[] { "A warm rain is expected tommorow.", "There will be a warm refreshing rain as a front passes by tommorow." };
+            string[] summerStormText = new string[] { "Expect storms throughout the day.", "A cold front is expected to pass through tommorow, bringing through a squall line." };
 
-            string[] fallRainText = new string[] { };
-            string[] fallStormText = new string[] { };
-            string[] fallWindText = new string[] { };
+            string[] fallRainText = new string[] { "Expect a cold rain tommorow as a low pressure goes overhead.", "Moisture off the Gem Sea will make for a cold windy rain tommorow." };
+            string[] fallStormText = new string[] { "Expect storms throughout the day.", "It'll be a cold and stormy day tomorrow."};
 
-            string[] winterSnowText = new string[] { };
+            string[] fallWindText = new string[] { "It'll be a blustry cold day outside tommorow.", "Expect blowing leaves - a cold front will be passing through tommorrow."};
 
-            string[] festivalWeather = new string[] { };
-            string[] springClearWeather = new string[] { };
-            string[] summerClearWeather = new string[] { };
-            string[] fallClearWeather = new string[] { };
-            string[] winterClearWeather = new string[] { };
+            string[] winterSnowText = new string[] { "Winter continues it's relentless assualt - expect snow tommorow.", "Moisture blowing off the Gem Sea tommorow - expecting snowfall for the Stardew Valley, more in the mountains.", "A curtain of white will descend on the valley tommorow." };
+
+            string[] festivalWeather = new string[] { "It'll be good weather tommorow for the festival! Sunny and clear." };
+            string[] weddingWeather = new string[] { "It'll be good weather tommorow for a Pelican Town Wedding! Congratuatlions to the newlyweds" };
+
+            string[] winterClearWeather = new string[] { "It'll be a clear cold day tommorow.", "A cold winter day tommorow - keep warm!", "Another chilly clear day over the Valley as a High pressure moves overhead." };
+            string[] summerClearWeather = new string[] { "It'll be a sweltering day tommorow.", "Another perfect sunny day tommorow, perfect for hitting the beach.", "A hot and clear day dawns over the Valley."};
+            string[] fallClearWeather = new string[] { "A cold day in the morning, with a warmer afternoon - clear.", "Another autumn day in eastern Ferngill, expect a chilly and clear day."};
+            string[] springClearWeather = new string[] { "A nice spring day, perfect for all those outside chores!", "Clear and warm, tomorrow should be a perfect day."};
 
 
             // Your custom weather channel string is created by this method
             int noLonger = VerifyValidTime(config.NoLongerDisplayToday) ? config.NoLongerDisplayToday : 1700;
             if (Game1.timeOfDay> noLonger) //don't display today's weather
-                tvText = "The high for today is " + currWeather.todayHigh + " C, with the low being " + currWeather.todayLow + "."+ Environment.NewLine;
+                tvText = "The high for today is " + currWeather.todayHigh + "C, with the low being " + currWeather.todayLow +  "C."+ Environment.NewLine;
 
-            
+            //temp warnings
+            if (currWeather.todayHigh > 36)
+                tvText = tvText + "It will be unusually hot outside. Stay hydrated." + Environment.NewLine;
+            if (currWeather.todayHigh < -5)
+                tvText = tvText + "There's a cold snap passing through. Stay warm." + Environment.NewLine;
+
+            //get WeatherForTommorow and set text
+
+            //generics
+            if (Game1.weatherForTomorrow == Game1.weather_festival)
+                tvText = tvText + festivalWeather.GetRandomItem(new Random());
+
+            if (Game1.weatherForTomorrow == Game1.weather_wedding)
+                tvText = tvText + festivalWeather.GetRandomItem(new Random());
+
+            //spring
+            if (Game1.currentSeason == "spring" && Game1.weatherForTomorrow == Game1.weather_debris)
+                tvText = tvText + springWindText.GetRandomItem(new Random());
+
+            if (Game1.currentSeason == "spring" && Game1.weatherForTomorrow == Game1.weather_sunny)
+                tvText = tvText + winterClearWeather.GetRandomItem(new Random());
+
+            if (Game1.currentSeason == "spring" && Game1.weatherForTomorrow == Game1.weather_lightning)
+                tvText = tvText + springStormText.GetRandomItem(new Random());
+
+            if (Game1.currentSeason == "spring" && Game1.weatherForTomorrow == Game1.weather_rain)
+                tvText = tvText + springRainText.GetRandomItem(new Random());
+
+            //summer
+            if (Game1.currentSeason == "summer" && Game1.weatherForTomorrow == Game1.weather_sunny)
+                tvText = tvText + summerClearWeather.GetRandomItem(new Random());
+
+            if (Game1.currentSeason == "summer" && Game1.weatherForTomorrow == Game1.weather_lightning)
+                tvText = tvText + summerStormText.GetRandomItem(new Random());
+
+            if (Game1.currentSeason == "summer" && Game1.weatherForTomorrow == Game1.weather_rain)
+                tvText = tvText + summerRainText.GetRandomItem(new Random());
+
+            //fall
+            if (Game1.currentSeason == "fall" && Game1.weatherForTomorrow == Game1.weather_debris)
+                tvText = tvText + fallWindText.GetRandomItem(new Random());
+
+            if (Game1.currentSeason == "fall" && Game1.weatherForTomorrow == Game1.weather_sunny)
+                tvText = tvText + fallClearWeather.GetRandomItem(new Random());
+
+            if (Game1.currentSeason == "fall" && Game1.weatherForTomorrow == Game1.weather_lightning)
+                tvText = tvText + fallStormText.GetRandomItem(new Random());
+
+            if (Game1.currentSeason == "fall" && Game1.weatherForTomorrow == Game1.weather_rain)
+                tvText = tvText + fallRainText.GetRandomItem(new Random());
+
+            if (Game1.currentSeason == "fall" && Game1.weatherForTomorrow == Game1.weather_snow)
+                tvText = tvText + "Winter is just around the bend, with snow predicted for tommorow!";
+
+            //winter
+            if (Game1.currentSeason == "winter" && Game1.weatherForTomorrow == Game1.weather_sunny)
+                tvText = tvText + winterClearWeather.GetRandomItem(new Random());
+
+            if (Game1.currentSeason == "winter" && Game1.weatherForTomorrow == Game1.weather_snow)
+                tvText = tvText + winterSnowText.GetRandomItem(new Random());
+
             return tvText;
         }
 
@@ -766,6 +829,16 @@ namespace ClimatesOfFerngill
         }
 
 
+    }
+
+    public static class OurExtensions
+    {
+        public static string GetRandomItem(this string[] array, Random r)
+        {
+            int l = array.Length;
+
+            return array[r.Next(0, l)];
+        }
     }
 }
 

@@ -2,7 +2,7 @@
 
 This mod alters the weather of Stardew Valley by creating a climate system. It adds temperature and may add hostile weather events down the line.  
 
-The current version is __0.7.22 rev 20170001__ 
+The current version is __0.7.26 rev 20170104 (beta)__ 
 
 ## Features
 * Custom TV dialogue (English only)
@@ -10,6 +10,9 @@ The current version is __0.7.22 rev 20170001__
 
 ## Planned Features
 * Hostile weather events (Heatwaves, Floods, Frosts)
+* Creating a 'traditional' option for the weather
+* Moving TV text options to a json/txt file for easier customization.
+* Adding in Farenheit as a temp option.
 
 ## Maybe features?
 * Specifying climate options via json file
@@ -41,6 +44,10 @@ A. There were too many, honestly. I may set up something in the future to allow 
 Q. I don't want the TV to display today's weather at all.
 
 A. Set it to 0600.
+
+Q. How do I get it to display today's temperature in Farenheit?
+
+A. Upcoming. Probably soon. 
 
 ## License
 
