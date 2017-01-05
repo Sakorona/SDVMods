@@ -2,7 +2,7 @@
 
 This mod alters the weather of Stardew Valley by creating a climate system. It adds temperature and may add hostile weather events down the line.  
 
-The current version is __0.7.26 rev 20170104 (beta)__ 
+The current version is __0.7.26 rev 20170105 (beta)__ 
 
 ## Features
 * Custom TV dialogue (English only)
@@ -48,6 +48,10 @@ A. Set it to 0600.
 Q. How do I get it to display today's temperature in Farenheit?
 
 A. Upcoming. Probably soon. 
+
+## Thanks
+
+This wouldn't have been possible without the inspiration from the original More Rain Mod and assistance from Entoraox and Pathoschild
 
 ## License
 
