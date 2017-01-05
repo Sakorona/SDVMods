@@ -14,11 +14,11 @@ namespace ClimatesOfFerngill
 {
     public class ClimatesOfFerngill : Mod
     {
-        public static ClimateConfig config { get; private set; }
-        bool gameloaded { get; set; }
-        int weatherAtStartDay { get; set; }
-        FerngillWeather currWeather { get; set; }
-        FerngillWeather tmrwWeather { get; set; }
+        public ClimateConfig Config { get; private set; }
+        bool GameLoaded { get; set; }
+        int WeatherAtStartOfDay { get; set; }
+        FerngillWeather CurrWeather { get; set; }
+        FerngillWeather TomorrowWeather { get; set; }
 
         //tv overloading
         private static FieldInfo Field = typeof(GameLocation).GetField("afterQuestion", BindingFlags.Instance | BindingFlags.NonPublic);
@@ -34,7 +34,7 @@ namespace ClimatesOfFerngill
         /// <param name="helper">Provides methods for interacting with the mod directory, such as read/writing a config file or custom JSON files.</param>
         public override void Entry(IModHelper helper)
         {
-            ClimateConfig config = helper.ReadConfig<ClimateConfig>();
+            Config = helper.ReadConfig<ClimateConfig>();
             PlayerEvents.LoadedGame += PlayerEvents_LoadedGame;
             TimeEvents.DayOfMonthChanged += TimeEvents_DayOfMonthChanged;
             MenuEvents.MenuChanged += MenuEvents_MenuChanged;
@@ -107,14 +107,14 @@ namespace ClimatesOfFerngill
             string[] weddingWeather = new string[] { "It'll be good weather tommorow for a Pelican Town Wedding! Congratuatlions to the newlyweds. " };
 
             // Your custom weather channel string is created by this method
-            int noLonger = VerifyValidTime(config.NoLongerDisplayToday) ? config.NoLongerDisplayToday : 1700;
+            int noLonger = VerifyValidTime(Config.NoLongerDisplayToday) ? Config.NoLongerDisplayToday : 1700;
             if (Game1.timeOfDay> noLonger) //don't display today's weather
-                tvText = "The high for today is " + currWeather.todayHigh + "C, with the low being " + currWeather.todayLow +  "C. ";
+                tvText = "The high for today is " + CurrWeather.todayHigh + "C, with the low being " + CurrWeather.todayLow +  "C. ";
 
             //temp warnings
-            if (currWeather.todayHigh > 36)
+            if (CurrWeather.todayHigh > 36)
                 tvText = tvText + "It will be unusually hot outside. Stay hydrated. ";
-            if (currWeather.todayHigh < -5)
+            if (CurrWeather.todayHigh < -5)
                 tvText = tvText + "There's a cold snap passing through. Stay warm. ";
 
             //get WeatherForTommorow and set text
@@ -194,12 +194,12 @@ namespace ClimatesOfFerngill
 
         public void checkForDangerousWeather(bool hud = true)
         {
-            if (currWeather.status == FerngillWeather.BLIZZARD) {
+            if (CurrWeather.status == FerngillWeather.BLIZZARD) {
                 Game1.hudMessages.Add(new HUDMessage("There's a dangerous blizzard out today. Be careful!"));
                 return;
             }
 
-            if (currWeather.status == FerngillWeather.HEATWAVE)
+            if (CurrWeather.status == FerngillWeather.HEATWAVE)
             {
                 Game1.hudMessages.Add(new HUDMessage("A massive heatwave is sweeping the valley. Stay hydrated!"));
                 return;
@@ -213,13 +213,13 @@ namespace ClimatesOfFerngill
 
         public void TimeEvents_DayOfMonthChanged(object sender, StardewModdingAPI.Events.EventArgsIntChanged e)
         {
-            if (gameloaded == false) return;
+            if (GameLoaded == false) return;
             UpdateWeather();
         }
 
         public void PlayerEvents_LoadedGame(object sender, StardewModdingAPI.Events.EventArgsLoadedGameChanged e)
         {
-            gameloaded = true;
+            GameLoaded = true;
         }
 
         void UpdateWeather(){
@@ -246,7 +246,7 @@ namespace ClimatesOfFerngill
             }
 
             //rain totem
-            if (weatherAtStartDay != Game1.weatherForTomorrow)
+            if (WeatherAtStartOfDay != Game1.weatherForTomorrow)
             {
                 if (Game1.weatherForTomorrow == Game1.weather_rain)
                 {
@@ -272,10 +272,10 @@ namespace ClimatesOfFerngill
                 if (Game1.dayOfMonth < 10)
                 {
                     //temperature
-                    currWeather.todayHigh = rng.Next(1,8) + 8;
-                    currWeather.GetLowFromHigh(rng.Next(1,3) + 3);
+                    CurrWeather.todayHigh = rng.Next(1,8) + 8;
+                    CurrWeather.GetLowFromHigh(rng.Next(1,3) + 3);
 
-                    if (config.ClimateType == "arid") currWeather.AlterTemps(5);
+                    if (Config.ClimateType == "arid") CurrWeather.AlterTemps(5);
 
                     //rain, snow, windy chances
                     stormChance = .15;
@@ -283,7 +283,7 @@ namespace ClimatesOfFerngill
                     rainChance = .3 + (Game1.dayOfMonth * .0278);
 
                     //climate changes to the rain.
-                    switch (config.ClimateType)
+                    switch (Config.ClimateType)
                     {
                         case "arid":
                             rainChance = .25;
@@ -314,10 +314,10 @@ namespace ClimatesOfFerngill
                 if (Game1.dayOfMonth > 9 && Game1.dayOfMonth < 19)
                 {
                     //temperature
-                    currWeather.todayHigh = rng.Next(1, 6) + 14;
-                    currWeather.GetLowFromHigh(rng.Next(1, 3) + 3);
+                    CurrWeather.todayHigh = rng.Next(1, 6) + 14;
+                    CurrWeather.GetLowFromHigh(rng.Next(1, 3) + 3);
 
-                    if (config.ClimateType == "arid") currWeather.AlterTemps(5);
+                    if (Config.ClimateType == "arid") CurrWeather.AlterTemps(5);
 
                     //rain, snow, windy chances
                     stormChance = .2;
@@ -325,7 +325,7 @@ namespace ClimatesOfFerngill
                     rainChance = .2 + (Game1.dayOfMonth * .01);
 
                     //climate changes to the rain.
-                    switch (config.ClimateType)
+                    switch (Config.ClimateType)
                     {
                         case "arid":
                             rainChance = .25;
@@ -356,10 +356,10 @@ namespace ClimatesOfFerngill
                 if (Game1.dayOfMonth > 18)
                 {
                     //temperature
-                    currWeather.todayHigh = rng.Next(1, 6) + 20;
-                    currWeather.GetLowFromHigh(rng.Next(1, 3) + 3);
+                    CurrWeather.todayHigh = rng.Next(1, 6) + 20;
+                    CurrWeather.GetLowFromHigh(rng.Next(1, 3) + 3);
 
-                    if (config.ClimateType == "arid") currWeather.AlterTemps(5);
+                    if (Config.ClimateType == "arid") CurrWeather.AlterTemps(5);
 
                     //rain, snow, windy chances
                     stormChance = .3;
@@ -367,7 +367,7 @@ namespace ClimatesOfFerngill
                     rainChance = .2;
 
                     //climate changes to the rain.
-                    switch (config.ClimateType)
+                    switch (Config.ClimateType)
                     {
                         case "arid":
                             rainChance = .25;
@@ -403,13 +403,13 @@ namespace ClimatesOfFerngill
                 if (Game1.dayOfMonth < 10)
                 {
                     //temperature
-                    currWeather.todayHigh = rng.Next(1, 5) + 26;
-                    currWeather.GetLowFromHigh(rng.Next(1, 3) + 3);
+                    CurrWeather.todayHigh = rng.Next(1, 5) + 26;
+                    CurrWeather.GetLowFromHigh(rng.Next(1, 3) + 3);
 
                     //summer adjustment
-                    currWeather.AlterTemps(rng.Next(0, 6));
+                    CurrWeather.AlterTemps(rng.Next(0, 6));
 
-                    if (config.ClimateType == "arid" || config.ClimateType == "monsoon") currWeather.AlterTemps(6);
+                    if (Config.ClimateType == "arid" || Config.ClimateType == "monsoon") CurrWeather.AlterTemps(6);
 
                     //rain, snow, windy chances
                     stormChance = .45;
@@ -417,7 +417,7 @@ namespace ClimatesOfFerngill
                     rainChance = .15;
 
                     //climate changes to the rain.
-                    switch (config.ClimateType)
+                    switch (Config.ClimateType)
                     {
                         case "arid":
                             rainChance = .05;
@@ -448,13 +448,13 @@ namespace ClimatesOfFerngill
                 if (Game1.dayOfMonth > 9 && Game1.dayOfMonth < 19)
                 {
                     //temperature
-                    currWeather.todayHigh = rng.Next(1, 5) + 31;
-                    currWeather.GetLowFromHigh(rng.Next(1, 3) + 3);
+                    CurrWeather.todayHigh = rng.Next(1, 5) + 31;
+                    CurrWeather.GetLowFromHigh(rng.Next(1, 3) + 3);
 
                     //summer adjustment
-                    currWeather.AlterTemps(rng.Next(0, 6));
+                    CurrWeather.AlterTemps(rng.Next(0, 6));
 
-                    if (config.ClimateType == "arid" || config.ClimateType == "monsoon") currWeather.AlterTemps(6);
+                    if (Config.ClimateType == "arid" || Config.ClimateType == "monsoon") CurrWeather.AlterTemps(6);
 
                     //rain, snow, windy chances
                     stormChance = .6;
@@ -462,7 +462,7 @@ namespace ClimatesOfFerngill
                     rainChance = .15;
 
                     //climate changes to the rain.
-                    switch (config.ClimateType)
+                    switch (Config.ClimateType)
                     {
                         case "arid":
                             rainChance = .05;
@@ -494,13 +494,13 @@ namespace ClimatesOfFerngill
                 {
                     //temperature
                     //currWeather.todayHigh = rng.Next(1, 14) + 22;
-                    currWeather.todayHigh = 22 + (int)Math.Floor(Game1.dayOfMonth * 1.56) + rng.Next(0,3);
-                    currWeather.GetLowFromHigh(rng.Next(1, 3) + 3);
+                    CurrWeather.todayHigh = 22 + (int)Math.Floor(Game1.dayOfMonth * 1.56) + rng.Next(0,3);
+                    CurrWeather.GetLowFromHigh(rng.Next(1, 3) + 3);
 
                     //summer adjustment
-                    currWeather.AlterTemps(rng.Next(0, 6));
+                    CurrWeather.AlterTemps(rng.Next(0, 6));
 
-                    if (config.ClimateType == "arid" || config.ClimateType == "monsoon") currWeather.AlterTemps(6);
+                    if (Config.ClimateType == "arid" || Config.ClimateType == "monsoon") CurrWeather.AlterTemps(6);
 
                     //rain, snow, windy chances
                     stormChance = .45;
@@ -508,7 +508,7 @@ namespace ClimatesOfFerngill
                     rainChance = .3;
 
                     //climate changes to the rain.
-                    switch (config.ClimateType)
+                    switch (Config.ClimateType)
                     {
                         case "arid":
                             rainChance = .05;
@@ -544,10 +544,10 @@ namespace ClimatesOfFerngill
                 if (Game1.dayOfMonth < 10)
                 {
                     //temperature
-                    currWeather.todayHigh = 16 + (int)Math.Floor(Game1.dayOfMonth * .667) + rng.Next(0, 2);
-                    currWeather.GetLowFromHigh(rng.Next(1, 6) + 4);
+                    CurrWeather.todayHigh = 16 + (int)Math.Floor(Game1.dayOfMonth * .667) + rng.Next(0, 2);
+                    CurrWeather.GetLowFromHigh(rng.Next(1, 6) + 4);
 
-                    if (config.ClimateType == "arid") currWeather.AlterTemps(2);
+                    if (Config.ClimateType == "arid") CurrWeather.AlterTemps(2);
 
                     //rain, snow, windy chances
                     stormChance = .33;
@@ -555,7 +555,7 @@ namespace ClimatesOfFerngill
                     rainChance = .3 + (Game1.dayOfMonth * .01111);
 
                     //climate changes to the rain.
-                    switch (config.ClimateType)
+                    switch (Config.ClimateType)
                     {
                         case "arid":
                             rainChance = .05;
@@ -588,10 +588,10 @@ namespace ClimatesOfFerngill
                 if (Game1.dayOfMonth > 9 && Game1.dayOfMonth < 19)
                 {
                     //temperature
-                    currWeather.todayHigh = 9 + (int)Math.Floor(Game1.dayOfMonth * .778) + rng.Next(0, 2);
-                    currWeather.GetLowFromHigh(rng.Next(1, 3) + 3);
+                    CurrWeather.todayHigh = 9 + (int)Math.Floor(Game1.dayOfMonth * .778) + rng.Next(0, 2);
+                    CurrWeather.GetLowFromHigh(rng.Next(1, 3) + 3);
 
-                    if (config.ClimateType == "arid") currWeather.AlterTemps(2);
+                    if (Config.ClimateType == "arid") CurrWeather.AlterTemps(2);
 
                     //rain, snow, windy chances
                     stormChance = .33;
@@ -599,7 +599,7 @@ namespace ClimatesOfFerngill
                     rainChance =  1- windChance;
 
                     //climate changes to the rain.
-                    switch (config.ClimateType)
+                    switch (Config.ClimateType)
                     {
                         case "arid":
                             rainChance = .05;
@@ -632,16 +632,16 @@ namespace ClimatesOfFerngill
                 if (Game1.dayOfMonth > 18)
                 {
                     //temperature
-                    currWeather.todayHigh = 2 + (int)Math.Floor(Game1.dayOfMonth * .333) + rng.Next(0, 4);
-                    currWeather.GetLowFromHigh(rng.Next(1, 3) + 3, 1);
+                    CurrWeather.todayHigh = 2 + (int)Math.Floor(Game1.dayOfMonth * .333) + rng.Next(0, 4);
+                    CurrWeather.GetLowFromHigh(rng.Next(1, 3) + 3, 1);
 
-                    if (Game1.dayOfMonth == 28 && config.AllowSnowOnFall28)
+                    if (Game1.dayOfMonth == 28 && Config.AllowSnowOnFall28)
                     {
-                        currWeather.todayHigh = 2;
-                        currWeather.todayLow = -1;
+                        CurrWeather.todayHigh = 2;
+                        CurrWeather.todayLow = -1;
                     }
 
-                    if (config.ClimateType == "arid") currWeather.AlterTemps(2);
+                    if (Config.ClimateType == "arid") CurrWeather.AlterTemps(2);
 
                     //rain, snow, windy chances
                     stormChance = .33;
@@ -649,7 +649,7 @@ namespace ClimatesOfFerngill
                     rainChance = .5;
 
                     //climate changes to the rain.
-                    switch (config.ClimateType)
+                    switch (Config.ClimateType)
                     {
                         case "arid":
                             rainChance = .05;
@@ -687,14 +687,14 @@ namespace ClimatesOfFerngill
                 if (Game1.dayOfMonth < 10)
                 {
                     //temperature
-                    currWeather.todayHigh = -2 + (int)Math.Floor(Game1.dayOfMonth * .889) + rng.Next(0, 3);
-                    currWeather.GetLowFromHigh(rng.Next(1, 4));
+                    CurrWeather.todayHigh = -2 + (int)Math.Floor(Game1.dayOfMonth * .889) + rng.Next(0, 3);
+                    CurrWeather.GetLowFromHigh(rng.Next(1, 4));
 
                     //rain, snow, windy chances
                     rainChance = .6;
 
                     //climate changes to the rain.
-                    switch (config.ClimateType)
+                    switch (Config.ClimateType)
                     {
                         case "arid":
                             rainChance = .25;
@@ -720,14 +720,14 @@ namespace ClimatesOfFerngill
                 if (Game1.dayOfMonth > 9 && Game1.dayOfMonth < 19)
                 {
                     //temperature
-                    currWeather.todayHigh = -12 + (int)Math.Floor(Game1.dayOfMonth * 1.111) + rng.Next(0, 3);
-                    currWeather.GetLowFromHigh(rng.Next(1, 4));
+                    CurrWeather.todayHigh = -12 + (int)Math.Floor(Game1.dayOfMonth * 1.111) + rng.Next(0, 3);
+                    CurrWeather.GetLowFromHigh(rng.Next(1, 4));
 
                     //rain, snow, windy chances
                     rainChance = .75;
 
                     //climate changes to the rain.
-                    switch (config.ClimateType)
+                    switch (Config.ClimateType)
                     {
                         case "arid":
                             rainChance = .25;
@@ -752,14 +752,14 @@ namespace ClimatesOfFerngill
                 if (Game1.dayOfMonth > 18)
                 {
                     //temperature
-                    currWeather.todayHigh = -12 + (int)Math.Floor(Game1.dayOfMonth * 1.222) + rng.Next(0, 3);
-                    currWeather.GetLowFromHigh(rng.Next(1, 4));
+                    CurrWeather.todayHigh = -12 + (int)Math.Floor(Game1.dayOfMonth * 1.222) + rng.Next(0, 3);
+                    CurrWeather.GetLowFromHigh(rng.Next(1, 4));
 
                     //rain, snow, windy chances
                     rainChance = .6;
 
                     //climate changes to the rain.
-                    switch (config.ClimateType)
+                    switch (Config.ClimateType)
                     {
                         case "arid":
                             rainChance = .25;
@@ -783,15 +783,15 @@ namespace ClimatesOfFerngill
                 }
             }
             #endregion
-            if (Game1.dayOfMonth == 28 && Game1.currentSeason == "fall" && config.AllowSnowOnFall28)
+            if (Game1.dayOfMonth == 28 && Game1.currentSeason == "fall" && Config.AllowSnowOnFall28)
                 Game1.weatherForTomorrow = Game1.weather_snow; //it now snows on Fall 28.
 
-            weatherAtStartDay = Game1.weatherForTomorrow;
+            WeatherAtStartOfDay = Game1.weatherForTomorrow;
         }
 
         private bool CanWeStorm()
         {
-            if (Game1.year == 1 && Game1.currentSeason == "spring") return config.AllowStormsFirstSpring;
+            if (Game1.year == 1 && Game1.currentSeason == "spring") return Config.AllowStormsFirstSpring;
             else return true;
         }
 
