@@ -14,7 +14,7 @@ namespace ClimatesOfFerngill
 {
     public class ClimatesOfFerngill : Mod
     {
-        public static ClimateConfig Config { get; private set; }
+        public ClimateConfig Config { get; private set; }
         bool GameLoaded { get; set; }
         int WeatherAtStartOfDay { get; set; }
         FerngillWeather CurrWeather { get; set; }
@@ -34,7 +34,7 @@ namespace ClimatesOfFerngill
         /// <param name="helper">Provides methods for interacting with the mod directory, such as read/writing a config file or custom JSON files.</param>
         public override void Entry(IModHelper helper)
         {
-            ClimateConfig config = helper.ReadConfig<ClimateConfig>();
+            Config = helper.ReadConfig<ClimateConfig>();
             PlayerEvents.LoadedGame += PlayerEvents_LoadedGame;
             TimeEvents.DayOfMonthChanged += TimeEvents_DayOfMonthChanged;
             MenuEvents.MenuChanged += MenuEvents_MenuChanged;
