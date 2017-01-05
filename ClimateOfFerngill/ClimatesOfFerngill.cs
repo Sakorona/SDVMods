@@ -785,7 +785,9 @@ namespace ClimatesOfFerngill
                 }
             }
             #endregion
-            overrideWeather();
+            if (Game1.dayOfMonth == 28 && Game1.currentSeason == "fall" && config.AllowSnowOnFall28)
+                Game1.weatherForTomorrow = Game1.weather_snow; //it now snows on Fall 28.
+
             weatherAtStartDay = Game1.weatherForTomorrow;
         }
 
@@ -821,13 +823,6 @@ namespace ClimatesOfFerngill
                 return;
             }
         }
-
-        private void overrideWeather()
-        {
-            if (Game1.dayOfMonth == 28 && Game1.currentSeason == "fall" && config.AllowSnowOnFall28)
-                Game1.weatherForTomorrow = Game1.weather_snow; //it now snows on Fall 28.
-        }
-
 
     }
 
