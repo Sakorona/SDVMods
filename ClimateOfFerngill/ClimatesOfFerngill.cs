@@ -110,7 +110,9 @@ namespace ClimatesOfFerngill
 
             // Your custom weather channel string is created by this method
             int noLonger = VerifyValidTime(Config.NoLongerDisplayToday) ? Config.NoLongerDisplayToday : 1700;
-            if (Game1.timeOfDay> noLonger) //don't display today's weather
+
+            //BUG #10 - >_>
+            if (Game1.timeOfDay < noLonger) //don't display today's weather 
                 tvText = "The high for today is " + CurrWeather.todayHigh + "C, with the low being " + CurrWeather.todayLow +  "C. ";
 
             //temp warnings
