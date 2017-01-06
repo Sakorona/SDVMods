@@ -108,7 +108,7 @@ namespace ClimatesOfFerngill
                 tvText = tvText + GetWeatherDesc(rng, GetTodayWeather());
 
                 //get WeatherForTommorow and set text
-                tvText = tvText + ".Tommorow, ";
+                tvText = tvText + "Tommorow, ";
             }
 
             if (CurrWeather.todayHigh > 36 && Game1.timeOfDay < 1900)
