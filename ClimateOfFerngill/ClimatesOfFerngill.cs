@@ -80,11 +80,13 @@ namespace ClimatesOfFerngill
         public string GetWeatherForecast()
         {
             string tvText = " ";
+            Random rng = new Random();
 
-            if (tvText != null)
-                Monitor.Log("AAAAAAH");
-            else
-                Monitor.Log("Why is this null?");
+            if (CurrWeather == null)
+            {
+                CurrWeather = new FerngillWeather();
+                SetTemperature(rng);
+            }
 
             string[] springRainText = new string[] { "It'll be a rainy day outside! Make sure to bring your coat. ", "It'll be a wet day outside. ", "It'll be a misty, wet day - make sure to pause when you can and enjoy it! "};
             string[] springStormText = new string[] { "Early showers bring summer flowers! It'll be stormy outside tommorow. ", "Expect some lightning tomorrow! ", "A storm front is blowing over the region, and it'll be here tommorrow. " };
@@ -121,56 +123,56 @@ namespace ClimatesOfFerngill
 
             //generics
             if (Game1.weatherForTomorrow == Game1.weather_festival)
-                tvText = tvText + festivalWeather.GetRandomItem(new Random());
+                tvText = tvText + festivalWeather.GetRandomItem(rng);
 
             if (Game1.weatherForTomorrow == Game1.weather_wedding)
-                tvText = tvText + festivalWeather.GetRandomItem(new Random());
+                tvText = tvText + festivalWeather.GetRandomItem(rng);
 
             //spring
             if (Game1.currentSeason == "spring" && Game1.weatherForTomorrow == Game1.weather_debris)
-                tvText = tvText + springWindText.GetRandomItem(new Random());
+                tvText = tvText + springWindText.GetRandomItem(rng);
 
             if (Game1.currentSeason == "spring" && Game1.weatherForTomorrow == Game1.weather_sunny)
-                tvText = tvText + springClearWeather.GetRandomItem(new Random());
+                tvText = tvText + springClearWeather.GetRandomItem(rng);
 
             if (Game1.currentSeason == "spring" && Game1.weatherForTomorrow == Game1.weather_lightning)
-                tvText = tvText + springStormText.GetRandomItem(new Random());
+                tvText = tvText + springStormText.GetRandomItem(rng);
 
             if (Game1.currentSeason == "spring" && Game1.weatherForTomorrow == Game1.weather_rain)
-                tvText = tvText + springRainText.GetRandomItem(new Random());
+                tvText = tvText + springRainText.GetRandomItem(rng);
 
             //summer
             if (Game1.currentSeason == "summer" && Game1.weatherForTomorrow == Game1.weather_sunny)
-                tvText = tvText + summerClearWeather.GetRandomItem(new Random());
+                tvText = tvText + summerClearWeather.GetRandomItem(rng);
 
             if (Game1.currentSeason == "summer" && Game1.weatherForTomorrow == Game1.weather_lightning)
-                tvText = tvText + summerStormText.GetRandomItem(new Random());
+                tvText = tvText + summerStormText.GetRandomItem(rng);
 
             if (Game1.currentSeason == "summer" && Game1.weatherForTomorrow == Game1.weather_rain)
-                tvText = tvText + summerRainText.GetRandomItem(new Random());
+                tvText = tvText + summerRainText.GetRandomItem(rng);
 
             //fall
             if (Game1.currentSeason == "fall" && Game1.weatherForTomorrow == Game1.weather_debris)
-                tvText = tvText + fallWindText.GetRandomItem(new Random());
+                tvText = tvText + fallWindText.GetRandomItem(rng);
 
             if (Game1.currentSeason == "fall" && Game1.weatherForTomorrow == Game1.weather_sunny)
-                tvText = tvText + fallClearWeather.GetRandomItem(new Random());
+                tvText = tvText + fallClearWeather.GetRandomItem(rng);
 
             if (Game1.currentSeason == "fall" && Game1.weatherForTomorrow == Game1.weather_lightning)
-                tvText = tvText + fallStormText.GetRandomItem(new Random());
+                tvText = tvText + fallStormText.GetRandomItem(rng);
 
             if (Game1.currentSeason == "fall" && Game1.weatherForTomorrow == Game1.weather_rain)
-                tvText = tvText + fallRainText.GetRandomItem(new Random());
+                tvText = tvText + fallRainText.GetRandomItem(rng);
 
             if (Game1.currentSeason == "fall" && Game1.weatherForTomorrow == Game1.weather_snow)
                 tvText = tvText + "Winter is just around the bend, with snow predicted for tommorow!";
 
             //winter
             if (Game1.currentSeason == "winter" && Game1.weatherForTomorrow == Game1.weather_sunny)
-                tvText = tvText + winterClearWeather.GetRandomItem(new Random());
+                tvText = tvText + winterClearWeather.GetRandomItem(rng);
 
             if (Game1.currentSeason == "winter" && Game1.weatherForTomorrow == Game1.weather_snow)
-                tvText = tvText + winterSnowText.GetRandomItem(new Random());
+                tvText = tvText + winterSnowText.GetRandomItem(rng);
 
             return tvText;
         }
@@ -260,10 +262,11 @@ namespace ClimatesOfFerngill
             #endregion
 
             //now on to the main program
-
+            CurrWeather = new FerngillWeather();
             Random rng = new Random(Guid.NewGuid().GetHashCode());
             double genNumber = rng.NextDouble();
             double rainChance = 0, stormChance = 0, windChance = 0;
+            SetTemperature(rng);
 
             //first: spring
             #region SpringWeather
@@ -271,12 +274,6 @@ namespace ClimatesOfFerngill
             {
                 if (Game1.dayOfMonth < 10)
                 {
-                    //temperature
-                    CurrWeather.todayHigh = rng.Next(1,8) + 8;
-                    CurrWeather.GetLowFromHigh(rng.Next(1,3) + 3);
-
-                    if (Config.ClimateType == "arid") CurrWeather.AlterTemps(5);
-
                     //rain, snow, windy chances
                     stormChance = .15;
                     windChance = .25;
@@ -313,12 +310,6 @@ namespace ClimatesOfFerngill
                 }
                 if (Game1.dayOfMonth > 9 && Game1.dayOfMonth < 19)
                 {
-                    //temperature
-                    CurrWeather.todayHigh = rng.Next(1, 6) + 14;
-                    CurrWeather.GetLowFromHigh(rng.Next(1, 3) + 3);
-
-                    if (Config.ClimateType == "arid") CurrWeather.AlterTemps(5);
-
                     //rain, snow, windy chances
                     stormChance = .2;
                     windChance = .15 + (Game1.dayOfMonth * .01);
@@ -355,12 +346,6 @@ namespace ClimatesOfFerngill
                 }
                 if (Game1.dayOfMonth > 18)
                 {
-                    //temperature
-                    CurrWeather.todayHigh = rng.Next(1, 6) + 20;
-                    CurrWeather.GetLowFromHigh(rng.Next(1, 3) + 3);
-
-                    if (Config.ClimateType == "arid") CurrWeather.AlterTemps(5);
-
                     //rain, snow, windy chances
                     stormChance = .3;
                     windChance = .05 + (Game1.dayOfMonth * .01);
@@ -402,15 +387,6 @@ namespace ClimatesOfFerngill
             {
                 if (Game1.dayOfMonth < 10)
                 {
-                    //temperature
-                    CurrWeather.todayHigh = rng.Next(1, 5) + 26;
-                    CurrWeather.GetLowFromHigh(rng.Next(1, 3) + 3);
-
-                    //summer adjustment
-                    CurrWeather.AlterTemps(rng.Next(0, 6));
-
-                    if (Config.ClimateType == "arid" || Config.ClimateType == "monsoon") CurrWeather.AlterTemps(6);
-
                     //rain, snow, windy chances
                     stormChance = .45;
                     windChance = 0; //cannot wind during summer
@@ -447,15 +423,6 @@ namespace ClimatesOfFerngill
                 }
                 if (Game1.dayOfMonth > 9 && Game1.dayOfMonth < 19)
                 {
-                    //temperature
-                    CurrWeather.todayHigh = rng.Next(1, 5) + 31;
-                    CurrWeather.GetLowFromHigh(rng.Next(1, 3) + 3);
-
-                    //summer adjustment
-                    CurrWeather.AlterTemps(rng.Next(0, 6));
-
-                    if (Config.ClimateType == "arid" || Config.ClimateType == "monsoon") CurrWeather.AlterTemps(6);
-
                     //rain, snow, windy chances
                     stormChance = .6;
                     windChance = 0; //cannot wind during summer
@@ -543,12 +510,6 @@ namespace ClimatesOfFerngill
             {
                 if (Game1.dayOfMonth < 10)
                 {
-                    //temperature
-                    CurrWeather.todayHigh = 16 + (int)Math.Floor(Game1.dayOfMonth * .667) + rng.Next(0, 2);
-                    CurrWeather.GetLowFromHigh(rng.Next(1, 6) + 4);
-
-                    if (Config.ClimateType == "arid") CurrWeather.AlterTemps(2);
-
                     //rain, snow, windy chances
                     stormChance = .33;
                     windChance = 0 + (Game1.dayOfMonth * .044); 
@@ -587,12 +548,6 @@ namespace ClimatesOfFerngill
                 }
                 if (Game1.dayOfMonth > 9 && Game1.dayOfMonth < 19)
                 {
-                    //temperature
-                    CurrWeather.todayHigh = 9 + (int)Math.Floor(Game1.dayOfMonth * .778) + rng.Next(0, 2);
-                    CurrWeather.GetLowFromHigh(rng.Next(1, 3) + 3);
-
-                    if (Config.ClimateType == "arid") CurrWeather.AlterTemps(2);
-
                     //rain, snow, windy chances
                     stormChance = .33;
                     windChance = .4 + (Game1.dayOfMonth * .022);
@@ -631,18 +586,6 @@ namespace ClimatesOfFerngill
                 }
                 if (Game1.dayOfMonth > 18)
                 {
-                    //temperature
-                    CurrWeather.todayHigh = 2 + (int)Math.Floor(Game1.dayOfMonth * .333) + rng.Next(0, 4);
-                    CurrWeather.GetLowFromHigh(rng.Next(1, 3) + 3, 1);
-
-                    if (Game1.dayOfMonth == 28 && Config.AllowSnowOnFall28)
-                    {
-                        CurrWeather.todayHigh = 2;
-                        CurrWeather.todayLow = -1;
-                    }
-
-                    if (Config.ClimateType == "arid") CurrWeather.AlterTemps(2);
-
                     //rain, snow, windy chances
                     stormChance = .33;
                     windChance = .1 + Game1.dayOfMonth * .044; //cannot wind during summer
@@ -686,10 +629,6 @@ namespace ClimatesOfFerngill
             {
                 if (Game1.dayOfMonth < 10)
                 {
-                    //temperature
-                    CurrWeather.todayHigh = -2 + (int)Math.Floor(Game1.dayOfMonth * .889) + rng.Next(0, 3);
-                    CurrWeather.GetLowFromHigh(rng.Next(1, 4));
-
                     //rain, snow, windy chances
                     rainChance = .6;
 
@@ -719,10 +658,6 @@ namespace ClimatesOfFerngill
 
                 if (Game1.dayOfMonth > 9 && Game1.dayOfMonth < 19)
                 {
-                    //temperature
-                    CurrWeather.todayHigh = -12 + (int)Math.Floor(Game1.dayOfMonth * 1.111) + rng.Next(0, 3);
-                    CurrWeather.GetLowFromHigh(rng.Next(1, 4));
-
                     //rain, snow, windy chances
                     rainChance = .75;
 
@@ -751,10 +686,6 @@ namespace ClimatesOfFerngill
                 }
                 if (Game1.dayOfMonth > 18)
                 {
-                    //temperature
-                    CurrWeather.todayHigh = -12 + (int)Math.Floor(Game1.dayOfMonth * 1.222) + rng.Next(0, 3);
-                    CurrWeather.GetLowFromHigh(rng.Next(1, 4));
-
                     //rain, snow, windy chances
                     rainChance = .6;
 
@@ -787,6 +718,112 @@ namespace ClimatesOfFerngill
                 Game1.weatherForTomorrow = Game1.weather_snow; //it now snows on Fall 28.
 
             WeatherAtStartOfDay = Game1.weatherForTomorrow;
+        }
+
+        public void SetTemperature(Random rng)
+        {
+            if (Game1.currentSeason == "spring" && Game1.dayOfMonth < 10)
+            {
+                CurrWeather.todayHigh = rng.Next(1, 8) + 8;
+                CurrWeather.GetLowFromHigh(rng.Next(1, 3) + 3);
+
+                if (Config.ClimateType == "arid") CurrWeather.AlterTemps(5);
+            }
+
+            if (Game1.currentSeason == "spring" && Game1.dayOfMonth > 9 && Game1.dayOfMonth < 19)
+            {
+                CurrWeather.todayHigh = rng.Next(1, 6) + 14;
+                CurrWeather.GetLowFromHigh(rng.Next(1, 3) + 3);
+
+                if (Config.ClimateType == "arid") CurrWeather.AlterTemps(5);
+            }
+            if (Game1.currentSeason == "spring" && Game1.dayOfMonth > 18)
+            {
+                CurrWeather.todayHigh = rng.Next(1, 6) + 20;
+                CurrWeather.GetLowFromHigh(rng.Next(1, 3) + 3);
+
+                if (Config.ClimateType == "arid") CurrWeather.AlterTemps(5);
+            }
+
+            //SUMMER
+            if (Game1.currentSeason == "summer" && Game1.dayOfMonth < 10)
+            {
+                CurrWeather.todayHigh = rng.Next(1, 8) + 26;
+                CurrWeather.GetLowFromHigh(rng.Next(1, 3) + 3);
+
+                CurrWeather.AlterTemps(rng.Next(0, 6));
+                if (Config.ClimateType == "arid" || Config.ClimateType == "monsoon")
+                    CurrWeather.AlterTemps(6);
+            }
+
+            if (Game1.currentSeason == "summer" && Game1.dayOfMonth > 9 && Game1.dayOfMonth < 19)
+            {
+                CurrWeather.todayHigh = rng.Next(1, 6) + 31;
+                CurrWeather.GetLowFromHigh(rng.Next(1, 3) + 3);
+
+                CurrWeather.AlterTemps(rng.Next(0, 6));
+                if (Config.ClimateType == "arid" || Config.ClimateType == "monsoon")
+                    CurrWeather.AlterTemps(6);
+            }
+            if (Game1.currentSeason == "summer" && Game1.dayOfMonth > 18)
+            {
+                CurrWeather.todayHigh = 22 + (int)Math.Floor(Game1.dayOfMonth * 1.56) + rng.Next(0, 3);
+                CurrWeather.GetLowFromHigh(rng.Next(1, 3) + 3);
+
+                CurrWeather.AlterTemps(rng.Next(0, 6));
+                if (Config.ClimateType == "arid" || Config.ClimateType == "monsoon")
+                    CurrWeather.AlterTemps(6);
+            }
+
+            //AUTUMN
+            if (Game1.currentSeason == "fall" && Game1.dayOfMonth < 10)
+            {
+                CurrWeather.todayHigh = 16 + (int)Math.Floor(Game1.dayOfMonth * .667) + rng.Next(0, 2);
+                CurrWeather.GetLowFromHigh(rng.Next(1, 6) + 4);
+
+                if (Config.ClimateType == "arid") CurrWeather.AlterTemps(2);
+            }
+
+            if (Game1.currentSeason == "fall" && Game1.dayOfMonth > 9 && Game1.dayOfMonth < 19)
+            {
+                CurrWeather.todayHigh = 9 + (int)Math.Floor(Game1.dayOfMonth * .778) + rng.Next(0, 2);
+                CurrWeather.GetLowFromHigh(rng.Next(1, 6) + 3);
+
+                if (Config.ClimateType == "arid") CurrWeather.AlterTemps(2);
+            }
+
+            if (Game1.currentSeason == "fall" && Game1.dayOfMonth > 18)
+            {
+                CurrWeather.todayHigh = 2 + (int)Math.Floor(Game1.dayOfMonth * .667) + rng.Next(0, 2);
+                CurrWeather.GetLowFromHigh(rng.Next(1, 3) + 3, 1);
+
+                if (Config.ClimateType == "arid") CurrWeather.AlterTemps(2);
+
+                if (Game1.dayOfMonth == 28 && Config.AllowSnowOnFall28)
+                {
+                    CurrWeather.todayHigh = 2;
+                    CurrWeather.todayLow = -1;
+                }
+            }
+
+            //WINTER
+            if (Game1.currentSeason == "winter" && Game1.dayOfMonth < 10)
+            {
+                CurrWeather.todayHigh = -2 + (int)Math.Floor(Game1.dayOfMonth * .889) + rng.Next(0, 3);
+                CurrWeather.GetLowFromHigh(rng.Next(1, 4));
+            }
+
+            if (Game1.currentSeason == "winter" && Game1.dayOfMonth > 9 && Game1.dayOfMonth < 19)
+            {
+                CurrWeather.todayHigh = -12 + (int)Math.Floor(Game1.dayOfMonth * 1.111) + rng.Next(0, 3);
+                CurrWeather.GetLowFromHigh(rng.Next(1, 4));
+            }
+
+            if (Game1.currentSeason == "winter" && Game1.dayOfMonth > 18)
+            {
+                CurrWeather.todayHigh = -12 + (int)Math.Floor(Game1.dayOfMonth * 1.222) + rng.Next(0, 3);
+                CurrWeather.GetLowFromHigh(rng.Next(1, 4));
+            }
         }
 
         private bool CanWeStorm()
