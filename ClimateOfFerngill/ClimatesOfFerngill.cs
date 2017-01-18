@@ -140,7 +140,7 @@ namespace ClimatesOfFerngill
             //BUG #10 - >_>
             if (Game1.timeOfDay < noLonger) //don't display today's weather 
             {
-                tvText = "The high for today is " + DisplayTemperature(CurrWeather.todayHigh, Config.TempGauge) + ", with the low being " + DisplayTemperature(CurrWeather.todayHigh, Config.TempGauge) + ". ";
+                tvText = "The high for today is " + DisplayTemperature(CurrWeather.todayHigh, Config.TempGauge) + ", with the low being " + DisplayTemperature(CurrWeather.todayLow, Config.TempGauge) + ". ";
 
                 //temp warnings
                 if (CurrWeather.todayHigh > 36 && Game1.timeOfDay < 1900)
