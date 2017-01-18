@@ -19,7 +19,7 @@ The current version is __0.8.0 rev 20170118__
 
 ## Requirements
 * Stardew Valley: __1.11__ or greater
-* SMAPI: __1.2__ or greater
+* SMAPI: __1.5__ or greater
 
 ## Configuration Options
 

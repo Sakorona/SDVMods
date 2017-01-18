@@ -35,9 +35,14 @@ namespace ClimatesOfFerngill
         public override void Entry(IModHelper helper)
         {
             Config = helper.ReadConfig<ClimateConfig>();
-            PlayerEvents.LoadedGame += PlayerEvents_LoadedGame;
+            SaveEvents.AfterLoad += SaveEvents_AfterLoad;
             TimeEvents.DayOfMonthChanged += TimeEvents_DayOfMonthChanged;
             MenuEvents.MenuChanged += MenuEvents_MenuChanged;
+        }
+
+        private void SaveEvents_AfterLoad(object sender, EventArgs e)
+        {
+            GameLoaded = true;
         }
 
         private void MenuEvents_MenuChanged(object sender, EventArgsClickableMenuChanged e)
@@ -306,10 +311,6 @@ namespace ClimatesOfFerngill
             UpdateWeather();
         }
 
-        public void PlayerEvents_LoadedGame(object sender, EventArgsLoadedGameChanged e)
-        {
-            GameLoaded = true;
-        }
 
         void UpdateWeather(){
             #region WeatherChecks
