@@ -77,6 +77,50 @@ namespace ClimatesOfFerngill
             TVMethodOverlay.Invoke(Target, null);
             Game1.afterDialogues = Target.proceedToNextScene;
         }
+
+        public string DisplayTemperature(int temp, string tempGauge)
+        {
+            //base temps are always in celsius
+            if (tempGauge == "celsius")
+            {
+                return temp + " C";
+            }
+
+            if (tempGauge == "kelvin")
+            {
+                return (temp + 273.15) + " K";
+            }
+
+            if (tempGauge == "rankine")
+            {
+                double tmpTemp = (temp + 273.15) * (9 / 5);
+                return string.Format("{0:0.00}", tmpTemp) + " Ra";
+            }
+
+            if (tempGauge == "farenheit")
+            {
+                double tmpTemp = temp * (9 / 5) + 32;
+                return string.Format("{0:0.00}", tmpTemp) + " F";
+            }
+
+            if (tempGauge == "romer")
+            {
+                return string.Format("{0:0.00}", (temp * (40 / 21) + 7.5)) + " Ro";
+            }
+
+            if (tempGauge == "delisle")
+            {
+                return string.Format("{0:0.00}", ((100 - temp) * 1.5)) + " De";
+            }
+
+            if (tempGauge == "reaumur")
+            {
+                return string.Format("{0:0.00}", temp * .8) + " Re";
+            }
+
+            return "ERROR";
+        }
+
         public string GetWeatherForecast()
         {
             string tvText = " ";
@@ -96,7 +140,7 @@ namespace ClimatesOfFerngill
             //BUG #10 - >_>
             if (Game1.timeOfDay < noLonger) //don't display today's weather 
             {
-                tvText = "The high for today is " + CurrWeather.todayHigh + "C, with the low being " + CurrWeather.todayLow + "C. ";
+                tvText = "The high for today is " + DisplayTemperature(CurrWeather.todayHigh, Config.TempGauge) + ", with the low being " + DisplayTemperature(CurrWeather.todayHigh, Config.TempGauge) + ". ";
 
                 //temp warnings
                 if (CurrWeather.todayHigh > 36 && Game1.timeOfDay < 1900)
@@ -256,13 +300,13 @@ namespace ClimatesOfFerngill
             //this function is called if it's too cold to grow crops. Must be enabled.
         }
 
-        public void TimeEvents_DayOfMonthChanged(object sender, StardewModdingAPI.Events.EventArgsIntChanged e)
+        public void TimeEvents_DayOfMonthChanged(object sender, EventArgsIntChanged e)
         {
             if (GameLoaded == false) return;
             UpdateWeather();
         }
 
-        public void PlayerEvents_LoadedGame(object sender, StardewModdingAPI.Events.EventArgsLoadedGameChanged e)
+        public void PlayerEvents_LoadedGame(object sender, EventArgsLoadedGameChanged e)
         {
             GameLoaded = true;
         }

@@ -3,9 +3,9 @@
   "Author": "KoihimeNakamura",
   "Version": {
     "MajorVersion": 0,
-    "MinorVersion": 7,
-    "PatchVersion": 27,
-    "Build": "beta2-20170106"
+    "MinorVersion": 8,
+    "PatchVersion": 0,
+    "Build": "stable-20170118"
   },
   "Description": "Create a unique climate system",
   "UniqueID": "4108e859-333c-4fec-a1a7-d2e18c1019fe",

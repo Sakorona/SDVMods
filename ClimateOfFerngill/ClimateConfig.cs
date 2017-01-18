@@ -9,6 +9,8 @@ namespace ClimatesOfFerngill
         public bool AllowStormsFirstSpring { get; set; }
         public int NoLongerDisplayToday { get; set; }
         public string ClimateType { get; set; }
+        public string TempGauge { get; set; }
+
         //Future time!
         public bool HarshWeather { get; set; }
 
@@ -22,6 +24,7 @@ namespace ClimatesOfFerngill
             SuppressLog = false;
             NoLongerDisplayToday = 1700;
             ClimateType = "normal";
+            TempGauge = "celsius";
 
             HarshWeather = false; //by default, turn the harsh events off. 
 
