@@ -50,7 +50,12 @@ namespace ClimatesOfFerngill
             //Essentially, if you were outside for a certain percentage of time, get penalized.
             if ((TickPerSpan > 0) && (TicksOutside / TickPerSpan > .65))
             {
-                Game1.player.Stamina -= Config.StaminaPenalty;
+                if (Config.tooMuchInfo) LogEvent("Ticks Outside was: " + (TicksOutside / TickPerSpan) + " with " + TickPerSpan + " ticks per span and " + TicksOutside + " ticks outside.");
+                if (Game1.isLightning)
+                {
+                    if (Config.tooMuchInfo) LogEvent("We are draining " + Config.StaminaPenalty + " stamina as it is storming outside");
+                    Game1.player.Stamina -= Config.StaminaPenalty;
+                }
             }
 
 
