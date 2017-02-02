@@ -20,8 +20,6 @@ namespace ClimateOfFerngill
         FerngillWeather CurrWeather { get; set; }
         FerngillWeather TomorrowWeather { get; set; }
         private int LastTime;
-        private int TicksOutside;
-        private int TickPerSpan;
         private bool GameLoaded;
         MersenneTwister dice;
 
@@ -117,6 +115,23 @@ namespace ClimateOfFerngill
         private void TimeEvents_TimeOfDayChanged(object sender, EventArgsIntChanged e)
         {
             StormyWeather.CheckForStaminaPenalty(LogEvent, Config.tooMuchInfo);
+
+            // have the stamina meter shake to make sure peopel are paying attention.
+            if (Game1.player.Stamina <= 20f)
+            {
+                Game1.staminaShakeTimer = 1000;
+                for (int i = 0; i < 4; i++)
+                {
+                    Game1.screenOverlayTempSprites.Add(new TemporaryAnimatedSprite(Game1.mouseCursors, new Microsoft.Xna.Framework.Rectangle(366, 412, 5, 6), new Vector2((float)(Game1.random.Next(Game1.tileSize / 2) + Game1.viewport.Width - (48 + Game1.tileSize / 8)), (float)(Game1.viewport.Height - 224 - Game1.tileSize / 4 - (int)((double)(Game1.player.MaxStamina - 270) * 0.715))), false, 0.012f, Color.SkyBlue)
+                    {
+                        motion = new Vector2(-2f, -10f),
+                        acceleration = new Vector2(0f, 0.5f),
+                        local = true,
+                        scale = (float)(Game1.pixelZoom + Game1.random.Next(-1, 0)),
+                        delayBeforeAnimationStart = i * 30
+                    });
+                }
+            }
         }
 
         private void GameEvents_UpdateTick(object sender, EventArgs e)
