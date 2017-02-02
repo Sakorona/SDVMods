@@ -10,6 +10,10 @@ namespace ClimatesOfFerngill
         public int NoLongerDisplayToday { get; set; }
         public string ClimateType { get; set; }
         public string TempGauge { get; set; }
+        public bool StormyPenalty { get; set; }
+        public int StaminaPenalty { get; set; }
+        public bool tooMuchInfo { get; set; }
+
 
         //Future time!
         public bool HarshWeather { get; set; }
@@ -25,7 +29,9 @@ namespace ClimatesOfFerngill
             NoLongerDisplayToday = 1700;
             ClimateType = "normal";
             TempGauge = "celsius";
-
+            StormyPenalty = true;
+            StaminaPenalty = 1;
+            tooMuchInfo = false; //debug string
             HarshWeather = false; //by default, turn the harsh events off. 
 
             //should we cap and min cap these?

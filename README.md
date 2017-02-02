@@ -2,15 +2,28 @@
 
 This mod alters the weather of Stardew Valley by creating a climate system. It adds temperature and may add hostile weather events down the line.  
 
-The current version is __0.8.0 rev 20170118__ 
+The current version is __0.8.4 rev 20170120__ 
+
+## Changelog
+
+0.8.6 (inprogress)
+- Frost and Heatwaves descend on the valley.
+- Traditional climate added.
+
+0.8.2
+- Stamina drain on stormy days.
+
+0.8.0 
+- New weather system
+- Temperature!
 
 ## Features
 * Custom TV dialogue (English only)
-* A more complex weather system that can be generally configured to match 5 different climates
+* A more complex weather system that can be generally configured to match 6 different climates
+* A return of the penalty for being outside in a storm
 
 ## Planned Features
-* Hostile weather events (Heatwaves, Floods, Frosts)
-* Creating a 'traditional' option for the weather
+* More hostile weather options
 * Moving TV text options to a json/txt file for easier customization.
 
 ## Maybe features?
@@ -19,7 +32,7 @@ The current version is __0.8.0 rev 20170118__
 
 ## Requirements
 * Stardew Valley: __1.11__ or greater
-* SMAPI: __1.5__ or greater
+* SMAPI: __1.7__ or greater
 
 ## Configuration Options
 
@@ -28,10 +41,16 @@ The current version is __0.8.0 rev 20170118__
 * _AllowStormsFirstSpring_ allows storms the first spring. In the base game this is disabled. It can be set to __false__ or __true__.  Default: __false__
 * _HarshWeather_ allows the hazards. It can be set to __false__ or __true__. Default: __false__        
 * _NoLongerDisplayToday_ is a setting that says after this point: don't display today's weather. The valid setting is: 0600 - 2600. Default: __1700__.
-* _ClimateType_ is a setting that lets you control the type of climate. The options are: __arid__, __dry__, __normal__, __wet__, __monsoon__. Default: __normal__
+* _ClimateType_ is a setting that lets you control the type of climate. The options are: __arid__, __dry__, __normal__, __wet__, __monsoon__ and _traditional_. Default: __normal__
 * _TempGauge_ is a setting that controls if temps are displayed in Celsius or Farenheit. The valid options are _celsius, farenheit_
+* _StormyPenalty_ is a setting that enables the stamina drain for being outside in a storm. The valid options are __true__ and __false.__. Default: __true__
+* _StaminaPenalty_ controls how much stamina is drained per 10 minute tick.
 
 ## FAQ
+
+Q. I don't want a storm penalty
+
+A. Turn it off then.
 
 Q. Why are you setting the mod to spam the console?
 

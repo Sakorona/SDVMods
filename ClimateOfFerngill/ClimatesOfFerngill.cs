@@ -15,10 +15,13 @@ namespace ClimatesOfFerngill
     public class ClimatesOfFerngill : Mod
     {
         public ClimateConfig Config { get; private set; }
-        bool GameLoaded { get; set; }
         int WeatherAtStartOfDay { get; set; }
         FerngillWeather CurrWeather { get; set; }
         FerngillWeather TomorrowWeather { get; set; }
+        private int LastTime;
+        private int TicksOutside;
+        private int TickPerSpan;
+        private bool GameLoaded;
 
         //tv overloading
         private static FieldInfo Field = typeof(GameLocation).GetField("afterQuestion", BindingFlags.Instance | BindingFlags.NonPublic);
@@ -35,14 +38,47 @@ namespace ClimatesOfFerngill
         public override void Entry(IModHelper helper)
         {
             Config = helper.ReadConfig<ClimateConfig>();
-            SaveEvents.AfterLoad += SaveEvents_AfterLoad;
             TimeEvents.DayOfMonthChanged += TimeEvents_DayOfMonthChanged;
             MenuEvents.MenuChanged += MenuEvents_MenuChanged;
+            SaveEvents.AfterLoad += SaveEvents_AfterLoad;
+            GameEvents.UpdateTick += GameEvents_UpdateTick;
+            TimeEvents.TimeOfDayChanged += TimeEvents_TimeOfDayChanged;
+        }
+
+        private void TimeEvents_TimeOfDayChanged(object sender, EventArgsIntChanged e)
+        {
+            //Essentially, if you were outside for a certain percentage of time, get penalized.
+            if ((TickPerSpan > 0) && (TicksOutside / TickPerSpan > .65))
+            {
+                Game1.player.Stamina -= Config.StaminaPenalty;
+            }
+
+
+            TickPerSpan = 0; //reset the tick counter
+        }
+
+        private void GameEvents_UpdateTick(object sender, EventArgs e)
+        {
+            if (GameLoaded)
+            {
+                if (Game1.currentLocation.isOutdoors)
+                    TicksOutside++;
+
+                if (Game1.timeOfDay != this.LastTime)
+                {
+                    LastTime = Game1.timeOfDay;
+                }
+                else
+                {
+                    TickPerSpan++;
+                }
+            }
         }
 
         private void SaveEvents_AfterLoad(object sender, EventArgs e)
         {
             GameLoaded = true;
+            UpdateWeather();
         }
 
         private void MenuEvents_MenuChanged(object sender, EventArgsClickableMenuChanged e)
@@ -102,7 +138,7 @@ namespace ClimatesOfFerngill
                 return string.Format("{0:0.00}", tmpTemp) + " Ra";
             }
 
-            if (tempGauge == "farenheit")
+            if (tempGauge == "fahrenheit")
             {
                 double tmpTemp = temp * (9 / 5) + 32;
                 return string.Format("{0:0.00}", tmpTemp) + " F";
@@ -307,7 +343,6 @@ namespace ClimatesOfFerngill
 
         public void TimeEvents_DayOfMonthChanged(object sender, EventArgsIntChanged e)
         {
-            if (GameLoaded == false) return;
             UpdateWeather();
         }
 
@@ -338,9 +373,12 @@ namespace ClimatesOfFerngill
             //rain totem
             if (WeatherAtStartOfDay != Game1.weatherForTomorrow)
             {
+                if (Config.tooMuchInfo)
+                    LogEvent("Change detected. Debug Info: DAY " + Game1.dayOfMonth + " Season: " + Game1.currentSeason + " with prev weather: " + WeatherAtStartOfDay + " and new weather: " + Game1.weatherForTomorrow);
+
                 if (Game1.weatherForTomorrow == Game1.weather_rain)
                 {
-                    LogEvent("Rain totem used, aborting weather change");
+                    LogEvent("Rain totem probably used, aborting weather change");
                     return;
                 }
             }
@@ -385,11 +423,21 @@ namespace ClimatesOfFerngill
                         default:
                             break;
                     }
+                    double chance = rng.NextDouble();
+                    if (Config.tooMuchInfo)
+                        LogEvent("Rain Chance is: " + rainChance + " with the rng being " + chance );
+                    
 
                     //sequence - rain (Storm), wind, sun
-                    if (rng.NextDouble() < rainChance)
+                    if (chance < rainChance)
                     {
-                        if (rng.NextDouble() < stormChance) Game1.weatherForTomorrow = Game1.weather_lightning;
+                        chance = rng.NextDouble();
+                        if (chance < stormChance)
+                        {
+                            if (Config.tooMuchInfo) LogEvent("Storm is selected, with roll " + chance + " and TP " + stormChance);
+
+                            Game1.weatherForTomorrow = Game1.weather_lightning;
+                        }
                         else Game1.weatherForTomorrow = Game1.weather_rain;
                     }
                     else if (rng.NextDouble() < windChance) Game1.weatherForTomorrow = Game1.weather_debris;
@@ -421,11 +469,21 @@ namespace ClimatesOfFerngill
                         default:
                             break;
                     }
+                    double chance = rng.NextDouble();
+                    if (Config.tooMuchInfo)
+                        LogEvent("Rain Chance is: " + rainChance + " with the rng being " + chance);
+
 
                     //sequence - rain (Storm), wind, sun
-                    if (rng.NextDouble() < rainChance)
+                    if (chance < rainChance)
                     {
-                        if (rng.NextDouble() < stormChance) Game1.weatherForTomorrow = Game1.weather_lightning;
+                        chance = rng.NextDouble();
+                        if (chance < stormChance)
+                        {
+                            if (Config.tooMuchInfo) LogEvent("Storm is selected, with roll " + chance + " and TP " + stormChance);
+
+                            Game1.weatherForTomorrow = Game1.weather_lightning;
+                        }
                         else Game1.weatherForTomorrow = Game1.weather_rain;
                     }
                     else if (rng.NextDouble() < windChance) Game1.weatherForTomorrow = Game1.weather_debris;
@@ -457,11 +515,21 @@ namespace ClimatesOfFerngill
                         default:
                             break;
                     }
+                    double chance = rng.NextDouble();
+                    if (Config.tooMuchInfo)
+                        LogEvent("Rain Chance is: " + rainChance + " with the rng being " + chance);
+
 
                     //sequence - rain (Storm), wind, sun
-                    if (rng.NextDouble() < rainChance)
+                    if (chance < rainChance)
                     {
-                        if (rng.NextDouble() < stormChance) Game1.weatherForTomorrow = Game1.weather_lightning;
+                        chance = rng.NextDouble();
+                        if (chance < stormChance)
+                        {
+                            if (Config.tooMuchInfo) LogEvent("Storm is selected, with roll " + chance + " and TP " + stormChance);
+
+                            Game1.weatherForTomorrow = Game1.weather_lightning;
+                        }
                         else Game1.weatherForTomorrow = Game1.weather_rain;
                     }
                     else if (rng.NextDouble() < windChance) Game1.weatherForTomorrow = Game1.weather_debris;
@@ -806,6 +874,7 @@ namespace ClimatesOfFerngill
                 Game1.weatherForTomorrow = Game1.weather_snow; //it now snows on Fall 28.
 
             WeatherAtStartOfDay = Game1.weatherForTomorrow;
+            LogEvent("We've set the weather. They are: " + WeatherAtStartOfDay + " and " + Game1.weatherForTomorrow);
         }
 
         public void SetTemperature(Random rng)
