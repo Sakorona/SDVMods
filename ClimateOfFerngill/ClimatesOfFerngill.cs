@@ -238,7 +238,6 @@ namespace ClimateOfFerngill
             return true;
         }
         
-
         private void LogEvent(string msg, bool important=false)
         {
             if (!important)
