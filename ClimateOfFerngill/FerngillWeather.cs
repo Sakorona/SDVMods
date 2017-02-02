@@ -1,4 +1,4 @@
-﻿namespace ClimatesOfFerngill
+﻿namespace ClimateOfFerngill
 {
     public class FerngillWeather
     {
@@ -20,6 +20,13 @@
             todayLow = todayHigh - temp;
             if (lowCap != 0 && todayLow < lowCap)
                 todayLow = lowCap;
+        }
+
+        public void Reset()
+        {
+            status = 0;
+            todayHigh = -1000;
+            todayLow = -1000;
         }
     }
 }

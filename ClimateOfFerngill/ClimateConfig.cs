@@ -1,6 +1,5 @@
-﻿using StardewModdingAPI;
-
-namespace ClimatesOfFerngill
+﻿
+namespace ClimateOfFerngill
 {
     public class ClimateConfig
     {
@@ -10,31 +9,40 @@ namespace ClimatesOfFerngill
         public int NoLongerDisplayToday { get; set; }
         public string ClimateType { get; set; }
         public string TempGauge { get; set; }
+        public bool DisplaySecondScale { get; set; }
+        public string SecondScaleGauge { get; set; }
         public bool StormyPenalty { get; set; }
         public int StaminaPenalty { get; set; }
         public bool tooMuchInfo { get; set; }
-
-
-        //Future time!
         public bool HarshWeather { get; set; }
-
+        public int HeatwaveWarning { get; set; }
 
         public ClimateConfig()
         {
-            //set defaults for spring weather
- 
+            //set defaults for mod specific stuff
+            SuppressLog = false;
+            tooMuchInfo = false; 
+
+            //set overrides
             AllowSnowOnFall28 = true;
             AllowStormsFirstSpring = false;
-            SuppressLog = false;
             NoLongerDisplayToday = 1700;
+
+            //set climate information
             ClimateType = "normal";
+
+            //set tv information
             TempGauge = "celsius";
+            DisplaySecondScale = false;
+            SecondScaleGauge = "";
+
+            //set storm penalty stuff
             StormyPenalty = true;
             StaminaPenalty = 1;
-            tooMuchInfo = false; //debug string
-            HarshWeather = false; //by default, turn the harsh events off. 
 
-            //should we cap and min cap these?
+            //set harsh weather events - currently unused.
+            HarshWeather = false;
+            HeatwaveWarning = 37;
         }
     }
 }

@@ -4,10 +4,10 @@
   "Version": {
     "MajorVersion": 0,
     "MinorVersion": 8,
-    "PatchVersion": 0,
-    "Build": "stable-20170118"
+    "PatchVersion": 4,
+    "Build": "stable-20170202"
   },
-  "Description": "Create a unique climate system",
+  "Description": "Create a unique climate system, as well as add weather related events.",
   "UniqueID": "4108e859-333c-4fec-a1a7-d2e18c1019fe",
   "EntryDll": "ClimateOfFerngill.dll"
 }
