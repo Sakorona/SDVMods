@@ -21,7 +21,7 @@ Weather through Spring tends to be dry. As is drying, temps hover between 11 C a
 Dry. Hot. 26 C to 36 C to 22 C at the end, with 36-39C not unreachable during the hottest bit. (Heatwaves should make that top out at 41C). Rain should be scarse but ramping up towards the end slowly. Storm conversions should be likely.
 
 ### Details:
-* In summer, you can have +6C randomly - so an average of .5 to 6 should be added to the day.
+* In summer, you can have +3C randomly - so an average of .5 to 3 should be added to the day. (Except on 10-18, which adds a chance of NO INCREASE.)
 
 * In the first nine days, temperatures are rising from ~26C to 31C. Lows the same spread as spring. Rain chances hover at 15%. Storm conversions are 45%
 * In the second nine days, temperature are rising from 31C to 36C. Rain chances the same, but storm conversions are now 60%.
@@ -31,7 +31,7 @@ Dry. Hot. 26 C to 36 C to 22 C at the end, with 36-39C not unreachable during th
 * Arid - In Arid climates, the summer is dry. Rain 5%. Temperatures are +6C throught out the month. (this means Arid climates will peak at 47C.)
 * Dry - Rain chances are 20, 10, 15%. Temperatures are the same. 
 * Wet - Increase rain chances by 5%
-* Monsoon - Rain odds are -10%, thunderstorm conversions 80%, temps are +6C. 
+* Monsoon - Rain odds are -10%, thunderstorm conversions 80%. Temp +(0-5C) during Summer 10-18.
 
 ## Autumn:
 

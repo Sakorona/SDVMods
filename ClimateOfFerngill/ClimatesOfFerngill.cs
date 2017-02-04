@@ -378,11 +378,11 @@ namespace ClimateOfFerngill
             }
 
             if (CurrWeather.todayHigh > Config.HeatwaveWarning && Game1.timeOfDay < 1900)
-                tvText = "It will be unusually hot outside. Stay hydrated and be careful not to stay too long in the sun. ";
+                tvText = tvText + "It will be unusually hot outside. Stay hydrated and be careful not to stay too long in the sun. ";
             if (CurrWeather.todayHigh < -5)
-                tvText = "There's an extreme cold snap passing through. Stay warm. ";
+                tvText = tvText + "There's an extreme cold snap passing through. Stay warm. ";
             if (CurrWeather.todayLow < 2 && Config.HarshWeather)
-                tvText = "Warning. There's a chance of frost tonight! Be careful what you plant";
+                tvText = tvText + "Warning. There's a chance of frost tonight! Be careful what you plant";
 
             //tommorow weather
             tvText = tvText + WeatherHelper.GetWeatherDesc(dice, (SDVWeather)Game1.weatherForTomorrow);
@@ -538,7 +538,10 @@ namespace ClimateOfFerngill
 
             //global change - if it rains, drop the temps
             if (Game1.isRaining)
+            {
+                if (Config.tooMuchInfo) LogEvent("Dropping temp by 3 from" + CurrWeather.todayHigh);
                 CurrWeather.todayHigh = CurrWeather.todayHigh - 3;
+            }
 
 
             if (forceSet)
@@ -663,7 +666,13 @@ namespace ClimateOfFerngill
                 windChance = 0; //cannot wind during summer
                 rainChance = .15;
 
-                CurrWeather.todayHigh = 22 + (int)Math.Floor(Game1.dayOfMonth * 1.56) + dice.Next(0, 3);
+                CurrWeather.todayHigh = 30 + (int)Math.Floor(Game1.dayOfMonth * .25) + dice.Next(0,5);
+                if (dice.NextDouble() > .70)
+                {
+                    if (Config.tooMuchInfo) LogEvent("Randomly adding to the temp");
+                    CurrWeather.todayHigh += dice.Next(0, 3);
+                }
+
                 CurrWeather.GetLowFromHigh(dice.Next(1, 3) + 3);
             }
             if (Game1.dayOfMonth > 18)
@@ -678,8 +687,8 @@ namespace ClimateOfFerngill
             }
 
             //summer alterations
-            CurrWeather.AlterTemps(dice.Next(0, 6));
-            if (Config.ClimateType == "arid" || Config.ClimateType == "monsoon")  CurrWeather.AlterTemps(6);
+            CurrWeather.AlterTemps(dice.Next(0, 3));
+            if (Config.ClimateType == "arid")  CurrWeather.AlterTemps(6);
 
             switch (Config.ClimateType)
             {
