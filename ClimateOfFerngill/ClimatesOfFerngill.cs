@@ -25,7 +25,7 @@ namespace ClimateOfFerngill
         private int LastTime;
         private bool GameLoaded;
         MersenneTwister dice;
-        private bool ModRan { get; set; } = false;
+        private bool ModRan { get; set; }
         private Dictionary<SDVCrops, double> cropTemps { get; set; }
         private List<Vector2> threatenedCrops { get; set; }
         private int deathTime { get; set; }
@@ -51,7 +51,8 @@ namespace ClimateOfFerngill
             dice = new MersenneTwister();
             Config = helper.ReadConfig<ClimateConfig>();
             CurrWeather = new FerngillWeather();
-            
+            ModRan = false;
+
             //set variables
             rainChance = 0;
             stormChance = 0;
@@ -93,15 +94,12 @@ namespace ClimateOfFerngill
 
         private void SaveEvents_BeforeSave(object sender, EventArgs e)
         {
-            Game1.addHUDMessage(new HUDMessage("During the night, some crops died to the frost...")); //TEST.
-
             //run all night time processing.
             if (Config.HarshWeather)
             {
                 if (CurrWeather.todayLow < 2 && Game1.currentSeason == "fall") //run frost event - restrict to fall rn.
                     EarlyFrost();
             }
-
         }
 
         private void SummerHeatwave()
@@ -471,6 +469,7 @@ namespace ClimateOfFerngill
         }
 
         void UpdateWeather(){
+            bool forceSet = false;
             //sanity checks.
             
             #region WeatherChecks
@@ -485,7 +484,7 @@ namespace ClimateOfFerngill
             if (Utility.isFestivalDay(Game1.dayOfMonth + 1, Game1.currentSeason))
             {
                 Game1.weatherForTomorrow = Game1.weather_festival;
-                return;
+                forceSet = true;
             }
             //catch call.
             if (WeatherAtStartOfDay != Game1.weatherForTomorrow && ModRan)
@@ -507,7 +506,7 @@ namespace ClimateOfFerngill
             if (forceTomorrow)
             {
                 LogEvent("Tommorow, there will be forced weather.");
-                return;
+                forceSet = true;
             }
             #endregion
 
@@ -536,6 +535,14 @@ namespace ClimateOfFerngill
             //override for the first spring.
             if (!CanWeStorm())
                 stormChance = 0;
+
+            //global change - if it rains, drop the temps
+            if (Game1.isRaining)
+                CurrWeather.todayHigh = CurrWeather.todayHigh - 3;
+
+
+            if (forceSet)
+                return;
 
             //sequence - rain (Storm), wind, sun
             //this also contains the notes - certain seasons don't have certain weathers.
@@ -579,11 +586,6 @@ namespace ClimateOfFerngill
                 Game1.weatherForTomorrow = Game1.weather_snow; //it now snows on Fall 28.
             }
 
-            //global change - if it rains, drop the temps
-            if (Game1.isRaining)
-                CurrWeather.todayHigh = CurrWeather.todayHigh - 3;
-
-
             WeatherAtStartOfDay = Game1.weatherForTomorrow;
             Game1.chanceToRainTomorrow = rainChance; //set for various events.
             LogEvent("We've set the weather for tommorow . It is: " + WeatherHelper.DescWeather(Game1.weatherForTomorrow));
@@ -592,6 +594,7 @@ namespace ClimateOfFerngill
 
         private void HandleSpringWeather()
         {
+            if (Config.tooMuchInfo) LogEvent("Executing Spring Weather");
             stormChance = .15;
             windChance = .25;
             rainChance = .3 + (Game1.dayOfMonth * .0278);
@@ -642,6 +645,7 @@ namespace ClimateOfFerngill
 
         private void HandleSummerWeather()
         {
+            if (Config.tooMuchInfo) LogEvent("Executing Summer Weather");
             if (Game1.dayOfMonth < 10)
             {
                 //rain, snow, windy chances
@@ -699,6 +703,7 @@ namespace ClimateOfFerngill
 
         private void HandleAutumnWeather()
         {
+            if (Config.tooMuchInfo) LogEvent("Executing Fall Weather");
             stormChance = .33;
             CurrWeather.todayHigh = 22 - (int)Math.Floor(Game1.dayOfMonth * .667) + dice.Next(0, 2); 
 
@@ -755,6 +760,7 @@ namespace ClimateOfFerngill
 
         private void HandleWinterWeather()
         {
+            if (Config.tooMuchInfo) LogEvent("Executing Winter Weather");
             stormChance = 0;
             windChance = 0;
             rainChance = .6;
