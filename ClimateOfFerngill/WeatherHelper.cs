@@ -29,7 +29,7 @@ namespace ClimateOfFerngill
             }
         }
 
-        public static string DisplayTemperature(int temp, string tempGauge)
+        public static string DisplayTemperature(double temp, string tempGauge)
         {
             //base temps are always in celsius
             if (tempGauge == "celsius")

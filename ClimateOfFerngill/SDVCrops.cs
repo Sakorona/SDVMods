@@ -1,29 +1,30 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace ClimateOfFerngill
+﻿namespace ClimateOfFerngill
 {
     enum SDVCrops
     {
-        Amaranth = 299,
-        Wheat = 483,
-        Corn = 487,
-        Eggplant = 488,
-        Artichoke = 489,
-        Pumpkin = 490,
-        BokChoy = 491,
-        Yam = 492,
-        Cranberry = 493,
-        Ancient = 499,
-        FairyRose = 595,
+        //Dead by Light Frost (35F/1.66C)
+        Corn = 270,
+        Wheat = 246,
+        Amaranth = 300,
+        Sunflower = 421,
+        Pumpkin = 276,
+        Eggplant = 272,
+        Yam = 280,
 
-        Sunflower = 431,
-        Beet = 494,
-        Grape = 301,
-        SweetGemBerry = 347
-        
+        //Dead by Heavy Frost (32F/0C)
+        Artichoke = 274,
+        BokChoy = 278,
+
+        //Dead by Light Freeze (31F/-0.55C)
+        Grape = 398,
+
+        //Dead by Freeze (28C/-2.22C)
+        FairyRose = 595,
+        Beet = 284,
+
+        //Dead by Heavy Freeze (26C/-3.33C)
+        Cranberry = 282,
+        Ancient = 454,
+        SweetGemBerry = 347        
     }
 }

@@ -2,9 +2,9 @@
 {
     public class FerngillWeather
     {
-        public int todayHigh { get; set; }
+        public double todayHigh { get; set; }
         public int status { get; set; }
-        public int todayLow { get; set; }
+        public double todayLow { get; set; }
 
         public static int BLIZZARD = 101;
         public static int HEATWAVE = 102;
@@ -15,7 +15,7 @@
             todayLow = todayLow + temp;
         }
 
-        public void GetLowFromHigh(int temp, int lowCap = 0)
+        public void GetLowFromHigh(double temp, int lowCap = 0)
         {
             todayLow = todayHigh - temp;
             if (lowCap != 0 && todayLow < lowCap)

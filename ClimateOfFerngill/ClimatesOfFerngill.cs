@@ -1,15 +1,18 @@
 ﻿using System;
 using System.Reflection;
+using System.Linq;
 
 //3P
 using NPack;
 using StardewModdingAPI;
 using StardewValley.Objects;
+using StardewValley.TerrainFeatures;
 using StardewModdingAPI.Events;
 using StardewValley.Locations;
 using StardewValley.Menus;
 using Microsoft.Xna.Framework;
 using StardewValley;
+using System.Collections.Generic;
 
 namespace ClimateOfFerngill
 {
@@ -23,6 +26,9 @@ namespace ClimateOfFerngill
         private bool GameLoaded;
         MersenneTwister dice;
         private bool ModRan { get; set; } = false;
+        private Dictionary<SDVCrops, double> cropTemps { get; set; }
+        private List<Vector2> threatenedCrops { get; set; }
+        private int deathTime { get; set; }
 
         private double windChance;
         private double stormChance;
@@ -63,12 +69,89 @@ namespace ClimateOfFerngill
             GameEvents.UpdateTick += GameEvents_UpdateTick;
             TimeEvents.TimeOfDayChanged += TimeEvents_TimeOfDayChanged;
             SaveEvents.BeforeSave += SaveEvents_BeforeSave;
+
+            //create crop and temp mapping.
+            cropTemps = new Dictionary<SDVCrops, double>();
+            cropTemps.Add(SDVCrops.Corn, 1.66);
+            cropTemps.Add(SDVCrops.Wheat, 1.66);
+            cropTemps.Add(SDVCrops.Amaranth, 1.66);
+            cropTemps.Add(SDVCrops.Sunflower, 1.66);
+            cropTemps.Add(SDVCrops.Pumpkin, 1.66);
+            cropTemps.Add(SDVCrops.Eggplant, 1.66);
+            cropTemps.Add(SDVCrops.Yam, 1.66);
+            cropTemps.Add(SDVCrops.Artichoke, 0);
+            cropTemps.Add(SDVCrops.BokChoy, 0);
+            cropTemps.Add(SDVCrops.Grape, -.55);
+            cropTemps.Add(SDVCrops.FairyRose, -2.22);
+            cropTemps.Add(SDVCrops.Beet, -2.22);
+            cropTemps.Add(SDVCrops.Cranberry, -3.33);
+            cropTemps.Add(SDVCrops.Ancient, -3.33);
+            cropTemps.Add(SDVCrops.SweetGemBerry, -3.33);
+
+            threatenedCrops = new List<Vector2>();
         }
 
         private void SaveEvents_BeforeSave(object sender, EventArgs e)
         {
-            //run all night time processing.
+            Game1.addHUDMessage(new HUDMessage("During the night, some crops died to the frost...")); //TEST.
 
+            //run all night time processing.
+            if (Config.HarshWeather)
+            {
+                if (CurrWeather.todayLow < 2 && Game1.currentSeason == "fall") //run frost event - restrict to fall rn.
+                    EarlyFrost();
+            }
+
+        }
+
+        private void SummerHeatwave()
+        {
+            Farm f = Game1.getFarm();
+            HoeDirt curr;
+            bool cropsDeWatered = false;
+            bool cropsKilled = false;
+            int count = 0;
+
+            if (f != null)
+            {
+                foreach (KeyValuePair<Vector2, TerrainFeature> tf in f.terrainFeatures)
+                {
+                    if (count >= 15)
+                        break;
+
+                    if (tf.Value is HoeDirt)
+                    {
+                        curr = (HoeDirt)tf.Value;
+                        if (curr.crop != null)
+                        {
+                            if (dice.NextDouble() > .65)
+                            {
+                                if (CurrWeather.todayHigh < Config.DeathTemp && !Config.AllowCropHeatDeath)
+                                {
+                                    curr.state = 0; //dewater
+                                    count++;
+                                    cropsDeWatered = true;
+                                }
+                                if (CurrWeather.todayHigh >= Config.DeathTemp && Config.AllowCropHeatDeath)
+                                {
+                                    threatenedCrops.Add(tf.Key);
+                                    curr.state = 0;
+                                    count++;
+                                    cropsKilled = true;
+                                }
+
+                            }
+                            
+
+                        }
+                    }
+                }
+            }
+
+            if (cropsDeWatered)
+                Game1.addHUDMessage(new HUDMessage("The extreme heat has caused some of your crops to become dry....!"));
+            if (cropsKilled)
+                Game1.addHUDMessage(new HUDMessage("The extreme heat has caused some of your crops to dry out. If you don't water them, they'll die!"));
         }
 
         private void HandleSetTemperature(object sender, EventArgsCommand e)
@@ -139,6 +222,36 @@ namespace ClimateOfFerngill
         private void TimeEvents_TimeOfDayChanged(object sender, EventArgsIntChanged e)
         {
             StormyWeather.CheckForStaminaPenalty(LogEvent, Config.tooMuchInfo);
+
+            if (Game1.timeOfDay > 1600 && Game1.timeOfDay < 1800)
+            {
+                if (CurrWeather.todayHigh > Config.HeatwaveWarning && !Utility.isFestivalDay(Game1.dayOfMonth, Game1.currentSeason))
+                {
+                    deathTime = Game1.timeOfDay;
+                    SummerHeatwave();
+                }
+            }
+
+            if (Game1.timeOfDay == deathTime)
+            {
+                //if it's still de watered - kill it.
+                Farm f = Game1.getFarm();
+                bool cDead = false;
+
+                foreach (Vector2 v in threatenedCrops)
+                {
+                    HoeDirt hd = (HoeDirt)f.terrainFeatures[v];
+                    if (hd.state == 0)
+                    {
+                        hd.crop.dead = true;
+                        cDead = true;
+                    }
+                }
+
+                if (cDead)
+                    Game1.addHUDMessage(new HUDMessage("Some of the crops have died due to lack of water!"));
+            }
+
 
             // have the stamina meter shake to make sure people are paying attention.
             if (Game1.player.Stamina <= 20f)
@@ -267,6 +380,8 @@ namespace ClimateOfFerngill
                 tvText = "It will be unusually hot outside. Stay hydrated and be careful not to stay too long in the sun. ";
             if (CurrWeather.todayHigh < -5)
                 tvText = "There's an extreme cold snap passing through. Stay warm. ";
+            if (CurrWeather.todayLow < 2 && Config.HarshWeather)
+                tvText = "Warning. There's a chance of frost tonight! Be careful what you plant";
 
             //tommorow weather
             tvText = tvText + WeatherHelper.GetWeatherDesc(dice, (SDVWeather)Game1.weatherForTomorrow);
@@ -307,10 +422,44 @@ namespace ClimateOfFerngill
             }
         }
 
+        public bool IsFallCrop(int crop)
+        {
+            if (Enum.IsDefined(typeof(SDVCrops), crop))
+                return true;
+            else
+                return false;
+        }
+
         public void EarlyFrost()
         {
             //this function is called if it's too cold to grow crops. Must be enabled.
-            
+            Farm f = Game1.getFarm();
+            HoeDirt curr;
+            bool cropsKilled = false;
+
+            if (f != null)
+            {
+                foreach (KeyValuePair<Vector2, TerrainFeature> tf in f.terrainFeatures)
+                {
+                    if (tf.Value is HoeDirt)
+                    {
+                        curr = (HoeDirt)tf.Value;
+                        if (curr.crop != null && IsFallCrop(curr.crop.indexOfHarvest))
+                        {
+                            if (CurrWeather.todayLow <= cropTemps[(SDVCrops)curr.crop.indexOfHarvest])
+                            {
+                                cropsKilled = true;
+                                curr.crop.dead = true;
+                            }
+                        }
+                    }
+                }
+            }
+
+            if (cropsKilled)
+            {
+                Game1.addHUDMessage(new HUDMessage("During the night, some crops died to the frost..."));
+            }
         }
 
         public void TimeEvents_DayOfMonthChanged(object sender, EventArgsIntChanged e)
