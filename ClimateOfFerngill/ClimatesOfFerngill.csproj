@@ -49,6 +49,7 @@
     <Compile Include="OurExtensions.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="ClimateConfig.cs" />
+    <Compile Include="SDVCrops.cs" />
     <Compile Include="SDVWeather.cs" />
     <Compile Include="StormyWeather.cs" />
     <Compile Include="WeatherHelper.cs" />

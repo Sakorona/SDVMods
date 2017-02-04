@@ -44,7 +44,8 @@ namespace ClimateOfFerngill
 
             if (PercentOutside > PenaltyThres && Game1.isLightning)
             {
-                Game1.player.Stamina = -1 * PenaltyAmt; //make it negative
+                Game1.player.Stamina -= -1 * PenaltyAmt; //make it negative
+                log("Current Stamina is " + Game1.player.Stamina, true);
             }
 
             //reset the counters

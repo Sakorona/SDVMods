@@ -1,4 +1,5 @@
-﻿using NPack;
+﻿using System;
+using NPack;
 using StardewValley;
 
 namespace ClimateOfFerngill
@@ -168,6 +169,20 @@ namespace ClimateOfFerngill
                 return winterSnowText.GetRandomItem(dice);
 
             return "Angry suns descend on us! Run! (ERROR)";
+        }
+
+        internal static bool WeatherForceDay(string currentSeason, int dayOfMonth, int year)
+        {
+            if (dayOfMonth == 1) //all day 1 are forced
+                return true;
+            if (Utility.isFestivalDay(dayOfMonth, currentSeason))
+                return true;
+            if (year == 1 && currentSeason == "spring" && (dayOfMonth == 2 || dayOfMonth == 3 || dayOfMonth == 4))
+                return true;
+            if (currentSeason == "summer" && (dayOfMonth == 13 || dayOfMonth == 26))
+                return true;
+
+            return false;
         }
     }
 }

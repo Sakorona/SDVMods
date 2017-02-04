@@ -35,7 +35,7 @@ Dry. Hot. 26 C to 36 C to 22 C at the end, with 36-39C not unreachable during th
 
 ## Autumn:
 
-Wet. Cooling. Windy, but it should essentially be windy or rainy. Highs start at 22 C but drop to 8C. Lows are 11C to 0C. If it snows, the temp should cap at 2C with low -1 C.
+Wet. Cooling. Windy, but it should essentially be windy or rainy. Highs start at 22 C but drop to 3.3C. Lows are 11C to 0C. If it snows, the temp should cap at 2C with low -1 C.
 
 Storm conversions are still likely.
 

@@ -16,6 +16,8 @@ namespace ClimateOfFerngill
         public bool tooMuchInfo { get; set; }
         public bool HarshWeather { get; set; }
         public int HeatwaveWarning { get; set; }
+        public bool SetLowCap { get; set; }
+        public int LowCap { get; set; }
 
         public ClimateConfig()
         {
@@ -43,6 +45,10 @@ namespace ClimateOfFerngill
             //set harsh weather events - currently unused.
             HarshWeather = false;
             HeatwaveWarning = 37;
+
+            //set fall temp caps, if the plyer wants
+            SetLowCap = false;
+            LowCap = 1;
         }
     }
 }
