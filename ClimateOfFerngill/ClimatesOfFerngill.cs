@@ -539,7 +539,7 @@ namespace ClimateOfFerngill
             //global change - if it rains, drop the temps
             if (Game1.isRaining)
             {
-                if (Config.tooMuchInfo) LogEvent("Dropping temp by 3 from" + CurrWeather.todayHigh);
+                if (Config.tooMuchInfo) LogEvent("Dropping temp by 3 from " + CurrWeather.todayHigh);
                 CurrWeather.todayHigh = CurrWeather.todayHigh - 3;
             }
 
@@ -554,7 +554,7 @@ namespace ClimateOfFerngill
                 chance = dice.NextDouble();
                 if (chance < stormChance && stormChance != 0)
                 {
-                    if (Config.tooMuchInfo) LogEvent("Storm is selected, with roll " + chance + " and TP " + stormChance);
+                    if (Config.tooMuchInfo) LogEvent("Storm is selected, with roll " + chance + " and target percent " + stormChance);
                     Game1.weatherForTomorrow = Game1.weather_lightning;
                 }
                 else
