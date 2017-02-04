@@ -2,13 +2,13 @@
 
 This mod alters the weather of Stardew Valley by creating a climate system. It adds temperature and may add hostile weather events down the line.  
 
-The current version is __0.8.4 rev 20170202__ 
+The current version is __0.8.6 rev 20170203__ 
 
 ## Changelog
 
-0.8.6 (inprogress)
+0.8.6
 - Frost and Heatwaves descend on the valley.
-- Traditional climate added.
+- Fall temps should work properly now
 
 0.8.4
 - bugfixes
