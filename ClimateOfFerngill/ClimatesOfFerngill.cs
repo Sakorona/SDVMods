@@ -225,7 +225,7 @@ namespace ClimateOfFerngill
 
             if (Game1.timeOfDay > 1600 && Game1.timeOfDay < 1800)
             {
-                if (CurrWeather.todayHigh > Config.HeatwaveWarning && !Utility.isFestivalDay(Game1.dayOfMonth, Game1.currentSeason))
+                if (CurrWeather.todayHigh > Config.HeatwaveWarning && !Utility.isFestivalDay(Game1.dayOfMonth, Game1.currentSeason) && !Game1.isRaining && !Game1.isLightning)
                 {
                     deathTime = Game1.timeOfDay;
                     SummerHeatwave();
@@ -355,12 +355,15 @@ namespace ClimateOfFerngill
             if (Game1.timeOfDay < noLonger) //don't display today's weather 
             {
                 tvText = "The high for today is ";
-                if (!Config.DisplaySecondScale)
-                    tvText += WeatherHelper.DisplayTemperature(CurrWeather.todayHigh, Config.TempGauge) + ", with the low being " + WeatherHelper.DisplayTemperature(CurrWeather.todayLow, Config.TempGauge) + ". ";
-                else
-                {
-                    tvText += WeatherHelper.DisplayTemperature(CurrWeather.todayHigh, Config.TempGauge) +  "(  " + WeatherHelper.DisplayTemperature(CurrWeather.todayHigh, Config.SecondScaleGauge) + " ), with the low being " + WeatherHelper.DisplayTemperature(CurrWeather.todayLow, Config.TempGauge) + " ( " + WeatherHelper.DisplayTemperature(CurrWeather.todayLow, Config.SecondScaleGauge) + "). ";
+                if (!Config.DisplaySecondScale) { 
+                tvText += WeatherHelper.DisplayTemperature(CurrWeather.todayHigh, Config.TempGauge) + ", with the low being " + WeatherHelper.DisplayTemperature(CurrWeather.todayLow, Config.TempGauge) + ". ";
+                if (Config.tooMuchInfo) LogEvent(tvText);
                 }
+            else
+            {
+                tvText += WeatherHelper.DisplayTemperature(CurrWeather.todayHigh, Config.TempGauge) + "(  " + WeatherHelper.DisplayTemperature(CurrWeather.todayHigh, Config.SecondScaleGauge) + " ), with the low being " + WeatherHelper.DisplayTemperature(CurrWeather.todayLow, Config.TempGauge) + " ( " + WeatherHelper.DisplayTemperature(CurrWeather.todayLow, Config.SecondScaleGauge) + "). ";
+                    if (Config.tooMuchInfo) LogEvent(tvText);
+            }
 
 
                 //temp warnings 
@@ -575,6 +578,11 @@ namespace ClimateOfFerngill
                 CurrWeather.todayLow = -1;
                 Game1.weatherForTomorrow = Game1.weather_snow; //it now snows on Fall 28.
             }
+
+            //global change - if it rains, drop the temps
+            if (Game1.isRaining)
+                CurrWeather.todayHigh = CurrWeather.todayHigh - 3;
+
 
             WeatherAtStartOfDay = Game1.weatherForTomorrow;
             Game1.chanceToRainTomorrow = rainChance; //set for various events.
