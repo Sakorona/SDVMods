@@ -678,7 +678,7 @@ namespace ClimateOfFerngill
             if (Game1.dayOfMonth > 18)
             {
                 //temperature
-                CurrWeather.todayHigh = 22 + (int)Math.Floor(Game1.dayOfMonth * 1.56) + dice.Next(0, 3);
+                CurrWeather.todayHigh = 42 - (int)Math.Floor(Game1.dayOfMonth * .8) + dice.Next(0, 3);
                 CurrWeather.GetLowFromHigh(dice.Next(1, 3) + 3);
 
                 stormChance = .45;
