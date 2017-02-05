@@ -46,7 +46,7 @@ The current version is __0.8.6 rev 20170203__
 * _AllowSnowOnFall28_ is a feature that will allow the possiblity of snow on the 28th of Fall. (Currently, 100%.) It can be set to __true__ or __false__ Default: __true__
 * _AllowStormsFirstSpring_ allows storms the first spring. In the base game this is disabled. It can be set to __false__ or __true__.  Default: __false__
 * _HarshWeather_ allows the hazards. It can be set to __false__ or __true__. Default: __false__        
-* _NoLongerDisplayToday_ is a setting that says after this point: don't display today's weather. The valid setting is: 0600 - 2600. Default: __1700__.
+* _NoLongerDisplayToday_ is a setting that says after this point: don't display today's weather. The valid setting is: 600 - 2600. Default: __1700__.
 * _ClimateType_ is a setting that lets you control the type of climate. The options are: __arid__, __dry__, __normal__, __wet__, __monsoon__ and _traditional_. Default: __normal__
 * _TempGauge_ is a setting that controls if temps are displayed in Celsius or Farenheit. The options are _celsius, fahrenheit_, default: _celsius_
 * _DisplaySecondScale_ is a setting that controls if two gauges are displayed at once. Valid options are __false__ or __true__, default: __false__.
@@ -71,7 +71,11 @@ A. There were too many, honestly. I may set up something in the future to allow 
 
 Q. I don't want the TV to display today's weather at all.
 
-A. Set it to 0600.
+A. Set it to 600.
+
+Q. I get an error on launch if I include the trailing zero on NoLongerDisplay!
+
+A. Don't.
 
 Q. Are there any easter eggs?
 

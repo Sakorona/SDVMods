@@ -221,7 +221,7 @@ namespace ClimateOfFerngill
         {
             StormyWeather.CheckForStaminaPenalty(LogEvent, Config.tooMuchInfo);
 
-            if (Game1.timeOfDay > 1600 && Game1.timeOfDay < 1800)
+            if (Game1.timeOfDay == 1630)
             {
                 if (CurrWeather.todayHigh > Config.HeatwaveWarning && !Utility.isFestivalDay(Game1.dayOfMonth, Game1.currentSeason) && !Game1.isRaining && !Game1.isLightning)
                 {
