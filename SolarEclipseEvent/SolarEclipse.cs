@@ -55,7 +55,8 @@ namespace SolarEclipseEvent
 
         private void SolarEclipseEvent_CommandFired(object sender, StardewModdingAPI.Events.EventArgsCommand e)
         {
-            throw new System.NotImplementedException();
+            IsEclipse = true;
+            Game1.globalOutdoorLighting = 1f; //force lightning change.
         }
 
     }
