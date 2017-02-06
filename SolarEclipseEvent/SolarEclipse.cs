@@ -69,6 +69,7 @@ namespace SolarEclipseEvent
             if (r.NextDouble() < Config.EclipseChance)
             {
                 IsEclipse = true;
+                Game1.addHUDMessage(new HUDMessage("It looks like a rare solar eclipse will darken the sky all day!"));
             }
         }
 
