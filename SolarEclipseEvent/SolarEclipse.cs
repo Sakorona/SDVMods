@@ -1,7 +1,10 @@
 ﻿using StardewModdingAPI;
 using StardewModdingAPI.Events;
+using StardewValley.Objects;
+using StardewValley.Locations;
 using StardewValley;
 using System;
+using Microsoft.Xna.Framework;
 
 namespace SolarEclipseEvent
 {
@@ -11,7 +14,7 @@ namespace SolarEclipseEvent
         public bool GameLoaded { get; set; }
         public bool IsEclipse { get; set; }
 
-        public SolarEclipseEvent()
+        public override void Entry(IModHelper helper)
         {
             Config = Helper.ReadConfig<EclipseConfig>();
 
@@ -21,13 +24,43 @@ namespace SolarEclipseEvent
             SaveEvents.BeforeSave += SaveEvents_BeforeSave;
             TimeEvents.DayOfMonthChanged += TimeEvents_DayOfMonthChanged;
             TimeEvents.TimeOfDayChanged += TimeEvents_TimeOfDayChanged;
+            LocationEvents.CurrentLocationChanged += LocationEvents_CurrentLocationChanged;
             
+        }
+
+        private void LocationEvents_CurrentLocationChanged(object sender, EventArgsCurrentLocationChanged e)
+        {
+            if (IsEclipse)
+            {
+                Game1.currentLocation.switchOutNightTiles();
+            }
         }
 
         private void TimeEvents_TimeOfDayChanged(object sender, EventArgsIntChanged e)
         {
             if (IsEclipse)
-                Game1.globalOutdoorLighting = 1f;
+            {
+                Game1.globalOutdoorLighting = .5f;
+                Game1.outdoorLight = Game1.eveningColor;
+                Game1.currentLocation.switchOutNightTiles();
+
+                if (Game1.spawnMonstersAtNight && Game1.farmEvent == null && Config.SpawnMonsters && Game1.random.NextDouble() < 0.25 - Game1.dailyLuck / 2.0)
+                {
+                    if (Game1.random.NextDouble() < 0.25)
+                    {
+                        if (this.Equals(Game1.currentLocation))
+                        {
+                            Game1.getFarm().spawnFlyingMonstersOffScreen();
+                            return;
+                        }
+                    }
+                    else
+                    {
+                        Game1.getFarm().spawnGroundMonsterOffScreen();
+                    }
+                }
+               
+            }
         }
 
         private void TimeEvents_DayOfMonthChanged(object sender, EventArgsIntChanged e)
@@ -37,9 +70,6 @@ namespace SolarEclipseEvent
             {
                 IsEclipse = true;
             }
-
-            if (IsEclipse)
-                Game1.globalOutdoorLighting = 1f; //midnight during the daaaayyy!
         }
 
         private void SaveEvents_BeforeSave(object sender, System.EventArgs e)
@@ -56,7 +86,10 @@ namespace SolarEclipseEvent
         private void SolarEclipseEvent_CommandFired(object sender, StardewModdingAPI.Events.EventArgsCommand e)
         {
             IsEclipse = true;
-            Game1.globalOutdoorLighting = 1f; //force lightning change.
+            Game1.globalOutdoorLighting = .5f; //force lightning change.
+            Game1.currentLocation.switchOutNightTiles();
+            Game1.outdoorLight = Game1.eveningColor;
+            Monitor.Log("Setting the eclipse event to true");
         }
 
     }

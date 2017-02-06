@@ -1,11 +1,11 @@
 {
-  "Name": "SolarEclipseEvent",
+  "Name": "Solar Eclipse Event",
   "Author": "KoihimeNakamura",
   "Version": {
     "MajorVersion": 1,
     "MinorVersion": 0,
     "PatchVersion": 0,
-    "Build": "a"
+    "Build": "20170205"
   },
   "Description": "Adds a solar eclipse event",
   "UniqueID": "KoihimeNakamura.SolarEclipseEvent",
