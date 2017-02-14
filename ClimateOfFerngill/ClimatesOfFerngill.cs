@@ -13,6 +13,9 @@ using Microsoft.Xna.Framework;
 using StardewValley;
 using System.Collections.Generic;
 
+//DAMN YOU 1.2
+using SFarmer = StardewValley.Farmer;
+
 namespace ClimateOfFerngill
 {
     public class ClimatesOfFerngill : Mod
@@ -302,7 +305,7 @@ namespace ClimateOfFerngill
             }
         }
     
-        public void InterceptCallback(Farmer who, string answer)
+        public void InterceptCallback(SFarmer who, string answer)
         {
             if (answer != "Weather")
             {
