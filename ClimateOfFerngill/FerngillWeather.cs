@@ -28,5 +28,10 @@
             todayHigh = -1000;
             todayLow = -1000;
         }
+
+        public override string ToString()
+        {
+            return "High: " + todayHigh + " C and Low: " + todayLow + " C";
+        }
     }
 }
