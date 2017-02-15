@@ -3,9 +3,9 @@
   "Author": "KoihimeNakamura",
   "Version": {
     "MajorVersion": 1,
-    "MinorVersion": 0,
+    "MinorVersion": 1,
     "PatchVersion": 0,
-    "Build": "20170205"
+    "Build": "20170215"
   },
   "Description": "Adds a solar eclipse event",
   "UniqueID": "KoihimeNakamura.SolarEclipseEvent",

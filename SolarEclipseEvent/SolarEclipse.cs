@@ -5,6 +5,8 @@ using StardewValley.Locations;
 using StardewValley;
 using System;
 using Microsoft.Xna.Framework;
+using System.Linq;
+using System.Reflection;
 
 namespace SolarEclipseEvent
 {
@@ -69,6 +71,16 @@ namespace SolarEclipseEvent
             Random r = new Random();
             if (r.NextDouble() < Config.EclipseChance)
             {
+                Type myType = Type.GetType("ClimatesOfFerngill.SDVMoon");
+                if (myType != null)
+                {
+                    MethodInfo method = myType.GetMethod("GetLunarPhase", BindingFlags.Public | BindingFlags.Static);
+                    object resp = method.Invoke(null, new object[] { });
+
+                    if ((string)resp == "newmoon")
+                        return; //early termination.
+                }
+
                 IsEclipse = true;
                 Game1.addHUDMessage(new HUDMessage("It looks like a rare solar eclipse will darken the sky all day!"));
             }
