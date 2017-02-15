@@ -62,6 +62,7 @@
   </Target>
   <Target Name="AfterBuild">
     <PropertyGroup>
+	  <GamePath>C:\GOG Games\Stardew Valley</GamePath>
       <ModPath>$(GamePath)\Mods\SolarEclipseEvent</ModPath>
     </PropertyGroup>
     <Copy SourceFiles="$(TargetDir)\$(TargetName).dll" DestinationFolder="$(ModPath)" />

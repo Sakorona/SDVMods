@@ -44,7 +44,8 @@ namespace SolarEclipseEvent
                 Game1.outdoorLight = Game1.eveningColor;
                 Game1.currentLocation.switchOutNightTiles();
 
-                if (Game1.spawnMonstersAtNight && Game1.farmEvent == null && Config.SpawnMonsters && Game1.random.NextDouble() < 0.25 - Game1.dailyLuck / 2.0)
+                if ((Game1.farmEvent == null && Game1.random.NextDouble() < (0.25 - Game1.dailyLuck / 2.0))
+                    && ((Config.SpawnMonsters && Game1.spawnMonstersAtNight) || (Config.SpawnMonstersAllFarms)))
                 {
                     if (Game1.random.NextDouble() < 0.25)
                     {
