@@ -31,6 +31,7 @@ namespace ClimateOfFerngill
         private Dictionary<SDVCrops, double> cropTemps { get; set; }
         private List<Vector2> threatenedCrops { get; set; }
         private int deathTime { get; set; }
+        public SDVMoon Luna { get; set; }
 
         private double windChance;
         private double stormChance;
