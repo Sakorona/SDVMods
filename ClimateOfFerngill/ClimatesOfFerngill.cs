@@ -502,7 +502,7 @@ namespace ClimateOfFerngill
             /* Since we have multiple different climates, maybe a more .. clearer? method */
             CurrWeather.Reset();
 
-            if (Config.tooMuchInfo) LogEvent("CurrWeather is " + CurrWeather, true);
+            if (Config.tooMuchInfo) LogEvent("CurrWeather is " + CurrWeather.ToString());
             //reset the variables
             rainChance = stormChance = windChance = 0;
 
