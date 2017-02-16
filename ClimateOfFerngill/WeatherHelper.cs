@@ -115,7 +115,7 @@ namespace ClimateOfFerngill
             string[] winterClearWeather = new string[] { "It'll be a clear cold day . ", "A cold winter day - keep warm!", "Another chilly clear day over the Valley as a High pressure moves overhead. " };
 			
 			string nextDayIsNextSeason = "It'll be a fine day for the first day of";
-			string nextDayIsNewYear = "Another year has come to an end, and we will greet the next year with a sunny spring day!"
+            string nextDayIsNewYear = "Another year has come to an end, and we will greet the next year with a sunny spring day!";
 
             string[] festivalWeather = new string[] { "It'll be good weather for the festival! Sunny and clear. " };
             string[] weddingWeather = new string[] { "It'll be good weather for a Pelican Town Wedding! Congratuatlions to the newlyweds. " };
@@ -125,7 +125,7 @@ namespace ClimateOfFerngill
             if ((int)weather == Game1.weather_wedding)
                 return festivalWeather.GetRandomItem(dice);
 			
-			if (Game1.dayofMonth == 28 && Game1.currentSeason != "winter") //some customization for next day is a new season
+			if (Game1.dayOfMonth == 28 && Game1.currentSeason != "winter") //some customization for next day is a new season
 				return nextDayIsNextSeason + " " + Game1.currentSeason;
 			if (Game1.dayOfMonth == 28 && Game1.currentSeason == "winter") //end of year message.
 				return nextDayIsNewYear;
