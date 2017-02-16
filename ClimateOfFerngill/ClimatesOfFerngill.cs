@@ -348,7 +348,7 @@ namespace ClimateOfFerngill
                 }
             else
             {
-                tvText += WeatherHelper.DisplayTemperature(CurrWeather.todayHigh, Config.TempGauge) + "( " + WeatherHelper.DisplayTemperature(CurrWeather.todayHigh, Config.SecondScaleGauge) + "), with the low being " + WeatherHelper.DisplayTemperature(CurrWeather.todayLow, Config.TempGauge) + " ( " + WeatherHelper.DisplayTemperature(CurrWeather.todayLow, Config.SecondScaleGauge) + "). ";
+                tvText += WeatherHelper.DisplayTemperature(CurrWeather.todayHigh, Config.TempGauge) + " (" + WeatherHelper.DisplayTemperature(CurrWeather.todayHigh, Config.SecondScaleGauge) + "), with the low being " + WeatherHelper.DisplayTemperature(CurrWeather.todayLow, Config.TempGauge) + " (" + WeatherHelper.DisplayTemperature(CurrWeather.todayLow, Config.SecondScaleGauge) + "). ";
                     if (Config.tooMuchInfo) LogEvent(tvText);
             }
 
@@ -502,7 +502,6 @@ namespace ClimateOfFerngill
             /* Since we have multiple different climates, maybe a more .. clearer? method */
             CurrWeather.Reset();
 
-            if (Config.tooMuchInfo) LogEvent("CurrWeather is " + CurrWeather.ToString());
             //reset the variables
             rainChance = stormChance = windChance = 0;
 
