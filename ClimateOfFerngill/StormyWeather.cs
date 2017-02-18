@@ -45,7 +45,7 @@ namespace ClimateOfFerngill
             if (PercentOutside > PenaltyThres && Game1.isLightning)
             {
                 Game1.player.Stamina -= PenaltyAmt; //make it negative //bugfix that was stupid self
-                log("Current Stamina is " + Game1.player.Stamina);
+                log("Current Stamina is " + Game1.player.Stamina, false);
                 if (Game1.player.Stamina <= 20f)
                 {
                     Game1.staminaShakeTimer = 1000;

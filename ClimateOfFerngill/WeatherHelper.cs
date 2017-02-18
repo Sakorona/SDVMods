@@ -1,5 +1,4 @@
-﻿using System;
-using NPack;
+﻿using NPack;
 using StardewValley;
 
 namespace ClimateOfFerngill
@@ -44,19 +43,19 @@ namespace ClimateOfFerngill
 
             if (tempGauge == "rankine")
             {
-                double tmpTemp = (temp + 273.15) * (9 / 5);
+                double tmpTemp = (temp + 273.15) * 1.8;
                 return string.Format("{0:0.00}", tmpTemp) + " Ra";
             }
 
             if (tempGauge == "fahrenheit")
             {
-                double tmpTemp = temp * (9 / 5) + 32;
+                double tmpTemp = (temp * 1.8) + 32;
                 return string.Format("{0:0.00}", tmpTemp) + " F";
             }
 
             if (tempGauge == "romer")
             {
-                return string.Format("{0:0.00}", (temp * (40 / 21) + 7.5)) + " Ro";
+                return string.Format("{0:0.00}", (temp * 1.904761905) + 7.5) + " Ro";
             }
 
             if (tempGauge == "delisle")

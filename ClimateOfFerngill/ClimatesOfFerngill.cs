@@ -363,7 +363,7 @@ namespace ClimateOfFerngill
                 tvText = tvText + WeatherHelper.GetWeatherDesc(dice, WeatherHelper.GetTodayWeather());
 
                 //get WeatherForTommorow and set text
-                tvText = tvText + "Tommorow, ";
+                tvText = tvText + "#Tommorow, ";
             }
 
             if (CurrWeather.todayHigh > Config.HeatwaveWarning && Game1.timeOfDay < 1900)
