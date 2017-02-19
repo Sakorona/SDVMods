@@ -222,13 +222,23 @@ namespace ClimateOfFerngill
 
         private void TimeEvents_TimeOfDayChanged(object sender, EventArgsIntChanged e)
         {
+            //if (Config.tooMuchInfo) LogEvent("Current time of day is " + Game1.timeOfDay);
+            Monitor.Log("Current time of day is" + Game1.timeOfDay, LogLevel.Info);
             StormyWeather.CheckForStaminaPenalty(LogEvent, Config.tooMuchInfo);
 
-            if (Game1.timeOfDay == 1630)
+            if (Config.tooMuchInfo) LogEvent("Current time of day is (post Stormy)" + Game1.timeOfDay);
+            Monitor.Log("Current time of day is (post Stormy)" + Game1.timeOfDay, LogLevel.Info);
+            if (Game1.timeOfDay == 900)
             {
-                if (CurrWeather.todayHigh > Config.HeatwaveWarning && !Utility.isFestivalDay(Game1.dayOfMonth, Game1.currentSeason) && !Game1.isRaining && !Game1.isLightning)
+                //debug spam
+                if (Config.tooMuchInfo) LogEvent("First Condition (temp): " + (CurrWeather.todayHigh > (int)Config.HeatwaveWarning));
+                if (Config.tooMuchInfo) LogEvent("Second Condition (not a festival day): " + Utility.isFestivalDay(Game1.dayOfMonth, Game1.currentSeason));
+                if (Config.tooMuchInfo) LogEvent("Third Condition (it's sunny out): " + (!Game1.isRaining || !Game1.isLightning));
+
+                if (CurrWeather.todayHigh > (int)Config.HeatwaveWarning && !Utility.isFestivalDay(Game1.dayOfMonth, Game1.currentSeason) && (!Game1.isRaining || !Game1.isLightning))
                 {
                     deathTime = Game1.timeOfDay;
+                    LogEvent("Heatwave Event Triggered");
                     SummerHeatwave();
                 }
             }
