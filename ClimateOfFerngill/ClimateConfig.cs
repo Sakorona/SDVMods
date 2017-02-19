@@ -7,21 +7,30 @@ namespace ClimateOfFerngill
         public bool AllowSnowOnFall28 { get; set; }
         public bool AllowStormsFirstSpring { get; set; }
         public int NoLongerDisplayToday { get; set; }
+
         public string ClimateType { get; set; }
         public string TempGauge { get; set; }
         public bool DisplaySecondScale { get; set; }
         public string SecondScaleGauge { get; set; }
+
         public bool StormyPenalty { get; set; }
         public int StaminaPenalty { get; set; }
+
         public bool tooMuchInfo { get; set; }
+
         public bool HarshWeather { get; set; }
+
         public int HeatwaveWarning { get; set; }
-        public int FrostWarning { get; set; }
-        public bool ForceHeat { get; set; }
-        public bool SetLowCap { get; set; }
-        public int LowCap { get; set; }
         public int DeathTemp { get; private set; }
         public bool AllowCropHeatDeath { get; private set; }
+
+        public int FrostWarning { get; set; }
+        public bool SetLowCap { get; set; }
+        public int LowCap { get; set; }        
+
+        //remove before rc1.
+        public bool ForceHeat { get; set; }
+        public bool ForceFrost { get; set; }
 
         public ClimateConfig()
         {
@@ -58,7 +67,8 @@ namespace ClimateOfFerngill
             LowCap = 1;
 
             //debug options
-            ForceHeat = true;
+            ForceHeat = false;
+            ForceFrost = false;
         }
     }
 }

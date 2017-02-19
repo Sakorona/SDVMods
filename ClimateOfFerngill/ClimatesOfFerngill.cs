@@ -422,22 +422,29 @@ namespace ClimateOfFerngill
                 Monitor.Log(msg, LogLevel.Info);            
         }
 
+        public static void showMessage(string msg)
+        {
+            var hudmsg = new HUDMessage(msg, Color.SeaGreen, 5250f, true);
+            hudmsg.whatType = 2;
+            Game1.addHUDMessage(hudmsg);
+        }
+
         public void checkForDangerousWeather(bool hud = true)
         {
             if (CurrWeather.status == FerngillWeather.BLIZZARD) {
-                Game1.hudMessages.Add(new HUDMessage("There's a dangerous blizard out today. Be careful!"));
+                showMessage("There's a dangerous blizzard out today. Be careful!");
                 return;
             }
 
             if (CurrWeather.status == FerngillWeather.FROST && Game1.currentSeason != "winter")
             {
-                Game1.hudMessages.Add(new HUDMessage("The temperature tonight will be dipping below freezing. Your crops may be vulnerable to frost!"));
+                showMessage("The temperature tonight will be dipping below freezing. Your crops may be vulnerable to frost!");
                 return;
             }
 
             if (CurrWeather.status == FerngillWeather.HEATWAVE)
             {
-                Game1.hudMessages.Add(new HUDMessage("A massive heatwave is sweeping the valley. Stay hydrated!"));
+                showMessage("A massive heatwave is sweeping the valley. Stay hydrated!");
                 return;
             }
         }
@@ -478,7 +485,7 @@ namespace ClimateOfFerngill
 
             if (cropsKilled)
             {
-                Game1.addHUDMessage(new HUDMessage("During the night, some crops died to the frost..."));
+                showMessage("During the night, some crops died to the frost...");
             }
         }
 
