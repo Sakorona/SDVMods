@@ -48,7 +48,7 @@ namespace ClimateOfFerngill
 
             //set harsh weather events - currently unused.
             HarshWeather = false;
-            HeatwaveWarning = 37; //98.6F
+            HeatwaveWarning = 37; //98.6F 
             FrostWarning = 2; //35.6F
             DeathTemp = 41; //105.8F
             AllowCropHeatDeath = false;

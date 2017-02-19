@@ -127,7 +127,7 @@ namespace ClimateOfFerngill
                         {
                             if (dice.NextDouble() > .65)
                             {
-                                if (CurrWeather.todayHigh < Config.DeathTemp && !Config.AllowCropHeatDeath)
+                                if (CurrWeather.todayHigh >= Config.HeatwaveWarning && !Config.AllowCropHeatDeath)
                                 {
                                     curr.state = 0; //dewater
                                     count++;
@@ -149,6 +149,7 @@ namespace ClimateOfFerngill
                 }
             }
 
+            Console.WriteLine("Count: " + count);
             if (cropsDeWatered)
                 Game1.addHUDMessage(new HUDMessage("The extreme heat has caused some of your crops to become dry....!"));
             if (cropsKilled)
@@ -250,13 +251,13 @@ namespace ClimateOfFerngill
 
                 if (CurrWeather.todayHigh > (int)Config.HeatwaveWarning && !Utility.isFestivalDay(Game1.dayOfMonth, Game1.currentSeason) && (!Game1.isRaining || !Game1.isLightning))
                 {
-                    deathTime = Game1.timeOfDay;
-                    LogEvent("Heatwave Event Triggered");
+                    if (Config.tooMuchInfo) LogEvent("Death Time is " + deathTime);
+                    if (Config.tooMuchInfo) LogEvent("Heatwave Event Triggered");
                     SummerHeatwave();
                 }
             }
 
-            if (Game1.timeOfDay == deathTime)
+            if (Game1.timeOfDay == deathTime && Config.AllowCropHeatDeath)
             {
                 //if it's still de watered - kill it.
                 Farm f = Game1.getFarm();
