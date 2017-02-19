@@ -161,6 +161,7 @@ namespace ClimateOfFerngill
             {
                 int temp = Convert.ToInt32(e.Command.CalledArgs[0]);
                 CurrWeather.todayHigh = temp;
+                Monitor.Log("Temperature reset", LogLevel.Info);
             }
         }
 
@@ -222,13 +223,25 @@ namespace ClimateOfFerngill
 
         private void TimeEvents_TimeOfDayChanged(object sender, EventArgsIntChanged e)
         {
-            //if (Config.tooMuchInfo) LogEvent("Current time of day is " + Game1.timeOfDay);
-            Monitor.Log("Current time of day is" + Game1.timeOfDay, LogLevel.Info);
             StormyWeather.CheckForStaminaPenalty(LogEvent, Config.tooMuchInfo);
 
-            if (Config.tooMuchInfo) LogEvent("Current time of day is (post Stormy)" + Game1.timeOfDay);
-            Monitor.Log("Current time of day is (post Stormy)" + Game1.timeOfDay, LogLevel.Info);
-            if (Game1.timeOfDay == 900)
+
+            if (e.NewInt == 610)
+            {
+                if (CurrWeather.todayHigh > Config.HeatwaveWarning)
+                {
+                    CurrWeather.status = FerngillWeather.HEATWAVE;
+                }
+
+                if (CurrWeather.todayLow < Config.FrostWarning)
+                {
+                    CurrWeather.status = FerngillWeather.FROST;
+                }
+
+                checkForDangerousWeather(true);
+            }
+
+            if (e.NewInt == 900)
             {
                 //debug spam
                 if (Config.tooMuchInfo) LogEvent("First Condition (temp): " + (CurrWeather.todayHigh > (int)Config.HeatwaveWarning));
@@ -403,7 +416,7 @@ namespace ClimateOfFerngill
         private void LogEvent(string msg, bool important=false)
         {
             if (!important)
-                Monitor.Log(msg, LogLevel.Trace);
+                Monitor.Log(msg, LogLevel.Debug);
             else
                 Monitor.Log(msg, LogLevel.Info);            
         }
@@ -412,6 +425,12 @@ namespace ClimateOfFerngill
         {
             if (CurrWeather.status == FerngillWeather.BLIZZARD) {
                 Game1.hudMessages.Add(new HUDMessage("There's a dangerous blizard out today. Be careful!"));
+                return;
+            }
+
+            if (CurrWeather.status == FerngillWeather.FROST && Game1.currentSeason != "winter")
+            {
+                Game1.hudMessages.Add(new HUDMessage("The temperature tonight will be dipping below freezing. Your crops may be vulnerable to frost!"));
                 return;
             }
 
@@ -534,13 +553,15 @@ namespace ClimateOfFerngill
             if (!CanWeStorm())
                 stormChance = 0;
 
-            //global change - if it rains, drop the temps
+            //global change - if it rains, drop the temps (and if it's stormy, drop the temps)
             if (Game1.isRaining)
             {
-                if (Config.tooMuchInfo) LogEvent("Dropping temp by 3 from " + CurrWeather.todayHigh);
-                CurrWeather.todayHigh = CurrWeather.todayHigh - 3;
+                if (Config.tooMuchInfo) LogEvent("Dropping temp by 6 from " + CurrWeather.todayHigh);
+                CurrWeather.todayHigh = CurrWeather.todayHigh - 4;
             }
 
+            if (Config.ForceHeat)
+                CurrWeather.todayHigh = 50;
 
             if (forceSet)
                 return;

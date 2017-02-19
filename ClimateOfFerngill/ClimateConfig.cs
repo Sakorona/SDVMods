@@ -16,6 +16,8 @@ namespace ClimateOfFerngill
         public bool tooMuchInfo { get; set; }
         public bool HarshWeather { get; set; }
         public int HeatwaveWarning { get; set; }
+        public int FrostWarning { get; set; }
+        public bool ForceHeat { get; set; }
         public bool SetLowCap { get; set; }
         public int LowCap { get; set; }
         public int DeathTemp { get; private set; }
@@ -47,12 +49,16 @@ namespace ClimateOfFerngill
             //set harsh weather events - currently unused.
             HarshWeather = false;
             HeatwaveWarning = 37; //98.6F
+            FrostWarning = 2; //35.6F
             DeathTemp = 41; //105.8F
             AllowCropHeatDeath = false;
 
             //set fall temp caps, if the plyer wants
             SetLowCap = false;
             LowCap = 1;
+
+            //debug options
+            ForceHeat = true;
         }
     }
 }

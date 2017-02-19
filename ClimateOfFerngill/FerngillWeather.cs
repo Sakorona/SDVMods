@@ -8,6 +8,7 @@
 
         public static int BLIZZARD = 101;
         public static int HEATWAVE = 102;
+        public static int FROST = 103;
 
         public void AlterTemps(int temp)
         {
