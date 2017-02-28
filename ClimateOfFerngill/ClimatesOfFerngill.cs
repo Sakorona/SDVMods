@@ -127,19 +127,24 @@ namespace ClimateOfFerngill
                         {
                             if (dice.NextDouble() > .65)
                             {
-                                if (CurrWeather.todayHigh >= Config.HeatwaveWarning && !Config.AllowCropHeatDeath)
-                                {
-                                    curr.state = 0; //dewater
-                                    count++;
-                                    cropsDeWatered = true;
-                                }
+                                if (Config.tooMuchInfo) Console.WriteLine("First Condition for Lethal: " + (CurrWeather.todayHigh >= Config.DeathTemp));
+                                if (Config.tooMuchInfo) Console.WriteLine("Second Condition for Lethal:" + Config.AllowCropHeatDeath);
                                 if (CurrWeather.todayHigh >= Config.DeathTemp && Config.AllowCropHeatDeath)
                                 {
                                     threatenedCrops.Add(tf.Key);
                                     curr.state = 0;
                                     count++;
                                     cropsKilled = true;
+                                    if (Config.tooMuchInfo) Console.WriteLine("Triggered: Lethal heatwave");
                                 }
+                                else if (CurrWeather.todayHigh >= Config.HeatwaveWarning && !Config.AllowCropHeatDeath)
+                                {
+                                    curr.state = 0; //dewater
+                                    count++;
+                                    cropsDeWatered = true;
+                                    if (Config.tooMuchInfo) Console.WriteLine("Triggered: Non lethal heatwave");
+                                }
+
 
                             }
                             
@@ -149,11 +154,10 @@ namespace ClimateOfFerngill
                 }
             }
 
-            Console.WriteLine("Count: " + count);
             if (cropsDeWatered)
-                Game1.addHUDMessage(new HUDMessage("The extreme heat has caused some of your crops to become dry....!"));
+                InternalUtility.showMessage("The extreme heat has caused some of your crops to become dry....!");
             if (cropsKilled)
-                Game1.addHUDMessage(new HUDMessage("The extreme heat has caused some of your crops to dry out. If you don't water them, they'll die!"));
+                InternalUtility.showMessage("The extreme heat has caused some of your crops to dry out. If you don't water them, they'll die!");
         }
 
         private void HandleSetTemperature(object sender, EventArgsCommand e)
@@ -242,7 +246,7 @@ namespace ClimateOfFerngill
                 checkForDangerousWeather(true);
             }
 
-            if (e.NewInt == 900)
+            if (e.NewInt == (int)Config.HeatwaveTime)
             {
                 //debug spam
                 if (Config.tooMuchInfo) LogEvent("First Condition (temp): " + (CurrWeather.todayHigh > (int)Config.HeatwaveWarning));
@@ -251,6 +255,7 @@ namespace ClimateOfFerngill
 
                 if (CurrWeather.todayHigh > (int)Config.HeatwaveWarning && !Utility.isFestivalDay(Game1.dayOfMonth, Game1.currentSeason) && (!Game1.isRaining || !Game1.isLightning))
                 {
+                    deathTime = InternalUtility.GetNewValidTime(e.NewInt, Config.TimeToDie, InternalUtility.TIMEADD);
                     if (Config.tooMuchInfo) LogEvent("Death Time is " + deathTime);
                     if (Config.tooMuchInfo) LogEvent("Heatwave Event Triggered");
                     SummerHeatwave();
@@ -274,11 +279,8 @@ namespace ClimateOfFerngill
                 }
 
                 if (cDead)
-                    Game1.addHUDMessage(new HUDMessage("Some of the crops have died due to lack of water!"));
+                    InternalUtility.showMessage("Some of the crops have died due to lack of water!");
             }
-
-
-            // have the stamina meter shake to make sure people are paying attention.
 
 
             if (Game1.player.Stamina <= 0f)
@@ -286,8 +288,6 @@ namespace ClimateOfFerngill
                 Game1.player.doEmote(36);
                 Game1.farmerShouldPassOut = true;
             }
-
-
         }
 
         private void GameEvents_UpdateTick(object sender, EventArgs e)
@@ -422,29 +422,24 @@ namespace ClimateOfFerngill
                 Monitor.Log(msg, LogLevel.Info);            
         }
 
-        public static void showMessage(string msg)
-        {
-            var hudmsg = new HUDMessage(msg, Color.SeaGreen, 5250f, true);
-            hudmsg.whatType = 2;
-            Game1.addHUDMessage(hudmsg);
-        }
+
 
         public void checkForDangerousWeather(bool hud = true)
         {
             if (CurrWeather.status == FerngillWeather.BLIZZARD) {
-                showMessage("There's a dangerous blizzard out today. Be careful!");
+                InternalUtility.showMessage("There's a dangerous blizzard out today. Be careful!");
                 return;
             }
 
             if (CurrWeather.status == FerngillWeather.FROST && Game1.currentSeason != "winter")
             {
-                showMessage("The temperature tonight will be dipping below freezing. Your crops may be vulnerable to frost!");
+                InternalUtility.showMessage("The temperature tonight will be dipping below freezing. Your crops may be vulnerable to frost!");
                 return;
             }
 
             if (CurrWeather.status == FerngillWeather.HEATWAVE)
             {
-                showMessage("A massive heatwave is sweeping the valley. Stay hydrated!");
+                InternalUtility.showMessage("A massive heatwave is sweeping the valley. Stay hydrated!");
                 return;
             }
         }
@@ -485,12 +480,13 @@ namespace ClimateOfFerngill
 
             if (cropsKilled)
             {
-                showMessage("During the night, some crops died to the frost...");
+                InternalUtility.showMessage("During the night, some crops died to the frost...");
             }
         }
 
         public void TimeEvents_DayOfMonthChanged(object sender, EventArgsIntChanged e)
         {
+            CurrWeather.status = 0; //reset status
             UpdateWeather();
         }
 

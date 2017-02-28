@@ -3,6 +3,8 @@ namespace ClimateOfFerngill
 {
     public class ClimateConfig
     {
+        public int HeatwaveTime { get; set; }
+
         public bool SuppressLog { get; set; }
         public bool AllowSnowOnFall28 { get; set; }
         public bool AllowStormsFirstSpring { get; set; }
@@ -21,8 +23,9 @@ namespace ClimateOfFerngill
         public bool HarshWeather { get; set; }
 
         public int HeatwaveWarning { get; set; }
-        public int DeathTemp { get; private set; }
-        public bool AllowCropHeatDeath { get; private set; }
+        public int DeathTemp { get; set; }
+        public int TimeToDie { get; set; }
+        public bool AllowCropHeatDeath { get; set; }
 
         public int FrostWarning { get; set; }
         public bool SetLowCap { get; set; }
@@ -57,12 +60,14 @@ namespace ClimateOfFerngill
 
             //set harsh weather events - currently unused.
             HarshWeather = false;
+            HeatwaveTime = 900;
             HeatwaveWarning = 37; //98.6F 
             FrostWarning = 2; //35.6F
             DeathTemp = 41; //105.8F
             AllowCropHeatDeath = false;
+            TimeToDie = 310; // gives by default 3 hrs and 10 mins.
 
-            //set fall temp caps, if the plyer wants
+            //set fall temp caps, if the player wants
             SetLowCap = false;
             LowCap = 1;
 

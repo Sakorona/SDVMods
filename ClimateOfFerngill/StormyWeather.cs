@@ -1,9 +1,5 @@
 ﻿using System;
 using StardewModdingAPI;
-using StardewValley.Objects;
-using StardewModdingAPI.Events;
-using StardewValley.Locations;
-using StardewValley.Menus;
 using Microsoft.Xna.Framework;
 using StardewValley;
 
@@ -45,7 +41,8 @@ namespace ClimateOfFerngill
             if (PercentOutside > PenaltyThres && Game1.isLightning)
             {
                 Game1.player.Stamina -= PenaltyAmt; //make it negative //bugfix that was stupid self
-                log("Current Stamina is " + Game1.player.Stamina, false);
+                if (debugEnabled) log("Current Stamina is " + Game1.player.Stamina, false);
+                InternalUtility.showMessage("The storm has caused you to be exhausted more quickly!");
                 if (Game1.player.Stamina <= 20f)
                 {
                     Game1.staminaShakeTimer = 1000;
