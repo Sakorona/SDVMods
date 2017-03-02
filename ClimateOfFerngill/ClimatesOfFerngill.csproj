@@ -54,7 +54,6 @@
     <Compile Include="SDVCrops.cs" />
     <Compile Include="SDVMoon.cs" />
     <Compile Include="SDVWeather.cs" />
-    <Compile Include="StormyWeather.cs" />
     <Compile Include="InternalUtility.cs" />
     <Compile Include="WeatherHelper.cs" />
   </ItemGroup>

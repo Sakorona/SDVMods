@@ -16,6 +16,7 @@ namespace ClimateOfFerngill
         public string SecondScaleGauge { get; set; }
 
         public bool StormyPenalty { get; set; }
+        public double DiseaseChance { get; set; }
         public int StaminaPenalty { get; set; }
 
         public bool tooMuchInfo { get; set; }
@@ -56,7 +57,8 @@ namespace ClimateOfFerngill
 
             //set storm penalty stuff
             StormyPenalty = true;
-            StaminaPenalty = 1;
+            DiseaseChance = .65;
+            StaminaPenalty = 2;
 
             //set harsh weather events - currently unused.
             HarshWeather = false;

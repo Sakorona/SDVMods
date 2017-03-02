@@ -32,6 +32,7 @@ namespace ClimateOfFerngill
         private List<Vector2> threatenedCrops { get; set; }
         private int deathTime { get; set; }
         public SDVMoon Luna { get; set; }
+        public bool isExhausted { get; set; }
 
         private double windChance;
         private double stormChance;
@@ -70,7 +71,6 @@ namespace ClimateOfFerngill
             TimeEvents.DayOfMonthChanged += TimeEvents_DayOfMonthChanged;
             MenuEvents.MenuChanged += MenuEvents_MenuChanged;
             SaveEvents.AfterLoad += SaveEvents_AfterLoad;
-            GameEvents.UpdateTick += GameEvents_UpdateTick;
             TimeEvents.TimeOfDayChanged += TimeEvents_TimeOfDayChanged;
             SaveEvents.BeforeSave += SaveEvents_BeforeSave;
 
@@ -228,7 +228,29 @@ namespace ClimateOfFerngill
 
         private void TimeEvents_TimeOfDayChanged(object sender, EventArgsIntChanged e)
         {
-            StormyWeather.CheckForStaminaPenalty(LogEvent, Config.tooMuchInfo);
+           //run non specific code first
+           if (Game1.currentLocation.IsOutdoors)
+            {
+                if (dice.NextDouble() > Config.DiseaseChance)
+                {
+                    isExhausted = true;
+                    InternalUtility.showMessage("The storm has caused you to get a cold!");
+                }
+            }
+
+           //disease code.
+           if (isExhausted)
+           {
+                if (Config.tooMuchInfo) LogEvent("The old stamina is : " + Game1.player.stamina);
+                Game1.player.stamina = Game1.player.stamina - Config.StaminaPenalty;
+                if (Config.tooMuchInfo) LogEvent("The new stamina is : " + Game1.player.stamina);
+           }
+
+           //alert code
+           if (isExhausted && dice.NextDouble() > .45)
+            {
+                InternalUtility.showMessage("You have a cold, and feel worn out!");
+            }
 
 
             if (e.NewInt == 610)
@@ -290,25 +312,9 @@ namespace ClimateOfFerngill
             }
         }
 
-        private void GameEvents_UpdateTick(object sender, EventArgs e)
-        {
-
-            if (GameLoaded)
-            {
-                if (Game1.currentLocation.isOutdoors)
-                    StormyWeather.TicksOutside++;
-
-                if (Game1.timeOfDay != this.LastTime)
-                    LastTime = Game1.timeOfDay;
-                else
-                    StormyWeather.TickPerSpan++;
-            }
-        }
-
         private void SaveEvents_AfterLoad(object sender, EventArgs e)
         {
             GameLoaded = true;
-            StormyWeather.InitiateVariables(Config);
             UpdateWeather();
         }
 
@@ -487,6 +493,7 @@ namespace ClimateOfFerngill
         public void TimeEvents_DayOfMonthChanged(object sender, EventArgsIntChanged e)
         {
             CurrWeather.status = 0; //reset status
+            isExhausted = false; //reset disease
             UpdateWeather();
         }
 
