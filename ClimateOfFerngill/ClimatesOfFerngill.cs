@@ -83,7 +83,6 @@ namespace ClimateOfFerngill
             GraphicsEvents.OnPostRenderEvent += GraphicsEvents_OnPostRenderEvent;
             TimeEvents.TimeOfDayChanged += TimeEvents_TimeOfDayChanged;
             SaveEvents.BeforeSave += SaveEvents_BeforeSave;
-            LocationEvents.CurrentLocationChanged += LocationEvents_CurrentLocationChanged;
 
             //create crop and temp mapping.
             InternalUtility.SetUpCrops(); 
@@ -93,16 +92,7 @@ namespace ClimateOfFerngill
         private void GraphicsEvents_OnPostRenderEvent(object sender, EventArgs e)
         {
             if (ambientFog && Game1.currentLocation.isOutdoors)
-                CreateFog();
-        }
-
-        private void LocationEvents_CurrentLocationChanged(object sender, EventArgsCurrentLocationChanged e)
-        {
-            if (ambientFog && e.NewLocation.IsOutdoors)
-            {
-                if (Config.tooMuchInfo) LogEvent("Spawning fog for new outdoors location");
-                CreateFog();
-            }
+                CreateFog(Game1.spriteBatch);
         }
 
         private void SaveEvents_BeforeSave(object sender, EventArgs e)
@@ -335,11 +325,10 @@ namespace ClimateOfFerngill
             }
         }
 
-        private void CreateFog()
+        private void CreateFog(SpriteBatch b)
         {
            Color fogColor = Color.BlueViolet * 1f;
            Vector2 position = new Vector2();
-           Game1.spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, SamplerState.PointClamp, null, null);
            float num1 = -64 * Game1.pixelZoom + (int)((double)fogPos.X % (double)(64 * Game1.pixelZoom));
            while ((double)num1 < (double)Game1.graphics.GraphicsDevice.Viewport.Width)
            {
@@ -348,12 +337,11 @@ namespace ClimateOfFerngill
                {
                    position.X = (float)(int)num1;
                    position.Y = (float)(int)num2;
-                   Game1.spriteBatch.Draw(Game1.mouseCursors, position, new Microsoft.Xna.Framework.Rectangle?(fogSource), (double)this.fogAlpha > 0.0 ? fogColor * fogAlpha : Color.Black * 0.95f, 0.0f, Vector2.Zero, (float)Game1.pixelZoom + 1f / 1000f, SpriteEffects.None, 1f);
+                   b.Draw(Game1.mouseCursors, position, new Microsoft.Xna.Framework.Rectangle?(fogSource), (double)this.fogAlpha > 0.0 ? fogColor * fogAlpha : Color.Black * 0.95f, 0.0f, Vector2.Zero, (float)Game1.pixelZoom + 1f / 1000f, SpriteEffects.None, 1f);
                    num2 += (float)(64 * Game1.pixelZoom);
                }
                num1 += (float)(64 * Game1.pixelZoom);
            }
-            Game1.spriteBatch.End();
 
             if (fogAlpha == 0.0f)
                 this.ambientFog = false;
