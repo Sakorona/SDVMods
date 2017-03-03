@@ -58,6 +58,7 @@
     <Compile Include="WeatherHelper.cs" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="Docs\HazardousWeather.md" />
     <None Include="manifest.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>

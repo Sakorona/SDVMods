@@ -3,6 +3,9 @@ namespace ClimateOfFerngill
 {
     public class ClimateConfig
     {
+        public double FogChance { get; set; }
+        public int FogDuration { get; set; }
+
         public int HeatwaveTime { get; set; }
 
         public bool SuppressLog { get; set; }
@@ -47,6 +50,10 @@ namespace ClimateOfFerngill
             AllowSnowOnFall28 = true;
             AllowStormsFirstSpring = false;
             NoLongerDisplayToday = 1700;
+
+            //fog stuff
+            FogChance = .10; //10% chance of fog
+            FogDuration = 2; // 2 hours duration 
 
             //set climate information
             ClimateType = "normal";

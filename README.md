@@ -75,6 +75,8 @@ The current version is __1.0.0 rc2 (rev 20170303)__
 * _StaminaPenalty_ controls how much stamina is drained per 10 minute tick.
 * _HeatwaveWarning_ controls at what temp you give the heatwave warning temp at. Default _37_, recommended anything over _35_. (temps default to Celsius.)
 * _ForceHeat_ and _ForceFrost_ are debug options set to false. ONLY ALTER THESE IF YOU KNOW WHAT YOU'RE DOING OR HAVE BEEN DIRECTED TO DO SO.
+* _FogDuration_ is the setting for how many hours this lasts. This is specifically an integer. Default _2_
+* _FogChance_ is the setting for the odds of fog per 10 minute check.
 
 ## Known Issues
 

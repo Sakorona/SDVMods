@@ -34,9 +34,15 @@ namespace ClimateOfFerngill
         public SDVMoon Luna { get; set; }
         public bool isExhausted { get; set; }
 
+        //chances of specific weathers
         private double windChance;
         private double stormChance;
         private double rainChance;
+
+        //fog info
+        private bool ambientFog;
+        private Vector2 fogPos;
+        private int startFogTime;
 
         //tv overloading
         private static FieldInfo Field = typeof(GameLocation).GetField("afterQuestion", BindingFlags.Instance | BindingFlags.NonPublic);
@@ -73,6 +79,7 @@ namespace ClimateOfFerngill
             SaveEvents.AfterLoad += SaveEvents_AfterLoad;
             TimeEvents.TimeOfDayChanged += TimeEvents_TimeOfDayChanged;
             SaveEvents.BeforeSave += SaveEvents_BeforeSave;
+            LocationEvents.CurrentLocationChanged += LocationEvents_CurrentLocationChanged;
 
             //create crop and temp mapping.
             cropTemps = new Dictionary<SDVCrops, double>();
@@ -93,6 +100,17 @@ namespace ClimateOfFerngill
             cropTemps.Add(SDVCrops.SweetGemBerry, -3.33);
 
             threatenedCrops = new List<Vector2>();
+        }
+
+        private void LocationEvents_CurrentLocationChanged(object sender, EventArgsCurrentLocationChanged e)
+        {
+            if (ambientFog && e.NewLocation.IsOutdoors)
+            {
+                if (Config.tooMuchInfo) LogEvent("Spawning fog for new outdoors location");
+                this.fogPos = Game1.updateFloatingObjectPositionForMovement(this.fogPos, new Vector2((float)Game1.viewport.X, (float)Game1.viewport.Y), Game1.previousViewportPosition, -1f);
+                this.fogPos.X = (this.fogPos.X + 0.5f) % (float)(64 * Game1.pixelZoom);
+                this.fogPos.Y = (this.fogPos.Y + 0.5f) % (float)(64 * Game1.pixelZoom);
+            }
         }
 
         private void SaveEvents_BeforeSave(object sender, EventArgs e)
@@ -250,6 +268,28 @@ namespace ClimateOfFerngill
                 InternalUtility.showMessage("You have a cold, and feel worn out!");
             }
 
+
+            //fog stuff.
+            if (dice.NextDouble() < Config.FogChance && e.NewInt <= 1000)
+            {
+                if (Config.tooMuchInfo) LogEvent("Spawning fog!");
+                this.fogPos = Game1.updateFloatingObjectPositionForMovement(this.fogPos, new Vector2((float)Game1.viewport.X, (float)Game1.viewport.Y), Game1.previousViewportPosition, -1f);
+                this.fogPos.X = (this.fogPos.X + 0.5f) % (float)(64 * Game1.pixelZoom);
+                this.fogPos.Y = (this.fogPos.Y + 0.5f) % (float)(64 * Game1.pixelZoom);
+                this.ambientFog = true;
+                this.startFogTime = e.NewInt;
+            }
+
+            //fog despawn - really hacky. 
+            if (ambientFog && e.NewInt == (this.startFogTime + (Config.FogDuration * 100)))
+            {
+                if (Config.tooMuchInfo) LogEvent("Attempting to despawn fog");
+                this.ambientFog = false;
+                this.fogPos.X = 0;
+                this.fogPos.Y = 0; 
+            }
+
+            //specific time stuff
             if (e.NewInt == 610)
             {
 
@@ -266,6 +306,7 @@ namespace ClimateOfFerngill
                 checkForDangerousWeather(true);
             }
 
+            //heatwave event
             if (e.NewInt == (int)Config.HeatwaveTime)
             {
                 if (CurrWeather.todayHigh > (int)Config.HeatwaveWarning && !Utility.isFestivalDay(Game1.dayOfMonth, Game1.currentSeason) && (!Game1.isRaining || !Game1.isLightning))
@@ -277,6 +318,7 @@ namespace ClimateOfFerngill
                 }
             }
 
+            //killer heatwave crop death time
             if (Game1.timeOfDay == deathTime && Config.AllowCropHeatDeath)
             {
                 //if it's still de watered - kill it.
@@ -297,7 +339,7 @@ namespace ClimateOfFerngill
                     InternalUtility.showMessage("Some of the crops have died due to lack of water!");
             }
 
-
+            // sanity check if the player hits 0 Stamina ( the game doesn't track this )
             if (Game1.player.Stamina <= 0f)
             {
                 Game1.player.doEmote(36);
