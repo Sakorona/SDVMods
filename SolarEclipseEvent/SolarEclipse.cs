@@ -49,6 +49,7 @@ namespace SolarEclipseEvent
                 if ((Game1.farmEvent == null && Game1.random.NextDouble() < (0.25 - Game1.dailyLuck / 2.0))
                     && ((Config.SpawnMonsters && Game1.spawnMonstersAtNight) || (Config.SpawnMonstersAllFarms)))
                 {
+                    Monitor.Log("Spawning a monster, or attempting to.", LogLevel.Debug);
                     if (Game1.random.NextDouble() < 0.25)
                     {
                         if (this.Equals(Game1.currentLocation))
@@ -74,10 +75,11 @@ namespace SolarEclipseEvent
                 Type myType = Type.GetType("ClimatesOfFerngill.SDVMoon");
                 if (myType != null)
                 {
+                    Monitor.Log("We've detected the moon!", LogLevel.Trace);
                     MethodInfo method = myType.GetMethod("GetLunarPhase", BindingFlags.Public | BindingFlags.Static);
                     object resp = method.Invoke(null, new object[] { });
 
-                    if ((string)resp == "newmoon")
+                    if ((int)resp == 1001)
                         return; //early termination.
                 }
 
