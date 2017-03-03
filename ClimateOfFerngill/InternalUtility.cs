@@ -1,6 +1,8 @@
 ﻿using System;
 using Microsoft.Xna.Framework;
 using StardewValley;
+using System.Collections.Generic;
+using StardewValley.Locations;
 
 namespace ClimateOfFerngill
 {
@@ -8,6 +10,32 @@ namespace ClimateOfFerngill
     {
         internal static int TIMEADD = 9001;
         internal static int TIMESUB = 9002;
+        private static Dictionary<SDVCrops, double> cropTemps { get; set; }
+
+        public static void SetUpCrops()
+        {
+            cropTemps = new Dictionary<SDVCrops, double>();
+            cropTemps.Add(SDVCrops.Corn, 1.66);
+            cropTemps.Add(SDVCrops.Wheat, 1.66);
+            cropTemps.Add(SDVCrops.Amaranth, 1.66);
+            cropTemps.Add(SDVCrops.Sunflower, 1.66);
+            cropTemps.Add(SDVCrops.Pumpkin, 1.66);
+            cropTemps.Add(SDVCrops.Eggplant, 1.66);
+            cropTemps.Add(SDVCrops.Yam, 1.66);
+            cropTemps.Add(SDVCrops.Artichoke, 0);
+            cropTemps.Add(SDVCrops.BokChoy, 0);
+            cropTemps.Add(SDVCrops.Grape, -.55);
+            cropTemps.Add(SDVCrops.FairyRose, -2.22);
+            cropTemps.Add(SDVCrops.Beet, -2.22);
+            cropTemps.Add(SDVCrops.Cranberry, -3.33);
+            cropTemps.Add(SDVCrops.Ancient, -3.33);
+            cropTemps.Add(SDVCrops.SweetGemBerry, -3.33);
+        }
+
+        public static double CheckCropTolerance(int currentCrop)
+        {
+            return cropTemps[(SDVCrops)currentCrop];
+        }
 
         public static void shakeScreenOnLowStamina()
         {
@@ -119,6 +147,13 @@ namespace ClimateOfFerngill
             return retVal; 
         }
 
+        internal static void FaintPlayer()
+        {
+            Game1.player.Stamina = 0;
+            Game1.player.doEmote(36);
+            Game1.farmerShouldPassOut = true;
+        }
+
         internal static string GetNewSeason(string currentSeason)
         {
             if (currentSeason == "spring") return "summer";
@@ -127,6 +162,11 @@ namespace ClimateOfFerngill
             if (currentSeason == "winter") return "spring";
 
             return "ERROR";
+        }
+
+        public static Beach getBeach()
+        {
+            return Game1.getLocationFromName("Beach") as Beach;
         }
 
         internal static bool IsFallCrop(int crop)

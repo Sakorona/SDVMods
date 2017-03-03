@@ -15,6 +15,8 @@ using System.Collections.Generic;
 
 //DAMN YOU 1.2
 using SFarmer = StardewValley.Farmer;
+using Microsoft.Xna.Framework.Graphics;
+using StardewValley.Monsters;
 
 namespace ClimateOfFerngill
 {
@@ -25,13 +27,14 @@ namespace ClimateOfFerngill
         FerngillWeather CurrWeather { get; set; }
         FerngillWeather TomorrowWeather { get; set; }
         private bool GameLoaded;
+        public SDVMoon Luna { get; set; }
 
         MersenneTwister dice;
         private bool ModRan { get; set; }
-        private Dictionary<SDVCrops, double> cropTemps { get; set; }
+
+        //event fields
         private List<Vector2> threatenedCrops { get; set; }
         private int deathTime { get; set; }
-        public SDVMoon Luna { get; set; }
         public bool isExhausted { get; set; }
 
         //chances of specific weathers
@@ -43,6 +46,9 @@ namespace ClimateOfFerngill
         private bool ambientFog;
         private Vector2 fogPos;
         private int startFogTime;
+        private Rectangle fogSource = new Rectangle(640, 0, 64, 64);
+        private float fogAlpha;
+        private int endFogTime;
 
         //tv overloading
         private static FieldInfo Field = typeof(GameLocation).GetField("afterQuestion", BindingFlags.Instance | BindingFlags.NonPublic);
@@ -54,6 +60,7 @@ namespace ClimateOfFerngill
         private static GameLocation.afterQuestionBehavior Callback;
         private static TV Target;
 
+
         /// <summary>Initialise the mod.</summary>
         /// <param name="helper">Provides methods for interacting with the mod directory, such as read/writing a config file or custom JSON files.</param>
         public override void Entry(IModHelper helper)
@@ -62,44 +69,31 @@ namespace ClimateOfFerngill
             Config = helper.ReadConfig<ClimateConfig>();
             CurrWeather = new FerngillWeather();
             ModRan = false;
+            Luna = new SDVMoon();
 
             //set variables
             rainChance = 0;
             stormChance = 0;
             windChance = 0;
-
-            //register debug commands
-            Command.RegisterCommand("world_setweather", "Sets the world's weather | world_setweather <string>", new[] { "(String)<value> The new weather" }).CommandFired += this.HandleSetWeather;
-            Command.RegisterCommand("world_settemp", "Sets the world's temperature | world_settemp <int>", new[] { "(Int32)<value> The new temperature" }).CommandFired += this.HandleSetTemperature;
-            Command.RegisterCommand("player_faint", "Causes the player to faint.").CommandFired += this.FaintPlayer;
-
+  
             //register event handlers
             TimeEvents.DayOfMonthChanged += TimeEvents_DayOfMonthChanged;
             MenuEvents.MenuChanged += MenuEvents_MenuChanged;
             SaveEvents.AfterLoad += SaveEvents_AfterLoad;
+            GraphicsEvents.OnPostRenderEvent += GraphicsEvents_OnPostRenderEvent;
             TimeEvents.TimeOfDayChanged += TimeEvents_TimeOfDayChanged;
             SaveEvents.BeforeSave += SaveEvents_BeforeSave;
             LocationEvents.CurrentLocationChanged += LocationEvents_CurrentLocationChanged;
 
             //create crop and temp mapping.
-            cropTemps = new Dictionary<SDVCrops, double>();
-            cropTemps.Add(SDVCrops.Corn, 1.66);
-            cropTemps.Add(SDVCrops.Wheat, 1.66);
-            cropTemps.Add(SDVCrops.Amaranth, 1.66);
-            cropTemps.Add(SDVCrops.Sunflower, 1.66);
-            cropTemps.Add(SDVCrops.Pumpkin, 1.66);
-            cropTemps.Add(SDVCrops.Eggplant, 1.66);
-            cropTemps.Add(SDVCrops.Yam, 1.66);
-            cropTemps.Add(SDVCrops.Artichoke, 0);
-            cropTemps.Add(SDVCrops.BokChoy, 0);
-            cropTemps.Add(SDVCrops.Grape, -.55);
-            cropTemps.Add(SDVCrops.FairyRose, -2.22);
-            cropTemps.Add(SDVCrops.Beet, -2.22);
-            cropTemps.Add(SDVCrops.Cranberry, -3.33);
-            cropTemps.Add(SDVCrops.Ancient, -3.33);
-            cropTemps.Add(SDVCrops.SweetGemBerry, -3.33);
-
+            InternalUtility.SetUpCrops(); 
             threatenedCrops = new List<Vector2>();
+        }
+
+        private void GraphicsEvents_OnPostRenderEvent(object sender, EventArgs e)
+        {
+            if (ambientFog && Game1.currentLocation.isOutdoors)
+                CreateFog();
         }
 
         private void LocationEvents_CurrentLocationChanged(object sender, EventArgsCurrentLocationChanged e)
@@ -107,9 +101,7 @@ namespace ClimateOfFerngill
             if (ambientFog && e.NewLocation.IsOutdoors)
             {
                 if (Config.tooMuchInfo) LogEvent("Spawning fog for new outdoors location");
-                this.fogPos = Game1.updateFloatingObjectPositionForMovement(this.fogPos, new Vector2((float)Game1.viewport.X, (float)Game1.viewport.Y), Game1.previousViewportPosition, -1f);
-                this.fogPos.X = (this.fogPos.X + 0.5f) % (float)(64 * Game1.pixelZoom);
-                this.fogPos.Y = (this.fogPos.Y + 0.5f) % (float)(64 * Game1.pixelZoom);
+                CreateFog();
             }
         }
 
@@ -120,6 +112,65 @@ namespace ClimateOfFerngill
             {
                 if (CurrWeather.todayLow < 2 && Game1.currentSeason == "fall") //run frost event - restrict to fall rn.
                     EarlyFrost();
+            }
+
+            //moon processing
+            if (SDVMoon.GetLunarPhase() == SDVMoon.FULMOON && Config.MoonEffects)
+            {
+                Farm f = Game1.getFarm();
+                HoeDirt curr;
+
+                if (f != null){
+                    foreach (KeyValuePair<Vector2, TerrainFeature> TF in f.terrainFeatures)
+                    {
+                        if (TF.Value is HoeDirt)
+                        {
+                            curr = (HoeDirt)TF.Value;
+                            if (curr.crop != null)
+                            {
+                                //20% chance of increased growth.
+                                if (dice.NextDouble() < .1)
+                                {
+                                    if (Config.tooMuchInfo) Console.WriteLine("Crop is being boosted by full moon");
+                                    if (curr.state == 1) //make sure it's watered
+                                    {
+                                        curr.crop.dayOfCurrentPhase = curr.crop.fullyGrown ? curr.crop.dayOfCurrentPhase - 1 : Math.Min(curr.crop.dayOfCurrentPhase + 1, curr.crop.phaseDays.Count > 0 ? curr.crop.phaseDays[Math.Min(curr.crop.phaseDays.Count - 1, curr.crop.currentPhase)] : 0);
+                                        if (curr.crop.dayOfCurrentPhase >= (curr.crop.phaseDays.Count > 0 ? curr.crop.phaseDays[Math.Min(curr.crop.phaseDays.Count - 1, curr.crop.currentPhase)] : 0) && curr.crop.currentPhase < curr.crop.phaseDays.Count - 1)
+                                        {
+                                            curr.crop.currentPhase = curr.crop.currentPhase + 1;
+                                            curr.crop.dayOfCurrentPhase = 0;
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+
+
+            if (SDVMoon.GetLunarPhase() == SDVMoon.NEWMOON && Config.MoonEffects)
+            {
+                Farm f = Game1.getFarm();
+                HoeDirt curr;
+
+                if (f != null)
+                {
+                    foreach (KeyValuePair<Vector2, TerrainFeature> TF in f.terrainFeatures)
+                    {
+                        if (TF.Value is HoeDirt)
+                        {
+                            curr = (HoeDirt)TF.Value;
+                            if (curr.crop != null)
+                            {
+                                if (dice.NextDouble() < .09)
+                                {
+                                    curr.state = 0; //dewater!! BWAHAHAAHAA.
+                                }
+                            }
+                        }
+                    }
+                }
             }
         }
 
@@ -174,72 +225,6 @@ namespace ClimateOfFerngill
                 InternalUtility.showMessage("The extreme heat has caused some of your crops to dry out. If you don't water them, they'll die!");
         }
 
-        private void HandleSetTemperature(object sender, EventArgsCommand e)
-        {
-            if (e.Command.CalledArgs.Length > 0)
-            {
-                int temp = Convert.ToInt32(e.Command.CalledArgs[0]);
-                CurrWeather.todayHigh = temp;
-                Monitor.Log("Temperature reset", LogLevel.Info);
-            }
-        }
-
-        private void FaintPlayer(object sender, EventArgsCommand e)
-        {
-            Game1.player.Stamina = 0;
-            Game1.player.doEmote(36);
-            Game1.farmerShouldPassOut = true;
-        }
-
-        private void HandleSetWeather(object sender, EventArgsCommand e)
-        {
-            if (e.Command.CalledArgs.Length > 0)
-            {
-                string newWeather = e.Command.CalledArgs[0];
-                switch (newWeather)
-                {
-                    case "sunny":
-                        Game1.isRaining = false;
-                        Game1.isDebrisWeather = false;
-                        Game1.isSnowing = false;
-                        Game1.isLightning = false;
-                        Monitor.Log("The weather is set to sunny", LogLevel.Info);
-                        break;
-                    case "stormy":
-                        Game1.isRaining = true;
-                        Game1.isDebrisWeather = false;
-                        Game1.isSnowing = false;
-                        Game1.isLightning = true;
-                        Monitor.Log("The weather is set to stormy", LogLevel.Info);
-                        break;
-                    case "snowy":
-                        Game1.isRaining = false;
-                        Game1.isDebrisWeather = false;
-                        Game1.isSnowing = true;
-                        Game1.isLightning = false;
-                        Monitor.Log("The weather is set to snowy", LogLevel.Info);
-                        break;
-                    case "rainy":
-                        Game1.isRaining = true;
-                        Game1.isDebrisWeather = false;
-                        Game1.isSnowing = false;
-                        Game1.isLightning = false;
-                        Monitor.Log("The weather is set to rainy", LogLevel.Info);
-                        break;
-                    case "windy":
-                        Game1.isRaining = false;
-                        Game1.isDebrisWeather = true;
-                        Game1.isSnowing = false;
-                        Game1.isLightning = false;
-                        Monitor.Log("The weather is set to windy", LogLevel.Info);
-                        break;
-                    default:
-                        this.Monitor.Log("Invalid input for world_setweather", LogLevel.Info);
-                        break;
-                }
-            }
-        }
-
         private void TimeEvents_TimeOfDayChanged(object sender, EventArgsIntChanged e)
         {
            //run non specific code first
@@ -247,7 +232,7 @@ namespace ClimateOfFerngill
             {
                 double diceChance = dice.NextDouble();
                 if (Config.tooMuchInfo) LogEvent("The chance of exhaustion is: " + diceChance);
-                if (diceChance > Config.DiseaseChance)
+                if (diceChance < Config.DiseaseChance)
                 {
                     isExhausted = true;
                     InternalUtility.showMessage("The storm has caused you to get a cold!");
@@ -270,40 +255,44 @@ namespace ClimateOfFerngill
 
 
             //fog stuff.
+            if (Config.tooMuchInfo) LogEvent("Checking for fog.");
             if (dice.NextDouble() < Config.FogChance && e.NewInt <= 1000)
             {
-                if (Config.tooMuchInfo) LogEvent("Spawning fog!");
-                this.fogPos = Game1.updateFloatingObjectPositionForMovement(this.fogPos, new Vector2((float)Game1.viewport.X, (float)Game1.viewport.Y), Game1.previousViewportPosition, -1f);
-                this.fogPos.X = (this.fogPos.X + 0.5f) % (float)(64 * Game1.pixelZoom);
-                this.fogPos.Y = (this.fogPos.Y + 0.5f) % (float)(64 * Game1.pixelZoom);
-                this.ambientFog = true;
-                this.startFogTime = e.NewInt;
+                if (Config.tooMuchInfo) LogEvent("Creating fog conditions!");
+                ambientFog = true;
+                startFogTime = e.NewInt; //woops!
+                fogAlpha = .85f;
+                endFogTime = e.NewInt + (Config.FogDuration * 100);
             }
 
             //fog despawn - really hacky. 
-            if (ambientFog && e.NewInt == (this.startFogTime + (Config.FogDuration * 100)))
+            if (ambientFog && e.NewInt == endFogTime)
             {
-                if (Config.tooMuchInfo) LogEvent("Attempting to despawn fog");
-                this.ambientFog = false;
-                this.fogPos.X = 0;
-                this.fogPos.Y = 0; 
+                if (Config.tooMuchInfo) LogEvent("Ending fog conditions!");
+                fogAlpha = 0.0f;
+                ambientFog = false;
             }
 
             //specific time stuff
             if (e.NewInt == 610)
             {
-
                 if (CurrWeather.todayHigh > Config.HeatwaveWarning)
-                {
                     CurrWeather.status = FerngillWeather.HEATWAVE;
-                }
 
                 if (CurrWeather.todayLow < Config.FrostWarning)
-                {
                     CurrWeather.status = FerngillWeather.FROST;
-                }
 
                 checkForDangerousWeather(true);
+            }
+
+            //night time events
+            if (e.NewInt > Game1.getTrulyDarkTime() && Game1.currentLocation.isOutdoors)
+            {
+                if (SDVMoon.GetLunarPhase() == SDVMoon.FULMOON && Config.MoonEffects)
+                {
+                    if (dice.NextDouble() > .98) //2% chance
+                        spawnGhostOffScreen();
+                }
             }
 
             //heatwave event
@@ -342,8 +331,82 @@ namespace ClimateOfFerngill
             // sanity check if the player hits 0 Stamina ( the game doesn't track this )
             if (Game1.player.Stamina <= 0f)
             {
-                Game1.player.doEmote(36);
-                Game1.farmerShouldPassOut = true;
+                InternalUtility.FaintPlayer();
+            }
+        }
+
+        private void CreateFog()
+        {
+           Color fogColor = Color.BlueViolet * 1f;
+           Vector2 position = new Vector2();
+           Game1.spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, SamplerState.PointClamp, null, null);
+           float num1 = -64 * Game1.pixelZoom + (int)((double)fogPos.X % (double)(64 * Game1.pixelZoom));
+           while ((double)num1 < (double)Game1.graphics.GraphicsDevice.Viewport.Width)
+           {
+               float num2 = (float)(-64 * Game1.pixelZoom + (int)((double)this.fogPos.Y % (double)(64 * Game1.pixelZoom)));
+               while ((double)num2 < (double)Game1.graphics.GraphicsDevice.Viewport.Height)
+               {
+                   position.X = (float)(int)num1;
+                   position.Y = (float)(int)num2;
+                   Game1.spriteBatch.Draw(Game1.mouseCursors, position, new Microsoft.Xna.Framework.Rectangle?(fogSource), (double)this.fogAlpha > 0.0 ? fogColor * fogAlpha : Color.Black * 0.95f, 0.0f, Vector2.Zero, (float)Game1.pixelZoom + 1f / 1000f, SpriteEffects.None, 1f);
+                   num2 += (float)(64 * Game1.pixelZoom);
+               }
+               num1 += (float)(64 * Game1.pixelZoom);
+           }
+            Game1.spriteBatch.End();
+
+            if (fogAlpha == 0.0f)
+                this.ambientFog = false;
+        }
+
+        public void spawnGhostOffScreen()
+        {
+            Vector2 zero = Vector2.Zero;
+            var ourFarm = Game1.getFarm();
+
+            if (ourFarm != null)
+            {
+                switch (Game1.random.Next(4))
+                {
+                    case 0:
+                        zero.X = (float)dice.Next(ourFarm.map.Layers[0].LayerWidth);
+                        break;
+                    case 1:
+                        zero.X = (float)(ourFarm.map.Layers[0].LayerWidth - 1);
+                        zero.Y = (float)dice.Next(ourFarm.map.Layers[0].LayerHeight);
+                        break;
+                    case 2:
+                        zero.Y = (float)(ourFarm.map.Layers[0].LayerHeight - 1);
+                        zero.X = (float)dice.Next(ourFarm.map.Layers[0].LayerWidth);
+                        break;
+                    case 3:
+                        zero.Y = (float)Game1.random.Next(ourFarm.map.Layers[0].LayerHeight);
+                        break;
+                }
+                if (Utility.isOnScreen(zero * (float)Game1.tileSize, Game1.tileSize))
+                    zero.X -= (float)Game1.viewport.Width;
+                bool flag;
+
+                List<NPC> characters = ourFarm.characters;
+                Ghost bat = new Ghost(zero * Game1.tileSize);
+                int num1 = 1;
+                bat.focusedOnFarmers = num1 != 0;
+                int num2 = 1;
+                bat.wildernessFarmMonster = num2 != 0;
+                characters.Add((NPC)bat);
+                flag = true;
+
+                if (!flag || !Game1.currentLocation.Equals((object)this))
+                    return;
+                foreach (KeyValuePair<Vector2, StardewValley.Object> keyValuePair in (Dictionary<Vector2, StardewValley.Object>)ourFarm.objects)
+                {
+                    if (keyValuePair.Value != null && keyValuePair.Value.bigCraftable && keyValuePair.Value.parentSheetIndex == 83)
+                    {
+                        keyValuePair.Value.shakeTimer = 1000;
+                        keyValuePair.Value.showNextIndex = true;
+                        Game1.currentLightSources.Add(new LightSource(4, keyValuePair.Key * (float)Game1.tileSize + new Vector2((float)(Game1.tileSize / 2), 0.0f), 1f, Color.Cyan * 0.75f, (int)((double)keyValuePair.Key.X * 797.0 + (double)keyValuePair.Key.Y * 13.0 + 666.0)));
+                    }
+                }
             }
         }
 
@@ -383,6 +446,7 @@ namespace ClimateOfFerngill
             Game1.drawObjectDialogue(Game1.parseText((string)TVMethod.Invoke(Target, null)));
             Game1.afterDialogues = NextScene;
         }
+
         public void NextScene()
         {
             TVScreen.SetValue(Target, new TemporaryAnimatedSprite(Game1.mouseCursors, new Rectangle(497, 305, 42, 28), 9999f, 1, 999999, Target.getScreenPosition(), false, false, (float)((double)(Target.boundingBox.Bottom - 1) / 10000.0 + 9.99999974737875E-06), 0.0f, Color.White, Target.getScreenSizeModifier(), 0.0f, 0.0f, 0.0f, false));
@@ -490,7 +554,7 @@ namespace ClimateOfFerngill
                         curr = (HoeDirt)tf.Value;
                         if (curr.crop != null && InternalUtility.IsFallCrop(curr.crop.indexOfHarvest))
                         {
-                            if (CurrWeather.todayLow <= cropTemps[(SDVCrops)curr.crop.indexOfHarvest] && dice.NextDouble() < Config.FrostHardiness)
+                            if (CurrWeather.todayLow <= InternalUtility.CheckCropTolerance(curr.crop.indexOfHarvest) && dice.NextDouble() < Config.FrostHardiness)
                             {
                                 cropsKilled = true;
                                 curr.crop.dead = true;
@@ -512,9 +576,48 @@ namespace ClimateOfFerngill
             if (!GameLoaded) //sanity check
                 return;
 
+            int[] beachItems = new int[] { 393, 397, 392, 394 };
+            int[] moonBeachItems = new int[] { 393, 394, 560, 586, 587, 589, 397 };
             CurrWeather.status = 0; //reset status
             isExhausted = false; //reset disease
-            UpdateWeather();
+            UpdateWeather();    
+
+            //moon processing
+            if (SDVMoon.GetLunarPhase() == SDVMoon.NEWMOON && Config.MoonEffects)
+            {
+                Beach ourBeach = InternalUtility.getBeach();
+                foreach (KeyValuePair<Vector2, StardewValley.Object> o in ourBeach.objects)
+                {
+                    if (beachItems.Contains(o.Value.parentSheetIndex))
+                    {
+                        if (dice.NextDouble() < .2)
+                        {
+                            ourBeach.objects.Remove(o.Key);
+                        }                           
+                    }
+                }
+            }
+            
+            //moon processing
+            if (SDVMoon.GetLunarPhase() == SDVMoon.FULMOON && Config.MoonEffects)
+            {
+                int parentSheetIndex = 0;
+                Rectangle rectangle = new Rectangle(65, 11, 25, 12);
+                Beach ourBeach = InternalUtility.getBeach();
+                for (int index = 0; index < 5; ++index)
+                {
+                    parentSheetIndex = moonBeachItems.GetRandomItem(dice);
+                    if (dice.NextDouble() < .0001)
+                        parentSheetIndex = 392; //rare chance
+
+                    if (dice.NextDouble() < .8)
+                    {
+                        Vector2 v = new Vector2((float)Game1.random.Next(rectangle.X, rectangle.Right), (float)Game1.random.Next(rectangle.Y, rectangle.Bottom));
+                        if (ourBeach.isTileLocationTotallyClearAndPlaceable(v))
+                            ourBeach.dropObject(new StardewValley.Object(parentSheetIndex, 1, false, -1, 0), v * (float)Game1.tileSize, Game1.viewport, true, (Farmer)null);
+                    }
+                }
+            }
         }
 
         void UpdateWeather(){

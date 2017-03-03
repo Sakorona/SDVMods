@@ -36,7 +36,10 @@ namespace ClimateOfFerngill
         public bool SetLowCap { get; set; }
         public int LowCap { get; set; }        
 
-        //remove before rc1.
+        public bool MoonEffects { get; set; }
+        public bool CrowsDoNotSpawn { get; set; }
+        public bool GhostsDoNotSpawn { get; set; }
+                
         public bool ForceHeat { get; set; }
         public bool ForceFrost { get; set; }
 
@@ -81,6 +84,11 @@ namespace ClimateOfFerngill
             //set fall temp caps, if the player wants
             SetLowCap = false;
             LowCap = 1;
+
+            //moon options
+            MoonEffects = true;
+            CrowsDoNotSpawn = false;
+            GhostsDoNotSpawn = false;
 
             //debug options
             ForceHeat = false;
