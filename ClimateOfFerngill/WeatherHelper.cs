@@ -120,7 +120,7 @@ namespace ClimateOfFerngill
             if ((int)weather == Game1.weather_festival)
                 return "It'll be good weather for the " + InternalUtility.getFestivalName(Game1.dayOfMonth + 1, Game1.currentSeason) + "! Sunny and clear.";
 
-            if ((int)weather == Game1.weather_wedding)
+            if ((int)weather == Game1.weather_wedding || Game1.countdownToWedding == 1) //fixes wedding forecast not properly stated.
                 return weddingWeather.GetRandomItem(dice);
 			
 			if (Game1.dayOfMonth == 28 && Game1.currentSeason != "winter") //some customization for next day is a new season

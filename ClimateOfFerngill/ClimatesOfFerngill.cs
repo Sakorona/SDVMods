@@ -24,8 +24,8 @@ namespace ClimateOfFerngill
         int WeatherAtStartOfDay { get; set; }
         FerngillWeather CurrWeather { get; set; }
         FerngillWeather TomorrowWeather { get; set; }
-        private int LastTime;
         private bool GameLoaded;
+
         MersenneTwister dice;
         private bool ModRan { get; set; }
         private Dictionary<SDVCrops, double> cropTemps { get; set; }
@@ -47,6 +47,7 @@ namespace ClimateOfFerngill
         private static MethodInfo TVMethodOverlay = typeof(TV).GetMethod("setWeatherOverlay", BindingFlags.Instance | BindingFlags.NonPublic);
         private static GameLocation.afterQuestionBehavior Callback;
         private static TV Target;
+        private bool NextDayFrostMsg;
 
         /// <summary>Initialise the mod.</summary>
         /// <param name="helper">Provides methods for interacting with the mod directory, such as read/writing a config file or custom JSON files.</param>
@@ -252,6 +253,10 @@ namespace ClimateOfFerngill
                 InternalUtility.showMessage("You have a cold, and feel worn out!");
             }
 
+           if (NextDayFrostMsg)
+            {
+                InternalUtility.showMessage("Over the night, some of your crops died to frost.");
+            }
 
             if (e.NewInt == 610)
             {
@@ -486,12 +491,20 @@ namespace ClimateOfFerngill
 
             if (cropsKilled)
             {
-                InternalUtility.showMessage("During the night, some crops died to the frost...");
+                //fixes a rather nasty render bug?
+                if (Game1.countdownToWedding > 1)
+                    InternalUtility.showMessage("During the night, some crops died to the frost...");
+                else
+                    NextDayFrostMsg = true;
+
             }
         }
 
         public void TimeEvents_DayOfMonthChanged(object sender, EventArgsIntChanged e)
         {
+            if (!GameLoaded)
+                return;
+
             CurrWeather.status = 0; //reset status
             isExhausted = false; //reset disease
             UpdateWeather();
@@ -503,7 +516,7 @@ namespace ClimateOfFerngill
             
             #region WeatherChecks
             //sanity check - wedding
-            if (Game1.weatherForTomorrow == Game1.weather_wedding)
+            if (Game1.weatherForTomorrow == Game1.weather_wedding || Game1.countdownToWedding == 1)
             {
                 LogEvent("There is no Alanis Morissetting here. Enjoy your wedding.");
                 return;
@@ -567,12 +580,20 @@ namespace ClimateOfFerngill
             //global change - if it rains, drop the temps (and if it's stormy, drop the temps)
             if (Game1.isRaining)
             {
-                if (Config.tooMuchInfo) LogEvent("Dropping temp by 6 from " + CurrWeather.todayHigh);
+                if (Config.tooMuchInfo) LogEvent("Dropping temp by 4 from " + CurrWeather.todayHigh);
                 CurrWeather.todayHigh = CurrWeather.todayHigh - 4;
+                CurrWeather.todayLow = CurrWeather.todayLow - 2;
             }
 
             if (Config.ForceHeat)
                 CurrWeather.todayHigh = 50;
+
+            if (Config.ForceFrost)
+            {
+                CurrWeather.todayHigh = 0;
+                CurrWeather.todayLow = -1;
+            }
+
 
             if (forceSet)
                 return;
