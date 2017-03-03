@@ -232,7 +232,9 @@ namespace ClimateOfFerngill
            //run non specific code first
            if (Game1.currentLocation.IsOutdoors && Game1.isLightning)
             {
-                if (dice.NextDouble() > Config.DiseaseChance)
+                double diceChance = dice.NextDouble();
+                if (Config.tooMuchInfo) LogEvent("The chance of exhaustion is: " + diceChance);
+                if (diceChance > Config.DiseaseChance)
                 {
                     isExhausted = true;
                     InternalUtility.showMessage("The storm has caused you to get a cold!");
@@ -253,14 +255,16 @@ namespace ClimateOfFerngill
                 InternalUtility.showMessage("You have a cold, and feel worn out!");
             }
 
-           if (NextDayFrostMsg)
-            {
-                InternalUtility.showMessage("Over the night, some of your crops died to frost.");
-                NextDayFrostMsg = false;
-            }
-
             if (e.NewInt == 610)
             {
+
+                if (NextDayFrostMsg)
+                {
+                    if (Config.tooMuchInfo) LogEvent("Writing frost message to the hud log.");
+                    InternalUtility.showMessage("Over the night, some of your crops died to frost.");
+                    NextDayFrostMsg = false;
+                }
+
                 if (CurrWeather.todayHigh > Config.HeatwaveWarning)
                 {
                     CurrWeather.status = FerngillWeather.HEATWAVE;
@@ -396,22 +400,20 @@ namespace ClimateOfFerngill
 
             if (Game1.timeOfDay < noLonger) //don't display today's weather 
             {
-                tvText = "The high for today is ";
+                tvText += "The high for today is ";
                 if (!Config.DisplaySecondScale)
-                {
                     tvText += WeatherHelper.DisplayTemperature(CurrWeather.todayHigh, Config.TempGauge) + ", with the low being " + WeatherHelper.DisplayTemperature(CurrWeather.todayLow, Config.TempGauge) + ". ";
-                    if (Config.tooMuchInfo) LogEvent(tvText);
+                else //derp.
+                    tvText += WeatherHelper.DisplayTemperature(CurrWeather.todayHigh, Config.TempGauge) + " (" + WeatherHelper.DisplayTemperature(CurrWeather.todayHigh, Config.SecondScaleGauge) + ") , with the low being " + WeatherHelper.DisplayTemperature(CurrWeather.todayLow, Config.TempGauge) + " (" + WeatherHelper.DisplayTemperature(CurrWeather.todayHigh, Config.SecondScaleGauge) + ") . ";
 
-                    //today weather
-                    tvText = tvText + WeatherHelper.GetWeatherDesc(dice, WeatherHelper.GetTodayWeather(), true);
+                if (Config.tooMuchInfo) LogEvent(tvText);
 
-                    //get WeatherForTommorow and set text
-                    tvText = tvText + "#Tommorow, ";
-                }
+                //today weather
+                tvText = tvText + WeatherHelper.GetWeatherDesc(dice, WeatherHelper.GetTodayWeather(), true);
+
+                //get WeatherForTommorow and set text
+                tvText = tvText + "#Tommorow, ";
             }
-
-            
-
 
             //tommorow weather
             tvText = tvText + WeatherHelper.GetWeatherDesc(dice, (SDVWeather)Game1.weatherForTomorrow, false);
@@ -496,12 +498,16 @@ namespace ClimateOfFerngill
 
             if (cropsKilled)
             {
-                //fixes a rather nasty render bug?
-                if (Game1.countdownToWedding > 1)
+                if (Game1.weatherForTomorrow != Game1.weather_wedding)
+                {
                     InternalUtility.showMessage("During the night, some crops died to the frost...");
-                else
+                    if (Config.tooMuchInfo) LogEvent("Setting frost test via queued message");
+                }
+                else 
+                {
                     NextDayFrostMsg = true;
-
+                    if (Config.tooMuchInfo) LogEvent("Queuing the message via delayed HUD message");
+                }
             }
         }
 
@@ -521,9 +527,18 @@ namespace ClimateOfFerngill
             
             #region WeatherChecks
             //sanity check - wedding
-            if (Game1.weatherForTomorrow == Game1.weather_wedding || Game1.countdownToWedding == 1)
+            if (Game1.weatherForTomorrow == Game1.weather_wedding)
             {
-                LogEvent("There is no Alanis Morissetting here. Enjoy your wedding.");
+                if (Config.tooMuchInfo) LogEvent("There is no Alanis Morissetting here. Enjoy your wedding.");
+                return;
+            }
+
+            if (Config.tooMuchInfo) LogEvent("Wedding Countdown Status: " + Game1.countdownToWedding);
+
+            if (Game1.countdownToWedding == 0 && (Game1.player.spouse != null && Game1.player.spouse.Contains("engaged")))
+            {
+                Game1.weatherForTomorrow = Game1.weather_wedding;
+                if (Config.tooMuchInfo) LogEvent("Detecting the wedding tommorow. Setting weather and returning");
                 return;
             }
 
