@@ -230,7 +230,7 @@ namespace ClimateOfFerngill
         private void TimeEvents_TimeOfDayChanged(object sender, EventArgsIntChanged e)
         {
            //run non specific code first
-           if (Game1.currentLocation.IsOutdoors)
+           if (Game1.currentLocation.IsOutdoors && Game1.isLightning)
             {
                 if (dice.NextDouble() > Config.DiseaseChance)
                 {
@@ -375,42 +375,46 @@ namespace ClimateOfFerngill
 
             int noLonger = VerifyValidTime(Config.NoLongerDisplayToday) ? Config.NoLongerDisplayToday : 1700;
 
+            //The TV should display: Alerts, today's weather, tommorow's weather, alerts.
+
+            // Something such as "Today, the high is 12C, with low 8C. It'll be a very windy day. Tommorow, it'll be rainy."
+            // since we don't predict weather in advance yet. (I don't want to rearchitecture it yet.)
+            // That said, the TV channel starts with Tommorow, so we need to keep that in mind.
+
+
+            // Alerts for frost/cold snap display all day. Alerts for heatwave last until 1830. 
+            tvText = "The forecast for the Valley is: ";
+
+            if (CurrWeather.todayHigh > Config.HeatwaveWarning && Game1.timeOfDay < 1830)
+                tvText = tvText + "That it will be unusually hot outside. Stay hydrated and be careful not to stay too long in the sun. ";
+            if (CurrWeather.todayHigh < -5)
+                tvText = tvText + "There's an extreme cold snap passing through the valley. Stay warm. ";
+            if (CurrWeather.todayLow < 2 && Config.HarshWeather)
+                tvText = tvText + "Warning. We're getting frost tonight! Be careful what you plant! ";
+
+
+
             if (Game1.timeOfDay < noLonger) //don't display today's weather 
             {
                 tvText = "The high for today is ";
-                if (!Config.DisplaySecondScale) { 
-                tvText += WeatherHelper.DisplayTemperature(CurrWeather.todayHigh, Config.TempGauge) + ", with the low being " + WeatherHelper.DisplayTemperature(CurrWeather.todayLow, Config.TempGauge) + ". ";
-                if (Config.tooMuchInfo) LogEvent(tvText);
-                }
-            else
-            {
-                tvText += WeatherHelper.DisplayTemperature(CurrWeather.todayHigh, Config.TempGauge) + " (" + WeatherHelper.DisplayTemperature(CurrWeather.todayHigh, Config.SecondScaleGauge) + "), with the low being " + WeatherHelper.DisplayTemperature(CurrWeather.todayLow, Config.TempGauge) + " (" + WeatherHelper.DisplayTemperature(CurrWeather.todayLow, Config.SecondScaleGauge) + "). ";
+                if (!Config.DisplaySecondScale)
+                {
+                    tvText += WeatherHelper.DisplayTemperature(CurrWeather.todayHigh, Config.TempGauge) + ", with the low being " + WeatherHelper.DisplayTemperature(CurrWeather.todayLow, Config.TempGauge) + ". ";
                     if (Config.tooMuchInfo) LogEvent(tvText);
+
+                    //today weather
+                    tvText = tvText + WeatherHelper.GetWeatherDesc(dice, WeatherHelper.GetTodayWeather(), true);
+
+                    //get WeatherForTommorow and set text
+                    tvText = tvText + "#Tommorow, ";
+                }
             }
 
+            
 
-                //temp warnings 
-                if (CurrWeather.todayHigh > Config.HeatwaveWarning && Game1.timeOfDay < 1900)
-                    tvText = tvText + "It will be unusually hot outside. Stay hydrated and be careful not to stay too long in the sun. ";
-                if (CurrWeather.todayHigh < -5)
-                    tvText = tvText + "There's an extreme cold snap passing through. Stay warm. ";
-
-                //today weather
-                tvText = tvText + WeatherHelper.GetWeatherDesc(dice, WeatherHelper.GetTodayWeather());
-
-                //get WeatherForTommorow and set text
-                tvText = tvText + "#Tommorow, ";
-            }
-
-            if (CurrWeather.todayHigh > Config.HeatwaveWarning && Game1.timeOfDay < 1900)
-                tvText = tvText + "It will be unusually hot outside. Stay hydrated and be careful not to stay too long in the sun. ";
-            if (CurrWeather.todayHigh < -5)
-                tvText = tvText + "There's an extreme cold snap passing through. Stay warm. ";
-            if (CurrWeather.todayLow < 2 && Config.HarshWeather)
-                tvText = tvText + "Warning. There's a chance of frost tonight! Be careful what you plant";
 
             //tommorow weather
-            tvText = tvText + WeatherHelper.GetWeatherDesc(dice, (SDVWeather)Game1.weatherForTomorrow);
+            tvText = tvText + WeatherHelper.GetWeatherDesc(dice, (SDVWeather)Game1.weatherForTomorrow, false);
 
             return tvText;
         }

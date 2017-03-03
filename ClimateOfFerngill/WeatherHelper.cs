@@ -93,7 +93,7 @@ namespace ClimateOfFerngill
         }
 
 
-        public static string GetWeatherDesc(MersenneTwister dice, SDVWeather weather)
+        public static string GetWeatherDesc(MersenneTwister dice, SDVWeather weather, bool today)
         {
 
             string[] springRainText = new string[] { "It'll be a rainy day outside! Make sure to bring your coat. ", "It'll be a wet day outside. ", "It'll be a misty, wet day - make sure to pause when you can and enjoy it! " };
@@ -105,7 +105,7 @@ namespace ClimateOfFerngill
             string[] summerStormText = new string[] { "Expect storms throughout the day. ", "A cold front is expected to pass through, bringing through a squall line. " };
             string[] summerClearWeather = new string[] { "It'll be a sweltering day. ", "Another perfect sunny day, perfect for hitting the beach.", "A hot and clear day dawns over the Valley. " };
 
-            string[] fallRainText = new string[] { "Expect a cold rain as a low pressure goes overhead. ", "Moisture off the Gem Sea will make for a cold windy rain. " };
+            string[] fallRainText = new string[] { "Expect a cold rain as a low pressure front passes overhead. ", "Moisture off the Gem Sea will make for a cold windy rain. " };
             string[] fallStormText = new string[] { "Expect storms throughout the day. ", "It'll be a cold and stormy day . " };
             string[] fallWindText = new string[] { "It'll be a blustry cold day outside . ", "Expect blowing leaves - a cold front will be passing through. " };
             string[] fallClearWeather = new string[] { "A cold day in the morning, with a warmer afternoon - clear. ", "Another autumn day in eastern Ferngill, expect a chilly and clear day. " };
@@ -120,10 +120,13 @@ namespace ClimateOfFerngill
             if ((int)weather == Game1.weather_festival)
                 return "It'll be good weather for the " + InternalUtility.getFestivalName(Game1.dayOfMonth + 1, Game1.currentSeason) + "! Sunny and clear.";
 
-            if ((int)weather == Game1.weather_wedding || Game1.countdownToWedding == 1) //fixes wedding forecast not properly stated.
+            if (Game1.countdownToWedding == 1 && !today)//fixes wedding forecast not properly stated. 
                 return weddingWeather.GetRandomItem(dice);
-			
-			if (Game1.dayOfMonth == 28 && Game1.currentSeason != "winter") //some customization for next day is a new season
+
+            if (Game1.weatherForTomorrow == Game1.weather_wedding)//fixes wedding forecast not properly stated. 
+                return weddingWeather.GetRandomItem(dice);
+
+            if (Game1.dayOfMonth == 28 && Game1.currentSeason != "winter") //some customization for next day is a new season
 				return nextDayIsNextSeason + " " + InternalUtility.GetNewSeason(Game1.currentSeason);
 
 			if (Game1.dayOfMonth == 28 && Game1.currentSeason == "winter") //end of year message.
