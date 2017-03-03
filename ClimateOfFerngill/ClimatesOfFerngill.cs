@@ -256,6 +256,7 @@ namespace ClimateOfFerngill
            if (NextDayFrostMsg)
             {
                 InternalUtility.showMessage("Over the night, some of your crops died to frost.");
+                NextDayFrostMsg = false;
             }
 
             if (e.NewInt == 610)
