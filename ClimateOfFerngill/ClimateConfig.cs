@@ -29,6 +29,7 @@ namespace ClimateOfFerngill
         public bool AllowCropHeatDeath { get; set; }
 
         public int FrostWarning { get; set; }
+        public double FrostHardiness { get; set; }
         public bool SetLowCap { get; set; }
         public int LowCap { get; set; }        
 
@@ -57,7 +58,7 @@ namespace ClimateOfFerngill
 
             //set storm penalty stuff
             StormyPenalty = true;
-            DiseaseChance = .65;
+            DiseaseChance = .475;
             StaminaPenalty = 2;
 
             //set harsh weather events - currently unused.
@@ -65,6 +66,7 @@ namespace ClimateOfFerngill
             HeatwaveTime = 900;
             HeatwaveWarning = 37; //98.6F 
             FrostWarning = 2; //35.6F
+            FrostHardiness = .45; // 45% of all crops will survive the frost wave.
             DeathTemp = 41; //105.8F
             AllowCropHeatDeath = false;
             TimeToDie = 310; // gives by default 3 hrs and 10 mins.

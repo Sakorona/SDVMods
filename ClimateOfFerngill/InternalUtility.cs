@@ -60,6 +60,17 @@ namespace ClimateOfFerngill
             Game1.addHUDMessage(hudmsg);
         }
 
+        internal static bool VerifyValidTime(int time)
+        {
+            //basic bounds first
+            if (time >= 0600 && time <= 2600)
+                return false;
+            if ((time % 100) > 50)
+                return false;
+
+            return true;
+        }
+
         internal static int GetNewValidTime(int originVal, int changeVal, int mode)
         {
             int oHour = 0, oMin = 0, cHour = 0, cMin = 0, retVal = 0;
@@ -116,6 +127,14 @@ namespace ClimateOfFerngill
             if (currentSeason == "winter") return "spring";
 
             return "ERROR";
+        }
+
+        internal static bool IsFallCrop(int crop)
+        {
+            if (Enum.IsDefined(typeof(SDVCrops), crop))
+                return true;
+            else
+                return false;
         }
     }
 }

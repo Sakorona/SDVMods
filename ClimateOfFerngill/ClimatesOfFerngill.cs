@@ -47,7 +47,6 @@ namespace ClimateOfFerngill
         private static MethodInfo TVMethodOverlay = typeof(TV).GetMethod("setWeatherOverlay", BindingFlags.Instance | BindingFlags.NonPublic);
         private static GameLocation.afterQuestionBehavior Callback;
         private static TV Target;
-        private bool NextDayFrostMsg;
 
         /// <summary>Initialise the mod.</summary>
         /// <param name="helper">Provides methods for interacting with the mod directory, such as read/writing a config file or custom JSON files.</param>
@@ -145,11 +144,7 @@ namespace ClimateOfFerngill
                                     cropsDeWatered = true;
                                     if (Config.tooMuchInfo) Console.WriteLine("Triggered: Non lethal heatwave");
                                 }
-
-
                             }
-                            
-
                         }
                     }
                 }
@@ -250,20 +245,13 @@ namespace ClimateOfFerngill
            }
 
            //alert code
-           if (isExhausted && dice.NextDouble() > .45)
+           if (isExhausted && dice.NextDouble() < Config.DiseaseChance)
             {
                 InternalUtility.showMessage("You have a cold, and feel worn out!");
             }
 
             if (e.NewInt == 610)
             {
-
-                if (NextDayFrostMsg)
-                {
-                    if (Config.tooMuchInfo) LogEvent("Writing frost message to the hud log.");
-                    InternalUtility.showMessage("Over the night, some of your crops died to frost.");
-                    NextDayFrostMsg = false;
-                }
 
                 if (CurrWeather.todayHigh > Config.HeatwaveWarning)
                 {
@@ -280,11 +268,6 @@ namespace ClimateOfFerngill
 
             if (e.NewInt == (int)Config.HeatwaveTime)
             {
-                //debug spam
-                if (Config.tooMuchInfo) LogEvent("First Condition (temp): " + (CurrWeather.todayHigh > (int)Config.HeatwaveWarning));
-                if (Config.tooMuchInfo) LogEvent("Second Condition (not a festival day): " + Utility.isFestivalDay(Game1.dayOfMonth, Game1.currentSeason));
-                if (Config.tooMuchInfo) LogEvent("Third Condition (it's sunny out): " + (!Game1.isRaining || !Game1.isLightning));
-
                 if (CurrWeather.todayHigh > (int)Config.HeatwaveWarning && !Utility.isFestivalDay(Game1.dayOfMonth, Game1.currentSeason) && (!Game1.isRaining || !Game1.isLightning))
                 {
                     deathTime = InternalUtility.GetNewValidTime(e.NewInt, Config.TimeToDie, InternalUtility.TIMEADD);
@@ -377,7 +360,7 @@ namespace ClimateOfFerngill
                 UpdateWeather();
             }
 
-            int noLonger = VerifyValidTime(Config.NoLongerDisplayToday) ? Config.NoLongerDisplayToday : 1700;
+            int noLonger = InternalUtility.VerifyValidTime(Config.NoLongerDisplayToday) ? Config.NoLongerDisplayToday : 1700;
 
             //The TV should display: Alerts, today's weather, tommorow's weather, alerts.
 
@@ -420,18 +403,7 @@ namespace ClimateOfFerngill
 
             return tvText;
         }
-
-        private bool VerifyValidTime(int time)
-        {
-            //basic bounds first
-            if (time >= 0600 && time <= 2600)
-                return false;
-            if ((time % 100) > 50)
-                return false;
-
-            return true;
-        }
-        
+       
         private void LogEvent(string msg, bool important=false)
         {
             if (!important)
@@ -439,8 +411,6 @@ namespace ClimateOfFerngill
             else
                 Monitor.Log(msg, LogLevel.Info);            
         }
-
-
 
         public void checkForDangerousWeather(bool hud = true)
         {
@@ -462,14 +432,6 @@ namespace ClimateOfFerngill
             }
         }
 
-        public bool IsFallCrop(int crop)
-        {
-            if (Enum.IsDefined(typeof(SDVCrops), crop))
-                return true;
-            else
-                return false;
-        }
-
         public void EarlyFrost()
         {
             //this function is called if it's too cold to grow crops. Must be enabled.
@@ -484,9 +446,9 @@ namespace ClimateOfFerngill
                     if (tf.Value is HoeDirt)
                     {
                         curr = (HoeDirt)tf.Value;
-                        if (curr.crop != null && IsFallCrop(curr.crop.indexOfHarvest))
+                        if (curr.crop != null && InternalUtility.IsFallCrop(curr.crop.indexOfHarvest))
                         {
-                            if (CurrWeather.todayLow <= cropTemps[(SDVCrops)curr.crop.indexOfHarvest])
+                            if (CurrWeather.todayLow <= cropTemps[(SDVCrops)curr.crop.indexOfHarvest] && dice.NextDouble() < Config.FrostHardiness)
                             {
                                 cropsKilled = true;
                                 curr.crop.dead = true;
@@ -498,22 +460,14 @@ namespace ClimateOfFerngill
 
             if (cropsKilled)
             {
-                if (Game1.weatherForTomorrow != Game1.weather_wedding)
-                {
-                    InternalUtility.showMessage("During the night, some crops died to the frost...");
-                    if (Config.tooMuchInfo) LogEvent("Setting frost test via queued message");
-                }
-                else 
-                {
-                    NextDayFrostMsg = true;
-                    if (Config.tooMuchInfo) LogEvent("Queuing the message via delayed HUD message");
-                }
+                InternalUtility.showMessage("During the night, some crops died to the frost...");
+                if (Config.tooMuchInfo) LogEvent("Setting frost test via queued message");
             }
         }
 
         public void TimeEvents_DayOfMonthChanged(object sender, EventArgsIntChanged e)
         {
-            if (!GameLoaded)
+            if (!GameLoaded) //sanity check
                 return;
 
             CurrWeather.status = 0; //reset status
@@ -532,8 +486,6 @@ namespace ClimateOfFerngill
                 if (Config.tooMuchInfo) LogEvent("There is no Alanis Morissetting here. Enjoy your wedding.");
                 return;
             }
-
-            if (Config.tooMuchInfo) LogEvent("Wedding Countdown Status: " + Game1.countdownToWedding);
 
             if (Game1.countdownToWedding == 0 && (Game1.player.spouse != null && Game1.player.spouse.Contains("engaged")))
             {
@@ -558,13 +510,13 @@ namespace ClimateOfFerngill
                 }
 
                 if (Config.tooMuchInfo)
-                    LogEvent("Change detected. Debug Info: DAY " + Game1.dayOfMonth + " Season: " + Game1.currentSeason + " with prev weather: " + WeatherHelper.DescWeather(WeatherAtStartOfDay) + " and new weather: " + WeatherHelper.DescWeather(Game1.weatherForTomorrow) + ". Aborting.");
+                    LogEvent("Change detected not caught by other checks. Debug Info: DAY " + Game1.dayOfMonth + " Season: " + Game1.currentSeason + " with prev weather: " + WeatherHelper.DescWeather(WeatherAtStartOfDay) + " and new weather: " + WeatherHelper.DescWeather(Game1.weatherForTomorrow) + ". Aborting.");
 
                 return;
             }
 
             //TV forces.
-            bool forceTomorrow = fixTV();
+            bool forceTomorrow = WeatherHelper.fixTV();
             if (forceTomorrow)
             {
                 LogEvent("Tommorow, there will be forced weather.");
@@ -594,7 +546,7 @@ namespace ClimateOfFerngill
                 LogEvent("Rain Chance is: " + rainChance + " with the rng being " + chance);
 
             //override for the first spring.
-            if (!CanWeStorm())
+            if (!WeatherHelper.CanWeStorm(Config))
                 stormChance = 0;
 
             //global change - if it rains, drop the temps (and if it's stormy, drop the temps)
@@ -606,10 +558,14 @@ namespace ClimateOfFerngill
             }
 
             if (Config.ForceHeat)
+            {
+                if (Config.tooMuchInfo) LogEvent("Forcing Hazardous Weather: Heatwave conditions");
                 CurrWeather.todayHigh = 50;
+            }
 
             if (Config.ForceFrost)
             {
+                if (Config.tooMuchInfo) LogEvent("Forcing Hazardous Weather: Frost conditions");
                 CurrWeather.todayHigh = 0;
                 CurrWeather.todayLow = -1;
             }
@@ -883,54 +839,6 @@ namespace ClimateOfFerngill
             }
 
         }
-
-        private bool CanWeStorm()
-        {
-            if (Game1.year == 1 && Game1.currentSeason == "spring") return Config.AllowStormsFirstSpring;
-            else return true;
-        }
-
-        private bool fixTV()
-        {
-            if (Game1.currentSeason == "spring" && Game1.year == 1 && Game1.dayOfMonth == 1)
-            {
-                Game1.weatherForTomorrow = Game1.weather_sunny;
-                return true;
-            }
-
-            if (Game1.currentSeason == "spring" && Game1.year == 1 && Game1.dayOfMonth == 2)
-            {
-                Game1.weatherForTomorrow = Game1.weather_rain;
-                return true;
-            }
-
-            if (Game1.currentSeason == "spring" && Game1.year == 1 && Game1.dayOfMonth == 3)
-            {
-                Game1.weatherForTomorrow = Game1.weather_sunny;
-                return true;
-            }
-
-            if (Game1.currentSeason == "summer" && Game1.dayOfMonth == 12)
-            {
-                Game1.weatherForTomorrow = Game1.weather_lightning;
-                return true;
-            }
-
-            if (Game1.currentSeason == "summer" && Game1.dayOfMonth == 25)
-            {
-                Game1.weatherForTomorrow = Game1.weather_lightning;
-                return true;
-            }
-
-            if (Game1.dayOfMonth == 28)
-            {
-                Game1.weatherForTomorrow = Game1.weather_sunny;
-                return true;
-            }
-
-            return false;
-        }
-
     }    
 }
 

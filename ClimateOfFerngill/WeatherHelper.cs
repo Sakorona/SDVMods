@@ -5,6 +5,53 @@ namespace ClimateOfFerngill
 {
     static class WeatherHelper
     {
+        public static bool CanWeStorm(ClimateConfig Config)
+        {
+            if (Game1.year == 1 && Game1.currentSeason == "spring") return Config.AllowStormsFirstSpring;
+            else return true;
+        }
+
+        public static bool fixTV()
+        {
+            if (Game1.currentSeason == "spring" && Game1.year == 1 && Game1.dayOfMonth == 1)
+            {
+                Game1.weatherForTomorrow = Game1.weather_sunny;
+                return true;
+            }
+
+            if (Game1.currentSeason == "spring" && Game1.year == 1 && Game1.dayOfMonth == 2)
+            {
+                Game1.weatherForTomorrow = Game1.weather_rain;
+                return true;
+            }
+
+            if (Game1.currentSeason == "spring" && Game1.year == 1 && Game1.dayOfMonth == 3)
+            {
+                Game1.weatherForTomorrow = Game1.weather_sunny;
+                return true;
+            }
+
+            if (Game1.currentSeason == "summer" && Game1.dayOfMonth == 12)
+            {
+                Game1.weatherForTomorrow = Game1.weather_lightning;
+                return true;
+            }
+
+            if (Game1.currentSeason == "summer" && Game1.dayOfMonth == 25)
+            {
+                Game1.weatherForTomorrow = Game1.weather_lightning;
+                return true;
+            }
+
+            if (Game1.dayOfMonth == 28)
+            {
+                Game1.weatherForTomorrow = Game1.weather_sunny;
+                return true;
+            }
+
+            return false;
+        }
+
         public static string DescWeather(int weather)
         {
             switch (weather)
@@ -96,27 +143,27 @@ namespace ClimateOfFerngill
         public static string GetWeatherDesc(MersenneTwister dice, SDVWeather weather, bool today)
         {
 
-            string[] springRainText = new string[] { "It'll be a rainy day outside! Make sure to bring your coat. ", "It'll be a wet day outside. ", "It'll be a misty, wet day - make sure to pause when you can and enjoy it! " };
-            string[] springStormText = new string[] { "Early showers bring summer flowers! It'll be stormy outside. ", "Expect some lightning  outside -  be careful! ", "A storm front is blowing over the region, bringing rain and lightning. " };
-            string[] springWindText = new string[] { "It'll be a blustery day outside. ", "A cold front is blowing through - if you have allergies, be careful. ", "The wind will be blowing through . " };
-            string[] springClearWeather = new string[] { "A nice spring day, perfect for all those outside chores! ", "Clear and warm, it should be a perfect day. " };
+            string[] springRainText = new string[] { "it'll be a rainy day outside! Make sure to bring your coat. ", "it'll be a wet day outside. ", "it'll be a misty, wet day - make sure to pause when you can and enjoy it! " };
+            string[] springStormText = new string[] { "early showers bring summer flowers! It'll be stormy outside. ", "expect some lightning outside -  be careful! ", "a storm front is blowing over the region, bringing rain and lightning. " };
+            string[] springWindText = new string[] { "it'll be a blustery day outside. ", "a cold front is blowing through - if you have allergies, be careful.  ", "the wind will be blowing through the valley today, bringing plenty of spring pollen. " };
+            string[] springClearWeather = new string[] { "a nice spring day, perfect for all those outside chores! ", "clear and warm, it should be a perfect day. ", "it will be a nice clear spring day. " };
 
-            string[] summerRainText = new string[] { "A warm rain is expected. ", "There will be a warm refreshing rain as a front passes by. " };
-            string[] summerStormText = new string[] { "Expect storms throughout the day. ", "A cold front is expected to pass through, bringing through a squall line. " };
-            string[] summerClearWeather = new string[] { "It'll be a sweltering day. ", "Another perfect sunny day, perfect for hitting the beach.", "A hot and clear day dawns over the Valley. " };
+            string[] summerRainText = new string[] { "a warm rain is expected. ", "there will be a warm refreshing rain as a front passes by. ", "rain tommorow will bring a slightly cooler day. " };
+            string[] summerStormText = new string[] { "expect storms throughout the day. ", "a cold front is expected to pass through, bringing through a squall line. ", "a warm front moving on from Calico Desert will cause storms as it nears the mountains. " };
+            string[] summerClearWeather = new string[] { "it'll be a sweltering day. ", "another perfect sunny day, perfect for hitting the beach. ", "a hot and clear day dawns over Stardew Valley. " };
 
-            string[] fallRainText = new string[] { "Expect a cold rain as a low pressure front passes overhead. ", "Moisture off the Gem Sea will make for a cold windy rain. " };
-            string[] fallStormText = new string[] { "Expect storms throughout the day. ", "It'll be a cold and stormy day . " };
-            string[] fallWindText = new string[] { "It'll be a blustry cold day outside . ", "Expect blowing leaves - a cold front will be passing through. " };
-            string[] fallClearWeather = new string[] { "A cold day in the morning, with a warmer afternoon - clear. ", "Another autumn day in eastern Ferngill, expect a chilly and clear day. " };
+            string[] fallRainText = new string[] { "expect a cold rain as a low pressure front passes overhead. ", "moisture off the Gem Sea will make for a cold windy rain. " };
+            string[] fallStormText = new string[] { "expect storms throughout the day. ", "it'll be a cold and stormy day. ", "a variable pressure front coming down from the north will bring storms with it. "};
+            string[] fallWindText = new string[] { "it'll be a blustry cold day outside . ", "expect blowing leaves - a cold front will be passing through. " };
+            string[] fallClearWeather = new string[] { "a cold day in the morning, with a warmer afternoon - clear. ", "another autumn day in eastern Ferngill, expect a chilly and clear day. " };
 
-            string[] winterSnowText = new string[] { "Winter continues it's relentless assualt - expect snow. ", "Moisture blowing off the Gem Sea - expecting snowfall for the Stardew Valley, more in the mountains. ", "A curtain of white will descend on the valley. " };
-            string[] winterClearWeather = new string[] { "It'll be a clear cold day . ", "A cold winter day - keep warm!", "Another chilly clear day over the Valley as a High pressure moves overhead. " };
+            string[] winterSnowText = new string[] { "winter continues it's relentless assualt - expect snow. ", "moisture blowing off the Gem Sea - expecting snowfall for the Stardew Valley, more in the mountains. ", "a curtain of white will descend on the valley starting at Point Drake. " };
+            string[] winterClearWeather = new string[] { "it'll be a clear cold day. ", "a cold winter day - keep warm! ", "another chilly clear day over the Valley as a High pressure moves overhead. " };
 			
-			string nextDayIsNextSeason = "It'll be a fine day for the first day of";
-            string nextDayIsNewYear = "Another year has come to an end, and we will greet the next year with a sunny spring day!";
+			string nextDayIsNextSeason = "it'll be a fine day for the first day of";
+            string nextDayIsNewYear = "another year has come to an end, and we will greet the next year with a sunny spring day!";
 
-            string[] weddingWeather = new string[] { "It'll be good weather for a Pelican Town Wedding! Congratulations to the newlyweds. " };
+            string[] weddingWeather = new string[] { "it'll be good weather for a Pelican Town Wedding! Congratulations to the newlyweds. " };
             if ((int)weather == Game1.weather_festival)
                 return "It'll be good weather for the " + InternalUtility.getFestivalName(Game1.dayOfMonth + 1, Game1.currentSeason) + "! Sunny and clear.";
 
