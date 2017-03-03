@@ -63,7 +63,7 @@ namespace ClimateOfFerngill
 
             //set harsh weather events - currently unused.
             HarshWeather = false;
-            HeatwaveTime = 900;
+            HeatwaveTime = 1600;
             HeatwaveWarning = 37; //98.6F 
             FrostWarning = 2; //35.6F
             FrostHardiness = .45; // 45% of all crops will survive the frost wave.

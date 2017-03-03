@@ -1,10 +1,17 @@
 # Climate of Ferngill
 
-This mod alters the weather of Stardew Valley by creating a climate system. It adds temperature and may add hostile weather events down the line.  
+This mod alters the weather of Stardew Valley by creating a climate system. It adds temperature and adds hostile weather events. 
 
-The current version is __0.8.6 rev 20170203__ 
+The current version is __1.0.0 rc2 (rev 20170303)__ 
 
 ## Changelog
+
+1.0.0 rc2
+- A lot of minor changes and updates to wording throughout the TV display, including now putting different days on different messages
+- more usage of hud messages
+- Prototyping of a moon to be added 
+- Implements it's own PRNG to help ensure proper randomness of weather and events
+- Updates to remove deprecation warnings on SMAPI 1.8
 
 0.8.6
 - Frost and Heatwaves descend on the valley.
@@ -27,18 +34,22 @@ The current version is __0.8.6 rev 20170203__
 * Custom TV dialogue (English only)
 * A more complex weather system that can be generally configured to match 6 different climates
 * A return of the penalty for being outside in a storm
+* Hostile weather events (Heatwaves, and Floods)
 
 ## Planned Features
-* More hostile weather options
 * Moving TV text options to a json/txt file for easier customization.
+* Morning fog!
+* Adding an item to remove exhaustion status
+* A moon, including effects on various things
 
 ## Maybe features?
 * Specifying climate options via json file
 * Making all strings able to be translated
+* A hotkey to trigger a weather window?
 
 ## Requirements
-* Stardew Valley: __1.11__ or greater
-* SMAPI: __1.7__ or greater
+* Stardew Valley: __1.11__ (but not the beta version on Steam)
+* SMAPI: __1.8__ or greater
 
 ## Configuration Options
 
@@ -51,9 +62,23 @@ The current version is __0.8.6 rev 20170203__
 * _TempGauge_ is a setting that controls if temps are displayed in Celsius or Farenheit. The options are _celsius, fahrenheit_, default: _celsius_
 * _DisplaySecondScale_ is a setting that controls if two gauges are displayed at once. Valid options are __false__ or __true__, default: __false__.
 * _SecondScaleGauge_ is a setting that controls what the second gauge is. Only used if DisplaySecondScale is true. Options are _celsius, fahrenheit_.
-* _StormyPenalty_ is a setting that enables the stamina drain for being outside in a storm. The valid options are __true__ and __false.__. Default: __true__
+* _StormyPenalty_ is a setting that enables the disease drain for being outside in a storm. The valid options are __true__ and __false.__. Default: __true__
+* _DiseaseChance_ is a setting that controls how likely you are to get a disease from being outside. Valid numbers are (0 to 1), default _.475_
+* _HeatwaveTime_ is a setting that controls when the heatwave will hit. Valid is any time. Default is set to _1600_.
+* _FrostWarning_ is a setting that controls when you get the Frost Warning. __Recommened you do not alter this setting__. Default is set to _2_ (degrees Celsius).
+* _FrostHardiness_ is a setting that controls the likelyhood of crops to die. Valid is any number, but the higher the number, the less likely crops are to die. Default is set to _.45_
+* _DeathTemp_ controls when the crops can be killed instead of dewatered. Do not recommened setting this lower than the heatwave warning, or much below 38. Default is _41_.
+* _AllowCropHeatDeath_ controls if you CAN kill crops instead of dewater them. Default is _false_.
+* _TimeToDie_ controls how long before the game checks if you've rewatered the crops queued to die. Default is _310_ (3 hrs 10 mins)
+* _SetLowCap_ controls if you can cap how cold fall temps can get. It is set to _false_ by default. 
+* _LowCap_ controls the cap. Only used if _SetLowCap_ is true. Default: _1_  degree Celsius
 * _StaminaPenalty_ controls how much stamina is drained per 10 minute tick.
 * _HeatwaveWarning_ controls at what temp you give the heatwave warning temp at. Default _37_, recommended anything over _35_. (temps default to Celsius.)
+* _ForceHeat_ and _ForceFrost_ are debug options set to false. ONLY ALTER THESE IF YOU KNOW WHAT YOU'RE DOING OR HAVE BEEN DIRECTED TO DO SO.
+
+## Known Issues
+
+* Weddings may cause heatwave and frost HUD messages to not display
 
 ## FAQ
 
@@ -63,7 +88,7 @@ A. Turn it off then.
 
 Q. Why are you setting the mod to spam the console?
 
-A. I am currently targetting .9 to change the default behavior of this option, or if I feel I have sufficently tested .8
+A. Turn off tooMuchInfo if you feel it spams the console.
 
 Q. What happened to the extensive setting options in previous versions?
 
