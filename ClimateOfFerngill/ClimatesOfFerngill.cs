@@ -1,22 +1,23 @@
 ﻿using System;
 using System.Reflection;
+using System.Collections.Generic;
 
 //3P
 using NPack;
 using StardewModdingAPI;
+using StardewModdingAPI.Events;
+
+using StardewValley;
 using StardewValley.Objects;
 using StardewValley.TerrainFeatures;
-using StardewModdingAPI.Events;
+using StardewValley.Monsters;
 using StardewValley.Locations;
 using StardewValley.Menus;
+
 using Microsoft.Xna.Framework;
-using StardewValley;
-using System.Collections.Generic;
 
 //DAMN YOU 1.2
 using SFarmer = StardewValley.Farmer;
-using Microsoft.Xna.Framework.Graphics;
-using StardewValley.Monsters;
 
 namespace ClimateOfFerngill
 {
@@ -42,14 +43,6 @@ namespace ClimateOfFerngill
         private double stormChance;
         private double rainChance;
 
-        //fog info
-        private bool ambientFog;
-        private Vector2 fogPos;
-        private int startFogTime;
-        private Rectangle fogSource = new Rectangle(640, 0, 64, 64);
-        private float fogAlpha;
-        private int endFogTime;
-
         //tv overloading
         private static FieldInfo Field = typeof(GameLocation).GetField("afterQuestion", BindingFlags.Instance | BindingFlags.NonPublic);
         private static FieldInfo TVChannel = typeof(TV).GetField("currentChannel", BindingFlags.Instance | BindingFlags.NonPublic);
@@ -59,7 +52,6 @@ namespace ClimateOfFerngill
         private static MethodInfo TVMethodOverlay = typeof(TV).GetMethod("setWeatherOverlay", BindingFlags.Instance | BindingFlags.NonPublic);
         private static GameLocation.afterQuestionBehavior Callback;
         private static TV Target;
-
 
         /// <summary>Initialise the mod.</summary>
         /// <param name="helper">Provides methods for interacting with the mod directory, such as read/writing a config file or custom JSON files.</param>
@@ -80,19 +72,12 @@ namespace ClimateOfFerngill
             TimeEvents.DayOfMonthChanged += TimeEvents_DayOfMonthChanged;
             MenuEvents.MenuChanged += MenuEvents_MenuChanged;
             SaveEvents.AfterLoad += SaveEvents_AfterLoad;
-            GraphicsEvents.OnPostRenderEvent += GraphicsEvents_OnPostRenderEvent;
             TimeEvents.TimeOfDayChanged += TimeEvents_TimeOfDayChanged;
             SaveEvents.BeforeSave += SaveEvents_BeforeSave;
 
             //create crop and temp mapping.
             InternalUtility.SetUpCrops(); 
             threatenedCrops = new List<Vector2>();
-        }
-
-        private void GraphicsEvents_OnPostRenderEvent(object sender, EventArgs e)
-        {
-            if (ambientFog && Game1.currentLocation.isOutdoors)
-                CreateFog(Game1.spriteBatch);
         }
 
         private void SaveEvents_BeforeSave(object sender, EventArgs e)
@@ -243,26 +228,6 @@ namespace ClimateOfFerngill
                 InternalUtility.showMessage("You have a cold, and feel worn out!");
             }
 
-
-            //fog stuff.
-            if (Config.tooMuchInfo) LogEvent("Checking for fog.");
-            if (dice.NextDouble() < Config.FogChance && e.NewInt <= 1000)
-            {
-                if (Config.tooMuchInfo) LogEvent("Creating fog conditions!");
-                ambientFog = true;
-                startFogTime = e.NewInt; //woops!
-                fogAlpha = .85f;
-                endFogTime = e.NewInt + (Config.FogDuration * 100);
-            }
-
-            //fog despawn - really hacky. 
-            if (ambientFog && e.NewInt == endFogTime)
-            {
-                if (Config.tooMuchInfo) LogEvent("Ending fog conditions!");
-                fogAlpha = 0.0f;
-                ambientFog = false;
-            }
-
             //specific time stuff
             if (e.NewInt == 610)
             {
@@ -323,28 +288,6 @@ namespace ClimateOfFerngill
             {
                 InternalUtility.FaintPlayer();
             }
-        }
-
-        private void CreateFog(SpriteBatch b)
-        {
-           Color fogColor = Color.BlueViolet * 1f;
-           Vector2 position = new Vector2();
-           float num1 = -64 * Game1.pixelZoom + (int)((double)fogPos.X % (double)(64 * Game1.pixelZoom));
-           while ((double)num1 < (double)Game1.graphics.GraphicsDevice.Viewport.Width)
-           {
-               float num2 = (float)(-64 * Game1.pixelZoom + (int)((double)this.fogPos.Y % (double)(64 * Game1.pixelZoom)));
-               while ((double)num2 < (double)Game1.graphics.GraphicsDevice.Viewport.Height)
-               {
-                   position.X = (float)(int)num1;
-                   position.Y = (float)(int)num2;
-                   b.Draw(Game1.mouseCursors, position, new Microsoft.Xna.Framework.Rectangle?(fogSource), (double)this.fogAlpha > 0.0 ? fogColor * fogAlpha : Color.Black * 0.95f, 0.0f, Vector2.Zero, (float)Game1.pixelZoom + 1f / 1000f, SpriteEffects.None, 1f);
-                   num2 += (float)(64 * Game1.pixelZoom);
-               }
-               num1 += (float)(64 * Game1.pixelZoom);
-           }
-
-            if (fogAlpha == 0.0f)
-                this.ambientFog = false;
         }
 
         public void spawnGhostOffScreen()
@@ -474,6 +417,14 @@ namespace ClimateOfFerngill
                 tvText = tvText + "Warning. We're getting frost tonight! Be careful what you plant! ";
 
 
+            //we need to catch wedding nonsense here
+
+            if (WeatherHelper.GetTodayWeather() == SDVWeather.Wedding && Game1.weatherForTomorrow == Game1.weather_wedding)
+            {
+                //this is a funny thing, since it shouldn't be doing ths.
+                Monitor.Log("We've triggered a flag where today AND tommorow are wedding days.", LogLevel.Info);
+                UpdateWeather();             
+            }
 
             if (Game1.timeOfDay < noLonger) //don't display today's weather 
             {
@@ -486,14 +437,14 @@ namespace ClimateOfFerngill
                 if (Config.tooMuchInfo) LogEvent(tvText);
 
                 //today weather
-                tvText = tvText + WeatherHelper.GetWeatherDesc(dice, WeatherHelper.GetTodayWeather(), true);
+                tvText = tvText + WeatherHelper.GetWeatherDesc(dice, WeatherHelper.GetTodayWeather(), true, Monitor);
 
                 //get WeatherForTommorow and set text
                 tvText = tvText + "#Tommorow, ";
             }
 
             //tommorow weather
-            tvText = tvText + WeatherHelper.GetWeatherDesc(dice, (SDVWeather)Game1.weatherForTomorrow, false);
+            tvText = tvText + WeatherHelper.GetWeatherDesc(dice, (SDVWeather)Game1.weatherForTomorrow, false, Monitor);
 
             return tvText;
         }
@@ -614,10 +565,14 @@ namespace ClimateOfFerngill
             
             #region WeatherChecks
             //sanity check - wedding
-            if (Game1.weatherForTomorrow == Game1.weather_wedding)
+            if (Game1.player.spouse != null && Game1.player.spouse.Contains("engaged"))
             {
-                if (Config.tooMuchInfo) LogEvent("There is no Alanis Morissetting here. Enjoy your wedding.");
-                return;
+                if (Game1.countdownToWedding == 1)
+                {
+                    if (Config.tooMuchInfo) LogEvent("There is no Alanis Morissetting here. Enjoy your wedding.");
+                    Game1.weatherForTomorrow = Game1.weather_wedding;
+                    return;
+                }
             }
 
             if (Game1.countdownToWedding == 0 && (Game1.player.spouse != null && Game1.player.spouse.Contains("engaged")))

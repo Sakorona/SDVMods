@@ -1,4 +1,5 @@
 ﻿using NPack;
+using StardewModdingAPI;
 using StardewValley;
 
 namespace ClimateOfFerngill
@@ -140,7 +141,7 @@ namespace ClimateOfFerngill
         }
 
 
-        public static string GetWeatherDesc(MersenneTwister dice, SDVWeather weather, bool today)
+        public static string GetWeatherDesc(MersenneTwister dice, SDVWeather weather, bool today, IMonitor logger)
         {
 
             string[] springRainText = new string[] { "it'll be a rainy day outside! Make sure to bring your coat. ", "it'll be a wet day outside. ", "it'll be a misty, wet day - make sure to pause when you can and enjoy it! " };
@@ -224,6 +225,9 @@ namespace ClimateOfFerngill
 
             if (Game1.currentSeason == "winter" && (int)weather == Game1.weather_snow)
                 return winterSnowText.GetRandomItem(dice);
+
+            //error!
+            logger.Log("This function has reached an error. It is being called for " + (today? "Today" : "Tommorow") + ". Current season is " + Game1.currentSeason + " and the internal weather is " + weather + " with the game weather flags being: Raining " + Game1.isRaining + " , Windy " + Game1.isDebrisWeather + " ,Stormy " + Game1.isLightning + " ,and Snowy " + Game1.isSnowing + " with tommorow's weather: " + DescWeather(Game1.weatherForTomorrow), LogLevel.Error);
 
             return "Angry suns descend on us! Run! (ERROR)";
         }

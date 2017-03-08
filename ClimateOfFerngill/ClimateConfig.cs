@@ -54,10 +54,6 @@ namespace ClimateOfFerngill
             AllowStormsFirstSpring = false;
             NoLongerDisplayToday = 1700;
 
-            //fog stuff
-            FogChance = .10; //10% chance of fog
-            FogDuration = 2; // 2 hours duration 
-
             //set climate information
             ClimateType = "normal";
 
