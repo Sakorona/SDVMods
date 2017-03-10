@@ -19,8 +19,7 @@ using Microsoft.Xna.Framework;
 //DAMN YOU 1.2
 using SFarmer = StardewValley.Farmer;
 using Microsoft.Xna.Framework.Input;
-using System.Text;
-using static ClimateOfFerngill.Sprites;
+
 
 namespace ClimateOfFerngill
 {
@@ -37,9 +36,9 @@ namespace ClimateOfFerngill
         //event fields
         private List<Vector2> ThreatenedCrops { get; set; }
         private int DeathTime { get; set; }
-        public bool IsExhausted { get; set; }
         public MersenneTwister Dice;
         private IClickableMenu PreviousMenu;
+        private HazardousWeatherEvents BadEvents;
 
         //chances of specific weathers
         private double windChance;
@@ -65,6 +64,8 @@ namespace ClimateOfFerngill
             CurrWeather = new FerngillWeather();
             ModRan = false;
             Luna = new SDVMoon();
+            var ourIcons = new Sprites.Icons(Helper.DirectoryPath);
+            BadEvents = new HazardousWeatherEvents(Monitor, Config, Dice);
 
             //set variables
             rainChance = 0;
@@ -81,11 +82,6 @@ namespace ClimateOfFerngill
             //register keyboard handlers and other menu events
             ControlEvents.KeyPressed += (sender, e) => this.ReceiveKeyPress(e.KeyPressed, this.Config.Keyboard);
             MenuEvents.MenuClosed += (sender, e) => this.ReceiveMenuClosed(e.PriorMenu);
-
-            //create crop and temp mapping.
-            InternalUtility.SetUpCrops();
-            Icons ourIcons = new Icons(Helper.DirectoryPath);
-            ThreatenedCrops = new List<Vector2>();
         }
 
         private void ReceiveKeyPress(Keys key, Keys config)
@@ -107,97 +103,14 @@ namespace ClimateOfFerngill
             }
         }
 
-        private void ToggleMenu()
-        {
-            if (Game1.activeClickableMenu is WeatherMenu)
-                this.HideMenu();
-            else
-                this.ShowMenu();
-        }
-
-        private void ShowMenu()
-        {
-            // show menu
-            this.PreviousMenu = Game1.activeClickableMenu;
-            Game1.activeClickableMenu = new WeatherMenu(Monitor);
-        }
-
-        private void HideMenu()
-        {
-            if (Game1.activeClickableMenu is WeatherMenu)
-            {
-                Game1.playSound("bigDeSelect"); // match default behaviour when closing a menu
-                Game1.activeClickableMenu = null;
-            }
-        }
-
         private void SaveEvents_BeforeSave(object sender, EventArgs e)
         {
-            //run all night time processing.
+            //run all night time processing. Events do their own checking if enabled
             if (Config.HarshWeather)
             {
-                if (CurrWeather.TodayLow < 2 && Game1.currentSeason == "fall") //run frost event - restrict to fall rn.
-                    EarlyFrost();
+                BadEvents.EarlyFrost(CurrWeather);
             }
 
-            //moon processing
-            if (SDVMoon.GetLunarPhase() == MoonPhase.FullMoon && Config.MoonEffects)
-            {
-                Farm f = Game1.getFarm();
-                HoeDirt curr;
-
-                if (f != null){
-                    foreach (KeyValuePair<Vector2, TerrainFeature> TF in f.terrainFeatures)
-                    {
-                        if (TF.Value is HoeDirt)
-                        {
-                            curr = (HoeDirt)TF.Value;
-                            if (curr.crop != null)
-                            {
-                                //20% chance of increased growth.
-                                if (Dice.NextDouble() < .1)
-                                {
-                                    if (Config.TooMuchInfo) Console.WriteLine("Crop is being boosted by full moon");
-                                    if (curr.state == 1) //make sure it's watered
-                                    {
-                                        curr.crop.dayOfCurrentPhase = curr.crop.fullyGrown ? curr.crop.dayOfCurrentPhase - 1 : Math.Min(curr.crop.dayOfCurrentPhase + 1, curr.crop.phaseDays.Count > 0 ? curr.crop.phaseDays[Math.Min(curr.crop.phaseDays.Count - 1, curr.crop.currentPhase)] : 0);
-                                        if (curr.crop.dayOfCurrentPhase >= (curr.crop.phaseDays.Count > 0 ? curr.crop.phaseDays[Math.Min(curr.crop.phaseDays.Count - 1, curr.crop.currentPhase)] : 0) && curr.crop.currentPhase < curr.crop.phaseDays.Count - 1)
-                                        {
-                                            curr.crop.currentPhase = curr.crop.currentPhase + 1;
-                                            curr.crop.dayOfCurrentPhase = 0;
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-
-
-            if (SDVMoon.GetLunarPhase() == MoonPhase.NewMoon && Config.MoonEffects)
-            {
-                Farm f = Game1.getFarm();
-                HoeDirt curr;
-
-                if (f != null)
-                {
-                    foreach (KeyValuePair<Vector2, TerrainFeature> TF in f.terrainFeatures)
-                    {
-                        if (TF.Value is HoeDirt)
-                        {
-                            curr = (HoeDirt)TF.Value;
-                            if (curr.crop != null)
-                            {
-                                if (Dice.NextDouble() < .09)
-                                {
-                                    curr.state = 0; //dewater!! BWAHAHAAHAA.
-                                }
-                            }
-                        }
-                    }
-                }
-            }
         }
 
         private void SummerHeatwave()
@@ -253,31 +166,7 @@ namespace ClimateOfFerngill
 
         private void TimeEvents_TimeOfDayChanged(object sender, EventArgsIntChanged e)
         {
-           //run non specific code first
-           if (Game1.currentLocation.IsOutdoors && Game1.isLightning)
-            {
-                double diceChance = Dice.NextDouble();
-                if (Config.TooMuchInfo) LogEvent("The chance of exhaustion is: " + diceChance);
-                if (diceChance < Config.DiseaseChance)
-                {
-                    IsExhausted = true;
-                    InternalUtility.ShowMessage("The storm has caused you to get a cold!");
-                }
-            }
-
-           //disease code.
-           if (IsExhausted)
-           {
-                if (Config.TooMuchInfo) LogEvent("The old stamina is : " + Game1.player.stamina);
-                Game1.player.stamina = Game1.player.stamina - Config.StaminaPenalty;
-                if (Config.TooMuchInfo) LogEvent("The new stamina is : " + Game1.player.stamina);
-           }
-
-           //alert code
-           if (IsExhausted && Dice.NextDouble() < Config.DiseaseChance)
-            {
-                InternalUtility.ShowMessage("You have a cold, and feel worn out!");
-            }
+            BadEvents.CatchACold();
 
             //specific time stuff
             if (e.NewInt == 610)
@@ -307,8 +196,8 @@ namespace ClimateOfFerngill
                 if (CurrWeather.TodayHigh > (int)Config.HeatwaveWarning && !Utility.isFestivalDay(Game1.dayOfMonth, Game1.currentSeason) && (!Game1.isRaining || !Game1.isLightning))
                 {
                     DeathTime = InternalUtility.GetNewValidTime(e.NewInt, 300, InternalUtility.TIMEADD); //3 hours.
-                    if (Config.TooMuchInfo) LogEvent("Death Time is " + DeathTime);
-                    if (Config.TooMuchInfo) LogEvent("Heatwave Event Triggered");
+                    if (Config.TooMuchInfo) Monitor.Log("Death Time is " + DeathTime);
+                    if (Config.TooMuchInfo) Monitor.Log("Heatwave Event Triggered");
                     SummerHeatwave();
                 }
             }
@@ -483,7 +372,7 @@ namespace ClimateOfFerngill
                 else //derp.
                     tvText += WeatherHelper.DisplayTemperature(CurrWeather.TodayHigh, Config.TempGauge) + " (" + WeatherHelper.DisplayTemperature(CurrWeather.TodayHigh, Config.SecondScaleGauge) + ") , with the low being " + WeatherHelper.DisplayTemperature(CurrWeather.TodayLow, Config.TempGauge) + " (" + WeatherHelper.DisplayTemperature(CurrWeather.TodayHigh, Config.SecondScaleGauge) + ") . ";
 
-                if (Config.TooMuchInfo) LogEvent(tvText);
+                if (Config.TooMuchInfo) Monitor.Log(tvText);
 
                 //today weather
                 tvText = tvText + WeatherHelper.GetWeatherDesc(Dice, WeatherHelper.GetTodayWeather(), true, Monitor);
@@ -498,14 +387,6 @@ namespace ClimateOfFerngill
             return tvText;
         }
        
-        private void LogEvent(string msg, bool important=false)
-        {
-            if (!important)
-                Monitor.Log(msg, LogLevel.Debug);
-            else
-                Monitor.Log(msg, LogLevel.Info);            
-        }
-
         public void CheckForDangerousWeather(bool hud = true)
         {
             if (CurrWeather.Status == FerngillWeather.BLIZZARD) {
@@ -526,48 +407,17 @@ namespace ClimateOfFerngill
             }
         }
 
-        public void EarlyFrost()
-        {
-            //this function is called if it's too cold to grow crops. Must be enabled.
-            Farm f = Game1.getFarm();
-            HoeDirt curr;
-            bool cropsKilled = false;
-
-            if (f != null)
-            {
-                foreach (KeyValuePair<Vector2, TerrainFeature> tf in f.terrainFeatures)
-                {
-                    if (tf.Value is HoeDirt)
-                    {
-                        curr = (HoeDirt)tf.Value;
-                        if (curr.crop != null && InternalUtility.IsFallCrop(curr.crop.indexOfHarvest))
-                        {
-                            if (CurrWeather.TodayLow <= InternalUtility.CheckCropTolerance(curr.crop.indexOfHarvest) && Dice.NextDouble() < Config.FrostHardiness)
-                            {
-                                cropsKilled = true;
-                                curr.crop.dead = true;
-                            }
-                        }
-                    }
-                }
-            }
-
-            if (cropsKilled)
-            {
-                InternalUtility.ShowMessage("During the night, some crops died to the frost...");
-                if (Config.TooMuchInfo) LogEvent("Setting frost test via queued message");
-            }
-        }
+     
 
         public void TimeEvents_DayOfMonthChanged(object sender, EventArgsIntChanged e)
         {
             if (!GameLoaded) //sanity check
                 return;
-
             int[] beachItems = new int[] { 393, 397, 392, 394 };
             int[] moonBeachItems = new int[] { 393, 394, 560, 586, 587, 589, 397 };
+
             CurrWeather.Status = 0; //reset status
-            IsExhausted = false; //reset disease
+            BadEvents.UpdateForNewDay();
             UpdateWeather();    
 
             //moon processing
@@ -618,7 +468,7 @@ namespace ClimateOfFerngill
             {
                 if (Game1.countdownToWedding == 1)
                 {
-                    if (Config.TooMuchInfo) LogEvent("There is no Alanis Morissetting here. Enjoy your wedding.");
+                    if (Config.TooMuchInfo) Monitor.Log("There is no Alanis Morissetting here. Enjoy your wedding.");
                     Game1.weatherForTomorrow = Game1.weather_wedding;
                     return;
                 }
@@ -627,7 +477,7 @@ namespace ClimateOfFerngill
             if (Game1.countdownToWedding == 0 && (Game1.player.spouse != null && Game1.player.spouse.Contains("engaged")))
             {
                 Game1.weatherForTomorrow = Game1.weather_wedding;
-                if (Config.TooMuchInfo) LogEvent("Detecting the wedding tommorow. Setting weather and returning");
+                if (Config.TooMuchInfo) Monitor.Log("Detecting the wedding tommorow. Setting weather and returning");
                 return;
             }
 
@@ -642,12 +492,12 @@ namespace ClimateOfFerngill
             {
                 if (WeatherHelper.WeatherForceDay(Game1.currentSeason, Game1.dayOfMonth + 1, Game1.year))
                 {
-                    if (Config.TooMuchInfo) LogEvent("The game will force weather. Aborting.");
+                    if (Config.TooMuchInfo) Monitor.Log("The game will force weather. Aborting.");
                     return;
                 }
 
                 if (Config.TooMuchInfo)
-                    LogEvent("Change detected not caught by other checks. Debug Info: DAY " + Game1.dayOfMonth + " Season: " + Game1.currentSeason + " with prev weather: " + WeatherHelper.DescWeather(WeatherAtStartOfDay) + " and new weather: " + WeatherHelper.DescWeather(Game1.weatherForTomorrow) + ". Aborting.");
+                    Monitor.Log("Change detected not caught by other checks. Debug Info: DAY " + Game1.dayOfMonth + " Season: " + Game1.currentSeason + " with prev weather: " + WeatherHelper.DescWeather(WeatherAtStartOfDay) + " and new weather: " + WeatherHelper.DescWeather(Game1.weatherForTomorrow) + ". Aborting.");
 
                 return;
             }
@@ -656,7 +506,7 @@ namespace ClimateOfFerngill
             bool forceTomorrow = WeatherHelper.FixTV();
             if (forceTomorrow)
             {
-                LogEvent("Tommorow, there will be forced weather.");
+                Monitor.Log("Tommorow, there will be forced weather.");
                 forceSet = true;
             }
             #endregion
@@ -680,7 +530,7 @@ namespace ClimateOfFerngill
             //handle calcs here for odds.
             double chance = Dice.NextDouble();
             if (Config.TooMuchInfo)
-                LogEvent("Rain Chance is: " + rainChance + " with the rng being " + chance);
+                Monitor.Log("Rain Chance is: " + rainChance + " with the rng being " + chance);
 
             //override for the first spring.
 
@@ -690,7 +540,7 @@ namespace ClimateOfFerngill
             //global change - if it rains, drop the temps (and if it's stormy, drop the temps)
             if (Game1.isRaining)
             {
-                if (Config.TooMuchInfo) LogEvent("Dropping temp by 4 from " + CurrWeather.TodayHigh);
+                if (Config.TooMuchInfo) Monitor.Log("Dropping temp by 4 from " + CurrWeather.TodayHigh);
                 CurrWeather.TodayHigh = CurrWeather.TodayHigh - 4;
                 CurrWeather.TodayLow = CurrWeather.TodayLow - 2;
             }
@@ -705,13 +555,13 @@ namespace ClimateOfFerngill
                 chance = Dice.NextDouble();
                 if (chance < stormChance && stormChance != 0)
                 {
-                    if (Config.TooMuchInfo) LogEvent("Storm is selected, with roll " + chance + " and target percent " + stormChance);
+                    if (Config.TooMuchInfo) Monitor.Log("Storm is selected, with roll " + chance + " and target percent " + stormChance);
                     Game1.weatherForTomorrow = Game1.weather_lightning;
                 }
                 else
                 {
                     Game1.weatherForTomorrow = Game1.weather_rain;
-                    if (Config.TooMuchInfo) LogEvent("Raining selected");
+                    if (Config.TooMuchInfo) Monitor.Log("Raining selected");
                 }
             }
             else if (Game1.currentSeason != "winter")
@@ -719,7 +569,7 @@ namespace ClimateOfFerngill
                 if (chance < (windChance + rainChance) && (Game1.currentSeason == "spring" || Game1.currentSeason == "fall") && windChance != 0)
                 {
                     Game1.weatherForTomorrow = Game1.weather_debris;
-                    if (Config.TooMuchInfo) LogEvent("It's windy today, with roll " + chance + " and wind odds " + windChance);
+                    if (Config.TooMuchInfo) Monitor.Log("It's windy today, with roll " + chance + " and wind odds " + windChance);
                 }
                 else
                     Game1.weatherForTomorrow = Game1.weather_sunny;
@@ -742,13 +592,13 @@ namespace ClimateOfFerngill
 
             WeatherAtStartOfDay = Game1.weatherForTomorrow;
             Game1.chanceToRainTomorrow = rainChance; //set for various events.
-            LogEvent("We've set the weather for tommorow . It is: " + WeatherHelper.DescWeather(Game1.weatherForTomorrow));
+            Monitor.Log("We've set the weather for tommorow . It is: " + WeatherHelper.DescWeather(Game1.weatherForTomorrow));
             ModRan = true;
         }
 
         private void HandleSpringWeather()
         {
-            if (Config.TooMuchInfo) LogEvent("Executing Spring Weather");
+            if (Config.TooMuchInfo) Monitor.Log("Executing Spring Weather");
             stormChance = .15;
             windChance = .25;
             rainChance = .3 + (Game1.dayOfMonth * .0278);
@@ -799,7 +649,7 @@ namespace ClimateOfFerngill
 
         private void HandleSummerWeather()
         {
-            if (Config.TooMuchInfo) LogEvent("Executing Summer Weather");
+            if (Config.TooMuchInfo) Monitor.Log("Executing Summer Weather");
             if (Game1.dayOfMonth < 10)
             {
                 //rain, snow, windy chances
@@ -820,7 +670,7 @@ namespace ClimateOfFerngill
                 CurrWeather.TodayHigh = 30 + (int)Math.Floor(Game1.dayOfMonth * .25) + Dice.Next(0,5);
                 if (Dice.NextDouble() > .70)
                 {
-                    if (Config.TooMuchInfo) LogEvent("Randomly adding to the temp");
+                    if (Config.TooMuchInfo) Monitor.Log("Randomly adding to the temp");
                     CurrWeather.TodayHigh += Dice.Next(0, 3);
                 }
 
@@ -863,7 +713,7 @@ namespace ClimateOfFerngill
 
         private void HandleAutumnWeather()
         {
-            if (Config.TooMuchInfo) LogEvent("Executing Fall Weather");
+            if (Config.TooMuchInfo) Monitor.Log("Executing Fall Weather");
             stormChance = .33;
             CurrWeather.TodayHigh = 22 - (int)Math.Floor(Game1.dayOfMonth * .667) + Dice.Next(0, 2); 
 
@@ -918,7 +768,7 @@ namespace ClimateOfFerngill
 
         private void HandleWinterWeather()
         {
-            if (Config.TooMuchInfo) LogEvent("Executing Winter Weather");
+            if (Config.TooMuchInfo) Monitor.Log("Executing Winter Weather");
             stormChance = 0;
             windChance = 0;
             rainChance = .6;
@@ -961,6 +811,32 @@ namespace ClimateOfFerngill
             }
 
         }
+
+        #region Menu
+        private void ToggleMenu()
+        {
+            if (Game1.activeClickableMenu is WeatherMenu)
+                this.HideMenu();
+            else
+                this.ShowMenu();
+        }
+
+        private void ShowMenu()
+        {
+            // show menu
+            this.PreviousMenu = Game1.activeClickableMenu;
+            Game1.activeClickableMenu = new WeatherMenu(Monitor);
+        }
+
+        private void HideMenu()
+        {
+            if (Game1.activeClickableMenu is WeatherMenu)
+            {
+                Game1.playSound("bigDeSelect"); // match default behaviour when closing a menu
+                Game1.activeClickableMenu = null;
+            }
+        }
+        #endregion
     }    
 }
 

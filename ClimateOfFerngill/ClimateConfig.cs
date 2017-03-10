@@ -27,8 +27,6 @@ namespace ClimateOfFerngill
         public bool AllowCropHeatDeath { get; set; }
         public int FrostWarning { get; set; }
         public double FrostHardiness { get; set; } 
-
-        public bool MoonEffects { get; set; }
         public bool GhostsDoNotSpawn { get; set; }
 
         public ClimateConfig()
@@ -65,7 +63,6 @@ namespace ClimateOfFerngill
             AllowCropHeatDeath = false;
 
             //moon options
-            MoonEffects = true;
             GhostsDoNotSpawn = false;
         }
     }

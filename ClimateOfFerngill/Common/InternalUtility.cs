@@ -1,5 +1,6 @@
 ﻿using System;
 using Microsoft.Xna.Framework;
+using StardewModdingAPI;
 using StardewValley;
 using System.Collections.Generic;
 using StardewValley.Locations;
@@ -10,29 +11,7 @@ namespace ClimateOfFerngill
     {
         internal static int TIMEADD = 9001;
         internal static int TIMESUB = 9002;
-        private static Dictionary<SDVCrops, double> CropTemps { get; set; }
 
-        public static void SetUpCrops()
-        {
-            CropTemps = new Dictionary<SDVCrops, double>
-            {
-                { SDVCrops.Corn, 1.66 },
-                { SDVCrops.Wheat, 1.66 },
-                { SDVCrops.Amaranth, 1.66 },
-                { SDVCrops.Sunflower, 1.66 },
-                { SDVCrops.Pumpkin, 1.66 },
-                { SDVCrops.Eggplant, 1.66 },
-                { SDVCrops.Yam, 1.66 },
-                { SDVCrops.Artichoke, 0 },
-                { SDVCrops.BokChoy, 0 },
-                { SDVCrops.Grape, -.55 },
-                { SDVCrops.FairyRose, -2.22 },
-                { SDVCrops.Beet, -2.22 },
-                { SDVCrops.Cranberry, -3.33 },
-                { SDVCrops.Ancient, -3.33 },
-                { SDVCrops.SweetGemBerry, -3.33 }
-            };
-        }
         public static void ShakeScreenOnLowStamina()
         {
             Game1.staminaShakeTimer = 1000;
@@ -177,17 +156,5 @@ namespace ClimateOfFerngill
             return Game1.getLocationFromName("Beach") as Beach;
         }
 
-        internal static bool IsFallCrop(int crop)
-        {
-            if (Enum.IsDefined(typeof(SDVCrops), crop))
-                return true;
-            else
-                return false;
-        }
-
-        internal static double CheckCropTolerance(int currentCrop)
-        {
-            return CropTemps[(SDVCrops)currentCrop];
-        }
     }
 }
