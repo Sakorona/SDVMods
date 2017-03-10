@@ -33,12 +33,6 @@ namespace ClimateOfFerngill
                 { SDVCrops.SweetGemBerry, -3.33 }
             };
         }
-
-        public static double CheckCropTolerance(int currentCrop)
-        {
-            return CropTemps[(SDVCrops)currentCrop];
-        }
-
         public static void ShakeScreenOnLowStamina()
         {
             Game1.staminaShakeTimer = 1000;
@@ -168,6 +162,16 @@ namespace ClimateOfFerngill
             return "ERROR";
         }
 
+        internal static SDVSeasons GetNewSeason(SDVSeasons currentSeason)
+        {
+            if (currentSeason == SDVSeasons.Spring) return SDVSeasons.Summer;
+            if (currentSeason == SDVSeasons.Summer) return SDVSeasons.Fall;
+            if (currentSeason == SDVSeasons.Fall) return SDVSeasons.Winter;
+            if (currentSeason == SDVSeasons.Winter) return SDVSeasons.Spring;
+
+            return SDVSeasons.None;
+        }
+
         public static Beach GetBeach()
         {
             return Game1.getLocationFromName("Beach") as Beach;
@@ -179,6 +183,11 @@ namespace ClimateOfFerngill
                 return true;
             else
                 return false;
+        }
+
+        internal static double CheckCropTolerance(int currentCrop)
+        {
+            return CropTemps[(SDVCrops)currentCrop];
         }
     }
 }

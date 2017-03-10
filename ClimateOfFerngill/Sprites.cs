@@ -43,6 +43,8 @@ namespace ClimateOfFerngill
                 }   
             }
 
+
+            // These are the positions of each sprite on the sheet.
             public static readonly Rectangle NewMoon = new Rectangle(17, 21, 10, 9);
             public static readonly Rectangle WaxingCrescent = new Rectangle(26, 21, 9, 9);
             public static readonly Rectangle FirstQuarter = new Rectangle(35, 21, 10, 9);

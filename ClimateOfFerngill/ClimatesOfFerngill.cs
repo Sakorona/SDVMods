@@ -302,11 +302,11 @@ namespace ClimateOfFerngill
             }
 
             //heatwave event
-            if (e.NewInt == (int)Config.HeatwaveTime)
+            if (e.NewInt == 1700)
             {
                 if (CurrWeather.TodayHigh > (int)Config.HeatwaveWarning && !Utility.isFestivalDay(Game1.dayOfMonth, Game1.currentSeason) && (!Game1.isRaining || !Game1.isLightning))
                 {
-                    DeathTime = InternalUtility.GetNewValidTime(e.NewInt, Config.TimeToDie, InternalUtility.TIMEADD);
+                    DeathTime = InternalUtility.GetNewValidTime(e.NewInt, 300, InternalUtility.TIMEADD); //3 hours.
                     if (Config.TooMuchInfo) LogEvent("Death Time is " + DeathTime);
                     if (Config.TooMuchInfo) LogEvent("Heatwave Event Triggered");
                     SummerHeatwave();
@@ -448,8 +448,6 @@ namespace ClimateOfFerngill
                 UpdateWeather();
             }
 
-            int noLonger = InternalUtility.VerifyValidTime(Config.NoLongerDisplayToday) ? Config.NoLongerDisplayToday : 1700;
-
             //The TV should display: Alerts, today's weather, tommorow's weather, alerts.
 
             // Something such as "Today, the high is 12C, with low 8C. It'll be a very windy day. Tommorow, it'll be rainy."
@@ -477,7 +475,7 @@ namespace ClimateOfFerngill
                 UpdateWeather();             
             }
 
-            if (Game1.timeOfDay < noLonger) //don't display today's weather 
+            if (Game1.timeOfDay < 1800) //don't display today's weather 
             {
                 tvText += "The high for today is ";
                 if (!Config.DisplaySecondScale)
@@ -685,8 +683,9 @@ namespace ClimateOfFerngill
                 LogEvent("Rain Chance is: " + rainChance + " with the rng being " + chance);
 
             //override for the first spring.
-            if (!WeatherHelper.CanWeStorm(Config))
-                stormChance = 0;
+
+            if (Game1.year == 1 && Game1.currentSeason == "spring" && !Config.AllowStormsFirstSpring)
+               stormChance = 0; 
 
             //global change - if it rains, drop the temps (and if it's stormy, drop the temps)
             if (Game1.isRaining)
@@ -695,20 +694,6 @@ namespace ClimateOfFerngill
                 CurrWeather.TodayHigh = CurrWeather.TodayHigh - 4;
                 CurrWeather.TodayLow = CurrWeather.TodayLow - 2;
             }
-
-            if (Config.ForceHeat)
-            {
-                if (Config.TooMuchInfo) LogEvent("Forcing Hazardous Weather: Heatwave conditions");
-                CurrWeather.TodayHigh = 50;
-            }
-
-            if (Config.ForceFrost)
-            {
-                if (Config.TooMuchInfo) LogEvent("Forcing Hazardous Weather: Frost conditions");
-                CurrWeather.TodayHigh = 0;
-                CurrWeather.TodayLow = -1;
-            }
-
 
             if (forceSet)
                 return;
@@ -900,10 +885,8 @@ namespace ClimateOfFerngill
             {
                 windChance = .1 + Game1.dayOfMonth * .044; 
                 rainChance = .5;
-                if (!Config.SetLowCap)
-                    CurrWeather.GetLowFromHigh(Dice.Next(1, 3) + 3);
-                else
-                    CurrWeather.GetLowFromHigh(Dice.Next(1, 3) + 3, Config.LowCap);
+                CurrWeather.GetLowFromHigh(Dice.Next(1, 3) + 3);
+
             }
 
 

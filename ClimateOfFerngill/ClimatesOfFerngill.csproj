@@ -48,21 +48,22 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="ClimatesOfFerngill.cs" />
+    <Compile Include="HazardousWeatherEvents.cs" />
     <Compile Include="Pathoschild.Stardew.UIF\DrawHelper.cs" />
     <Compile Include="FerngillWeather.cs" />
     <Compile Include="Pathoschild.Stardew.UIF\FormattedText.cs" />
     <Compile Include="Pathoschild.Stardew.UIF\IFormattedText.cs" />
-    <Compile Include="MersenneTwister.cs" />
-    <Compile Include="OurExtensions.cs" />
+    <Compile Include="Common\MersenneTwister.cs" />
+    <Compile Include="Common\OurExtensions.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="ClimateConfig.cs" />
-    <Compile Include="SDVCrops.cs" />
+    <Compile Include="Helpers\SDVCrops.cs" />
     <Compile Include="SDVMoon.cs" />
-    <Compile Include="StardewHelpers\SDVSeasons.cs" />
-    <Compile Include="StardewHelpers\SDVWeather.cs" />
-    <Compile Include="InternalUtility.cs" />
+    <Compile Include="Helpers\SDVSeasons.cs" />
+    <Compile Include="Helpers\SDVWeather.cs" />
+    <Compile Include="Common\InternalUtility.cs" />
     <Compile Include="Sprites.cs" />
-    <Compile Include="WeatherHelper.cs" />
+    <Compile Include="Helpers\WeatherHelper.cs" />
     <Compile Include="WeatherMenu.cs" />
   </ItemGroup>
   <ItemGroup>

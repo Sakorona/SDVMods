@@ -6,17 +6,6 @@ namespace ClimateOfFerngill
 {
     static class WeatherHelper
     {
-        /// <summary>
-        /// This function checks if we're allowed to storm.
-        /// </summary>
-        /// <param name="Config">Mod configuration variable</param>
-        /// <returns>If we can storm or not</returns>
-        public static bool CanWeStorm(ClimateConfig Config)
-        {
-            if (Game1.year == 1 && Game1.currentSeason == "spring") return Config.AllowStormsFirstSpring;
-            else return true;
-        }
-
         public static bool IsSeason(SDVSeasons season)
         {
             return (season.ToString()).ToLower() == Game1.currentSeason;
