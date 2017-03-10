@@ -6,13 +6,27 @@ namespace ClimateOfFerngill
 {
     static class WeatherHelper
     {
+        /// <summary>
+        /// This function checks if we're allowed to storm.
+        /// </summary>
+        /// <param name="Config">Mod configuration variable</param>
+        /// <returns>If we can storm or not</returns>
         public static bool CanWeStorm(ClimateConfig Config)
         {
             if (Game1.year == 1 && Game1.currentSeason == "spring") return Config.AllowStormsFirstSpring;
             else return true;
         }
 
-        public static bool fixTV()
+        public static bool IsSeason(SDVSeasons season)
+        {
+            return (season.ToString()).ToLower() == Game1.currentSeason;
+        }
+
+        /// <summary>
+        /// This function just attempts to fix the TV for tomorrow to match forced weather.
+        /// </summary>
+        /// <returns>True if it was fixed, false elsewise</returns>
+        public static bool FixTV()
         {
             if (Game1.currentSeason == "spring" && Game1.year == 1 && Game1.dayOfMonth == 1)
             {
@@ -76,6 +90,29 @@ namespace ClimateOfFerngill
             }
         }
 
+        public static string DescWeather(SDVWeather weather)
+        {
+            switch (weather)
+            {
+                case SDVWeather.Sunny:
+                    return "Sunny";
+                case SDVWeather.Rainy:
+                    return "Rainy";
+                case SDVWeather.Debris:
+                    return "Debris";
+                case SDVWeather.Stormy:
+                    return "Stormy";
+                case SDVWeather.Festival:
+                    return "Festival";
+                case SDVWeather.Snow:
+                    return "Snowy";
+                case SDVWeather.Wedding:
+                    return "Wedding";
+                default:
+                    return "Weather not present in base game";
+            }
+        }
+
         public static string DisplayTemperature(double temp, string tempGauge)
         {
             //base temps are always in celsius
@@ -119,7 +156,6 @@ namespace ClimateOfFerngill
             return "ERROR";
         }
 
-
         public static SDVWeather GetTodayWeather()
         {
             if (Game1.isRaining)
@@ -139,7 +175,6 @@ namespace ClimateOfFerngill
 
             return SDVWeather.Sunny;
         }
-
 
         public static string GetWeatherDesc(MersenneTwister dice, SDVWeather weather, bool today, IMonitor logger)
         {
@@ -166,7 +201,7 @@ namespace ClimateOfFerngill
 
             string[] weddingWeather = new string[] { "it'll be good weather for a Pelican Town Wedding! Congratulations to the newlyweds. " };
             if ((int)weather == Game1.weather_festival)
-                return "It'll be good weather for the " + InternalUtility.getFestivalName(Game1.dayOfMonth + 1, Game1.currentSeason) + "! Sunny and clear.";
+                return "It'll be good weather for the " + InternalUtility.GetFestivalName(Game1.dayOfMonth + 1, Game1.currentSeason) + "! Sunny and clear.";
 
             if (today && weather == SDVWeather.Wedding)
                 return weddingWeather.GetRandomItem(dice);

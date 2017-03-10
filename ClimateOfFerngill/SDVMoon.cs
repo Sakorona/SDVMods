@@ -3,20 +3,24 @@ using System;
 
 namespace ClimateOfFerngill
 {
+    public enum MoonPhase
+    {
+        NewMoon,
+        WaxingCrescent,
+        FirstQuarter,
+        WaxingGibbeous,
+        FullMoon,
+        WaningGibbeous,
+        ThirdQuarter,
+        WaningCrescent,
+        ErrorPhase
+    }
+
     public class SDVMoon
     {
         private static int cycleLength = 16;
 
-        internal const int NEWMOON = 1001;
-        internal const int WAXCRES = 1002;
-        internal const int FIRSTQT = 1003;
-        internal const int WAXGIBB = 1004;
-        internal const int FULMOON = 1005;
-        internal const int WANGIBB = 1006;
-        internal const int LASTQRT = 1007;
-        internal const int WANCRES = 1008;
-
-        public static int GetLunarPhase()
+        public static MoonPhase GetLunarPhase()
         {
             //divide it by the cycle.
             int currentDay = (int)Game1.stats.daysPlayed - ((int)(Math.Floor(Game1.stats.daysPlayed / (double)cycleLength)) * cycleLength);
@@ -25,33 +29,33 @@ namespace ClimateOfFerngill
             switch (currentDay)
             {
                 case 0:
-                    return NEWMOON;
+                    return MoonPhase.NewMoon;
                 case 1:
                 case 2:
                 case 3:
-                    return WAXCRES;
+                    return MoonPhase.WaxingCrescent;
                 case 4:
-                    return FIRSTQT;
+                    return MoonPhase.FirstQuarter;
                 case 5:
                 case 6:
                 case 7:
-                    return WAXGIBB;
+                    return MoonPhase.WaxingGibbeous;
                 case 8:
-                    return FULMOON;
+                    return MoonPhase.FullMoon;
                 case 9:
                 case 10:
                 case 11:
-                    return WANGIBB;
+                    return MoonPhase.WaningGibbeous;
                 case 12:
-                    return LASTQRT;
+                    return MoonPhase.ThirdQuarter;
                 case 13:
                 case 14:
                 case 15:
-                    return WANCRES;
+                    return MoonPhase.WaningCrescent;
                 case 16:
-                    return NEWMOON; //sanity check
+                    return MoonPhase.NewMoon;
                 default:
-                    return -1;             
+                    return MoonPhase.ErrorPhase;             
             }       
 
         }

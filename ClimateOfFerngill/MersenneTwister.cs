@@ -1,4 +1,5 @@
-﻿    #region License
+﻿
+#region License
     // Copyright 2007-2008 Rory Plaire (codekaizen@gmail.com)
     /*
      * This license governs use of the accompanying software. If you use the software, you
@@ -121,15 +122,16 @@
 
     namespace NPack
     {
-        /// <summary>
-        /// Generates pseudo-random numbers using the Mersenne Twister algorithm.
-        /// </summary>
-        /// <remarks>
-        /// See <a href="http://www.math.sci.hiroshima-u.ac.jp/~m-mat/MT/emt.html">
-        /// http://www.math.sci.hiroshima-u.ac.jp/~m-mat/MT/emt.html</a> for details
-        /// on the algorithm.
-        /// </remarks>
-        public class MersenneTwister : Random
+    #pragma warning disable IDE1006 // Naming Styles
+    /// <summary>
+    /// Generates pseudo-random numbers using the Mersenne Twister algorithm.
+    /// </summary>
+    /// <remarks>
+    /// See <a href="http://www.math.sci.hiroshima-u.ac.jp/~m-mat/MT/emt.html">
+    /// http://www.math.sci.hiroshima-u.ac.jp/~m-mat/MT/emt.html</a> for details
+    /// on the algorithm.
+    /// </remarks>
+    public class MersenneTwister : Random
         {
             /// <summary>
             /// Creates a new pseudo-random number generator with a given seed.
@@ -469,8 +471,9 @@
             private const UInt32 TemperingMaskB = 0x9d2c5680;
             private const UInt32 TemperingMaskC = 0xefc60000;
 
-            private static UInt32 temperingShiftU(UInt32 y)
-            {
+        private static UInt32 temperingShiftU(UInt32 y)
+
+        {
                 return (y >> 11);
             }
 
@@ -573,4 +576,5 @@
                 //return BitConverter.Int64BitsToDouble((a << 26) + b));
             }
         }
-    }
+#pragma warning restore IDE1006 // Naming Styles
+}

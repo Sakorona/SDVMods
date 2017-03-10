@@ -1,10 +1,12 @@
 ﻿
+using Microsoft.Xna.Framework.Input;
+
 namespace ClimateOfFerngill
 {
     public class ClimateConfig
     {
-        public double FogChance { get; set; }
-        public int FogDuration { get; set; }
+        public Keys Keyboard { get; set; }
+        public Buttons Controller { get; set; }
 
         public int HeatwaveTime { get; set; }
 
@@ -22,7 +24,7 @@ namespace ClimateOfFerngill
         public double DiseaseChance { get; set; }
         public int StaminaPenalty { get; set; }
 
-        public bool tooMuchInfo { get; set; }
+        public bool TooMuchInfo { get; set; }
 
         public bool HarshWeather { get; set; }
 
@@ -47,7 +49,10 @@ namespace ClimateOfFerngill
         {
             //set defaults for mod specific stuff
             SuppressLog = false;
-            tooMuchInfo = false; 
+            TooMuchInfo = false;
+
+            //set keyboard key
+            Keyboard = Keys.Z;
 
             //set overrides
             AllowSnowOnFall28 = true;
