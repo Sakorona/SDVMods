@@ -1,6 +1,10 @@
 ﻿using StardewValley;
 using System;
 using StardewModdingAPI;
+using StardewValley.TerrainFeatures;
+using NPack;
+using System.Collections.Generic;
+using Microsoft.Xna.Framework;
 
 namespace ClimateOfFerngill
 {
@@ -19,6 +23,18 @@ namespace ClimateOfFerngill
 
     public class SDVMoon
     {
+
+        private MersenneTwister Dice;
+        private ClimateConfig Config;
+        private IMonitor Monitor;
+
+        public SDVMoon(IMonitor mon, ClimateConfig config, MersenneTwister rng)
+        {
+            Monitor = mon;
+            Dice = rng;
+            Config = config;
+        }
+
         private static int cycleLength = 16;
 
         public static MoonPhase GetLunarPhase()
@@ -66,16 +82,12 @@ namespace ClimateOfFerngill
             if (SDVMoon.GetLunarPhase() == MoonPhase.FullMoon)
             {
                 Farm f = Game1.getFarm();
-        HoeDirt curr;
 
                 if (f != null){
                     foreach (KeyValuePair<Vector2, TerrainFeature> TF in f.terrainFeatures)
                     {
-                        if (TF.Value is HoeDirt)
+                        if (TF.Value is HoeDirt curr && curr.crop != null)
                         {
-                            curr = (HoeDirt) TF.Value;
-                            if (curr.crop != null)
-                            {
                                 //20% chance of increased growth.
                                 if (Dice.NextDouble() < .1)
                                 {
@@ -90,14 +102,14 @@ namespace ClimateOfFerngill
                                         }
 }
                                 }
-                            }
+                            
                         }
                     }
                 }
             }
 
 
-            if (SDVMoon.GetLunarPhase() == MoonPhase.NewMoon && Config.MoonEffects)
+            if (SDVMoon.GetLunarPhase() == MoonPhase.NewMoon)
             {
                 Farm f = Game1.getFarm();
 HoeDirt curr;

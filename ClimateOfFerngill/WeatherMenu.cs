@@ -43,10 +43,12 @@ namespace ClimateOfFerngill
         ****/
         /// <summary>Construct an instance.</summary>
         /// <param name="monitor">Encapsulates logging and monitoring.</param>
-        public WeatherMenu(IMonitor monitor)
+        public WeatherMenu(IMonitor monitor, IReflectionHelper reflectionHelper)
         {
             // save data
             this.Monitor = monitor;
+
+            this.Reflection = reflectionHelper;
 
             // update layout
             this.UpdateLayout();

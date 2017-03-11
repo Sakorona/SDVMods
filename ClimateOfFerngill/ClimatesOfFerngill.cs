@@ -63,8 +63,10 @@ namespace ClimateOfFerngill
             Config = helper.ReadConfig<ClimateConfig>();
             CurrWeather = new FerngillWeather();
             ModRan = false;
-            Luna = new SDVMoon();
+
             var ourIcons = new Sprites.Icons(Helper.DirectoryPath);
+
+            Luna = new SDVMoon(Monitor, Config, Dice);
             BadEvents = new HazardousWeatherEvents(Monitor, Config, Dice);
 
             //set variables
@@ -183,7 +185,7 @@ namespace ClimateOfFerngill
             //night time events
             if (e.NewInt > Game1.getTrulyDarkTime() && Game1.currentLocation.isOutdoors)
             {
-                if (SDVMoon.GetLunarPhase() == MoonPhase.FullMoon && Config.MoonEffects)
+                if (SDVMoon.GetLunarPhase() == MoonPhase.FullMoon)
                 {
                     if (Dice.NextDouble() > .98) //2% chance
                         SpawnGhostOffScreen();
@@ -421,7 +423,7 @@ namespace ClimateOfFerngill
             UpdateWeather();    
 
             //moon processing
-            if (SDVMoon.GetLunarPhase() == MoonPhase.NewMoon && Config.MoonEffects)
+            if (SDVMoon.GetLunarPhase() == MoonPhase.NewMoon)
             {
                 Beach ourBeach = InternalUtility.GetBeach();
                 foreach (KeyValuePair<Vector2, StardewValley.Object> o in ourBeach.objects)
@@ -437,7 +439,7 @@ namespace ClimateOfFerngill
             }
             
             //moon processing
-            if (SDVMoon.GetLunarPhase() == MoonPhase.FullMoon && Config.MoonEffects)
+            if (SDVMoon.GetLunarPhase() == MoonPhase.FullMoon)
             {
                 int parentSheetIndex = 0;
                 Rectangle rectangle = new Rectangle(65, 11, 25, 12);
@@ -825,7 +827,7 @@ namespace ClimateOfFerngill
         {
             // show menu
             this.PreviousMenu = Game1.activeClickableMenu;
-            Game1.activeClickableMenu = new WeatherMenu(Monitor);
+            Game1.activeClickableMenu = new WeatherMenu(Monitor, this.Helper.Reflection);
         }
 
         private void HideMenu()
