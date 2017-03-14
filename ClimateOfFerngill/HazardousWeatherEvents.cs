@@ -126,5 +126,7 @@ namespace ClimateOfFerngill
                 if (Config.TooMuchInfo) Logger.Log("Setting frost test via queued message", LogLevel.Trace);
             }
         }
+
+     
     }
 }

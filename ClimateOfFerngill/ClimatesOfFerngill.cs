@@ -26,12 +26,13 @@ namespace ClimateOfFerngill
     public class ClimatesOfFerngill : Mod
     {
         public ClimateConfig Config { get; private set; }
-        int WeatherAtStartOfDay { get; set; }
-        FerngillWeather CurrWeather { get; set; }
-        private bool GameLoaded;
+        internal SDVWeather WeatherAtStartOfDay { get; set; }
+        internal FerngillWeather CurrWeather { get; set; }
         public SDVMoon Luna { get; set; }
 
-        private bool ModRan { get; set; }
+        //trackers
+        private bool GameLoaded;
+        private SDVWeather TmrwWeather;
 
         //event fields
         private List<Vector2> ThreatenedCrops { get; set; }
@@ -61,8 +62,7 @@ namespace ClimateOfFerngill
         {
             Dice = new MersenneTwister();
             Config = helper.ReadConfig<ClimateConfig>();
-            CurrWeather = new FerngillWeather();
-            ModRan = false;
+            CurrWeather = new FerngillWeather(Config);
 
             var ourIcons = new Sprites.Icons(Helper.DirectoryPath);
 
@@ -113,84 +113,21 @@ namespace ClimateOfFerngill
                 BadEvents.EarlyFrost(CurrWeather);
             }
 
+            Luna.HandleMoonBeforeSleep(Game1.getFarm()); //run lunar events
         }
-
-        private void SummerHeatwave()
-        {
-            Farm f = Game1.getFarm();
-            HoeDirt curr;
-            bool cropsDeWatered = false;
-            bool cropsKilled = false;
-            int count = 0;
-
-            if (f != null)
-            {
-                foreach (KeyValuePair<Vector2, TerrainFeature> tf in f.terrainFeatures)
-                {
-                    if (count >= 15)
-                        break;
-
-                    if (tf.Value is HoeDirt)
-                    {
-                        curr = (HoeDirt)tf.Value;
-                        if (curr.crop != null)
-                        {
-                            if (Dice.NextDouble() > .65)
-                            {
-                                if (Config.TooMuchInfo) Console.WriteLine("First Condition for Lethal: " + (CurrWeather.TodayHigh >= Config.DeathTemp));
-                                if (Config.TooMuchInfo) Console.WriteLine("Second Condition for Lethal:" + Config.AllowCropHeatDeath);
-                                if (CurrWeather.TodayHigh >= Config.DeathTemp && Config.AllowCropHeatDeath)
-                                {
-                                    ThreatenedCrops.Add(tf.Key);
-                                    curr.state = 0;
-                                    count++;
-                                    cropsKilled = true;
-                                    if (Config.TooMuchInfo) Console.WriteLine("Triggered: Lethal heatwave");
-                                }
-                                else if (CurrWeather.TodayHigh >= Config.HeatwaveWarning && !Config.AllowCropHeatDeath)
-                                {
-                                    curr.state = 0; //dewater
-                                    count++;
-                                    cropsDeWatered = true;
-                                    if (Config.TooMuchInfo) Console.WriteLine("Triggered: Non lethal heatwave");
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-
-            if (cropsDeWatered)
-                InternalUtility.ShowMessage("The extreme heat has caused some of your crops to become dry....!");
-            if (cropsKilled)
-                InternalUtility.ShowMessage("The extreme heat has caused some of your crops to dry out. If you don't water them, they'll die!");
-        }
-
+       
         private void TimeEvents_TimeOfDayChanged(object sender, EventArgsIntChanged e)
         {
             BadEvents.CatchACold();
 
             //specific time stuff
-            if (e.NewInt == 610)
-            {
-                if (CurrWeather.TodayHigh > Config.HeatwaveWarning)
-                    CurrWeather.Status = FerngillWeather.HEATWAVE;
+            if (e.NewInt == 610)  CurrWeather.CheckForDangerousWeather(); //HUD Messages about status.
 
-                if (CurrWeather.TodayLow < Config.FrostWarning)
-                    CurrWeather.Status = FerngillWeather.FROST;
+            /* /////////////////////////////////////////////////
+             * night time events
+             * //////////////////////////////////////////////// */
 
-                CheckForDangerousWeather(true);
-            }
-
-            //night time events
-            if (e.NewInt > Game1.getTrulyDarkTime() && Game1.currentLocation.isOutdoors)
-            {
-                if (SDVMoon.GetLunarPhase() == MoonPhase.FullMoon)
-                {
-                    if (Dice.NextDouble() > .98) //2% chance
-                        SpawnGhostOffScreen();
-                }
-            }
+            if (Luna.CheckForGhostSpawn()) SpawnGhostOffScreen();
 
             //heatwave event
             if (e.NewInt == 1700)
@@ -235,9 +172,8 @@ namespace ClimateOfFerngill
         public void SpawnGhostOffScreen()
         {
             Vector2 zero = Vector2.Zero;
-            var ourFarm = Game1.getFarm();
 
-            if (ourFarm != null)
+            if (Game1.getFarm() is Farm ourFarm)
             {
                 switch (Game1.random.Next(4))
                 {
@@ -256,37 +192,28 @@ namespace ClimateOfFerngill
                         zero.Y = (float)Game1.random.Next(ourFarm.map.Layers[0].LayerHeight);
                         break;
                 }
+
                 if (Utility.isOnScreen(zero * (float)Game1.tileSize, Game1.tileSize))
                     zero.X -= (float)Game1.viewport.Width;
-                bool flag;
 
                 List<NPC> characters = ourFarm.characters;
-                Ghost bat = new Ghost(zero * Game1.tileSize);
-                int num1 = 1;
-                bat.focusedOnFarmers = num1 != 0;
-                int num2 = 1;
-                bat.wildernessFarmMonster = num2 != 0;
-                characters.Add((NPC)bat);
-                flag = true;
-
-                if (!flag || !Game1.currentLocation.Equals((object)this))
-                    return;
-                foreach (KeyValuePair<Vector2, StardewValley.Object> keyValuePair in (Dictionary<Vector2, StardewValley.Object>)ourFarm.objects)
+                Ghost bat = new Ghost(zero * Game1.tileSize)
                 {
-                    if (keyValuePair.Value != null && keyValuePair.Value.bigCraftable && keyValuePair.Value.parentSheetIndex == 83)
-                    {
-                        keyValuePair.Value.shakeTimer = 1000;
-                        keyValuePair.Value.showNextIndex = true;
-                        Game1.currentLightSources.Add(new LightSource(4, keyValuePair.Key * (float)Game1.tileSize + new Vector2((float)(Game1.tileSize / 2), 0.0f), 1f, Color.Cyan * 0.75f, (int)((double)keyValuePair.Key.X * 797.0 + (double)keyValuePair.Key.Y * 13.0 + 666.0)));
-                    }
-                }
+                    focusedOnFarmers = true,
+                    wildernessFarmMonster = true
+                };
+                characters.Add((NPC)bat);
+
+                if (!Game1.currentLocation.Equals((object)this))
+                    return;
             }
         }
 
         private void SaveEvents_AfterLoad(object sender, EventArgs e)
         {
             GameLoaded = true;
-            UpdateWeather();
+            UpdateWeather(CurrWeather);
+            Luna.UpdateForNewDay();
         }
 
         private void MenuEvents_MenuChanged(object sender, EventArgsClickableMenuChanged e)
@@ -335,7 +262,7 @@ namespace ClimateOfFerngill
             //prevent null from being true.
             if (CurrWeather == null)
             {
-                CurrWeather = new FerngillWeather();
+                CurrWeather = new FerngillWeather(Config);
                 UpdateWeather();
             }
 
@@ -389,429 +316,37 @@ namespace ClimateOfFerngill
             return tvText;
         }
        
-        public void CheckForDangerousWeather(bool hud = true)
-        {
-            if (CurrWeather.Status == FerngillWeather.BLIZZARD) {
-                InternalUtility.ShowMessage("There's a dangerous blizzard out today. Be careful!");
-                return;
-            }
-
-            if (CurrWeather.Status == FerngillWeather.FROST && Game1.currentSeason != "winter")
-            {
-                InternalUtility.ShowMessage("The temperature tonight will be dipping below freezing. Your crops may be vulnerable to frost!");
-                return;
-            }
-
-            if (CurrWeather.Status == FerngillWeather.HEATWAVE)
-            {
-                InternalUtility.ShowMessage("A massive heatwave is sweeping the valley. Stay hydrated!");
-                return;
-            }
-        }
-
-     
-
         public void TimeEvents_DayOfMonthChanged(object sender, EventArgsIntChanged e)
         {
             if (!GameLoaded) //sanity check
                 return;
-            int[] beachItems = new int[] { 393, 397, 392, 394 };
-            int[] moonBeachItems = new int[] { 393, 394, 560, 586, 587, 589, 397 };
 
-            CurrWeather.Status = 0; //reset status
+            //update objects for new day.
             BadEvents.UpdateForNewDay();
-            UpdateWeather();    
+            CurrWeather.UpdateForNewDay();
+            Luna.UpdateForNewDay();
+            Luna.HandleMoonAfterWake(InternalUtility.GetBeach());
 
-            //moon processing
-            if (SDVMoon.GetLunarPhase() == MoonPhase.NewMoon)
-            {
-                Beach ourBeach = InternalUtility.GetBeach();
-                foreach (KeyValuePair<Vector2, StardewValley.Object> o in ourBeach.objects)
-                {
-                    if (beachItems.Contains(o.Value.parentSheetIndex))
-                    {
-                        if (Dice.NextDouble() < .2)
-                        {
-                            ourBeach.objects.Remove(o.Key);
-                        }                           
-                    }
-                }
-            }
-            
-            //moon processing
-            if (SDVMoon.GetLunarPhase() == MoonPhase.FullMoon)
-            {
-                int parentSheetIndex = 0;
-                Rectangle rectangle = new Rectangle(65, 11, 25, 12);
-                Beach ourBeach = InternalUtility.GetBeach();
-                for (int index = 0; index < 5; ++index)
-                {
-                    parentSheetIndex = moonBeachItems.GetRandomItem(Dice);
-                    if (Dice.NextDouble() < .0001)
-                        parentSheetIndex = 392; //rare chance
-
-                    if (Dice.NextDouble() < .8)
-                    {
-                        Vector2 v = new Vector2((float)Game1.random.Next(rectangle.X, rectangle.Right), (float)Game1.random.Next(rectangle.Y, rectangle.Bottom));
-                        if (ourBeach.isTileLocationTotallyClearAndPlaceable(v))
-                            ourBeach.dropObject(new StardewValley.Object(parentSheetIndex, 1, false, -1, 0), v * (float)Game1.tileSize, Game1.viewport, true, (Farmer)null);
-                    }
-                }
-            }
+            //update the weather
+            UpdateWeather(CurrWeather);    
         }
 
-        void UpdateWeather(){
+        void UpdateWeather(FerngillWeather weatherOutput)
+        {
             bool forceSet = false;
-            //sanity checks.
             
-            #region WeatherChecks
-            //sanity check - wedding
-            if (Game1.player.spouse != null && Game1.player.spouse.Contains("engaged"))
-            {
-                if (Game1.countdownToWedding == 1)
-                {
-                    if (Config.TooMuchInfo) Monitor.Log("There is no Alanis Morissetting here. Enjoy your wedding.");
-                    Game1.weatherForTomorrow = Game1.weather_wedding;
-                    return;
-                }
-            }
+            SDVSeasons CurSeason = InternalUtility.GetSeason(Game1.currentSeason);
 
-            if (Game1.countdownToWedding == 0 && (Game1.player.spouse != null && Game1.player.spouse.Contains("engaged")))
+            /* First, we need to check for forced weather changes */
+            if (Utility.isFestivalDay(Game1.dayOfMonth + 1, CurSeason.ToString()))
             {
-                Game1.weatherForTomorrow = Game1.weather_wedding;
-                if (Config.TooMuchInfo) Monitor.Log("Detecting the wedding tommorow. Setting weather and returning");
-                return;
-            }
-
-            //sanity check - festival
-            if (Utility.isFestivalDay(Game1.dayOfMonth + 1, Game1.currentSeason))
-            {
-                Game1.weatherForTomorrow = Game1.weather_festival;
+                Game1.weatherForTomorrow = (int)SDVWeather.Festival;
                 forceSet = true;
             }
-            //catch call.
-            if (WeatherAtStartOfDay != Game1.weatherForTomorrow && ModRan)
-            {
-                if (WeatherHelper.WeatherForceDay(Game1.currentSeason, Game1.dayOfMonth + 1, Game1.year))
-                {
-                    if (Config.TooMuchInfo) Monitor.Log("The game will force weather. Aborting.");
-                    return;
-                }
-
-                if (Config.TooMuchInfo)
-                    Monitor.Log("Change detected not caught by other checks. Debug Info: DAY " + Game1.dayOfMonth + " Season: " + Game1.currentSeason + " with prev weather: " + WeatherHelper.DescWeather(WeatherAtStartOfDay) + " and new weather: " + WeatherHelper.DescWeather(Game1.weatherForTomorrow) + ". Aborting.");
-
-                return;
-            }
-
-            //TV forces.
-            bool forceTomorrow = WeatherHelper.FixTV();
-            if (forceTomorrow)
-            {
-                Monitor.Log("Tommorow, there will be forced weather.");
-                forceSet = true;
-            }
-            #endregion
-
-            /* Since we have multiple different climates, maybe a more .. clearer? method */
-            CurrWeather.Reset();
-
-            //reset the variables
-            rainChance = stormChance = windChance = 0;
-
-            //set the variables
-            if (Game1.currentSeason == "spring")
-                HandleSpringWeather();
-            else if (Game1.currentSeason == "summer")
-                HandleSummerWeather();
-            else if (Game1.currentSeason == "fall")
-                HandleAutumnWeather();
-            else if (Game1.currentSeason == "winter")
-                HandleWinterWeather();
-
-            //handle calcs here for odds.
-            double chance = Dice.NextDouble();
-            if (Config.TooMuchInfo)
-                Monitor.Log("Rain Chance is: " + rainChance + " with the rng being " + chance);
-
-            //override for the first spring.
-
-            if (Game1.year == 1 && Game1.currentSeason == "spring" && !Config.AllowStormsFirstSpring)
-               stormChance = 0; 
-
-            //global change - if it rains, drop the temps (and if it's stormy, drop the temps)
-            if (Game1.isRaining)
-            {
-                if (Config.TooMuchInfo) Monitor.Log("Dropping temp by 4 from " + CurrWeather.TodayHigh);
-                CurrWeather.TodayHigh = CurrWeather.TodayHigh - 4;
-                CurrWeather.TodayLow = CurrWeather.TodayLow - 2;
-            }
-
-            if (forceSet)
-                return;
-
-            //sequence - rain (Storm), wind, sun
-            //this also contains the notes - certain seasons don't have certain weathers.
-            if (chance < rainChance || Game1.currentSeason != "winter")
-            {
-                chance = Dice.NextDouble();
-                if (chance < stormChance && stormChance != 0)
-                {
-                    if (Config.TooMuchInfo) Monitor.Log("Storm is selected, with roll " + chance + " and target percent " + stormChance);
-                    Game1.weatherForTomorrow = Game1.weather_lightning;
-                }
-                else
-                {
-                    Game1.weatherForTomorrow = Game1.weather_rain;
-                    if (Config.TooMuchInfo) Monitor.Log("Raining selected");
-                }
-            }
-            else if (Game1.currentSeason != "winter")
-            {
-                if (chance < (windChance + rainChance) && (Game1.currentSeason == "spring" || Game1.currentSeason == "fall") && windChance != 0)
-                {
-                    Game1.weatherForTomorrow = Game1.weather_debris;
-                    if (Config.TooMuchInfo) Monitor.Log("It's windy today, with roll " + chance + " and wind odds " + windChance);
-                }
-                else
-                    Game1.weatherForTomorrow = Game1.weather_sunny;
-            }
-
-            if (Game1.currentSeason == "winter")
-            {
-                if (chance < rainChance)
-                    Game1.weatherForTomorrow = Game1.weather_snow;
-                else
-                    Game1.weatherForTomorrow = Game1.weather_sunny;
-            }
-
-            if (Game1.dayOfMonth == 28 && Game1.currentSeason == "fall" && Config.AllowSnowOnFall28)
-            {
-                CurrWeather.TodayHigh = 2;
-                CurrWeather.TodayLow = -1;
-                Game1.weatherForTomorrow = Game1.weather_snow; //it now snows on Fall 28.
-            }
-
-            WeatherAtStartOfDay = Game1.weatherForTomorrow;
-            Game1.chanceToRainTomorrow = rainChance; //set for various events.
-            Monitor.Log("We've set the weather for tommorow . It is: " + WeatherHelper.DescWeather(Game1.weatherForTomorrow));
-            ModRan = true;
-        }
-
-        private void HandleSpringWeather()
-        {
-            if (Config.TooMuchInfo) Monitor.Log("Executing Spring Weather");
-            stormChance = .15;
-            windChance = .25;
-            rainChance = .3 + (Game1.dayOfMonth * .0278);
-
-            CurrWeather.TodayHigh = Dice.Next(1, 8) + 8;
-            CurrWeather.GetLowFromHigh(Dice.Next(1, 3) + 3);
-
-            if (Game1.dayOfMonth > 9 && Game1.dayOfMonth < 19)
-            {
-                stormChance = .2;
-                windChance = .15 + (Game1.dayOfMonth * .01);
-                rainChance = .2 + (Game1.dayOfMonth * .01);            
-
-                CurrWeather.TodayHigh = Dice.Next(1, 6) + 14;
-                CurrWeather.GetLowFromHigh(Dice.Next(1, 3) + 3);
-            }
-
-            if (Game1.dayOfMonth > 18)
-            {
-                stormChance = .3;
-                windChance = .05 + (Game1.dayOfMonth * .01);
-                rainChance = .2;
-
-                CurrWeather.TodayHigh = Dice.Next(1, 6) + 20;
-                CurrWeather.GetLowFromHigh(Dice.Next(1, 3) + 3);
-            }
-
-            //override the rain chance - it's the same no matter what day, so pulling it out of the if statements.
-            switch (Config.ClimateType)
-            {
-                case "arid":
-                    CurrWeather.AlterTemps(5);
-                    rainChance = .25;
-                    break;
-                case "dry":
-                    rainChance = .3;
-                    break;
-                case "wet":
-                    rainChance = rainChance + .05;
-                    break;
-                case "monsoon":
-                    rainChance = .95;
-                    break;
-                default:
-                    break;
-            }
-        }
-
-        private void HandleSummerWeather()
-        {
-            if (Config.TooMuchInfo) Monitor.Log("Executing Summer Weather");
-            if (Game1.dayOfMonth < 10)
-            {
-                //rain, snow, windy chances
-                stormChance = .45;
-                windChance = 0; //cannot wind during summer
-                rainChance = .15;
-
-                CurrWeather.TodayHigh = Dice.Next(1, 8) + 26;
-                CurrWeather.GetLowFromHigh(Dice.Next(1, 3) + 3);
-            }
-            if (Game1.dayOfMonth > 9 && Game1.dayOfMonth < 19)
-            {
-                //rain, snow, windy chances
-                stormChance = .6;
-                windChance = 0; //cannot wind during summer
-                rainChance = .15;
-
-                CurrWeather.TodayHigh = 30 + (int)Math.Floor(Game1.dayOfMonth * .25) + Dice.Next(0,5);
-                if (Dice.NextDouble() > .70)
-                {
-                    if (Config.TooMuchInfo) Monitor.Log("Randomly adding to the temp");
-                    CurrWeather.TodayHigh += Dice.Next(0, 3);
-                }
-
-                CurrWeather.GetLowFromHigh(Dice.Next(1, 3) + 3);
-            }
-            if (Game1.dayOfMonth > 18)
-            {
-                //temperature
-                CurrWeather.TodayHigh = 42 - (int)Math.Floor(Game1.dayOfMonth * .8) + Dice.Next(0, 3);
-                CurrWeather.GetLowFromHigh(Dice.Next(1, 3) + 3);
-
-                stormChance = .45;
-                windChance = 0; 
-                rainChance = .3;
-            }
-
-            //summer alterations
-            CurrWeather.AlterTemps(Dice.Next(0, 3));
-            if (Config.ClimateType == "arid")  CurrWeather.AlterTemps(6);
-
-            switch (Config.ClimateType)
-            {
-                case "arid":
-                    rainChance = .05;
-                    break;
-                case "dry":
-                    rainChance = .20;
-                    break;
-                case "wet":
-                    rainChance = rainChance + .05;
-                    break;
-                case "monsoon":
-                    rainChance = rainChance - .1;
-                    stormChance = .8;
-                    break;
-                default:
-                    break;
-            }
-        }
-
-        private void HandleAutumnWeather()
-        {
-            if (Config.TooMuchInfo) Monitor.Log("Executing Fall Weather");
-            stormChance = .33;
-            CurrWeather.TodayHigh = 22 - (int)Math.Floor(Game1.dayOfMonth * .667) + Dice.Next(0, 2); 
-
-            if (Game1.dayOfMonth < 10)
-            {
-                windChance = 0 + (Game1.dayOfMonth * .044);
-                rainChance = .3 + (Game1.dayOfMonth * .01111);
-                CurrWeather.GetLowFromHigh(Dice.Next(1, 6) + 4);
-            }
-
-            if (Game1.dayOfMonth > 9 && Game1.dayOfMonth < 19)
-            {
-                windChance = .4 + (Game1.dayOfMonth * .022);
-                rainChance = 1 - windChance;
-                CurrWeather.GetLowFromHigh(Dice.Next(1, 6) + 3);
-            }
-
-            if (Game1.dayOfMonth > 18)
-            {
-                windChance = .1 + Game1.dayOfMonth * .044; 
-                rainChance = .5;
-                CurrWeather.GetLowFromHigh(Dice.Next(1, 3) + 3);
-
-            }
 
 
-            //climate changes to the rain.
-            switch (Config.ClimateType)
-            {
-                case "arid":
-                    rainChance = .05;
-                    CurrWeather.AlterTemps(2);
-                    if (Game1.dayOfMonth < 10 && Game1.dayOfMonth > 18) windChance = .3;
-                    break;
-                case "dry":
-                    if (Game1.dayOfMonth > 10) rainChance = .25;
-                    else rainChance = .2;
-                    windChance = .3;
-                    break;
-                case "wet":
-                    rainChance = rainChance + .05;
-                    break;
-                case "monsoon":
-                    if (Game1.dayOfMonth > 18) rainChance = .9;
-                    else rainChance = .1 + (Game1.dayOfMonth * .08889);
-                    break;
-                default:
-                    break;
-            }
 
-    }
-
-        private void HandleWinterWeather()
-        {
-            if (Config.TooMuchInfo) Monitor.Log("Executing Winter Weather");
-            stormChance = 0;
-            windChance = 0;
-            rainChance = .6;
-
-            if (Game1.dayOfMonth < 10)
-            {
-                CurrWeather.TodayHigh = -2 + (int)Math.Floor(Game1.dayOfMonth * .889) + Dice.Next(0, 3);
-                CurrWeather.GetLowFromHigh(Dice.Next(1, 4));
-            }
-
-            if (Game1.dayOfMonth > 9 && Game1.dayOfMonth < 19)
-            {
-                CurrWeather.TodayHigh = -12 + (int)Math.Floor(Game1.dayOfMonth * 1.111) + Dice.Next(0, 3);
-                CurrWeather.GetLowFromHigh(Dice.Next(1, 4));
-                rainChance = .75;
-            }
-
-            if (Game1.dayOfMonth > 18)
-            {
-                CurrWeather.TodayHigh = -12 + (int)Math.Floor(Game1.dayOfMonth * 1.222) + Dice.Next(0, 3);
-                CurrWeather.GetLowFromHigh(Dice.Next(1, 4));
-            } 
-
-            switch (Config.ClimateType)
-            {
-                case "arid":
-                    rainChance = .25;
-                    break;
-                case "dry":
-                    rainChance = .30;
-                    break;
-                case "wet":
-                    rainChance = rainChance + .05;
-                    break;
-                case "monsoon":
-                    rainChance = 1;
-                    break;
-                default:
-                    break;
-            }
-
+            TmrwWeather = (SDVWeather)Game1.weatherForTomorrow;
         }
 
         #region Menu

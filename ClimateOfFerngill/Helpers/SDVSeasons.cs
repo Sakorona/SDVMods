@@ -2,11 +2,11 @@
 {
     internal enum SDVSeasons
     {
-        Spring = 0,
-        Summer = 1,
-        Fall = 2,
-        Winter = 3,
-        None = 4
+        spring = 0,
+        summer = 1,
+        fall = 2,
+        winter = 3,
+        none = 4
     }
 
 }

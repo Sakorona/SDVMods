@@ -5,6 +5,7 @@ using StardewValley.TerrainFeatures;
 using NPack;
 using System.Collections.Generic;
 using Microsoft.Xna.Framework;
+using StardewValley.Locations;
 
 namespace ClimateOfFerngill
 {
@@ -23,19 +24,44 @@ namespace ClimateOfFerngill
 
     public class SDVMoon
     {
-
+        //encapsulated members
         private MersenneTwister Dice;
         private ClimateConfig Config;
         private IMonitor Monitor;
+
+        //internal trackers
+        internal MoonPhase CurrPhase;
+        private static int cycleLength = 16;
+
+        //chances for various things
+        private double CropGrowthChance;
+        private double CropNoGrowthChance;
+        private double GhostChance;
+        private double BeachRemovalChance;
+        private double BeachSpawnChance;
+
+        //internal arrays
+        internal readonly int[] beachItems = new int[] { 393, 397, 392, 394 };
+        internal readonly int[] moonBeachItems = new int[] { 393, 394, 560, 586, 587, 589, 397 };
 
         public SDVMoon(IMonitor mon, ClimateConfig config, MersenneTwister rng)
         {
             Monitor = mon;
             Dice = rng;
             Config = config;
+
+            //set chances.
+            CropGrowthChance = .09;
+            CropNoGrowthChance = .09;
+            BeachRemovalChance = .09;
+            BeachSpawnChance = .35;
+            GhostChance = .02;
         }
 
-        private static int cycleLength = 16;
+        public void UpdateForNewDay()
+        {
+            CurrPhase = SDVMoon.GetLunarPhase();
+        }
 
         public static MoonPhase GetLunarPhase()
         {
@@ -77,32 +103,29 @@ namespace ClimateOfFerngill
 
         }
 
-        public void HandleMoonBeforeSleep() { 
+        public void HandleMoonBeforeSleep(Farm f) { 
             //moon processing
             if (SDVMoon.GetLunarPhase() == MoonPhase.FullMoon)
             {
-                Farm f = Game1.getFarm();
-
-                if (f != null){
+                if(f != null) {
                     foreach (KeyValuePair<Vector2, TerrainFeature> TF in f.terrainFeatures)
                     {
                         if (TF.Value is HoeDirt curr && curr.crop != null)
                         {
-                                //20% chance of increased growth.
-                                if (Dice.NextDouble() < .1)
+                            //20% chance of increased growth.
+                            if (Dice.NextDouble() < CropGrowthChance)
+                            {
+                                if (Config.TooMuchInfo) Monitor.Log("Crop is being boosted by full moon", LogLevel.Trace);
+                                if (curr.state == 1) //make sure it's watered
                                 {
-                                    if (Config.TooMuchInfo) Console.WriteLine("Crop is being boosted by full moon");
-                                    if (curr.state == 1) //make sure it's watered
+                                    curr.crop.dayOfCurrentPhase = curr.crop.fullyGrown? curr.crop.dayOfCurrentPhase - 1 : Math.Min(curr.crop.dayOfCurrentPhase + 1, curr.crop.phaseDays.Count > 0 ? curr.crop.phaseDays[Math.Min(curr.crop.phaseDays.Count - 1, curr.crop.currentPhase)] : 0);
+                                    if (curr.crop.dayOfCurrentPhase >= (curr.crop.phaseDays.Count > 0 ? curr.crop.phaseDays[Math.Min(curr.crop.phaseDays.Count - 1, curr.crop.currentPhase)] : 0) && curr.crop.currentPhase<curr.crop.phaseDays.Count - 1)
                                     {
-                                        curr.crop.dayOfCurrentPhase = curr.crop.fullyGrown? curr.crop.dayOfCurrentPhase - 1 : Math.Min(curr.crop.dayOfCurrentPhase + 1, curr.crop.phaseDays.Count > 0 ? curr.crop.phaseDays[Math.Min(curr.crop.phaseDays.Count - 1, curr.crop.currentPhase)] : 0);
-                                        if (curr.crop.dayOfCurrentPhase >= (curr.crop.phaseDays.Count > 0 ? curr.crop.phaseDays[Math.Min(curr.crop.phaseDays.Count - 1, curr.crop.currentPhase)] : 0) && curr.crop.currentPhase<curr.crop.phaseDays.Count - 1)
-                                        {
-                                            curr.crop.currentPhase = curr.crop.currentPhase + 1;
-                                            curr.crop.dayOfCurrentPhase = 0;
-                                        }
-}
+                                        curr.crop.currentPhase = curr.crop.currentPhase + 1;
+                                        curr.crop.dayOfCurrentPhase = 0;
+                                    }
                                 }
-                            
+                            }
                         }
                     }
                 }
@@ -111,27 +134,72 @@ namespace ClimateOfFerngill
 
             if (SDVMoon.GetLunarPhase() == MoonPhase.NewMoon)
             {
-                Farm f = Game1.getFarm();
-HoeDirt curr;
-
                 if (f != null)
                 {
                     foreach (KeyValuePair<Vector2, TerrainFeature> TF in f.terrainFeatures)
                     {
-                        if (TF.Value is HoeDirt)
+                        if (TF.Value is HoeDirt curr && curr.crop != null)
                         {
-                            curr = (HoeDirt) TF.Value;
-                            if (curr.crop != null)
+                            if (Dice.NextDouble() < CropNoGrowthChance)
                             {
-                                if (Dice.NextDouble() < .09)
-                                {
-                                    curr.state = 0; //dewater!! BWAHAHAAHAA.
-                                }
+                                curr.state = 0; //dewater!! BWAHAHAAHAA.
                             }
                         }
                     }
                 }
             }
-    }
+        }
+
+        public void HandleMoonAfterWake(Beach b)
+        {
+            //moon processing
+            if (SDVMoon.GetLunarPhase() == MoonPhase.NewMoon)
+            {
+                foreach (KeyValuePair<Vector2, StardewValley.Object> o in b.objects)
+                {
+                    if (beachItems.Contains(o.Value.parentSheetIndex))
+                    {
+                        if (Dice.NextDouble() < BeachRemovalChance)
+                        {
+                            b.objects.Remove(o.Key);
+                        }
+                    }
+                }
+            }
+
+            //moon processing
+            if (SDVMoon.GetLunarPhase() == MoonPhase.FullMoon)
+            {
+                int parentSheetIndex = 0;
+                Rectangle rectangle = new Rectangle(65, 11, 25, 12);
+                for (int index = 0; index < 5; ++index)
+                {
+                    //get the item ID to spawn
+                    parentSheetIndex = moonBeachItems.GetRandomItem(Dice);
+                    if (Dice.NextDouble() < .0001)
+                        parentSheetIndex = 392; //rare chance
+
+                    if (Dice.NextDouble() < BeachSpawnChance)
+                    {
+                        Vector2 v = new Vector2((float)Game1.random.Next(rectangle.X, rectangle.Right), (float)Game1.random.Next(rectangle.Y, rectangle.Bottom));
+                        if (b.isTileLocationTotallyClearAndPlaceable(v))
+                            b.dropObject(new StardewValley.Object(parentSheetIndex, 1, false, -1, 0), v * (float)Game1.tileSize, Game1.viewport, true, (Farmer)null);
+                    }
+                }
+            }
+        }
+
+        public bool CheckForGhostSpawn()
+        {
+            if (Game1.timeOfDay > Game1.getTrulyDarkTime() && Game1.currentLocation.isOutdoors && Game1.currentLocation is Farm)
+            {
+                if (CurrPhase is MoonPhase.FullMoon && Dice.NextDouble() < GhostChance)
+                {
+                    return true;
+                }
+            }
+
+            return false;
+        }
     }
 }

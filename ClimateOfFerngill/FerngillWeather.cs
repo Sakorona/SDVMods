@@ -2,37 +2,109 @@
 {
     public class FerngillWeather
     {
-        public double TodayHigh { get; set; }
-        public int Status { get; set; }
-        public double TodayLow { get; set; }
+        private double TodayHigh { get; set; }
+        private double TodayLow { get; set; }
+        private SDVWeather CurrentWeather { get; set; }
+        private ClimateConfig Config { get; set; }
 
-        public static int BLIZZARD = 101;
-        public static int HEATWAVE = 102;
-        public static int FROST = 103;
+        public bool IsBlizzard { get; private set; }
+        public bool IsHeatwave { get; private set; }
+        public bool IsFrost { get; private set; }
 
-        public void AlterTemps(int temp)
+        public FerngillWeather(ClimateConfig config)
+        {
+            IsBlizzard = false;
+            IsHeatwave = false;
+            IsFrost = false;
+            Config = config;
+        }
+
+        public void CheckForDangerousWeather()
+        {
+            if (IsBlizzard) InternalUtility.ShowMessage("There's a dangerous blizzard out today. Be careful!");
+            if (IsFrost) InternalUtility.ShowMessage("The temperature tonight will be dipping below freezing. Your crops may be vulnerable to frost!");
+            if (IsHeatwave) InternalUtility.ShowMessage("A massive heatwave is sweeping the valley. Stay hydrated!");
+        }
+
+        public void SetTemperatures(double high, double low)
+        {
+            TodayHigh = high;
+            TodayLow = low;
+        }
+
+        public bool SetBlizzard()
+        {
+            if (CurrentWeather == SDVWeather.Snow)
+            {
+                IsBlizzard = true;
+                return true;
+            }
+
+            return false;
+        }
+
+        public bool SetHeatwave()
+        {
+            if (TodayHigh > Config.HeatwaveWarning)
+            {
+                IsHeatwave = true;
+                return true;
+            }
+
+            return false;
+        }
+
+        public bool SetFrost()
+        {
+            if (TodayLow < Config.FrostWarning)
+            {
+                IsFrost = true;
+                return true;
+            }
+
+            return false;
+        }
+
+        public void AlterTemps(double temp)
         {
             TodayHigh = TodayHigh + temp;
             TodayLow = TodayLow + temp;
         }
 
-        public void GetLowFromHigh(double temp, int lowCap = 0)
+        public void GetLowFromHigh(double temp)
         {
             TodayLow = TodayHigh - temp;
-            if (lowCap != 0 && TodayLow < lowCap)
-                TodayLow = lowCap;
+        }
+
+        public void UpdateForNewDay()
+        {
+            Reset();
         }
 
         public void Reset()
         {
-            Status = 0;
+            IsBlizzard = false;
+            IsHeatwave = false;
+            IsFrost = false;
+            CurrentWeather = SDVWeather.None;
             TodayHigh = -1000;
             TodayLow = -1000;
         }
 
         public override string ToString()
         {
-            return "High: " + TodayHigh + " C and Low: " + TodayLow + " C";
+            string s = "High: " + TodayHigh + " C and Low: " + TodayLow + " C, with status " + CurrentWeather.ToString();
+
+            if (IsBlizzard)
+                s += " . There's a blizzard out";
+
+            if (IsFrost)
+                s += " . There's a high chance of a frost tonight";
+
+            if (IsHeatwave)
+                s += " . It's very hot outside, expect a good chance of a heatwave.";
+
+            return s;
         }
     }
 }
