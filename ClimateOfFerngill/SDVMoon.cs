@@ -152,7 +152,7 @@ namespace ClimateOfFerngill
 
         public void HandleMoonAfterWake(Beach b)
         {
-            //moon processing
+            //new moon processing
             if (SDVMoon.GetLunarPhase() == MoonPhase.NewMoon)
             {
                 foreach (KeyValuePair<Vector2, StardewValley.Object> o in b.objects)
@@ -167,7 +167,7 @@ namespace ClimateOfFerngill
                 }
             }
 
-            //moon processing
+            //full moon processing
             if (SDVMoon.GetLunarPhase() == MoonPhase.FullMoon)
             {
                 int parentSheetIndex = 0;

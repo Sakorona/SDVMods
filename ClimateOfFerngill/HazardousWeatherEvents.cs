@@ -94,10 +94,23 @@ namespace ClimateOfFerngill
             
         }
 
+        public List<Vector2> ProcessHeatwave(Farm f)
+        {
+            if (f != null)
+            {
+
+            }
+        }
+
+        public void WiltHeatwave(List<Vector2> UnluckyCrops)
+        {
+
+        }
+
         public void EarlyFrost(FerngillWeather currWeather)
         {
             //If it's not cold enough or not fall (or potentially spring later), return.
-            if (currWeather.TodayLow > 2 && Game1.currentSeason != "fall")
+            if (currWeather.GetTodayLow() > 2 && Game1.currentSeason != "fall")
                 return;
             
             //iterate through the farm for crops
@@ -110,7 +123,7 @@ namespace ClimateOfFerngill
                 {
                     if (tf.Value is HoeDirt curr && curr.crop != null && IsFallCrop(curr.crop.indexOfHarvest)) 
                     {
-                        if (currWeather.TodayLow <= CheckCropTolerance(curr.crop.indexOfHarvest) && 
+                        if (currWeather.GetTodayLow() <= CheckCropTolerance(curr.crop.indexOfHarvest) && 
                             Dice.NextDouble() < Config.FrostHardiness)
                         {
                             cropsKilled = true;

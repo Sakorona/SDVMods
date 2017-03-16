@@ -5,7 +5,7 @@
     "MajorVersion": 1,
     "MinorVersion": 0,
     "PatchVersion": 0,
-    "Build": "rc2-20170303"
+    "Build": "rc2-20170315"
   },
   "Description": "Create a unique climate system, as well as add weather related events.",
   "UniqueID": "KoihimeNakamura.ClimatesOfFerngill",

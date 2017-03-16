@@ -32,6 +32,16 @@
             TodayLow = low;
         }
 
+        public double GetTodayHigh()
+        {
+            return this.TodayHigh;
+        }
+
+        public double GetTodayLow()
+        {
+            return this.TodayLow;
+        }
+
         public bool SetBlizzard()
         {
             if (CurrentWeather == SDVWeather.Snow)
