@@ -1,4 +1,4 @@
-namespace TimeReminder
+﻿namespace TimeReminder
 {
     public class TimeConfig
     {
