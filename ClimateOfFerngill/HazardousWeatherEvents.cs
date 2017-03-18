@@ -94,17 +94,54 @@ namespace ClimateOfFerngill
             
         }
 
-        public List<Vector2> ProcessHeatwave(Farm f)
+        public List<Vector2> ProcessHeatwave(Farm f, FerngillWeather CurrWeather)
         {
+            var ThreatenedCrops = new List<Vector2>();
+            int count = 0;
+
             if (f != null)
             {
+                foreach (KeyValuePair<Vector2, TerrainFeature> tf in f.terrainFeatures)
+                {
+                    if (count >= 15)
+                        return ThreatenedCrops;
 
+                    if (tf.Value is HoeDirt curr)
+                    {
+                        if (Dice.NextDouble() > .65)
+                        {
+                            if (CurrWeather.GetTodayHigh() >= Config.DeathTemp)
+                            {
+                                ThreatenedCrops.Add(tf.Key);
+                                curr.state = 0;
+                                count++;
+                            }
+                        }
+                    }
+                }
             }
+
+            return ThreatenedCrops;
         }
 
         public void WiltHeatwave(List<Vector2> UnluckyCrops)
         {
+            //if it's still de watered - kill it.
+            Farm f = Game1.getFarm();
+            bool cDead = false;
 
+            foreach (Vector2 v in UnluckyCrops)
+            {
+                HoeDirt hd = (HoeDirt)f.terrainFeatures[v];
+                if (hd.state == 0)
+                {
+                    hd.crop.dead = true;
+                    cDead = true;
+                }
+            }
+
+            if (cDead)
+                InternalUtility.ShowMessage("Some of the crops have died due to lack of water!");
         }
 
         public void EarlyFrost(FerngillWeather currWeather)

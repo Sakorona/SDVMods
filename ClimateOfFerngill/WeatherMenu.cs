@@ -32,6 +32,12 @@ namespace ClimateOfFerngill
         /// <summary>The spacing around the scroll buttons.</summary>
         private readonly int ScrollButtonGutter = 15;
 
+        private SDVMoon OurMoon;
+
+        private FerngillWeather CurrentWeather;
+
+        private Sprites.Icons IconSheet;
+
         /// <summary>Whether the game's draw mode has been validated for compatibility.</summary>
         private bool ValidatedDrawMode;
 
@@ -43,12 +49,15 @@ namespace ClimateOfFerngill
         ****/
         /// <summary>Construct an instance.</summary>
         /// <param name="monitor">Encapsulates logging and monitoring.</param>
-        public WeatherMenu(IMonitor monitor, IReflectionHelper reflectionHelper)
+        public WeatherMenu(IMonitor monitor, IReflectionHelper reflectionHelper, Sprites.Icons Icon, FerngillWeather weat, SDVMoon Termina)
         {
             // save data
             this.Monitor = monitor;
 
             this.Reflection = reflectionHelper;
+            this.CurrentWeather = weat;
+            this.IconSheet = Icon;
+            this.OurMoon = Termina;
 
             // update layout
             this.UpdateLayout();
@@ -143,7 +152,7 @@ namespace ClimateOfFerngill
             float topOffset = gutter;
             float contentWidth = this.width - gutter * 2;
             float contentHeight = this.height - gutter * 2;
-            int tableBorderWidth = 1;
+            //int tableBorderWidth = 1;
 
             // get font
             SpriteFont font = Game1.smallFont;
@@ -164,110 +173,49 @@ namespace ClimateOfFerngill
                 backgroundBatch.End();
             }
 
-            /*
-            this.Monitor.InterceptErrors("drawing the lookup info", () =>
+            // draw foreground
+            // (This uses a separate sprite batch to set a clipping area for scrolling.)
+            using (SpriteBatch contentBatch = new SpriteBatch(Game1.graphics.GraphicsDevice))
             {
- 
-                   // draw background
-                // (This uses a separate sprite batch because it needs to be drawn before the
-                // foreground batch, and we can't use the foreground batch because the background is
-                // outside the clipping area.)
-                using (SpriteBatch backgroundBatch = new SpriteBatch(Game1.graphics.GraphicsDevice))
+                // begin draw
+                GraphicsDevice device = Game1.graphics.GraphicsDevice;
+                device.ScissorRectangle = new Rectangle(x + gutter, y + gutter, (int)contentWidth, (int)contentHeight);
+                contentBatch.Begin(SpriteSortMode.Deferred, BlendState.NonPremultiplied, SamplerState.PointClamp, null, new RasterizerState { ScissorTestEnable = true });
+
+                // draw portrait
+                spriteBatch.Draw(IconSheet.source, new Vector2(x + leftOffset, y + topOffset), IconSheet.GetWeatherSprite(WeatherHelper.GetTodayWeather()), Color.White);
+                leftOffset += 72;
+
+                // draw fields
+                float wrapWidth = this.width - leftOffset - gutter;
                 {
-                    backgroundBatch.Begin(SpriteSortMode.Deferred, BlendState.NonPremultiplied, SamplerState.PointClamp, null, null);
-                    backgroundBatch.DrawSprite(Sprites.Letter.Sheet, Sprites.Letter.Sprite, x, y, scale: this.width / (float)Sprites.Letter.Sprite.Width);
-                    backgroundBatch.End();
-                }
-
-                // draw foreground
-                // (This uses a separate sprite batch to set a clipping area for scrolling.)
-                using (SpriteBatch contentBatch = new SpriteBatch(Game1.graphics.GraphicsDevice))
-                {
-                    // begin draw
-                    GraphicsDevice device = Game1.graphics.GraphicsDevice;
-                    device.ScissorRectangle = new Rectangle(x + gutter, y + gutter, (int)contentWidth, (int)contentHeight);
-                    contentBatch.Begin(SpriteSortMode.Deferred, BlendState.NonPremultiplied, SamplerState.PointClamp, null, new RasterizerState { ScissorTestEnable = true });
-
-                    // scroll view
-                    this.CurrentScroll = Math.Max(0, this.CurrentScroll); // don't scroll past top
-                    this.CurrentScroll = Math.Min(this.MaxScroll, this.CurrentScroll); // don't scroll past bottom
-                    topOffset -= this.CurrentScroll; // scrolled down == move text up
-
-                    // draw portrait
-                    if (subject.DrawPortrait(contentBatch, new Vector2(x + leftOffset, y + topOffset), new Vector2(70, 70)))
-                        leftOffset += 72;
-
-                    // draw fields
-                    float wrapWidth = this.width - leftOffset - gutter;
+                    // draw high and low
                     {
-                        // draw name & item type
-                        {
-                            Vector2 nameSize = contentBatch.DrawTextBlock(font, $"{subject.Name}.", new Vector2(x + leftOffset, y + topOffset), wrapWidth, bold: true);
-                            Vector2 typeSize = contentBatch.DrawTextBlock(font, $"{subject.Type}.", new Vector2(x + leftOffset + nameSize.X + spaceWidth, y + topOffset), wrapWidth);
-                            topOffset += Math.Max(nameSize.Y, typeSize.Y);
-                        }
-
-                        // draw description
-                        if (subject.Description != null)
-                        {
-                            Vector2 size = contentBatch.DrawTextBlock(font, subject.Description?.Replace(Environment.NewLine, " "), new Vector2(x + leftOffset, y + topOffset), wrapWidth);
-                            topOffset += size.Y;
-                        }
-
-                        // draw spacer
-                        topOffset += lineHeight;
-
-                        // draw custom fields
-                        if (this.Fields.Any())
-                        {
-                            ICustomField[] fields = this.Fields;
-                            float cellPadding = 3;
-                            float labelWidth = fields.Where(p => p.HasValue).Max(p => font.MeasureString(p.Label).X);
-                            float valueWidth = wrapWidth - labelWidth - cellPadding * 4 - tableBorderWidth;
-                            foreach (ICustomField field in fields)
-                            {
-                                if (!field.HasValue)
-                                    continue;
-
-                                // draw label & value
-                                Vector2 labelSize = contentBatch.DrawTextBlock(font, field.Label, new Vector2(x + leftOffset + cellPadding, y + topOffset + cellPadding), wrapWidth);
-                                Vector2 valuePosition = new Vector2(x + leftOffset + labelWidth + cellPadding * 3, y + topOffset + cellPadding);
-                                Vector2 valueSize =
-                                    field.DrawValue(contentBatch, font, valuePosition, valueWidth)
-                                    ?? contentBatch.DrawTextBlock(font, field.Value, valuePosition, valueWidth);
-                                Vector2 rowSize = new Vector2(labelWidth + valueWidth + cellPadding * 4, Math.Max(labelSize.Y, valueSize.Y));
-
-                                // draw table row
-                                Color lineColor = Color.Gray;
-                                contentBatch.DrawLine(x + leftOffset, y + topOffset, new Vector2(rowSize.X, tableBorderWidth), lineColor); // top
-                                contentBatch.DrawLine(x + leftOffset, y + topOffset + rowSize.Y, new Vector2(rowSize.X, tableBorderWidth), lineColor); // bottom
-                                contentBatch.DrawLine(x + leftOffset, y + topOffset, new Vector2(tableBorderWidth, rowSize.Y), lineColor); // left
-                                contentBatch.DrawLine(x + leftOffset + labelWidth + cellPadding * 2, y + topOffset, new Vector2(tableBorderWidth, rowSize.Y), lineColor); // middle
-                                contentBatch.DrawLine(x + leftOffset + rowSize.X, y + topOffset, new Vector2(tableBorderWidth, rowSize.Y), lineColor); // right
-
-                                // update offset
-                                topOffset += Math.Max(labelSize.Y, valueSize.Y);
-                            }
-                        }
+                        Vector2 nameSize = contentBatch.DrawTextBlock(font, $"Today's High is {CurrentWeather.GetTodayHigh()} C with Low {CurrentWeather.GetTodayLow()} C", new Vector2(x + leftOffset, y + topOffset), wrapWidth);
+                        //Vector2 typeSize = contentBatch.DrawTextBlock(font, $"{subject.Type}.", new Vector2(x + leftOffset + nameSize.X + spaceWidth, y + topOffset), wrapWidth);
+                        topOffset += nameSize.Y;
                     }
 
-                    // update max scroll
-                    this.MaxScroll = Math.Max(0, (int)(topOffset - contentHeight + this.CurrentScroll));
+                    // draw spacer
+                    topOffset += lineHeight;
 
-                    // draw scroll icons
-                    if (this.MaxScroll > 0 && this.CurrentScroll > 0)
-                        this.ScrollUpButton.draw(contentBatch);
-                    if (this.MaxScroll > 0 && this.CurrentScroll < this.MaxScroll)
-                        this.ScrollDownButton.draw(spriteBatch);
-
-                    // end draw
-                    contentBatch.End();
+                    if (CurrentWeather.IsDangerousWeather())
+                    {
+                        Vector2 statusSize = contentBatch.DrawTextBlock(font, $"WEATHER ALERT: {CurrentWeather.GetHazardMessage()}", new Vector2(x + leftOffset, y + topOffset), wrapWidth, bold: true);
+                        topOffset += statusSize.Y;
+                        topOffset += lineHeight;
+                    }
                 }
 
-                // draw cursor
-                base.drawMouse(Game1.spriteBatch);
-            }, this.OnDrawError);
-            */
+                //draw moon info
+                spriteBatch.Draw(IconSheet.source, new Vector2(x + 15, y + topOffset), IconSheet.GetMoonSprite(OurMoon.CurrPhase), Color.White);
+                
+                Vector2 moonText = contentBatch.DrawTextBlock(font, $"Today's Moon Phase is {SDVMoon.DescribeMoonPhase(OurMoon.CurrPhase)}.", new Vector2(x + leftOffset, y + topOffset), wrapWidth);
+
+
+                // end draw
+                contentBatch.End();
+            }
         }
 
 

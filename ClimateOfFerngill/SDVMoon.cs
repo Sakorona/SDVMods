@@ -189,6 +189,33 @@ namespace ClimateOfFerngill
             }
         }
 
+        public static string DescribeMoonPhase(MoonPhase mp)
+        {
+            switch (mp)
+            {
+                case MoonPhase.ErrorPhase:
+                    return "error";
+                case MoonPhase.FirstQuarter:
+                    return "First Quarter";
+                case MoonPhase.FullMoon:
+                    return "Full Moon";
+                case MoonPhase.NewMoon:
+                    return "New Moon";
+                case MoonPhase.ThirdQuarter:
+                    return "Third Quarter";
+                case MoonPhase.WaningCrescent:
+                    return "Waning Crescent";
+                case MoonPhase.WaningGibbeous:
+                    return "Waning Gibbeous";
+                case MoonPhase.WaxingCrescent:
+                    return "Waxing Crescent";
+                case MoonPhase.WaxingGibbeous:
+                    return "Waxing Gibbeous";
+                default:
+                    return "ERRROR";
+            }
+        }
+
         public bool CheckForGhostSpawn()
         {
             if (Game1.timeOfDay > Game1.getTrulyDarkTime() && Game1.currentLocation.isOutdoors && Game1.currentLocation is Farm)

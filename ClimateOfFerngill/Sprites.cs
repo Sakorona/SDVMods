@@ -43,6 +43,45 @@ namespace ClimateOfFerngill
                 }   
             }
 
+            public Rectangle GetMoonSprite(MoonPhase moon)
+            {
+                if (moon == MoonPhase.FirstQuarter)
+                    return Icons.FirstQuarter;
+                if (moon == MoonPhase.FullMoon)
+                    return Icons.FullMoon;
+                if (moon == MoonPhase.NewMoon)
+                    return Icons.NewMoon;
+                if (moon == MoonPhase.ThirdQuarter)
+                    return Icons.ThirdQuarter;
+                if (moon == MoonPhase.WaningCrescent)
+                    return Icons.WaningCrescent;
+                if (moon == MoonPhase.WaningGibbeous)
+                    return Icons.WaningGibbeous;
+                if (moon == MoonPhase.WaxingCrescent)
+                    return Icons.WaxingCrescent;
+                if (moon == MoonPhase.WaxingGibbeous)
+                    return Icons.WaxingGibbeous;
+
+                return Icons.NewMoon;
+            }
+
+            public Rectangle GetWeatherSprite(SDVWeather weather)
+            {
+                if (weather == SDVWeather.Debris)
+                    return Icons.WeatherWindy;
+                if (weather == SDVWeather.Festival)
+                    return Icons.WeatherFestival;
+                if (weather == SDVWeather.Sunny)
+                    return Icons.WeatherSunny;
+                if (weather == SDVWeather.Wedding)
+                    return Icons.WeatherWedding;
+                if (weather == SDVWeather.Snow)
+                    return Icons.WeatherSnowy;
+                if (weather == SDVWeather.Rainy)
+                    return Icons.WeatherRainy;
+
+                return Icons.WeatherSunny;
+            }
 
             // These are the positions of each sprite on the sheet.
             public static readonly Rectangle NewMoon = new Rectangle(17, 21, 10, 9);

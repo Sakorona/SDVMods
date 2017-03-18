@@ -19,7 +19,28 @@
             Config = config;
         }
 
-        public void CheckForDangerousWeather()
+        public bool IsDangerousWeather()
+        {
+            if (IsBlizzard || IsFrost || IsHeatwave)
+                return true;
+            else
+                return false;
+        }
+
+        public string GetHazardMessage()
+        {
+            string areasAffected = " Areas affected include Zuzu City, Pelican Town...";
+            if (IsBlizzard)
+                return "FRWS Warning: There's a dangerous blizzard out today." + areasAffected;
+            if (IsHeatwave)
+                return "FRWS Warning: An unnatural heatwave is affecting the region." + areasAffected;
+            if (IsFrost)
+                return "FRAS Warning: Temepratures in your region will be dipping below the frost threshold. Your crops will be vulnerable.";
+
+            return "";
+        }
+
+        public void MessageForDangerousWeather()
         {
             if (IsBlizzard) InternalUtility.ShowMessage("There's a dangerous blizzard out today. Be careful!");
             if (IsFrost) InternalUtility.ShowMessage("The temperature tonight will be dipping below freezing. Your crops may be vulnerable to frost!");
@@ -29,6 +50,16 @@
         public void SetTemperatures(double high, double low)
         {
             TodayHigh = high;
+            TodayLow = low;
+        }
+
+        public void SetTodayHigh(double high)
+        {
+            TodayHigh = high;
+        }
+
+        public void SetTodayLow(double low)
+        {
             TodayLow = low;
         }
 
