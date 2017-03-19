@@ -63,8 +63,7 @@ namespace ClimateOfFerngill
             Dice = new MersenneTwister();
             Config = helper.ReadConfig<ClimateConfig>();
             CurrWeather = new FerngillWeather(Config);
-
-            OurIcons = new Sprites.Icons(Helper.DirectoryPath);
+            ThreatenedCrops = new List<Vector2>();
 
             Luna = new SDVMoon(Monitor, Config, Dice);
             BadEvents = new HazardousWeatherEvents(Monitor, Config, Dice);
@@ -121,7 +120,10 @@ namespace ClimateOfFerngill
             BadEvents.CatchACold();
 
             //specific time stuff
-            if (e.NewInt == 610) CurrWeather.MessageForDangerousWeather();
+            if (e.NewInt == 610)
+            {
+                CurrWeather.MessageForDangerousWeather();
+            }
 
             //heatwave event
             if (e.NewInt == 1700)
@@ -208,6 +210,7 @@ namespace ClimateOfFerngill
         private void SaveEvents_AfterLoad(object sender, EventArgs e)
         {
             GameLoaded = true;
+            OurIcons = new Sprites.Icons(Helper.DirectoryPath);
             UpdateWeather(CurrWeather);
             Luna.UpdateForNewDay();
             BadEvents.UpdateForNewDay();
@@ -256,6 +259,21 @@ namespace ClimateOfFerngill
 
         public string GetWeatherForecast()
         {
+            if (Config.TooMuchInfo)
+                Monitor.Log(
+                      "This is a long debug message.\n"
+                      + $"Wedding Today: {Game1.weddingToday}\n"
+                      + $"Spouse Status: {Game1.player.spouse}\n"
+                      + $"Countdown info: {Game1.countdownToWedding}");
+
+            if (Game1.weddingToday) // sanity check
+            {
+                if (Config.TooMuchInfo)
+                    Monitor.Log("There was a wedding today. Regenerating the weather.");
+
+                UpdateWeather(CurrWeather, weddingOverride: true);
+            }
+
             string tvText = " ";
 
             //The TV should display: Alerts, today's weather, tommorow's weather, alerts.
@@ -287,14 +305,14 @@ namespace ClimateOfFerngill
                 if (Config.TooMuchInfo) Monitor.Log(tvText);
 
                 //today weather
-                tvText = tvText + WeatherHelper.GetWeatherDesc(Dice, WeatherHelper.GetTodayWeather(), true, Monitor);
+                tvText = tvText + WeatherHelper.GetWeatherDesc(Dice, WeatherHelper.GetTodayWeather(), true, Monitor, Config.TooMuchInfo);
 
                 //get WeatherForTommorow and set text
                 tvText = tvText + "#Tommorow, ";
             }
 
             //tommorow weather
-            tvText = tvText + WeatherHelper.GetWeatherDesc(Dice, (SDVWeather)Game1.weatherForTomorrow, false, Monitor);
+            tvText = tvText + WeatherHelper.GetWeatherDesc(Dice, (SDVWeather)Game1.weatherForTomorrow, false, Monitor, Config.TooMuchInfo);
 
             return tvText;
         }
@@ -317,12 +335,15 @@ namespace ClimateOfFerngill
             UpdateWeather(CurrWeather);    
         }
 
-        void UpdateWeather(FerngillWeather weatherOutput)
-        {        
+        void UpdateWeather(FerngillWeather weatherOutput, bool weddingOverride = false)
+        {
             //get start values
             SDVSeasons CurSeason = InternalUtility.GetSeason(Game1.currentSeason);
             SDVWeather TmrwWeather = (SDVWeather)Game1.weatherForTomorrow;
             bool forceSet = false;
+
+            if (Config.TooMuchInfo)
+                Monitor.Log($"The weather tommorow at start is: {WeatherHelper.DescWeather(TmrwWeather)}");
 
             // The mod executes after the main loop and should only execute at the beginning of the
             //  day. This really means we have to make sure it runs or we'll have an issue with the tv
@@ -331,16 +352,21 @@ namespace ClimateOfFerngill
             // So, essentially, if it's already set to wedding or festival, we can go ahead and 
             //  just not run. If you use a rain totem, that should run after this, and before the 
             //  game's own weather processing.
-
-            if (TmrwWeather == SDVWeather.Wedding || TmrwWeather == SDVWeather.Festival)
+            if (!weddingOverride)
             {
-                if (Config.TooMuchInfo) Monitor.Log("The weather tommorow is a festival or wedding.");
+                if (Game1.countdownToWedding == 1 && Game1.player.spouse.Contains("engaged"))
+                    Game1.weatherForTomorrow = Game1.weather_wedding;
+                if (Config.TooMuchInfo)
+                    Monitor.Log("Wedding tommorrow");
                 forceSet = true;
             }
 
-            //some debug stuff for later
-            if (Config.TooMuchInfo)
-                Monitor.Log("The weather on run is " + TmrwWeather.ToString() + " and the weather set was " + EndWeather.ToString());
+            if (TmrwWeather == SDVWeather.Festival)
+            {
+                if (Config.TooMuchInfo)
+                    Monitor.Log("The weather tommorow is a festival.", LogLevel.Warn);
+                forceSet = true;
+            }
 
             // We've detected what we shouldn't intefere with.
             // Now to set the weather by season.
@@ -362,7 +388,7 @@ namespace ClimateOfFerngill
                 default:
                     TmrwWeather = SDVWeather.Sunny;
                     if (Config.TooMuchInfo)
-                        Monitor.Log("Error: Season detection code has failed.", LogLevel.Warn); 
+                        Monitor.Log("Error: Season detection code has failed.", LogLevel.Warn);
                     break;
             }
 
@@ -370,7 +396,7 @@ namespace ClimateOfFerngill
             //handle calcs here for odds.
             double chance = Dice.NextDouble();
             if (Config.TooMuchInfo)
-                Monitor.Log("Rain Chance is: " + rainChance + " with the rng being " + chance);
+                Monitor.Log($"Rain Chance is: {rainChance} with the rng being {chance}");
 
             //override for the first spring.
 
@@ -380,13 +406,16 @@ namespace ClimateOfFerngill
             //global change - if it rains, drop the temps (and if it's stormy, drop the temps)
             if (Game1.isRaining)
             {
-                if (Config.TooMuchInfo) Monitor.Log("Dropping temp by 4 from " + CurrWeather.GetTodayHigh());
+                if (Config.TooMuchInfo) Monitor.Log($"Dropping temp by 4 from {CurrWeather.GetTodayHigh()}");
                 CurrWeather.SetTodayHigh(CurrWeather.GetTodayHigh() - 4);
                 CurrWeather.SetTodayLow(CurrWeather.GetTodayLow() - 2);
             }
 
             if (forceSet)
+            {
+                if (Config.TooMuchInfo) Monitor.Log("Detecting Force Set. Exiting.");
                 return;
+            }
 
             //sequence - rain (Storm), wind, sun
             //this also contains the notes - certain seasons don't have certain weathers.
@@ -395,12 +424,12 @@ namespace ClimateOfFerngill
                 chance = Dice.NextDouble();
                 if (chance < stormChance && stormChance != 0)
                 {
-                    if (Config.TooMuchInfo) Monitor.Log("Storm is selected, with roll " + chance + " and target percent " + stormChance);
-                    Game1.weatherForTomorrow = Game1.weather_lightning;
+                    if (Config.TooMuchInfo) Monitor.Log($"Storm is selected, with roll {chance} and target percent {stormChance}");
+                    TmrwWeather = (SDVWeather)Game1.weather_lightning;
                 }
                 else
                 {
-                    Game1.weatherForTomorrow = Game1.weather_rain;
+                    TmrwWeather = (SDVWeather)Game1.weather_rain;
                     if (Config.TooMuchInfo) Monitor.Log("Raining selected");
                 }
             }
@@ -408,39 +437,42 @@ namespace ClimateOfFerngill
             {
                 if (chance < (windChance + rainChance) && (Game1.currentSeason == "spring" || Game1.currentSeason == "fall") && windChance != 0)
                 {
-                    Game1.weatherForTomorrow = Game1.weather_debris;
-                    if (Config.TooMuchInfo) Monitor.Log("It's windy today, with roll " + chance + " and wind odds " + windChance);
+                    TmrwWeather = (SDVWeather)Game1.weather_debris;
+                    if (Config.TooMuchInfo) Monitor.Log($"It's windy today, with roll {chance} and wind odds {windChance}");
                 }
                 else
-                    Game1.weatherForTomorrow = Game1.weather_sunny;
+                    TmrwWeather = (SDVWeather)Game1.weather_sunny;
             }
 
             if (Game1.currentSeason == "winter")
             {
                 if (chance < rainChance)
-                    Game1.weatherForTomorrow = Game1.weather_snow;
+                    TmrwWeather = (SDVWeather)Game1.weather_snow;
                 else
-                    Game1.weatherForTomorrow = Game1.weather_sunny;
+                    TmrwWeather = (SDVWeather)Game1.weather_sunny;
             }
 
             if (Game1.dayOfMonth == 28 && Game1.currentSeason == "fall" && Config.AllowSnowOnFall28)
             {
                 CurrWeather.SetTodayHigh(2);
                 CurrWeather.SetTodayLow(-1);
-                Game1.weatherForTomorrow = Game1.weather_snow; //it now snows on Fall 28.
+                TmrwWeather = (SDVWeather)Game1.weather_snow; //it now snows on Fall 28.
             }
 
-            Monitor.Log("We've set the weather for tommorow . It is: " + WeatherHelper.DescWeather(Game1.weatherForTomorrow));
+            Monitor.Log($"We've set the weather for tommorow. It is: {WeatherHelper.DescWeather(TmrwWeather)}");
 
             //set trackers
             EndWeather = TmrwWeather;
             Game1.chanceToRainTomorrow = rainChance; //set for various events.
             Game1.weatherForTomorrow = (int)TmrwWeather;
+            if (Config.TooMuchInfo)
+                Monitor.Log($"Checking if set. Generated Weather: {WeatherHelper.DescWeather(TmrwWeather)} and set weather is: {WeatherHelper.DescWeather(Game1.weatherForTomorrow)}", LogLevel.Info);
         }
 
         private void HandleSpringWeather()
         {
-            if (Config.TooMuchInfo) Monitor.Log("Executing Spring Weather");
+            if (Config.TooMuchInfo)
+                Monitor.Log("Executing Spring Weather");
             stormChance = .15;
             windChance = .25;
             rainChance = .3 + (Game1.dayOfMonth * .0278);
@@ -512,7 +544,8 @@ namespace ClimateOfFerngill
                 CurrWeather.SetTodayHigh(30 + (int)Math.Floor(Game1.dayOfMonth * .25) + Dice.Next(0, 5));
                 if (Dice.NextDouble() > .70)
                 {
-                    if (Config.TooMuchInfo) Monitor.Log("Randomly adding to the temp");
+                    if (Config.TooMuchInfo)
+                        Monitor.Log("Randomly adding to the temp");
                     CurrWeather.SetTodayHigh(CurrWeather.GetTodayHigh() + Dice.Next(0, 3));
                 }
 
@@ -555,7 +588,8 @@ namespace ClimateOfFerngill
 
         private void HandleAutumnWeather()
         {
-            if (Config.TooMuchInfo) Monitor.Log("Executing Fall Weather");
+            if (Config.TooMuchInfo)
+                Monitor.Log("Executing Fall Weather");
             stormChance = .33;
             CurrWeather.SetTodayHigh(22 - (int)Math.Floor(Game1.dayOfMonth * .667) + Dice.Next(0, 2));
 
@@ -610,7 +644,8 @@ namespace ClimateOfFerngill
 
         private void HandleWinterWeather()
         {
-            if (Config.TooMuchInfo) Monitor.Log("Executing Winter Weather");
+            if (Config.TooMuchInfo)
+                Monitor.Log("Executing Winter Weather");
             stormChance = 0;
             windChance = 0;
             rainChance = .6;
@@ -668,7 +703,7 @@ namespace ClimateOfFerngill
         {
             // show menu
             this.PreviousMenu = Game1.activeClickableMenu;
-            Game1.activeClickableMenu = new WeatherMenu(Monitor, this.Helper.Reflection, OurIcons, CurrWeather, Luna);
+            Game1.activeClickableMenu = new WeatherMenu(Monitor, this.Helper.Reflection, OurIcons, CurrWeather, Luna, Config);
         }
 
         private void HideMenu()

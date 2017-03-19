@@ -165,8 +165,10 @@ namespace ClimateOfFerngill
             return SDVWeather.Sunny;
         }
 
-        public static string GetWeatherDesc(MersenneTwister dice, SDVWeather weather, bool today, IMonitor logger)
+        public static string GetWeatherDesc(MersenneTwister dice, SDVWeather weather, bool today, IMonitor logger, bool debugFlag)
         {
+            if (debugFlag)
+                logger.Log($"[DESC] The weather tommorow at start is: {WeatherHelper.DescWeather(weather)}");
 
             string[] springRainText = new string[] { "it'll be a rainy day outside! Make sure to bring your coat. ", "it'll be a wet day outside. ", "it'll be a misty, wet day - make sure to pause when you can and enjoy it! " };
             string[] springStormText = new string[] { "early showers bring summer flowers! It'll be stormy outside. ", "expect some lightning outside -  be careful! ", "a storm front is blowing over the region, bringing rain and lightning. " };
@@ -251,7 +253,11 @@ namespace ClimateOfFerngill
                 return winterSnowText.GetRandomItem(dice);
 
             //error!
-            logger.Log("This function has reached an error. It is being called for " + (today? "Today" : "Tommorow") + ". Current season is " + Game1.currentSeason + " and the internal weather is " + weather + " with the game weather flags being: Raining " + Game1.isRaining + " , Windy " + Game1.isDebrisWeather + " ,Stormy " + Game1.isLightning + " ,and Snowy " + Game1.isSnowing + " with tommorow's weather: " + DescWeather(Game1.weatherForTomorrow), LogLevel.Error);
+            logger.Log($"The weather desc has reached an error. It is being called for {(today? "Today" : "Tommorow")}." +
+                       $"Current season is {Game1.currentSeason} and the internal weather is {weather}" +
+                       $" with the game weather flags being: Raining: {Game1.isRaining}, Windy: {Game1.isDebrisWeather}," +
+                       $" Stormy: {Game1.isLightning}, and Snowy: {Game1.isSnowing} with tommorow's weather: "
+                       + DescWeather(Game1.weatherForTomorrow), LogLevel.Error);
 
             return "Angry suns descend on us! Run! (ERROR)";
         }

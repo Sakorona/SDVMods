@@ -16,9 +16,7 @@ namespace ClimateOfFerngill
 
             /// <summary>The letter background (including edges and corners).</summary>
             public static readonly Rectangle Sprite = new Rectangle(0, 0, 320, 180);
-
         }
-
 
         /// <summary>A blank pixel which can be colorised and stretched to draw geometric shapes.</summary>
         public static Texture2D Pixel => LazyPixel.Value;
@@ -37,7 +35,7 @@ namespace ClimateOfFerngill
 
            public Icons(string path)
            {
-                using (FileStream stream = File.OpenRead(Path.Combine(path, "SpriteSheetCoF.png")))
+                using (FileStream stream = File.OpenRead(Path.Combine(path, "climatesheet.png")))
                 {
                     source = Texture2D.FromStream(Game1.graphics.GraphicsDevice, stream);
                 }   

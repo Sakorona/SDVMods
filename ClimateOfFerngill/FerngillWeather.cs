@@ -39,6 +39,11 @@
 
             return "";
         }
+        public string TestHazardMessage()
+        {
+            string areasAffected = " Areas affected include Zuzu City, Pelican Town...";
+            return "FRWS Warning: An unnatural heatwave is affecting the region." + areasAffected;
+        }
 
         public void MessageForDangerousWeather()
         {
@@ -134,7 +139,7 @@
 
         public override string ToString()
         {
-            string s = "High: " + TodayHigh + " C and Low: " + TodayLow + " C, with status " + CurrentWeather.ToString();
+            string s = $"High: {TodayHigh} C and Low: {TodayLow} C, with status {CurrentWeather.ToString()}";
 
             if (IsBlizzard)
                 s += " . There's a blizzard out";

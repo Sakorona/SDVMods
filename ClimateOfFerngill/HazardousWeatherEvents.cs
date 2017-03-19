@@ -69,7 +69,9 @@ namespace ClimateOfFerngill
             if (Game1.currentLocation.IsOutdoors && Game1.isLightning)
             {
                 double diceChance = Dice.NextDouble();
-                if (Config.TooMuchInfo) Logger.Log("The chance of exhaustion is: " + diceChance, LogLevel.Trace);
+                if (Config.TooMuchInfo)
+                    Logger.Log($"The chance of exhaustion is: {diceChance} with the configured chance of {Config.DiseaseChance}");
+
                 if (diceChance < Config.DiseaseChance)
                 {
                     IsExhausted = true;
@@ -80,18 +82,15 @@ namespace ClimateOfFerngill
             //disease code.
             if (IsExhausted)
             {
-                if (Config.TooMuchInfo) Logger.Log("The old stamina is : " + Game1.player.stamina);
                 Game1.player.stamina = Game1.player.stamina - Config.StaminaPenalty;
-                if (Config.TooMuchInfo) Logger.Log("The new stamina is : " + Game1.player.stamina);
             }
 
             //alert code - 30% chance of appearing
-            if (IsExhausted && Dice.NextDouble() < -0.3)
+            // configured to properly appear now
+            if (IsExhausted && Dice.NextDouble() < 0.3)
             {
                 InternalUtility.ShowMessage("You have a cold, and feel worn out!");
-            }
-
-            
+            }          
         }
 
         public List<Vector2> ProcessHeatwave(Farm f, FerngillWeather CurrWeather)
@@ -173,7 +172,8 @@ namespace ClimateOfFerngill
             if (cropsKilled)
             {
                 InternalUtility.ShowMessage("During the night, some crops died to the frost...");
-                if (Config.TooMuchInfo) Logger.Log("Setting frost test via queued message", LogLevel.Trace);
+                if (Config.TooMuchInfo)
+                    Logger.Log("Setting frost test via queued message");
             }
         }
 

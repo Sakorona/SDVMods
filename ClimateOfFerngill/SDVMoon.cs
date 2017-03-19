@@ -115,7 +115,8 @@ namespace ClimateOfFerngill
                             //20% chance of increased growth.
                             if (Dice.NextDouble() < CropGrowthChance)
                             {
-                                if (Config.TooMuchInfo) Monitor.Log("Crop is being boosted by full moon", LogLevel.Trace);
+                                if (Config.TooMuchInfo)
+                                    Monitor.Log("Crop is being boosted by full moon");
                                 if (curr.state == 1) //make sure it's watered
                                 {
                                     curr.crop.dayOfCurrentPhase = curr.crop.fullyGrown? curr.crop.dayOfCurrentPhase - 1 : Math.Min(curr.crop.dayOfCurrentPhase + 1, curr.crop.phaseDays.Count > 0 ? curr.crop.phaseDays[Math.Min(curr.crop.phaseDays.Count - 1, curr.crop.currentPhase)] : 0);

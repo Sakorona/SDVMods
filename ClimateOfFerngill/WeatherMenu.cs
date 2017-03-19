@@ -10,6 +10,7 @@ using StardewValley.Menus;
 
 //3P
 using Pathoschild.Stardew.UIF;
+using System.Linq;
 
 namespace ClimateOfFerngill
 {
@@ -25,6 +26,8 @@ namespace ClimateOfFerngill
 
         /// <summary>Simplifies access to private game code.</summary>
         private readonly IReflectionHelper Reflection;
+
+        private ClimateConfig OurConfig;
 
         /// <summary>The aspect ratio of the page background.</summary>
         private readonly Vector2 AspectRatio = new Vector2(Sprites.Letter.Sprite.Width, Sprites.Letter.Sprite.Height);
@@ -49,7 +52,7 @@ namespace ClimateOfFerngill
         ****/
         /// <summary>Construct an instance.</summary>
         /// <param name="monitor">Encapsulates logging and monitoring.</param>
-        public WeatherMenu(IMonitor monitor, IReflectionHelper reflectionHelper, Sprites.Icons Icon, FerngillWeather weat, SDVMoon Termina)
+        public WeatherMenu(IMonitor monitor, IReflectionHelper reflectionHelper, Sprites.Icons Icon, FerngillWeather weat, SDVMoon Termina, ClimateConfig ModCon)
         {
             // save data
             this.Monitor = monitor;
@@ -58,6 +61,7 @@ namespace ClimateOfFerngill
             this.CurrentWeather = weat;
             this.IconSheet = Icon;
             this.OurMoon = Termina;
+            this.OurConfig = ModCon;
 
             // update layout
             this.UpdateLayout();
@@ -120,6 +124,13 @@ namespace ClimateOfFerngill
             // close menu when clicked outside
             if (!this.isWithinBounds(x, y))
                 this.exitThisMenu();
+        }
+
+        public string FirstCharToUpper(string input)
+        {
+            if (String.IsNullOrEmpty(input))
+                throw new ArgumentException("ARGH!");
+            return input.First().ToString().ToUpper() + input.Substring(1);
         }
 
         /// <summary>Render the UI.</summary>
@@ -191,20 +202,43 @@ namespace ClimateOfFerngill
                 {
                     // draw high and low
                     {
-                        Vector2 nameSize = contentBatch.DrawTextBlock(font, $"Today's High is {CurrentWeather.GetTodayHigh()} C with Low {CurrentWeather.GetTodayLow()} C", new Vector2(x + leftOffset, y + topOffset), wrapWidth);
-                        //Vector2 typeSize = contentBatch.DrawTextBlock(font, $"{subject.Type}.", new Vector2(x + leftOffset + nameSize.X + spaceWidth, y + topOffset), wrapWidth);
+                        Vector2 descSize = contentBatch.DrawTextBlock(font, "Your weather, from KKWF Radio.", new Vector2(x + leftOffset, y + topOffset), wrapWidth);
+                        topOffset += descSize.Y;
+                        
+                        Vector2 forSize = contentBatch.DrawTextBlock(font, $" The weather report for {Game1.dayOfMonth} {FirstCharToUpper(Game1.currentSeason)} is as follows", new Vector2(x + leftOffset, y + topOffset), wrapWidth);
+                        topOffset += descSize.Y;
+
+                        //build the temperature display
+                        string Temperature = $"the high: {WeatherHelper.DisplayTemperature(CurrentWeather.GetTodayHigh(), OurConfig.TempGauge)} ";
+                        
+                        if (OurConfig.DisplaySecondScale)
+                            Temperature += $" ({WeatherHelper.DisplayTemperature(CurrentWeather.GetTodayHigh(), OurConfig.SecondScaleGauge)}) ";
+
+                        Temperature += $"and low:  {WeatherHelper.DisplayTemperature(CurrentWeather.GetTodayLow(), OurConfig.TempGauge)} ";
+
+                        if (OurConfig.DisplaySecondScale)
+                            Temperature += $" ({WeatherHelper.DisplayTemperature(CurrentWeather.GetTodayLow(), OurConfig.SecondScaleGauge)}) ";
+                        
+                        //Output today's weather
+                        Vector2 nameSize = contentBatch.DrawTextBlock(font, $"Today, the weather is {WeatherHelper.DescWeather(WeatherHelper.GetTodayWeather())} with " + Temperature, new Vector2(x + leftOffset, y + topOffset), wrapWidth);
                         topOffset += nameSize.Y;
+
+                        //Output tommorow's weather
+                        Vector2 tomSize = contentBatch.DrawTextBlock(font, $"Tommorow, the weather will be { WeatherHelper.DescWeather(WeatherHelper.GetTodayWeather())} with " + Temperature, new Vector2(x + leftOffset, y + topOffset), wrapWidth);
+
+                        topOffset += tomSize.Y;
                     }
 
                     // draw spacer
                     topOffset += lineHeight;
-
+                    
                     if (CurrentWeather.IsDangerousWeather())
                     {
                         Vector2 statusSize = contentBatch.DrawTextBlock(font, $"WEATHER ALERT: {CurrentWeather.GetHazardMessage()}", new Vector2(x + leftOffset, y + topOffset), wrapWidth, bold: true);
                         topOffset += statusSize.Y;
                         topOffset += lineHeight;
                     }
+
                 }
 
                 //draw moon info
