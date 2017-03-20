@@ -28,7 +28,7 @@ namespace ClimateOfFerngill
         private readonly IReflectionHelper Reflection;
 
         private ClimateConfig OurConfig;
-
+        
         /// <summary>The aspect ratio of the page background.</summary>
         private readonly Vector2 AspectRatio = new Vector2(Sprites.Letter.Sprite.Width, Sprites.Letter.Sprite.Height);
 
@@ -40,6 +40,7 @@ namespace ClimateOfFerngill
         private FerngillWeather CurrentWeather;
 
         private Sprites.Icons IconSheet;
+        //private Sprites.Letter OurLetter;
 
         /// <summary>Whether the game's draw mode has been validated for compatibility.</summary>
         private bool ValidatedDrawMode;
@@ -207,7 +208,7 @@ namespace ClimateOfFerngill
                         
                         Vector2 forSize = contentBatch.DrawTextBlock(font, $" The weather report for {Game1.dayOfMonth} {FirstCharToUpper(Game1.currentSeason)} is as follows", new Vector2(x + leftOffset, y + topOffset), wrapWidth);
                         topOffset += descSize.Y;
-
+                        topOffset += lineHeight;
                         //build the temperature display
                         string Temperature = $"the high: {WeatherHelper.DisplayTemperature(CurrentWeather.GetTodayHigh(), OurConfig.TempGauge)} ";
                         
@@ -220,11 +221,12 @@ namespace ClimateOfFerngill
                             Temperature += $" ({WeatherHelper.DisplayTemperature(CurrentWeather.GetTodayLow(), OurConfig.SecondScaleGauge)}) ";
                         
                         //Output today's weather
-                        Vector2 nameSize = contentBatch.DrawTextBlock(font, $"Today, the weather is {WeatherHelper.DescWeather(WeatherHelper.GetTodayWeather())} with " + Temperature, new Vector2(x + leftOffset, y + topOffset), wrapWidth);
+                        Vector2 nameSize = contentBatch.DrawTextBlock(font, $"Today, the weather is {WeatherHelper.DescWeather(WeatherHelper.GetTodayWeather())} with {Temperature}", new Vector2(x + leftOffset, y + topOffset), wrapWidth);
                         topOffset += nameSize.Y;
+                        topOffset += lineHeight;
 
                         //Output tommorow's weather
-                        Vector2 tomSize = contentBatch.DrawTextBlock(font, $"Tommorow, the weather will be { WeatherHelper.DescWeather(WeatherHelper.GetTodayWeather())} with " + Temperature, new Vector2(x + leftOffset, y + topOffset), wrapWidth);
+                        Vector2 tomSize = contentBatch.DrawTextBlock(font, $"Tommorow, the weather will be { WeatherHelper.DescWeather(Game1.weatherForTomorrow)}.", new Vector2(x + leftOffset, y + topOffset), wrapWidth);
 
                         topOffset += tomSize.Y;
                     }

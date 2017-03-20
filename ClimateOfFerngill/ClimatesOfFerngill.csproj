@@ -79,11 +79,17 @@
     <Content Include="climatesheet.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
+    <Content Include="climatesheet2.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="darkLetterBG.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Target Name="AfterBuild">
     <PropertyGroup>
-      <GamePath>C:\GOG Games\Stardew Valley</GamePath>
+      <GamePath>C:\GOG Games\Stardew Valley\</GamePath>
       <ModPath>$(GamePath)\Mods\ClimateOfFerngill</ModPath>
     </PropertyGroup>
     <Copy SourceFiles="$(TargetDir)\$(TargetName).dll" DestinationFolder="$(ModPath)" />

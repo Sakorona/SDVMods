@@ -63,6 +63,11 @@ namespace ClimateOfFerngill
             CurrPhase = SDVMoon.GetLunarPhase();
         }
 
+        public void Reset()
+        {
+            CurrPhase = MoonPhase.ErrorPhase;
+        }
+
         public static MoonPhase GetLunarPhase()
         {
             //divide it by the cycle.
@@ -184,7 +189,7 @@ namespace ClimateOfFerngill
                     {
                         Vector2 v = new Vector2((float)Game1.random.Next(rectangle.X, rectangle.Right), (float)Game1.random.Next(rectangle.Y, rectangle.Bottom));
                         if (b.isTileLocationTotallyClearAndPlaceable(v))
-                            b.dropObject(new StardewValley.Object(parentSheetIndex, 1, false, -1, 0), v * (float)Game1.tileSize, Game1.viewport, true, (Farmer)null);
+                            b.dropObject(new StardewValley.Object(parentSheetIndex, 1, false, -1, 0), v * (float)Game1.tileSize, Game1.viewport, true, null);
                     }
                 }
             }

@@ -9,16 +9,16 @@ using StardewModdingAPI.Events;
 
 using StardewValley;
 using StardewValley.Objects;
-using StardewValley.TerrainFeatures;
 using StardewValley.Monsters;
 using StardewValley.Locations;
 using StardewValley.Menus;
 
 using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Input;
 
 //DAMN YOU 1.2
 using SFarmer = StardewValley.Farmer;
-using Microsoft.Xna.Framework.Input;
+
 
 
 namespace ClimateOfFerngill
@@ -29,6 +29,7 @@ namespace ClimateOfFerngill
         internal FerngillWeather CurrWeather { get; set; }
         public SDVMoon Luna { get; set; }
         private Sprites.Icons OurIcons { get; set; }
+        //private Sprites.Letter OurLetter { get; set; }
 
         //trackers
         private bool GameLoaded;
@@ -79,15 +80,32 @@ namespace ClimateOfFerngill
             SaveEvents.AfterLoad += SaveEvents_AfterLoad;
             TimeEvents.TimeOfDayChanged += TimeEvents_TimeOfDayChanged;
             SaveEvents.BeforeSave += SaveEvents_BeforeSave;
+            //SaveEvents.AfterReturnToTitle += SaveEvents_AfterReturnToTitle;
 
             //register keyboard handlers and other menu events
             ControlEvents.KeyPressed += (sender, e) => this.ReceiveKeyPress(e.KeyPressed, this.Config.Keyboard);
             MenuEvents.MenuClosed += (sender, e) => this.ReceiveMenuClosed(e.PriorMenu);
         }
 
+        /*
+        private void SaveEvents_AfterReturnToTitle(object sender, EventArgs e)
+        {
+            BadEvents.UpdateForNewDay();
+            CurrWeather.UpdateForNewDay();
+            OurIcons = null;
+            Luna.Reset();
+            DeathTime = 0;
+            ThreatenedCrops.Clear();
+            rainChance = stormChance = windChance = 0;
+            GameLoaded = false;
+        }*/
+
         private void ReceiveKeyPress(Keys key, Keys config)
         {
-            if (config != key)
+            if (config != key)  //sanity force this to exit!
+                return;
+
+            if (!GameLoaded)
                 return;
 
             // perform bound action
@@ -117,7 +135,8 @@ namespace ClimateOfFerngill
        
         private void TimeEvents_TimeOfDayChanged(object sender, EventArgsIntChanged e)
         {
-            BadEvents.CatchACold();
+            if (Config.StormyPenalty)
+                BadEvents.CatchACold();
 
             //specific time stuff
             if (e.NewInt == 610)
@@ -354,11 +373,17 @@ namespace ClimateOfFerngill
             //  game's own weather processing.
             if (!weddingOverride)
             {
-                if (Game1.countdownToWedding == 1 && Game1.player.spouse.Contains("engaged"))
-                    Game1.weatherForTomorrow = Game1.weather_wedding;
                 if (Config.TooMuchInfo)
-                    Monitor.Log("Wedding tommorrow");
-                forceSet = true;
+                    Monitor.Log($"Wedding flags: {Game1.countdownToWedding == 1} and {Game1.player.spouse.Contains("engaged")} with" +
+                        $"count down to wedding being {Game1.countdownToWedding}");
+
+                if (Game1.countdownToWedding == 1 && Game1.player.spouse.Contains("engaged"))
+                {
+                    if (Config.TooMuchInfo)
+                        Monitor.Log("Wedding tommorrow");
+                    forceSet = true;
+                    Game1.weatherForTomorrow = Game1.weather_wedding;
+                }        
             }
 
             if (TmrwWeather == SDVWeather.Festival)
