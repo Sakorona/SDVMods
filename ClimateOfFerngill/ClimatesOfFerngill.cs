@@ -398,7 +398,6 @@ namespace ClimateOfFerngill
 
             // We've detected what we shouldn't intefere with.
             // Now to set the weather by season.
-
             switch (CurSeason)
             {
                 case SDVSeasons.spring:
@@ -423,11 +422,8 @@ namespace ClimateOfFerngill
 
             //handle calcs here for odds.
             double chance = Dice.NextDouble();
-            if (Config.TooMuchInfo)
-                Monitor.Log($"Rain Chance is: {rainChance} with the rng being {chance}");
 
             //override for the first spring.
-
             if (Game1.year == 1 && Game1.currentSeason == "spring" && !Config.AllowStormsFirstSpring)
                 stormChance = 0;
 
@@ -474,6 +470,7 @@ namespace ClimateOfFerngill
                     TmrwWeather = (SDVWeather)Game1.weather_sunny;
             }
 
+            //Winter has two weathers. Snow and Sun.
             if (Game1.currentSeason == "winter")
             {
                 if (chance < rainChance)
@@ -484,7 +481,8 @@ namespace ClimateOfFerngill
                 else
                     TmrwWeather = (SDVWeather)Game1.weather_sunny;
             }
-
+            
+            //Snow fall on Fall 28, if the flag is set.
             if (Game1.dayOfMonth == 28 && Game1.currentSeason == "fall" && Config.AllowSnowOnFall28)
             {
                 CurrWeather.SetTodayHigh(2);
@@ -499,6 +497,7 @@ namespace ClimateOfFerngill
             EndWeather = TmrwWeather;
             Game1.chanceToRainTomorrow = rainChance; //set for various events.
             Game1.weatherForTomorrow = (int)TmrwWeather;
+
             if (Config.TooMuchInfo)
                 Monitor.Log($"Checking if set. Generated Weather: {WeatherHelper.DescWeather(TmrwWeather)} and set weather is: {WeatherHelper.DescWeather(Game1.weatherForTomorrow)}");
         }
@@ -542,7 +541,10 @@ namespace ClimateOfFerngill
                     rainChance = .25;
                     break;
                 case "dry":
-                    rainChance = .3;
+                    if (Game1.dayOfMonth < 9)
+                        rainChance = .3;
+                    else if (Game1.dayOfMonth > 9)
+                        rainChance = .185;
                     break;
                 case "wet":
                     rainChance = rainChance + .05;
