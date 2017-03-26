@@ -373,11 +373,14 @@ namespace ClimateOfFerngill
             //  game's own weather processing.
             if (!weddingOverride)
             {
-                if (Config.TooMuchInfo)
+
+                if (Config.TooMuchInfo && Game1.player.spouse != null)
                     Monitor.Log($"Wedding flags: {Game1.countdownToWedding == 1} and {Game1.player.spouse.Contains("engaged")} with" +
                         $"count down to wedding being {Game1.countdownToWedding}");
+                else if (Config.TooMuchInfo)
+                    Monitor.Log($"Spouse is null. No wedding.");
 
-                if (Game1.countdownToWedding == 1 && Game1.player.spouse.Contains("engaged"))
+                if (Game1.countdownToWedding == 1 && Game1.player.spouse != null && Game1.player.spouse.Contains("engaged"))
                 {
                     if (Config.TooMuchInfo)
                         Monitor.Log("Wedding tommorrow");
@@ -444,26 +447,28 @@ namespace ClimateOfFerngill
 
             //sequence - rain (Storm), wind, sun
             //this also contains the notes - certain seasons don't have certain weathers.
-            if (chance < rainChance || Game1.currentSeason != "winter")
+            //BUG: AND NOT OR. Re oriented.
+            if (Game1.currentSeason != "winter")
             {
-                chance = Dice.NextDouble();
-                if (chance < stormChance && stormChance != 0)
+                if (chance < rainChance)
                 {
-                    if (Config.TooMuchInfo) Monitor.Log($"Storm is selected, with roll {chance} and target percent {stormChance}");
-                    TmrwWeather = (SDVWeather)Game1.weather_lightning;
+                    chance = Dice.NextDouble();
+                    if (chance < stormChance && stormChance != 0)
+                    {
+                        if (Config.TooMuchInfo) Monitor.Log($"Storm is selected, with roll {chance} and target percent {stormChance}");
+                        TmrwWeather = (SDVWeather)Game1.weather_lightning;
+                    }
+                    else
+                    {
+                        TmrwWeather = (SDVWeather)Game1.weather_rain;
+                        if (Config.TooMuchInfo) Monitor.Log($"Rain is selected, with roll {chance} and target percent {stormChance}");
+                    }
                 }
-                else
-                {
-                    TmrwWeather = (SDVWeather)Game1.weather_rain;
-                    if (Config.TooMuchInfo) Monitor.Log("Raining selected");
-                }
-            }
-            else if (Game1.currentSeason != "winter")
-            {
+            
                 if (chance < (windChance + rainChance) && (Game1.currentSeason == "spring" || Game1.currentSeason == "fall") && windChance != 0)
                 {
                     TmrwWeather = (SDVWeather)Game1.weather_debris;
-                    if (Config.TooMuchInfo) Monitor.Log($"It's windy today, with roll {chance} and wind odds {windChance}");
+                    if (Config.TooMuchInfo) Monitor.Log($"It's windy today, with roll {chance} and with odds {windChance}");
                 }
                 else
                     TmrwWeather = (SDVWeather)Game1.weather_sunny;
@@ -472,7 +477,10 @@ namespace ClimateOfFerngill
             if (Game1.currentSeason == "winter")
             {
                 if (chance < rainChance)
+                {
                     TmrwWeather = (SDVWeather)Game1.weather_snow;
+                    if (Config.TooMuchInfo) Monitor.Log($"It's snowy today, with roll {chance} and with odds {rainChance}");
+                }
                 else
                     TmrwWeather = (SDVWeather)Game1.weather_sunny;
             }
