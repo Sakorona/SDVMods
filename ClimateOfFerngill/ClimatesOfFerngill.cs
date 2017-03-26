@@ -483,15 +483,16 @@ namespace ClimateOfFerngill
                 CurrWeather.SetTodayLow(-1);
                 TmrwWeather = (SDVWeather)Game1.weather_snow; //it now snows on Fall 28.
             }
-
-            Monitor.Log($"We've set the weather for tommorow. It is: {WeatherHelper.DescWeather(TmrwWeather)}");
+            
+            if (Config.TooMuchInfo)
+                Monitor.Log($"We've set the weather for tommorow. It is: {WeatherHelper.DescWeather(TmrwWeather)}");
 
             //set trackers
             EndWeather = TmrwWeather;
             Game1.chanceToRainTomorrow = rainChance; //set for various events.
             Game1.weatherForTomorrow = (int)TmrwWeather;
             if (Config.TooMuchInfo)
-                Monitor.Log($"Checking if set. Generated Weather: {WeatherHelper.DescWeather(TmrwWeather)} and set weather is: {WeatherHelper.DescWeather(Game1.weatherForTomorrow)}", LogLevel.Info);
+                Monitor.Log($"Checking if set. Generated Weather: {WeatherHelper.DescWeather(TmrwWeather)} and set weather is: {WeatherHelper.DescWeather(Game1.weatherForTomorrow)}");
         }
 
         private void HandleSpringWeather()

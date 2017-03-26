@@ -219,14 +219,34 @@ namespace ClimateOfFerngill
 
                         if (OurConfig.DisplaySecondScale)
                             Temperature += $" ({WeatherHelper.DisplayTemperature(CurrentWeather.GetTodayLow(), OurConfig.SecondScaleGauge)}) ";
-                        
+
                         //Output today's weather
-                        Vector2 nameSize = contentBatch.DrawTextBlock(font, $"Today, the weather is {WeatherHelper.DescWeather(WeatherHelper.GetTodayWeather())} with {Temperature}", new Vector2(x + leftOffset, y + topOffset), wrapWidth);
+                        string weatherString = "";
+                        if (WeatherHelper.GetTodayWeather() != SDVWeather.Festival)
+                        {
+                            weatherString = $"Today, the weather is {WeatherHelper.DescWeather(WeatherHelper.GetTodayWeather())} with {Temperature}";
+                        }
+                        else
+                        {
+                            weatherString = $"Today, we have the {InternalUtility.GetFestivalName()} with {Temperature}";
+                        }
+
+                        Vector2 nameSize = contentBatch.DrawTextBlock(font, weatherString, new Vector2(x + leftOffset, y + topOffset), wrapWidth);
                         topOffset += nameSize.Y;
                         topOffset += lineHeight;
 
+
                         //Output tommorow's weather
-                        Vector2 tomSize = contentBatch.DrawTextBlock(font, $"Tommorow, the weather will be { WeatherHelper.DescWeather(Game1.weatherForTomorrow)}.", new Vector2(x + leftOffset, y + topOffset), wrapWidth);
+                        if (WeatherHelper.GetTodayWeather() != SDVWeather.Festival)
+                        {
+                            weatherString = $"Tommorow, the weather will be { WeatherHelper.DescWeather(Game1.weatherForTomorrow)}.";
+                        }
+                        else
+                        {
+                            weatherString = $"Tommorow will be a special event: {InternalUtility.GetTommorowFestivalName()}";
+                        }
+
+                        Vector2 tomSize = contentBatch.DrawTextBlock(font, weatherString, new Vector2(x + leftOffset, y + topOffset), wrapWidth);
 
                         topOffset += tomSize.Y;
                     }

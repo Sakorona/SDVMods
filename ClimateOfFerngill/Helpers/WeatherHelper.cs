@@ -192,7 +192,7 @@ namespace ClimateOfFerngill
 
             string[] weddingWeather = new string[] { "it'll be good weather for a Pelican Town Wedding! Congratulations to the newlyweds. " };
             if ((int)weather == Game1.weather_festival)
-                return "It'll be good weather for the " + InternalUtility.GetFestivalName(Game1.dayOfMonth + 1, Game1.currentSeason) + "! Sunny and clear.";
+                return "It'll be good weather for the " + InternalUtility.GetTommorowFestivalName() + "! Sunny and clear.";
 
             if (today && weather == SDVWeather.Wedding)
                 return weddingWeather.GetRandomItem(dice);

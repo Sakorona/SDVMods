@@ -28,7 +28,17 @@ namespace ClimateOfFerngill
             }
         }
 
-        public static string GetFestivalName(int dayOfMonth, string currentSeason)
+        public static string GetFestivalName()
+        {
+            return GetFestivalName(Game1.dayOfMonth, Game1.currentSeason);
+        }
+
+        public static string GetTommorowFestivalName()
+        {
+            return GetFestivalName(Game1.dayOfMonth + 1, Game1.currentSeason);
+        }
+
+        private static string GetFestivalName(int dayOfMonth, string currentSeason)
         {
             switch (currentSeason)
             {
