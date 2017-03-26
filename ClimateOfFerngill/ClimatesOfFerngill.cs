@@ -230,7 +230,7 @@ namespace ClimateOfFerngill
         {
             GameLoaded = true;
             OurIcons = new Sprites.Icons(Helper.DirectoryPath);
-            UpdateWeather(CurrWeather);
+            //UpdateWeather(CurrWeather);
             Luna.UpdateForNewDay();
             BadEvents.UpdateForNewDay();
         }
