@@ -224,7 +224,7 @@ namespace ClimateOfFerngill
                         string weatherString = "";
                         if (WeatherHelper.GetTodayWeather() != SDVWeather.Festival)
                         {
-                            weatherString = $"Today, the weather is {WeatherHelper.DescWeather(WeatherHelper.GetTodayWeather())} with {Temperature}";
+                            weatherString = $"Today, the weather is {WeatherHelper.DescWeather(WeatherHelper.GetTodayWeather(), Game1.currentSeason)} with {Temperature}";
                         }
                         else
                         {
@@ -239,7 +239,7 @@ namespace ClimateOfFerngill
                         //Output tommorow's weather
                         if (WeatherHelper.GetTodayWeather() != SDVWeather.Festival)
                         {
-                            weatherString = $"Tommorow, the weather will be { WeatherHelper.DescWeather(Game1.weatherForTomorrow)}.";
+                            weatherString = $"Tommorow, the weather will be { WeatherHelper.DescWeather(Game1.weatherForTomorrow, Game1.currentSeason)}.";
                         }
                         else
                         {

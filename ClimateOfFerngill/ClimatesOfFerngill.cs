@@ -362,7 +362,7 @@ namespace ClimateOfFerngill
             bool forceSet = false;
 
             if (Config.TooMuchInfo)
-                Monitor.Log($"The weather tommorow at start is: {WeatherHelper.DescWeather(TmrwWeather)}");
+                Monitor.Log($"The weather tommorow at start is: {WeatherHelper.DescWeather(TmrwWeather, Game1.currentSeason)}");
 
             // The mod executes after the main loop and should only execute at the beginning of the
             //  day. This really means we have to make sure it runs or we'll have an issue with the tv
@@ -491,7 +491,7 @@ namespace ClimateOfFerngill
             }
             
             if (Config.TooMuchInfo)
-                Monitor.Log($"We've set the weather for tommorow. It is: {WeatherHelper.DescWeather(TmrwWeather)}");
+                Monitor.Log($"We've set the weather for tommorow. It is: {WeatherHelper.DescWeather(TmrwWeather, Game1.currentSeason)}");
 
             //set trackers
             EndWeather = TmrwWeather;
@@ -499,7 +499,7 @@ namespace ClimateOfFerngill
             Game1.weatherForTomorrow = (int)TmrwWeather;
 
             if (Config.TooMuchInfo)
-                Monitor.Log($"Checking if set. Generated Weather: {WeatherHelper.DescWeather(TmrwWeather)} and set weather is: {WeatherHelper.DescWeather(Game1.weatherForTomorrow)}");
+                Monitor.Log($"Checking if set. Generated Weather: {WeatherHelper.DescWeather(TmrwWeather, Game1.currentSeason)} and set weather is: {WeatherHelper.DescWeather(Game1.weatherForTomorrow, Game1.currentSeason)}");
         }
 
         private void HandleSpringWeather()
