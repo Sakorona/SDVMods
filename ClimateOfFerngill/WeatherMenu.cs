@@ -237,7 +237,7 @@ namespace ClimateOfFerngill
 
 
                         //Output tommorow's weather
-                        if (WeatherHelper.GetTodayWeather() != SDVWeather.Festival)
+                        if (!(Utility.isFestivalDay(Game1.dayOfMonth +1, Game1.currentSeason)))
                         {
                             weatherString = $"Tommorow, the weather will be { WeatherHelper.DescWeather(Game1.weatherForTomorrow, Game1.currentSeason)}.";
                         }
