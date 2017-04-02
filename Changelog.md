@@ -15,6 +15,8 @@
 - Added hazardous events such as frosts and heatwaves
 - Added a moon, which has special events on a new moon and full moon. See readme for more information
 - Refactored for easier updating later
+- Better usage of HUD messages
+- Updated to remove deprecation warnings on SMAPI 1.8 and earlier.
 
 
 0.8.0
