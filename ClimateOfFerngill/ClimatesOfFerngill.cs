@@ -25,6 +25,9 @@ namespace ClimateOfFerngill
 {
     public class ClimatesOfFerngill : Mod
     {
+        /// <summary>
+        /// This function
+        /// </summary>
         public ClimateConfig Config { get; private set; }
         internal FerngillWeather CurrWeather { get; set; }
         public SDVMoon Luna { get; set; }
