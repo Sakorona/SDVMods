@@ -83,11 +83,23 @@ namespace ClimateOfFerngill
             SaveEvents.AfterLoad += SaveEvents_AfterLoad;
             TimeEvents.TimeOfDayChanged += TimeEvents_TimeOfDayChanged;
             SaveEvents.BeforeSave += SaveEvents_BeforeSave;
+            GameEvents.QuarterSecondTick += GameEvents_QuarterSecondTick;
             //SaveEvents.AfterReturnToTitle += SaveEvents_AfterReturnToTitle;
 
             //register keyboard handlers and other menu events
             ControlEvents.KeyPressed += (sender, e) => this.ReceiveKeyPress(e.KeyPressed, this.Config.Keyboard);
             MenuEvents.MenuClosed += (sender, e) => this.ReceiveMenuClosed(e.PriorMenu);
+        }
+
+        private void GameEvents_QuarterSecondTick(object sender, EventArgs e)
+        {
+            if (Config.StormTotem)
+            {
+                if (Game1.weatherForTomorrow != (int)EndWeather)
+                {
+
+                }
+            }
         }
 
         /*

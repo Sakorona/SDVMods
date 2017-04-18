@@ -28,6 +28,7 @@ namespace ClimateOfFerngill
         public int FrostWarning { get; set; }
         public double FrostHardiness { get; set; } 
         public bool GhostsDoNotSpawn { get; set; }
+        public bool StormTotem { get; set; }
 
         public ClimateConfig()
         {
@@ -64,6 +65,9 @@ namespace ClimateOfFerngill
 
             //moon options
             GhostsDoNotSpawn = false;
+
+            //other options
+            StormTotem = false;
         }
     }
 }
