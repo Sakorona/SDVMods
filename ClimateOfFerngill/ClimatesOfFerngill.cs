@@ -101,30 +101,36 @@ namespace ClimateOfFerngill
                     if (Game1.currentSeason == "spring")
                     {
                         if (Dice.NextDoublePositive() < .25)
+                        {
                             Game1.weatherForTomorrow = Game1.weather_lightning;
-
-                        if (Config.TooMuchInfo)
-                            Monitor.Log($"Setting the rain totem to stormy, based on a roll of under .25");
+                            Game1.addHUDMessage(new HUDMessage("You hear a roll of thunder..."));
+                            if (Config.TooMuchInfo)
+                                Monitor.Log($"Setting the rain totem to stormy, based on a roll of under .6");
+                        }
                     }
 
                     //use flat storm chances
                     if (Game1.currentSeason == "summer")
                     {
                         if (Dice.NextDoublePositive() < .4)
+                        {
                             Game1.weatherForTomorrow = Game1.weather_lightning;
-
-                        if (Config.TooMuchInfo)
-                            Monitor.Log($"Setting the rain totem to stormy, based on a roll of under .4");
+                            Game1.addHUDMessage(new HUDMessage("You hear a roll of thunder..."));
+                            if (Config.TooMuchInfo)
+                                Monitor.Log($"Setting the rain totem to stormy, based on a roll of under .6");
+                        }
                     }
 
                     //use flat storm chances
                     if (Game1.currentSeason == "autumn")
                     {
                         if (Dice.NextDoublePositive() < .6)
+                        {
                             Game1.weatherForTomorrow = Game1.weather_lightning;
-
-                        if (Config.TooMuchInfo)
-                            Monitor.Log($"Setting the rain totem to stormy, based on a roll of under .6");
+                            Game1.addHUDMessage(new HUDMessage("You hear a roll of thunder..."));
+                            if (Config.TooMuchInfo)
+                                Monitor.Log($"Setting the rain totem to stormy, based on a roll of under .6");
+                        }
                     }
                 }
             }
