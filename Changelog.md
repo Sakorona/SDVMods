@@ -1,3 +1,6 @@
+1.0rc10
+- Added in an option to allow storm changes to change the rain to stormy
+
 1.0rc9
 - Fixed a logic error that would make it rain far too often
 - Made the 'dry' setting more detailed during Spring.

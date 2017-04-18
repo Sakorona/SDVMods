@@ -2,7 +2,7 @@
 
 This mod alters the weather of Stardew Valley by creating a climate system. It adds temperature and adds hostile weather events. 
 
-The current version is __1.0.0 rc9 (rev 20170402)__ 
+The current version is __1.0.0 rc10 (rev 20170418)__ 
 
 ## Changelog
 
