@@ -36,6 +36,7 @@ namespace ClimateOfFerngill
 
         //trackers
         private bool GameLoaded;
+        private bool RainTotemUsedToday;
         private SDVWeather EndWeather;
 
         //event fields
@@ -76,7 +77,10 @@ namespace ClimateOfFerngill
             rainChance = 0;
             stormChance = 0;
             windChance = 0;
-  
+
+            //set flags
+            RainTotemUsedToday = false;
+
             //register event handlers
             TimeEvents.DayOfMonthChanged += TimeEvents_DayOfMonthChanged;
             MenuEvents.MenuChanged += MenuEvents_MenuChanged;
@@ -93,10 +97,15 @@ namespace ClimateOfFerngill
 
         private void GameEvents_QuarterSecondTick(object sender, EventArgs e)
         {
+
             if (Config.StormTotem)
             {
-                if (Game1.weatherForTomorrow != (int)EndWeather)
+                if (Game1.weatherForTomorrow != (int)EndWeather && !RainTotemUsedToday)
                 {
+                    RainTotemUsedToday = true;
+                    if (Config.TooMuchInfo)
+                        Monitor.Log("Storm totem code enabled and running");
+
                     //use flat storm chances
                     if (Game1.currentSeason == "spring")
                     {
@@ -147,6 +156,7 @@ namespace ClimateOfFerngill
             ThreatenedCrops.Clear();
             rainChance = stormChance = windChance = 0;
             GameLoaded = false;
+            RainTotemUsedToday = false;
         }*/
 
         private void ReceiveKeyPress(Keys key, Keys config)
@@ -282,6 +292,7 @@ namespace ClimateOfFerngill
             //UpdateWeather(CurrWeather);
             Luna.UpdateForNewDay();
             BadEvents.UpdateForNewDay();
+            RainTotemUsedToday = false;
         }
 
         private void MenuEvents_MenuChanged(object sender, EventArgsClickableMenuChanged e)
@@ -393,6 +404,7 @@ namespace ClimateOfFerngill
             //update objects for new day.
             BadEvents.UpdateForNewDay();
             CurrWeather.UpdateForNewDay();
+            RainTotemUsedToday = false;
             Luna.UpdateForNewDay();
             DeathTime = 0;
             ThreatenedCrops.Clear();
