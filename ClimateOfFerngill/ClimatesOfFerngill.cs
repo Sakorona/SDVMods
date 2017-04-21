@@ -606,68 +606,70 @@ namespace ClimateOfFerngill
                 Monitor.Log($"Checking if set. Generated Weather: {WeatherHelper.DescWeather(TmrwWeather, Game1.currentSeason)} and set weather is: {WeatherHelper.DescWeather(Game1.weatherForTomorrow, Game1.currentSeason)}");
         }
 
-        private bool GameWillForceTomorrow((string, int) specificDay)
+        private bool GameWillForceTomorrow(SDVDate Tomorrow)
         {
-          switch (specificDay.Item1)
-          {
+            switch (Tomorrow.Season)
+            {
                 case "spring":
-                    if (Game1.year == 1 && specificDay.Item2 == 2 || specificDay.Item2 == 4)
+                    if (Game1.year == 1 && Tomorrow.Day == 2 || Tomorrow.Day == 4)
                     {
                         Game1.weatherForTomorrow = Game1.weather_sunny;
                         return true;
                     }
 
-                    else if (Game1.year == 1 && specificDay.Item2 == 3)
+                    else if (Game1.year == 1 && Tomorrow.Day == 3)
                     {
                         Game1.weatherForTomorrow = Game1.weather_rain;
                         return true;
                     }
 
-                    else if (specificDay.Item2 == 1)
+                    else if (Tomorrow.Day == 1)
                     {
                         Game1.weatherForTomorrow = Game1.weather_sunny;
                         return true;
                     }
-                    else if (specificDay.Item2 == 13 || specificDay.Item2 == 24)
+                    else if (Tomorrow.Day == 13 || Tomorrow.Day == 24)
                     {
                         Game1.weatherForTomorrow = Game1.weather_festival;
                         return true;
                     }
                     break;
                 case "summer":
-                    if (specificDay.Item2 == 1) {
+                    if (Tomorrow.Day == 1)
+                    {
                         Game1.weatherForTomorrow = Game1.weather_sunny;
                         return true;
                     }
-                    else if (specificDay.Item2 == 11 || specificDay.Item2 == 28)
+                    else if (Tomorrow.Day == 11 || Tomorrow.Day == 28)
                     {
                         Game1.weatherForTomorrow = Game1.weather_festival;
                         return true;
                     }
 
-                    else if (specificDay.Item2 == 13 || specificDay.Item2 == 25 || specificDay.Item2 == 26) {
+                    else if (Tomorrow.Day == 13 || Tomorrow.Day == 25 || Tomorrow.Day == 26)
+                    {
                         Game1.weatherForTomorrow = Game1.weather_lightning;
                         return true;
                     }
                     break;
                 case "fall":
-                    if (specificDay.Item2 == 1)
+                    if (Tomorrow.Day == 1)
                     {
                         return true;
                     }
-                    else if (specificDay.Item2 == 16 || specificDay.Item2 == 27)
+                    else if (Tomorrow.Day == 16 || Tomorrow.Day == 27)
                     {
                         Game1.weatherForTomorrow = Game1.weather_festival;
                         return true;
                     }
                     break;
                 case "winter":
-                    if (specificDay.Item2 == 1)
+                    if (Tomorrow.Day == 1)
                     {
                         Game1.weatherForTomorrow = Game1.weather_sunny;
                         return true;
                     }
-                    else if (specificDay.Item2 == 8 || specificDay.Item2 == 25)
+                    else if (Tomorrow.Day == 8 || Tomorrow.Day == 25)
                     {
                         Game1.weatherForTomorrow = Game1.weather_festival;
                         return true;
@@ -675,12 +677,12 @@ namespace ClimateOfFerngill
                     break;
                 default:
                     return false;
-          }
+            }
 
             return false;
         }
 
-        private ValueTuple<string, int> GetTommorowInGame()
+        private SDVDate GetTommorowInGame()
         {
             int day = 1;
             string season = "spring";
@@ -696,7 +698,7 @@ namespace ClimateOfFerngill
                 day = Game1.dayOfMonth + 1;
             }
 
-            return new ValueTuple<string, int>(season, day);
+            return new SDVDate(season, day);
             
         }
 
