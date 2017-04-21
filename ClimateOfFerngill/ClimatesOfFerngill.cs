@@ -102,7 +102,7 @@ namespace ClimateOfFerngill
         private void GameEvents_UpdateTick(object sender, EventArgs e)
         {
             
-            if (Game1.player != null && Game1.player.itemToEat != RememberItemToEat)
+            if (Game1.player != null && Game1.player.itemToEat != RememberItemToEat && !HaveIEatenYet)
             {
                 RememberItemToEat = Game1.player.itemToEat;
                 if (Game1.player.itemToEat != null)
@@ -530,11 +530,12 @@ namespace ClimateOfFerngill
                 CurrWeather.SetTodayLow(CurrWeather.GetTodayLow() - 2);
             }
 
-            //handle forced weather from the game
+            //handle forced weather from the game - this function will actually set the weather itself, if true.
             if (GameWillForceTomorrow(GetTommorowInGame()))
             {
                 forceSet = true;
                 if (Config.TooMuchInfo) Monitor.Log("The game is forcing weather tommorow. Setting flag.");
+
             }
 
 
@@ -610,24 +611,67 @@ namespace ClimateOfFerngill
           switch (specificDay.Item1)
           {
                 case "spring":
-                    if (Game1.year == 1 && specificDay.Item2 == 2 || specificDay.Item2 == 3 || specificDay.Item2 == 4)
+                    if (Game1.year == 1 && specificDay.Item2 == 2 || specificDay.Item2 == 4)
+                    {
+                        Game1.weatherForTomorrow = Game1.weather_sunny;
+                        return true;
+                    }
+
+                    else if (Game1.year == 1 && specificDay.Item2 == 3)
+                    {
+                        Game1.weatherForTomorrow = Game1.weather_rain;
+                        return true;
+                    }
+
+                    else if (specificDay.Item2 == 1)
+                    {
+                        Game1.weatherForTomorrow = Game1.weather_sunny;
+                        return true;
+                    }
+                    else if (specificDay.Item2 == 13 || specificDay.Item2 == 24)
+                    {
+                        Game1.weatherForTomorrow = Game1.weather_festival;
+                        return true;
+                    }
+                    break;
+                case "summer":
+                    if (specificDay.Item2 == 1) {
+                        Game1.weatherForTomorrow = Game1.weather_sunny;
+                        return true;
+                    }
+                    else if (specificDay.Item2 == 11 || specificDay.Item2 == 28)
+                    {
+                        Game1.weatherForTomorrow = Game1.weather_festival;
+                        return true;
+                    }
+
+                    else if (specificDay.Item2 == 13 || specificDay.Item2 == 25 || specificDay.Item2 == 26) {
+                        Game1.weatherForTomorrow = Game1.weather_lightning;
+                        return true;
+                    }
+                    break;
+                case "fall":
+                    if (specificDay.Item2 == 1)
                     {
                         return true;
                     }
-                    if (specificDay.Item2 == 1 || specificDay.Item2 == 13 || specificDay.Item2 == 24)
+                    else if (specificDay.Item2 == 16 || specificDay.Item2 == 27)
+                    {
+                        Game1.weatherForTomorrow = Game1.weather_festival;
                         return true;
-                    break;
-                case "summer":
-                    if (specificDay.Item2 == 1 || specificDay.Item2 == 11 || specificDay.Item2 == 13 || specificDay.Item2 == 25 || specificDay.Item2 == 26)
-                        return true;
-                    break;
-                case "fall":
-                    if (specificDay.Item2 == 1 || specificDay.Item2 == 16 || specificDay.Item2 == 27)
-                        return true;
+                    }
                     break;
                 case "winter":
-                    if (specificDay.Item2 == 8 || specificDay.Item2 == 25)
+                    if (specificDay.Item2 == 1)
+                    {
+                        Game1.weatherForTomorrow = Game1.weather_sunny;
                         return true;
+                    }
+                    else if (specificDay.Item2 == 8 || specificDay.Item2 == 25)
+                    {
+                        Game1.weatherForTomorrow = Game1.weather_festival;
+                        return true;
+                    }
                     break;
                 default:
                     return false;

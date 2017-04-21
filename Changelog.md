@@ -1,3 +1,7 @@
+1.0rc11
+- added in a way to clear exhaustion
+- fix so the weather system won't try to set weather on force days. Instead, it'll just output the weather from the force days
+
 1.0rc10
 - Added in an option to allow storm changes to change the rain to stormy
 
