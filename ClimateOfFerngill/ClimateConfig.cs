@@ -20,6 +20,7 @@ namespace ClimateOfFerngill
         public bool StormyPenalty { get; set; }
         public double DiseaseChance { get; set; }
         public int StaminaPenalty { get; set; }
+        public bool OnlyOneColdADay { get; set; }
 
         public bool HarshWeather { get; set; }
         public int HeatwaveWarning { get; set; }
@@ -54,6 +55,7 @@ namespace ClimateOfFerngill
             StormyPenalty = true;
             DiseaseChance = .475;
             StaminaPenalty = 2;
+            OnlyOneColdADay = true;
 
             //set harsh weather events - currently unused.
             HarshWeather = false;

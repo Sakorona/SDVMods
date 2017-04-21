@@ -13,6 +13,7 @@ namespace ClimateOfFerngill
         private IMonitor Logger;
         private ClimateConfig Config;
         private MersenneTwister Dice;
+        private bool HasGottenColdToday;
 
         private static Dictionary<SDVCrops, double> CropTemps { get; set; }
 
@@ -24,6 +25,7 @@ namespace ClimateOfFerngill
             Logger = modlogger;
             Config = modconfig;
             Dice = moddice;
+            HasGottenColdToday = false;
 
             CropTemps = new Dictionary<SDVCrops, double>
             {
@@ -48,6 +50,7 @@ namespace ClimateOfFerngill
         internal void UpdateForNewDay()
         {
             IsExhausted = false;
+            HasGottenColdToday = false;
         }
 
         internal bool IsFallCrop(int crop)
@@ -76,7 +79,7 @@ namespace ClimateOfFerngill
         public void CatchACold()
         {
             //run non specific code first
-            if (Game1.currentLocation.IsOutdoors && Game1.isLightning)
+            if (Game1.currentLocation.IsOutdoors && Game1.isLightning && !HasGottenColdToday)
             {
                 double diceChance = Dice.NextDouble();
                 if (Config.TooMuchInfo)
@@ -86,6 +89,7 @@ namespace ClimateOfFerngill
                 {
                     IsExhausted = true;
                     InternalUtility.ShowMessage("The storm has caused you to get a cold!");
+                    HasGottenColdToday = true;
                 }
             }
 

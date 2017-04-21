@@ -101,14 +101,16 @@ namespace ClimateOfFerngill
 
         private void GameEvents_UpdateTick(object sender, EventArgs e)
         {
-            
             if (Game1.player != null && Game1.player.itemToEat != RememberItemToEat && !HaveIEatenYet)
             {
                 RememberItemToEat = Game1.player.itemToEat;
                 if (Game1.player.itemToEat != null)
                 {
+                    if (Config.TooMuchInfo)
+                        Monitor.Log("Detecting someone is eating something!");
+
                     HaveIEatenYet = true;
-                    if (RememberItemToEat.parentSheetIndex == 351 && Game1.isEating && !(Game1.activeClickableMenu is DialogueBox))
+                    if (RememberItemToEat.parentSheetIndex == 351 && Game1.isEating)
                     {
                         if (BadEvents.HasACold())
                         {
