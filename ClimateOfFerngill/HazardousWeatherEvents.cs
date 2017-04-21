@@ -62,6 +62,16 @@ namespace ClimateOfFerngill
         {
             return CropTemps[(SDVCrops)currentCrop];
         }
+        public bool HasACold()
+        {
+            return this.IsExhausted;
+        }
+
+        public void RemoveCold()
+        {
+            IsExhausted = false;
+            Game1.addHUDMessage(new HUDMessage("You are no longer exhausted!"));
+        }
 
         public void CatchACold()
         {

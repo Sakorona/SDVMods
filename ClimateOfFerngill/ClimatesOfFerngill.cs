@@ -33,10 +33,12 @@ namespace ClimateOfFerngill
         public SDVMoon Luna { get; set; }
         private Sprites.Icons OurIcons { get; set; }
         //private Sprites.Letter OurLetter { get; set; }
+        private static Item RememberItemToEat; 
 
         //trackers
         private bool GameLoaded;
         private bool RainTotemUsedToday;
+        private bool HaveIEatenYet;
         private SDVWeather EndWeather;
 
         //event fields
@@ -80,6 +82,7 @@ namespace ClimateOfFerngill
 
             //set flags
             RainTotemUsedToday = false;
+            HaveIEatenYet = false;
 
             //register event handlers
             TimeEvents.DayOfMonthChanged += TimeEvents_DayOfMonthChanged;
@@ -88,11 +91,41 @@ namespace ClimateOfFerngill
             TimeEvents.TimeOfDayChanged += TimeEvents_TimeOfDayChanged;
             SaveEvents.BeforeSave += SaveEvents_BeforeSave;
             GameEvents.QuarterSecondTick += GameEvents_QuarterSecondTick;
+            GameEvents.UpdateTick += GameEvents_UpdateTick;
             //SaveEvents.AfterReturnToTitle += SaveEvents_AfterReturnToTitle;
 
             //register keyboard handlers and other menu events
             ControlEvents.KeyPressed += (sender, e) => this.ReceiveKeyPress(e.KeyPressed, this.Config.Keyboard);
             MenuEvents.MenuClosed += (sender, e) => this.ReceiveMenuClosed(e.PriorMenu);
+        }
+
+        private void GameEvents_UpdateTick(object sender, EventArgs e)
+        {
+            
+            if (Game1.player != null && Game1.player.itemToEat != RememberItemToEat)
+            {
+                RememberItemToEat = Game1.player.itemToEat;
+                if (Game1.player.itemToEat != null)
+                {
+                    HaveIEatenYet = true;
+                    if (RememberItemToEat.parentSheetIndex == 351 && Game1.isEating && !(Game1.activeClickableMenu is DialogueBox))
+                    {
+                        if (BadEvents.HasACold())
+                        {
+                            if (Config.TooMuchInfo)
+                                Monitor.Log("Removing the cold after having drunk a muscle relaxant");
+
+                            BadEvents.RemoveCold();
+                        }
+
+                    }
+                }
+                else
+                {
+                    //clear the flag
+                    HaveIEatenYet = false;
+                }
+            }
         }
 
         private void GameEvents_QuarterSecondTick(object sender, EventArgs e)
@@ -415,6 +448,7 @@ namespace ClimateOfFerngill
             UpdateWeather(CurrWeather);    
         }
 
+
         void UpdateWeather(FerngillWeather weatherOutput, bool weddingOverride = false)
         {
             //get start values
@@ -496,6 +530,14 @@ namespace ClimateOfFerngill
                 CurrWeather.SetTodayLow(CurrWeather.GetTodayLow() - 2);
             }
 
+            //handle forced weather from the game
+            if (GameWillForceTomorrow(GetTommorowInGame()))
+            {
+                forceSet = true;
+                if (Config.TooMuchInfo) Monitor.Log("The game is forcing weather tommorow. Setting flag.");
+            }
+
+
             if (forceSet)
             {
                 if (Config.TooMuchInfo) Monitor.Log("Detecting Force Set. Exiting.");
@@ -561,6 +603,71 @@ namespace ClimateOfFerngill
 
             if (Config.TooMuchInfo)
                 Monitor.Log($"Checking if set. Generated Weather: {WeatherHelper.DescWeather(TmrwWeather, Game1.currentSeason)} and set weather is: {WeatherHelper.DescWeather(Game1.weatherForTomorrow, Game1.currentSeason)}");
+        }
+
+        private bool GameWillForceTomorrow((string, int) specificDay)
+        {
+          switch (specificDay.Item1)
+          {
+                case "spring":
+                    if (Game1.year == 1 && specificDay.Item2 == 2 || specificDay.Item2 == 3 || specificDay.Item2 == 4)
+                    {
+                        return true;
+                    }
+                    if (specificDay.Item2 == 1 || specificDay.Item2 == 13 || specificDay.Item2 == 24)
+                        return true;
+                    break;
+                case "summer":
+                    if (specificDay.Item2 == 1 || specificDay.Item2 == 11 || specificDay.Item2 == 13 || specificDay.Item2 == 25 || specificDay.Item2 == 26)
+                        return true;
+                    break;
+                case "fall":
+                    if (specificDay.Item2 == 1 || specificDay.Item2 == 16 || specificDay.Item2 == 27)
+                        return true;
+                    break;
+                case "winter":
+                    if (specificDay.Item2 == 8 || specificDay.Item2 == 25)
+                        return true;
+                    break;
+                default:
+                    return false;
+          }
+
+            return false;
+        }
+
+        private ValueTuple<string, int> GetTommorowInGame()
+        {
+            int day = 1;
+            string season = "spring";
+
+            if (Game1.dayOfMonth == 28)
+            {
+                day = 1;
+                season = GetNextSeason(Game1.currentSeason);
+            }
+            else
+            {
+                season = Game1.currentSeason;
+                day = Game1.dayOfMonth + 1;
+            }
+
+            return new ValueTuple<string, int>(season, day);
+            
+        }
+
+        private string GetNextSeason(string currentSeason)
+        {
+            if (currentSeason == "spring")
+                return "summer";
+            if (currentSeason == "summer")
+                return "fall";
+            if (currentSeason == "fall")
+                return "winter";
+            if (currentSeason == "winter")
+                return "spring";
+
+            return "error";
         }
 
         private void HandleSpringWeather()
