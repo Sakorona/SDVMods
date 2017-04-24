@@ -92,7 +92,7 @@ namespace ClimateOfFerngill
             SaveEvents.BeforeSave += SaveEvents_BeforeSave;
             GameEvents.QuarterSecondTick += GameEvents_QuarterSecondTick;
             GameEvents.UpdateTick += GameEvents_UpdateTick;
-            //SaveEvents.AfterReturnToTitle += SaveEvents_AfterReturnToTitle;
+            SaveEvents.AfterReturnToTitle += SaveEvents_AfterReturnToTitle;
 
             //register keyboard handlers and other menu events
             ControlEvents.KeyPressed += (sender, e) => this.ReceiveKeyPress(e.KeyPressed, this.Config.Keyboard);
@@ -180,7 +180,7 @@ namespace ClimateOfFerngill
             }
         }
 
-        /*
+        
         private void SaveEvents_AfterReturnToTitle(object sender, EventArgs e)
         {
             BadEvents.UpdateForNewDay();
@@ -192,7 +192,7 @@ namespace ClimateOfFerngill
             rainChance = stormChance = windChance = 0;
             GameLoaded = false;
             RainTotemUsedToday = false;
-        }*/
+        }
 
         private void ReceiveKeyPress(Keys key, Keys config)
         {
