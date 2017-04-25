@@ -262,6 +262,9 @@ namespace ClimateOfFerngill
         
         private void SaveEvents_AfterReturnToTitle(object sender, EventArgs e)
         {
+            if (Config.TooMuchInfo)
+                Monitor.Log("Resetting the game state for returning to title");
+
             BadEvents.UpdateForNewDay();
             CurrWeather.UpdateForNewDay();
             OurIcons = null;

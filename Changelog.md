@@ -1,3 +1,9 @@
+1.0
+- Final release for SDV 1.2
+- Updated for new functionality in 1.2
+- Added in weather commands, to use type in help in the command base
+- Some tweaks
+
 1.0rc11
 - added in a way to clear exhaustion
 - fix so the weather system won't try to set weather on force days. Instead, it'll just output the weather from the force days
