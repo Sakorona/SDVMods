@@ -38,6 +38,26 @@ namespace ClimateOfFerngill
             return GetFestivalName(Game1.dayOfMonth + 1, Game1.currentSeason);
         }
 
+        public static string PrintStringArray(string[] array)
+        {
+            string s = "";
+            for (int i = 0; i < array.Length; i++)
+            {
+                s = s + $"Command {i} is {array[i]}";
+            }
+
+            return s;
+        }
+
+        public static string PrintCurrentWeatherStatus()
+        {
+            return $"Printing current weather status:" +
+                    $"It is Raining: {Game1.isRaining} {Environment.NewLine}" +
+                    $"It is Stormy: {Game1.isLightning} {Environment.NewLine}" +
+                    $"It is Snowy: {Game1.isSnowing} {Environment.NewLine}" +
+                    $"It is Debris Weather: {Game1.isDebrisWeather} {Environment.NewLine}";
+        }
+
         private static string GetFestivalName(int dayOfMonth, string currentSeason)
         {
             switch (currentSeason)

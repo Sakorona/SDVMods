@@ -94,9 +94,88 @@ namespace ClimateOfFerngill
             GameEvents.UpdateTick += GameEvents_UpdateTick;
             SaveEvents.AfterReturnToTitle += SaveEvents_AfterReturnToTitle;
 
+            //siiigh.
+            helper.ConsoleCommands
+                    .Add("world_changetmrweather", "Changes tomorrow's weather.\"rain,storm,snow,debris,festival,wedding,sun\" ", TmrwWeatherChangeFromConsole)
+                    .Add("world_changeweather", "Changes CURRENT weather. \"rain,storm,snow,debris,sun\"", WeatherChangeFromConsole);
+
             //register keyboard handlers and other menu events
             ControlEvents.KeyPressed += (sender, e) => this.ReceiveKeyPress(e.KeyPressed, this.Config.Keyboard);
             MenuEvents.MenuClosed += (sender, e) => this.ReceiveMenuClosed(e.PriorMenu);
+        }
+
+        private void WeatherChangeFromConsole(string arg1, string[] arg2)
+        {
+            if (arg2.Length < 1)
+                return;
+
+            if (Config.TooMuchInfo)
+                Monitor.Log($"The arguments passed are {arg1} and {InternalUtility.PrintStringArray(arg2)}");
+
+            string ChosenWeather = arg2[0];
+
+            switch (ChosenWeather)
+            {
+                case "rain":
+                    Game1.isSnowing = Game1.isLightning = Game1.isDebrisWeather = false;
+                    Game1.isRaining = true;
+                    break;
+                case "storm":
+                    Game1.isSnowing = Game1.isDebrisWeather = false;
+                    Game1.isLightning = Game1.isRaining = true;
+                    break;
+                case "snow":
+                    Game1.isRaining = Game1.isLightning = Game1.isDebrisWeather = false;
+                    Game1.isSnowing = true;
+                    break;
+                case "debris":
+                    Game1.isSnowing = Game1.isLightning = Game1.isRaining = false;
+                    Game1.isDebrisWeather = true;
+                    break;
+                case "sunny":
+                    Game1.isSnowing = Game1.isLightning = Game1.isRaining = Game1.isRaining = false;
+                    break;
+            }
+
+            Game1.updateWeatherIcon();
+            if (Config.TooMuchInfo)
+                Monitor.Log(InternalUtility.PrintCurrentWeatherStatus());
+
+        }
+
+        private void TmrwWeatherChangeFromConsole(string arg1, string[] arg2)
+        {
+            if (arg2.Length < 1)
+                return;
+
+            if (Config.TooMuchInfo)
+                Monitor.Log($"The arguments passed are {arg1} and {arg2.ToString()}");
+
+            string ChosenWeather = arg2[0];
+            switch(ChosenWeather)
+                    {
+                        case "rain":
+                            Game1.weatherForTomorrow = Game1.weather_rain;
+                break;
+                        case "storm":
+                            Game1.weatherForTomorrow = Game1.weather_lightning;
+                break;
+                        case "snow":
+                            Game1.weatherForTomorrow = Game1.weather_snow;
+                break;
+                        case "debris":
+                            Game1.weatherForTomorrow = Game1.weather_debris;
+                break;
+                        case "festival":
+                            Game1.weatherForTomorrow = Game1.weather_festival;
+                break;
+                        case "sun":
+                            Game1.weatherForTomorrow = Game1.weather_sunny;
+                break;
+                        case "wedding":
+                            Game1.weatherForTomorrow = Game1.weather_wedding;
+                break;
+            }
         }
 
         private void GameEvents_UpdateTick(object sender, EventArgs e)
