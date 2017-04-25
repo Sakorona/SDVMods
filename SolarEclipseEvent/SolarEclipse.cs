@@ -20,7 +20,8 @@ namespace SolarEclipseEvent
         {
             Config = Helper.ReadConfig<EclipseConfig>();
 
-            Command.RegisterCommand("world_solareclipse", "Starts the solar eclipse").CommandFired += SolarEclipseEvent_CommandFired;
+            helper.ConsoleCommands
+                .Add("world_solareclipse", "Starts the solar eclipse.", SolarEclipseEvent_CommandFired);
 
             SaveEvents.AfterLoad += SaveEvents_AfterLoad;
             SaveEvents.BeforeSave += SaveEvents_BeforeSave;
@@ -99,7 +100,7 @@ namespace SolarEclipseEvent
             GameLoaded = true;
         }
 
-        private void SolarEclipseEvent_CommandFired(object sender, StardewModdingAPI.Events.EventArgsCommand e)
+        private void SolarEclipseEvent_CommandFired(string command, string[] args)
         {
             IsEclipse = true;
             Game1.globalOutdoorLighting = .5f; //force lightning change.
