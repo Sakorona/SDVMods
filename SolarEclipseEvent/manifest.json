@@ -1,0 +1,13 @@
+{
+  "Name": "Solar Eclipse Event",
+  "Author": "KoihimeNakamura",
+  "Version": {
+    "MajorVersion": 1,
+    "MinorVersion": 1,
+    "PatchVersion": 0,
+    "Build": "20170215"
+  },
+  "Description": "Adds a solar eclipse event",
+  "UniqueID": "KoihimeNakamura.SolarEclipseEvent",
+  "EntryDll": "SolarEclipseEvent.dll"
+}
