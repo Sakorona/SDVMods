@@ -1,0 +1,43 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 15
+VisualStudioVersion = 15.0.26403.7
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ClimatesOfFerngill", "ClimateOfFerngill\ClimatesOfFerngill.csproj", "{D0F25EF3-15F0-4CC6-849A-C2E9B1BBAAB1}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SolarEclipseEvent", "SolarEclipseEvent\SolarEclipseEvent.csproj", "{B932C1FD-CAC3-4A8C-8119-8D156F8CEB96}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TimeReminder", "TimeReminder\TimeReminder.csproj", "{3F10D072-54FD-47FA-B0AA-47A5A6F80931}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".metadata", ".metadata", "{ACEE3349-CD26-4969-8693-5CB58786A2AA}"
+	ProjectSection(SolutionItems) = preProject
+		.gitattributes = .gitattributes
+		.gitignore = .gitignore
+		deploy-mod.targets = deploy-mod.targets
+		GlobalAssemblyInfo.cs = GlobalAssemblyInfo.cs
+		README.md = README.md
+	EndProjectSection
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{D0F25EF3-15F0-4CC6-849A-C2E9B1BBAAB1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D0F25EF3-15F0-4CC6-849A-C2E9B1BBAAB1}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D0F25EF3-15F0-4CC6-849A-C2E9B1BBAAB1}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D0F25EF3-15F0-4CC6-849A-C2E9B1BBAAB1}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B932C1FD-CAC3-4A8C-8119-8D156F8CEB96}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B932C1FD-CAC3-4A8C-8119-8D156F8CEB96}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B932C1FD-CAC3-4A8C-8119-8D156F8CEB96}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B932C1FD-CAC3-4A8C-8119-8D156F8CEB96}.Release|Any CPU.Build.0 = Release|Any CPU
+		{3F10D072-54FD-47FA-B0AA-47A5A6F80931}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3F10D072-54FD-47FA-B0AA-47A5A6F80931}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3F10D072-54FD-47FA-B0AA-47A5A6F80931}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3F10D072-54FD-47FA-B0AA-47A5A6F80931}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal
