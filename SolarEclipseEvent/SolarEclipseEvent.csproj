@@ -44,6 +44,9 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="..\GlobalAssemblyInfo.cs">
+      <Link>Properties\GlobalAssemblyInfo.cs</Link>
+    </Compile>
     <Compile Include="SolarEclipse.cs" />
     <Compile Include="EclipseConfig.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -62,7 +65,7 @@
   </Target>
   <Target Name="AfterBuild">
     <PropertyGroup>
-	  <GamePath>C:\GOG Games\Stardew Valley</GamePath>
+      <GamePath>C:\GOG Games\Stardew Valley</GamePath>
       <ModPath>$(GamePath)\Mods\SolarEclipseEvent</ModPath>
     </PropertyGroup>
     <Copy SourceFiles="$(TargetDir)\$(TargetName).dll" DestinationFolder="$(ModPath)" />
