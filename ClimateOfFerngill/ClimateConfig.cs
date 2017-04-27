@@ -30,6 +30,7 @@ namespace ClimateOfFerngill
         public double FrostHardiness { get; set; } 
         public bool GhostsDoNotSpawn { get; set; }
         public bool StormTotem { get; set; }
+        public bool AllowRainInWinter { get; set; }
 
         public ClimateConfig()
         {
@@ -70,6 +71,7 @@ namespace ClimateOfFerngill
 
             //other options
             StormTotem = false;
+            AllowRainInWinter = false;
         }
     }
 }

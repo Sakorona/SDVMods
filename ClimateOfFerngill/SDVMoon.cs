@@ -6,6 +6,7 @@ using NPack;
 using System.Collections.Generic;
 using Microsoft.Xna.Framework;
 using StardewValley.Locations;
+using System.Linq;
 
 namespace ClimateOfFerngill
 {
@@ -113,7 +114,7 @@ namespace ClimateOfFerngill
             if (SDVMoon.GetLunarPhase() == MoonPhase.FullMoon)
             {
                 if(f != null) {
-                    foreach (KeyValuePair<Vector2, TerrainFeature> TF in f.terrainFeatures)
+                    foreach (var TF in f.terrainFeatures)
                     {
                         if (TF.Value is HoeDirt curr && curr.crop != null)
                         {
@@ -161,15 +162,16 @@ namespace ClimateOfFerngill
             //new moon processing
             if (SDVMoon.GetLunarPhase() == MoonPhase.NewMoon)
             {
-                foreach (KeyValuePair<Vector2, StardewValley.Object> o in b.objects)
+                List<KeyValuePair<Vector2, StardewValley.Object>> entries = (from o in b.objects
+                                                                             where beachItems.Contains(o.Value.parentSheetIndex)
+                                                                             select o).ToList();
+
+                foreach (KeyValuePair<Vector2, StardewValley.Object> rem in entries)
                 {
-                    if (beachItems.Contains(o.Value.parentSheetIndex))
-                    {
                         if (Dice.NextDouble() < BeachRemovalChance)
                         {
-                            b.objects.Remove(o.Key);
+                            b.objects.Remove(rem.Key);
                         }
-                    }
                 }
             }
 

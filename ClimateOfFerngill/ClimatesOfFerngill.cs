@@ -119,21 +119,26 @@ namespace ClimateOfFerngill
                 case "rain":
                     Game1.isSnowing = Game1.isLightning = Game1.isDebrisWeather = false;
                     Game1.isRaining = true;
+                    Monitor.Log("The weather is now rain",LogLevel.Info);
                     break;
                 case "storm":
                     Game1.isSnowing = Game1.isDebrisWeather = false;
                     Game1.isLightning = Game1.isRaining = true;
+                    Monitor.Log("The weather is now storm", LogLevel.Info);
                     break;
                 case "snow":
                     Game1.isRaining = Game1.isLightning = Game1.isDebrisWeather = false;
                     Game1.isSnowing = true;
+                    Monitor.Log("The weather is now snow", LogLevel.Info);
                     break;
                 case "debris":
                     Game1.isSnowing = Game1.isLightning = Game1.isRaining = false;
                     Game1.isDebrisWeather = true;
+                    Monitor.Log("The weather is now debris", LogLevel.Info);
                     break;
                 case "sunny":
                     Game1.isSnowing = Game1.isLightning = Game1.isRaining = Game1.isRaining = false;
+                    Monitor.Log("The weather is now sunny", LogLevel.Info);
                     break;
             }
 
@@ -156,25 +161,32 @@ namespace ClimateOfFerngill
                     {
                         case "rain":
                             Game1.weatherForTomorrow = Game1.weather_rain;
-                break;
+                            Monitor.Log("The weather tommorow is now rain", LogLevel.Info);
+                            break;
                         case "storm":
                             Game1.weatherForTomorrow = Game1.weather_lightning;
-                break;
+                            Monitor.Log("The weather tommorow is now storm", LogLevel.Info);
+                            break;
                         case "snow":
                             Game1.weatherForTomorrow = Game1.weather_snow;
-                break;
+                            Monitor.Log("The weather tommorow is now snow", LogLevel.Info);
+                            break;
                         case "debris":
                             Game1.weatherForTomorrow = Game1.weather_debris;
-                break;
+                            Monitor.Log("The weather tommorow is now debris", LogLevel.Info);
+                            break;
                         case "festival":
                             Game1.weatherForTomorrow = Game1.weather_festival;
-                break;
+                            Monitor.Log("The weather tommorow is now festival", LogLevel.Info);
+                            break;
                         case "sun":
                             Game1.weatherForTomorrow = Game1.weather_sunny;
-                break;
+                            Monitor.Log("The weather tommorow is now sun", LogLevel.Info);
+                            break;
                         case "wedding":
                             Game1.weatherForTomorrow = Game1.weather_wedding;
-                break;
+                            Monitor.Log("The weather tommorow is now wedding", LogLevel.Info);
+                            break;
             }
         }
 
@@ -622,6 +634,15 @@ namespace ClimateOfFerngill
 
             }
 
+            if (Game1.currentSeason == "winter" && !Config.AllowRainInWinter)
+            {
+                if (Config.TooMuchInfo)
+                    Monitor.Log("Fixing rain in winter.");
+
+                Game1.weatherForTomorrow = Game1.weather_snow;
+            }
+
+
 
             if (forceSet)
             {
@@ -661,13 +682,39 @@ namespace ClimateOfFerngill
             //Winter has two weathers. Snow and Sun.
             if (Game1.currentSeason == "winter")
             {
-                if (chance < rainChance)
+                if (Config.AllowRainInWinter)
                 {
-                    TmrwWeather = (SDVWeather)Game1.weather_snow;
-                    if (Config.TooMuchInfo) Monitor.Log($"It's snowy today, with roll {chance} and with odds {rainChance}");
+                    //rain is a 13% chance.
+                    if (chance < rainChance)
+                    {
+                        if (chance < .065)
+                        {
+                            TmrwWeather = (SDVWeather)Game1.weather_rain;
+                            CurrWeather.SetTodayHigh(2); //set the high above freezing
+                            if (Config.TooMuchInfo)
+                                Monitor.Log($"It's ..rainy!? today, with roll {chance} and with odds {rainChance}");
+                        }
+                        else
+                        {
+                            TmrwWeather = (SDVWeather)Game1.weather_snow;
+
+                            if (Config.TooMuchInfo)
+                                Monitor.Log($"It's snowy today, with roll {chance} and with odds {rainChance}");
+                        }
+                    }
+                    else
+                        TmrwWeather = (SDVWeather)Game1.weather_sunny;
                 }
                 else
-                    TmrwWeather = (SDVWeather)Game1.weather_sunny;
+                {
+                    if (chance < rainChance)
+                    {
+                        TmrwWeather = (SDVWeather)Game1.weather_snow;
+                        if (Config.TooMuchInfo) Monitor.Log($"It's snowy today, with roll {chance} and with odds {rainChance}");
+                    }
+                    else
+                        TmrwWeather = (SDVWeather)Game1.weather_sunny;
+                }
             }
             
             //Snow fall on Fall 28, if the flag is set.

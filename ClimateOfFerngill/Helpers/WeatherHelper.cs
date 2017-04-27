@@ -186,6 +186,7 @@ namespace ClimateOfFerngill
 
             string[] winterSnowText = new string[] { "winter continues it's relentless assualt - expect snow. ", "moisture blowing off the Gem Sea - expecting snowfall for the Stardew Valley, more in the mountains. ", "a curtain of white will descend on the valley starting at Point Drake. " };
             string[] winterClearWeather = new string[] { "it'll be a clear cold day. ", "a cold winter day - keep warm! ", "another chilly clear day over the Valley as a High pressure moves overhead. " };
+            string[] winterRainText = new string[] { "a rare day of ice-cold rain over the valley. ", " it's warmed up enough outside that tommorow's winter day will be a chilly rain. " };
 			
 			string nextDayIsNextSeason = "it'll be a fine day for the first day of";
             string nextDayIsNewYear = "another year has come to an end, and we will greet the next year with a sunny spring day!";
@@ -251,6 +252,8 @@ namespace ClimateOfFerngill
 
             if (Game1.currentSeason == "winter" && (int)weather == Game1.weather_snow)
                 return winterSnowText.GetRandomItem(dice);
+            if (Game1.currentSeason == "winter" && (int)weather == Game1.weather_rain)
+                return winterRainText.GetRandomItem(dice);
 
             //error!
             logger.Log($"The weather desc has reached an error. It is being called for {(today? "Today" : "Tommorow")}." +
