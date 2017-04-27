@@ -197,7 +197,7 @@ namespace ClimateOfFerngill
                 if (Game1.player.itemToEat != null)
                 {
                     if (Config.TooMuchInfo)
-                        Monitor.Log("Detecting someone is eating something!");
+                        Monitor.Log($"Detecting someone is eating something! This something is {Game1.player.itemToEat.parentSheetIndex}");
 
                     HaveIEatenYet = true;
                     if (RememberItemToEat.parentSheetIndex == 351 && Game1.isEating)
@@ -1032,20 +1032,20 @@ namespace ClimateOfFerngill
 
             if (Game1.dayOfMonth < 10)
             {
-                CurrWeather.SetTodayHigh(-2 + (int)Math.Floor(Game1.dayOfMonth * .889) + Dice.Next(0, 3));
+                CurrWeather.SetTodayHigh(-2 - (int)Math.Floor(Game1.dayOfMonth * .4) + Dice.Next(0, 3));
                 CurrWeather.GetLowFromHigh(Dice.Next(1, 4));
             }
 
             if (Game1.dayOfMonth > 9 && Game1.dayOfMonth < 19)
             {
-                CurrWeather.SetTodayHigh(-12 + (int)Math.Floor(Game1.dayOfMonth * 1.111) + Dice.Next(0, 3));
+                CurrWeather.SetTodayHigh(-10 - (int)Math.Floor(Game1.dayOfMonth * .16) + Dice.Next(0, 3));
                 CurrWeather.GetLowFromHigh(Dice.Next(1, 4));
                 rainChance = .75;
             }
 
             if (Game1.dayOfMonth > 18)
             {
-                CurrWeather.SetTodayHigh(-12 + (int)Math.Floor(Game1.dayOfMonth * 1.222) + Dice.Next(0, 3));
+                CurrWeather.SetTodayHigh(-12 + (int)Math.Floor(Game1.dayOfMonth * .222) + Dice.Next(0, 3));
                 CurrWeather.GetLowFromHigh(Dice.Next(1, 4));
             }
 
