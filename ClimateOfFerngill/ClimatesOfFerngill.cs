@@ -32,7 +32,6 @@ namespace ClimateOfFerngill
         internal FerngillWeather CurrWeather { get; set; }
         public SDVMoon Luna { get; set; }
         private Sprites.Icons OurIcons { get; set; }
-        //private Sprites.Letter OurLetter { get; set; }
         private static Item RememberItemToEat; 
 
         //trackers
@@ -634,10 +633,10 @@ namespace ClimateOfFerngill
 
             }
 
-            if (Game1.currentSeason == "winter" && !Config.AllowRainInWinter)
+            if (Game1.currentSeason == "winter" && (Game1.weatherForTomorrow == Game1.weather_rain || Game1.weatherForTomorrow == Game1.weather_lightning ) && !Config.AllowRainInWinter)
             {
                 if (Config.TooMuchInfo)
-                    Monitor.Log("Fixing rain in winter.");
+                    Monitor.Log($"Fixing {WeatherHelper.WeatherToString(Game1.weatherForTomorrow)} in winter. Force setting to snow");
 
                 Game1.weatherForTomorrow = Game1.weather_snow;
             }
@@ -679,7 +678,7 @@ namespace ClimateOfFerngill
                     TmrwWeather = (SDVWeather)Game1.weather_sunny;
             }
 
-            //Winter has two weathers. Snow and Sun.
+            //Winter has two weathers. Snow and Sun. If configed, rain might happen, but currently not storms.
             if (Game1.currentSeason == "winter")
             {
                 if (Config.AllowRainInWinter)

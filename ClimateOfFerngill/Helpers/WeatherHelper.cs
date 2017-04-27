@@ -265,6 +265,29 @@ namespace ClimateOfFerngill
             return "Angry suns descend on us! Run! (ERROR)";
         }
 
+        public static string WeatherToString(int weather)
+        {
+            switch (weather)
+            {
+                case 0:
+                    return "Sunny";
+                case 1:
+                    return "Rain";
+                case 2:
+                    return "Debris";
+                case 3:
+                    return "Lightning";
+                case 4:
+                    return "Festival";
+                case 5:
+                    return "Snow";
+                case 6:
+                    return "Wedding";
+                default:
+                    return "<ERROR>";                    
+            }
+        }
+
         internal static bool WeatherForceDay(string currentSeason, int dayOfMonth, int year)
         {
             if (dayOfMonth == 1) //all day 1 are forced
