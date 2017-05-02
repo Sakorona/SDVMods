@@ -125,10 +125,11 @@ namespace ClimateOfFerngill
                 NormalClimate.ClimateSequences.Add(
                     new FerngillClimateTimeSpan(Season: "spring", BeginDay: 1, EndDay: 9, FrozenPrecip: false,
                         LowTempBase: 4, LowTempChange: .725, LowTempVariable: .5, HighTempBase: 8.5, HighTempChange: .745,
-                        HighTempVariable: .65, BaseRainChance: .55, RainChange: -.024, RainVariability: .001, BaseStormChance: .145, StormChange: 0, 
-                        StormVariability: .01, BaseDebrisChance: .25, DebrisChange: 0, AllowDebris: true)
-                    
-                        );
+                        HighTempVariable: .65, BaseRainChance: .55, RainChange: -.024, RainVariability: .001, BaseStormChance: .145, StormChange: 0,
+                        StormVariability: .01, BaseDebrisChance: .25, DebrisChange: 0, AllowDebris: true));
+                NormalClimate.ClimateSequences.Add(
+                    new FerngillClimateTimeSpan(Season: "spring", BeginDay: 10, EndDay: 18, FrozenPrecip: false,
+                        LowTempBase:));
                 Helper.WriteJsonFile<FerngillClimate>(Path.Combine(Helper.DirectoryPath, "weather/normal.json"), NormalClimate);
             }
         }
