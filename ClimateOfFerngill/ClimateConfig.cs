@@ -1,5 +1,4 @@
-﻿
-using Microsoft.Xna.Framework.Input;
+﻿using Microsoft.Xna.Framework.Input;
 
 namespace ClimateOfFerngill
 {
@@ -31,6 +30,7 @@ namespace ClimateOfFerngill
         public bool GhostsDoNotSpawn { get; set; }
         public bool StormTotem { get; set; }
         public bool AllowRainInWinter { get; set; }
+        public bool UseCustomWeather { get; set; }
 
         public ClimateConfig()
         {
@@ -43,6 +43,7 @@ namespace ClimateOfFerngill
             //set overrides
             AllowSnowOnFall28 = true;
             AllowStormsFirstSpring = false;
+            UseCustomWeather = false;
 
             //set climate information
             ClimateType = "normal";

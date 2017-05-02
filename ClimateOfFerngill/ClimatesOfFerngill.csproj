@@ -51,6 +51,7 @@
       <Link>Properties\GlobalAssemblyInfo.cs</Link>
     </Compile>
     <Compile Include="ClimatesOfFerngill.cs" />
+    <Compile Include="FerngillClimate.cs" />
     <Compile Include="HazardousWeatherEvents.cs" />
     <Compile Include="Helpers\SDVDate.cs" />
     <Compile Include="Pathoschild.Stardew.UIF\DrawHelper.cs" />

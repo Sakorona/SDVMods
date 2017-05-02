@@ -1,4 +1,5 @@
-﻿using NPack;
+﻿using System;
+using NPack;
 using StardewModdingAPI;
 using StardewValley;
 
