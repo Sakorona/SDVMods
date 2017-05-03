@@ -19,8 +19,7 @@ using Microsoft.Xna.Framework.Input;
 
 //DAMN YOU 1.2
 using SFarmer = StardewValley.Farmer;
-
-
+using Microsoft.Xna.Framework.Graphics;
 
 namespace ClimateOfFerngill
 {
@@ -33,12 +32,10 @@ namespace ClimateOfFerngill
         internal FerngillWeather CurrWeather { get; set; }
         public SDVMoon Luna { get; set; }
         private Sprites.Icons OurIcons { get; set; }
-        private static Item RememberItemToEat; 
 
         //trackers
         private bool GameLoaded;
         private bool RainTotemUsedToday;
-        private bool HaveIEatenYet;
         private SDVWeather EndWeather;
 
         //event fields
@@ -62,6 +59,15 @@ namespace ClimateOfFerngill
         private static GameLocation.afterQuestionBehavior Callback;
         private static TV Target;
 
+        //fog elements
+        private Rectangle FogSource = new Microsoft.Xna.Framework.Rectangle(640, 0, 64, 64);
+        private bool AmbientFog;
+        private Vector2 FogPosition;
+        private Color FogColor;
+        private float FogAlpha;
+        private int FogTime;
+        private int FogExpirTime;
+
         /// <summary>Initialise the mod.</summary>
         /// <param name="helper">Provides methods for interacting with the mod directory, such as read/writing a config file or custom JSON files.</param>
         public override void Entry(IModHelper helper)
@@ -76,7 +82,6 @@ namespace ClimateOfFerngill
 
             //set flags
             RainTotemUsedToday = false;
-            HaveIEatenYet = false;
 
             //register event handlers
             TimeEvents.DayOfMonthChanged += TimeEvents_DayOfMonthChanged;
@@ -87,6 +92,12 @@ namespace ClimateOfFerngill
             GameEvents.QuarterSecondTick += GameEvents_QuarterSecondTick;
             GameEvents.UpdateTick += GameEvents_UpdateTick;
             SaveEvents.AfterReturnToTitle += SaveEvents_AfterReturnToTitle;
+
+
+            //fog
+            GraphicsEvents.OnPostRenderEvent += GraphicsEvents_OnPostRenderEvent;
+            // Game1.mapDisplayDevice = new MapDisplayDeviceIntercept((xTile.Display.XnaDisplayDevice)Game1.mapDisplayDevice);
+            // DrawMapEvents.DrawMapLayer += DrawMapEvents_DrawMapLayer;
 
             //siiigh.
             helper.ConsoleCommands
@@ -115,6 +126,36 @@ namespace ClimateOfFerngill
                 Helper.WriteJsonFile<CustomClimate>(Path.Combine(Helper.DirectoryPath, "userClimate.json"), UserClimate);
             }
             */
+        }
+
+        private void GraphicsEvents_OnPostRenderEvent(object sender, EventArgs e)
+        {
+            if (GameLoaded && Game1.currentLocation.IsOutdoors)
+            {
+                DrawFog();
+            }
+        }
+
+        private void DrawFog()
+        {
+            if ((double)this.FogAlpha > 0.0 || this.AmbientFog)
+            {
+                Vector2 position = new Vector2();
+                float num1 = -64 * Game1.pixelZoom + (int)(FogPosition.X % (double)(64 * Game1.pixelZoom));
+                while (num1 < (double)Game1.graphics.GraphicsDevice.Viewport.Width)
+                {
+                    float num2 = -64 * Game1.pixelZoom + (int)(FogPosition.Y % (double)(64 * Game1.pixelZoom));
+                    while ((double)num2 < Game1.graphics.GraphicsDevice.Viewport.Height)
+                    {
+                        position.X = (int)num1;
+                        position.Y = (int)num2;
+                        Game1.spriteBatch.Draw(Game1.mouseCursors, position, new Microsoft.Xna.Framework.Rectangle?
+                            (this.FogSource), (double)this.FogAlpha > 0.0 ? this.FogColor * this.FogAlpha : Color.Black * 0.95f, 0.0f, Vector2.Zero, (float)Game1.pixelZoom + 1f / 1000f, SpriteEffects.None, 1f);
+                        num2 += (float)(64 * Game1.pixelZoom);
+                    }
+                    num1 += (float)(64 * Game1.pixelZoom);
+                }
+            }
         }
 
         private void VerifyBundledWeatherFiles()
@@ -231,75 +272,68 @@ namespace ClimateOfFerngill
         
         private bool wasEating = false;
         private int prevToEatStack = -1;
-        private Buff lastFood = null, lastDrink = null;
 
         private void GameEvents_UpdateTick(object sender, EventArgs e)
         {
-            /*  if (Game1.isEating != wasEating)
-              {
-                  if (!Game1.isEating)
-                  {
-                      // Apparently this happens when the ask to eat dialog opens, but they pressed no.
-                      // So make sure something was actually consumed.
-                      if (prevToEatStack != -1 && (prevToEatStack - 1 == Game1.player.itemToEat.Stack))
-                      {
-                          if (Config.TooMuchInfo)
-                              Monitor.Log($"Detecting someone is eating something! This something is {Game1.player.itemToEat.parentSheetIndex}");
-
-                          HaveIEatenYet = true;
-                          if (RememberItemToEat.parentSheetIndex == 351 && Game1.isEating)
-                          {
-                              if (BadEvents.HasACold())
-                              {
-                                  if (Config.TooMuchInfo)
-                                      Monitor.Log("Removing the cold after having drunk a muscle relaxant");
-
-                                  BadEvents.RemoveCold();
-                              }
-
-                          }
-                      }
-                      prevToEatStack = (Game1.player.itemToEat != null ? Game1.player.itemToEat.Stack : -1);
-                  }
-                  wasEating = Game1.isEating;
-              }*/
-
-                if (Game1.isEating != wasEating)
+            if (this.FogTime > 0 && Game1.shouldTimePass())
+            { 
+                if ((double)this.FogAlpha < 1.0)
                 {
-                    if (!Game1.isEating)
+                    this.FogAlpha = this.FogAlpha + 0.01f;
+                }
+
+                this.FogPosition = Game1.updateFloatingObjectPositionForMovement(this.FogPosition, 
+                    new Vector2((float)Game1.viewport.X, (float)Game1.viewport.Y), Game1.previousViewportPosition, -1f);
+                this.FogPosition.X = (this.FogPosition.X + 0.5f) % (float)(64 * Game1.pixelZoom);
+                this.FogPosition.Y = (this.FogPosition.Y + 0.5f) % (float)(64 * Game1.pixelZoom);
+            }
+            else if ((double)this.FogAlpha > 0.0)
+            {
+                this.FogAlpha = this.FogAlpha - 0.01f;
+            }
+            else if (this.AmbientFog)
+            {
+                this.FogPosition = Game1.updateFloatingObjectPositionForMovement(this.FogPosition, 
+                    new Vector2((float)Game1.viewport.X, (float)Game1.viewport.Y), Game1.previousViewportPosition, -1f);
+                this.FogPosition.X = (this.FogPosition.X + 0.5f) % (float)(64 * Game1.pixelZoom);
+                this.FogPosition.Y = (this.FogPosition.Y + 0.5f) % (float)(64 * Game1.pixelZoom);
+            }
+
+            if (Game1.isEating != wasEating)
+            {
+                if (!Game1.isEating)
+                {
+                    // Apparently this happens when the ask to eat dialog opens, but they pressed no.
+                    // So make sure something was actually consumed.
+                    if (prevToEatStack != -1 && (prevToEatStack - 1 == Game1.player.itemToEat.Stack))
                     {
-                        // Apparently this happens when the ask to eat dialog opens, but they pressed no.
-                        // So make sure something was actually consumed.
-                        if (prevToEatStack != -1 && (prevToEatStack - 1 == Game1.player.itemToEat.Stack))
+                        if (Config.TooMuchInfo)
+                            Monitor.Log($"Detecting someone is eating something! This something is {Game1.player.itemToEat.parentSheetIndex}");
+
+                        if (Game1.player.itemToEat.parentSheetIndex == 351 && Game1.isEating)
                         {
-                            if (Config.TooMuchInfo)
-                                Monitor.Log($"Detecting someone is eating something! This something is {Game1.player.itemToEat.parentSheetIndex}");
-
-                            HaveIEatenYet = true;
-                            if (RememberItemToEat.parentSheetIndex == 351 && Game1.isEating)
+                            if (BadEvents.HasACold())
                             {
-                                if (BadEvents.HasACold())
-                                {
-                                    if (Config.TooMuchInfo)
-                                        Monitor.Log("Removing the cold after having drunk a muscle relaxant");
+                                if (Config.TooMuchInfo)
+                                    Monitor.Log("Removing the cold after having drunk a muscle relaxant");
 
-                                    BadEvents.RemoveCold();
-                                }
+                                BadEvents.RemoveCold();
                             }
                         }
                     }
-
-                    if (Config.TooMuchInfo)
-                    {
-                        Monitor.Log("Eating:" + Game1.isEating,LogLevel.Trace);
-                        Monitor.Log("prev:" + prevToEatStack, LogLevel.Trace);
-                        Monitor.Log("I:" + Game1.player.itemToEat + " " + ((Game1.player.itemToEat != null) ? Game1.player.itemToEat.getStack() : -1), LogLevel.Trace);
-                        Monitor.Log("A:" + Game1.player.ActiveObject + " " + ((Game1.player.ActiveObject != null) ? Game1.player.ActiveObject.getStack() : -1), LogLevel.Trace);
-                    }
-                    prevToEatStack = (Game1.player.itemToEat != null ? Game1.player.itemToEat.Stack : -1);
                 }
 
-                wasEating = Game1.isEating;
+                if (Config.TooMuchInfo)
+                {
+                    Monitor.Log("Eating:" + Game1.isEating,LogLevel.Trace);
+                    Monitor.Log("prev:" + prevToEatStack, LogLevel.Trace);
+                    Monitor.Log("I:" + Game1.player.itemToEat + " " + ((Game1.player.itemToEat != null) ? Game1.player.itemToEat.getStack() : -1), LogLevel.Trace);
+                    Monitor.Log("A:" + Game1.player.ActiveObject + " " + ((Game1.player.ActiveObject != null) ? Game1.player.ActiveObject.getStack() : -1), LogLevel.Trace);
+                }
+                prevToEatStack = (Game1.player.itemToEat != null ? Game1.player.itemToEat.Stack : -1);
+            }
+
+            wasEating = Game1.isEating;
         }
 
         private void GameEvents_QuarterSecondTick(object sender, EventArgs e)
@@ -333,7 +367,7 @@ namespace ClimateOfFerngill
                             Game1.weatherForTomorrow = Game1.weather_lightning;
                             Game1.addHUDMessage(new HUDMessage("You hear a roll of thunder..."));
                             if (Config.TooMuchInfo)
-                                Monitor.Log($"Setting the rain totem to stormy, based on a roll of under .6");
+                                Monitor.Log($"Setting the rain totem to stormy, based on a roll of under .4");
                         }
                     }
 
@@ -366,6 +400,7 @@ namespace ClimateOfFerngill
             ThreatenedCrops.Clear();
             GameLoaded = false;
             RainTotemUsedToday = false;
+            AmbientFog = false;
         }
 
         private void ReceiveKeyPress(Keys key, Keys config)
@@ -376,7 +411,7 @@ namespace ClimateOfFerngill
             if (!GameLoaded)
                 return;
 
-            // perform bound action
+            // perform bound action ONLY if there is no menu
             if (Game1.activeClickableMenu == null)
             {
                 this.ToggleMenu();
@@ -406,6 +441,13 @@ namespace ClimateOfFerngill
        
         private void TimeEvents_TimeOfDayChanged(object sender, EventArgsIntChanged e)
         {
+            //it helps if you implement the fog cutoff!
+            if (e.NewInt == FogExpirTime)
+            {
+                this.AmbientFog = false;
+                this.FogTime = 0;
+            }
+
             if (Config.StormyPenalty)
                 BadEvents.CatchACold();
 
@@ -623,7 +665,65 @@ namespace ClimateOfFerngill
             Luna.HandleMoonAfterWake(InternalUtility.GetBeach());
 
             //update the weather
-            UpdateWeather(CurrWeather);    
+            UpdateWeather(CurrWeather);
+
+            //set up fog.
+            double FogChance = 0;
+            switch (Game1.currentSeason)
+            {
+                case "spring":
+                    FogChance = Config.SpringFogChance;
+                    break;
+                case "summer":
+                    FogChance = Config.SummerFogChance;
+                    break;
+                case "fall":
+                    FogChance = Config.AutumnFogChance;
+                    break;
+                case "winter":
+                    FogChance = Config.WinterFogChance;
+                    break;
+                default:
+                    FogChance = 0;
+                    break;
+            }
+
+
+            //if (Dice.NextDouble() < FogChance && !Game1.isDebrisWeather)
+            if (true)
+            {
+                this.FogAlpha = .55f;
+                this.AmbientFog = true;
+                this.FogTime = 10000;
+                this.FogColor = Color.White * 1.35f; 
+                double FogTimer = Dice.NextDouble();
+
+                if (FogTimer > .90)
+                {
+                    //Last for ~7 hours. This means it expires at 1300.
+                    FogExpirTime = 1300;
+                }
+                else if (FogTimer > .75 && FogTimer <= .90)
+                {
+                    FogExpirTime = 1120;
+                }
+                else if (FogTimer > .55 && FogTimer <= .75)
+                {
+                    FogExpirTime = 1030;
+                }
+                else if (FogTimer > .30 && FogTimer <= .55)
+                {
+                    FogExpirTime = 930;
+                }
+                else if (FogTimer <= .30)
+                {
+                    FogExpirTime = 820;
+                }
+                
+                if (Config.TooMuchInfo)
+                    Monitor.Log($"It'll be a foggy morning, expiring at {FogExpirTime}");
+
+            }
         }
 
 

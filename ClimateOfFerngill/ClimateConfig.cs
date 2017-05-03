@@ -32,6 +32,11 @@ namespace ClimateOfFerngill
         public bool AllowRainInWinter { get; set; }
         public bool UseCustomWeather { get; set; }
 
+        public double SpringFogChance { get; set; }
+        public double SummerFogChance { get; set; }
+        public double AutumnFogChance { get; set; }
+        public double WinterFogChance { get; set; }
+
         public ClimateConfig()
         {
             //set defaults for mod specific stuff
@@ -73,6 +78,11 @@ namespace ClimateOfFerngill
             //other options
             StormTotem = false;
             AllowRainInWinter = false;
+
+            SpringFogChance = .30;
+            SummerFogChance = .001;
+            AutumnFogChance = .20;
+            WinterFogChance = .05;
         }
     }
 }
