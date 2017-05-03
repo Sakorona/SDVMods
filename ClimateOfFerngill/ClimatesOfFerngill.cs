@@ -119,7 +119,7 @@ namespace ClimateOfFerngill
 
         private void VerifyBundledWeatherFiles()
         {
-            if (!File.Exists(Path.Combine(Helper.DirectoryPath, "weather/normal.json")))
+           /* if (!File.Exists(Path.Combine(Helper.DirectoryPath, "weather/normal.json")))
             {
                 FerngillClimate NormalClimate = new FerngillClimate();
                 NormalClimate.ClimateSequences.Add(
@@ -131,7 +131,7 @@ namespace ClimateOfFerngill
                     new FerngillClimateTimeSpan(Season: "spring", BeginDay: 10, EndDay: 18, FrozenPrecip: false,
                         LowTempBase:));
                 Helper.WriteJsonFile<FerngillClimate>(Path.Combine(Helper.DirectoryPath, "weather/normal.json"), NormalClimate);
-            }
+            } */
         }
 
         private void RemovePlayerCode(string arg1, string[] arg2)
@@ -235,33 +235,71 @@ namespace ClimateOfFerngill
 
         private void GameEvents_UpdateTick(object sender, EventArgs e)
         {
-            if (Game1.isEating != wasEating)
-            {
-                if ( !Game1.isEating )
+            /*  if (Game1.isEating != wasEating)
+              {
+                  if (!Game1.isEating)
+                  {
+                      // Apparently this happens when the ask to eat dialog opens, but they pressed no.
+                      // So make sure something was actually consumed.
+                      if (prevToEatStack != -1 && (prevToEatStack - 1 == Game1.player.itemToEat.Stack))
+                      {
+                          if (Config.TooMuchInfo)
+                              Monitor.Log($"Detecting someone is eating something! This something is {Game1.player.itemToEat.parentSheetIndex}");
+
+                          HaveIEatenYet = true;
+                          if (RememberItemToEat.parentSheetIndex == 351 && Game1.isEating)
+                          {
+                              if (BadEvents.HasACold())
+                              {
+                                  if (Config.TooMuchInfo)
+                                      Monitor.Log("Removing the cold after having drunk a muscle relaxant");
+
+                                  BadEvents.RemoveCold();
+                              }
+
+                          }
+                      }
+                      prevToEatStack = (Game1.player.itemToEat != null ? Game1.player.itemToEat.Stack : -1);
+                  }
+                  wasEating = Game1.isEating;
+              }*/
+
+                if (Game1.isEating != wasEating)
                 {
-                    // Apparently this happens when the ask to eat dialog opens, but they pressed no.
-                    // So make sure something was actually consumed.
-                    if ( prevToEatStack != -1 && ( prevToEatStack - 1 == Game1.player.itemToEat.Stack ) )
+                    if (!Game1.isEating)
                     {
-                        if (Config.TooMuchInfo)
-                            Monitor.Log($"Detecting someone is eating something! This something is {Game1.player.itemToEat.parentSheetIndex}");
-
-                        HaveIEatenYet = true;
-                        if (RememberItemToEat.parentSheetIndex == 351 && Game1.isEating)
+                        // Apparently this happens when the ask to eat dialog opens, but they pressed no.
+                        // So make sure something was actually consumed.
+                        if (prevToEatStack != -1 && (prevToEatStack - 1 == Game1.player.itemToEat.Stack))
                         {
-                            if (BadEvents.HasACold())
+                            if (Config.TooMuchInfo)
+                                Monitor.Log($"Detecting someone is eating something! This something is {Game1.player.itemToEat.parentSheetIndex}");
+
+                            HaveIEatenYet = true;
+                            if (RememberItemToEat.parentSheetIndex == 351 && Game1.isEating)
                             {
-                                if (Config.TooMuchInfo)
-                                    Monitor.Log("Removing the cold after having drunk a muscle relaxant");
+                                if (BadEvents.HasACold())
+                                {
+                                    if (Config.TooMuchInfo)
+                                        Monitor.Log("Removing the cold after having drunk a muscle relaxant");
 
-                                BadEvents.RemoveCold();
+                                    BadEvents.RemoveCold();
+                                }
                             }
-
                         }
                     }
+
+                    if (Config.TooMuchInfo)
+                    {
+                        Monitor.Log("Eating:" + Game1.isEating,LogLevel.Trace);
+                        Monitor.Log("prev:" + prevToEatStack, LogLevel.Trace);
+                        Monitor.Log("I:" + Game1.player.itemToEat + " " + ((Game1.player.itemToEat != null) ? Game1.player.itemToEat.getStack() : -1), LogLevel.Trace);
+                        Monitor.Log("A:" + Game1.player.ActiveObject + " " + ((Game1.player.ActiveObject != null) ? Game1.player.ActiveObject.getStack() : -1), LogLevel.Trace);
+                    }
                     prevToEatStack = (Game1.player.itemToEat != null ? Game1.player.itemToEat.Stack : -1);
-            }
-            wasEating = Game1.isEating;
+                }
+
+                wasEating = Game1.isEating;
         }
 
         private void GameEvents_QuarterSecondTick(object sender, EventArgs e)
