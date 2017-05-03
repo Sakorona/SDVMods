@@ -154,21 +154,25 @@ namespace ClimateOfFerngill
                 case "rain":
                     Game1.isSnowing = Game1.isLightning = Game1.isDebrisWeather = false;
                     Game1.isRaining = true;
+                    Game1.debrisWeather.Clear();
                     Monitor.Log("The weather is now rain",LogLevel.Info);
                     break;
                 case "storm":
                     Game1.isSnowing = Game1.isDebrisWeather = false;
                     Game1.isLightning = Game1.isRaining = true;
+                    Game1.debrisWeather.Clear();
                     Monitor.Log("The weather is now storm", LogLevel.Info);
                     break;
                 case "snow":
                     Game1.isRaining = Game1.isLightning = Game1.isDebrisWeather = false;
                     Game1.isSnowing = true;
+                    Game1.debrisWeather.Clear();
                     Monitor.Log("The weather is now snow", LogLevel.Info);
                     break;
                 case "debris":
                     Game1.isSnowing = Game1.isLightning = Game1.isRaining = false;
                     Game1.isDebrisWeather = true;
+                    Game1.populateDebrisWeatherArray();
                     Monitor.Log("The weather is now debris", LogLevel.Info);
                     break;
                 case "sunny":
