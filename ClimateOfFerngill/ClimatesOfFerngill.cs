@@ -330,12 +330,15 @@ namespace ClimateOfFerngill
         {
             if (config != key)  //sanity force this to exit!
                 return;
-
+                
             if (!GameLoaded)
                 return;
 
             // perform bound action
-            this.ToggleMenu();
+            if (Game1.activeClickableMenu == null)
+            {
+                this.ToggleMenu();
+            }
         }
 
         private void ReceiveMenuClosed(IClickableMenu closedMenu)
