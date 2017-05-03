@@ -446,6 +446,8 @@ namespace ClimateOfFerngill
             {
                 this.AmbientFog = false;
                 this.FogTime = 0;
+                Game1.globalOutdoorLighting = 1f;
+                Game1.outdoorLight = Color.White;
             }
 
             if (Config.StormyPenalty)
@@ -689,15 +691,18 @@ namespace ClimateOfFerngill
             }
 
 
-            //if (Dice.NextDouble() < FogChance && !Game1.isDebrisWeather)
-            if (true)
+            if (Dice.NextDouble() < FogChance && !Game1.isDebrisWeather)
             {
                 this.FogAlpha = .55f;
                 this.AmbientFog = true;
                 this.FogTime = 10000;
-                this.FogColor = Color.White * 1.35f; 
-                double FogTimer = Dice.NextDouble();
+                this.FogColor = Color.White * 1.35f;
+                Game1.globalOutdoorLighting = .82f; // .3f is spoopy. :| .6f is SUPER THICK FOG. .78f isn't much better. 
+                Game1.outdoorLight = new Color(220, 163, 39);
 
+                double FogTimer = Dice.NextDouble();
+                FogExpirTime = 700;
+                /*
                 if (FogTimer > .90)
                 {
                     //Last for ~7 hours. This means it expires at 1300.
@@ -718,7 +723,7 @@ namespace ClimateOfFerngill
                 else if (FogTimer <= .30)
                 {
                     FogExpirTime = 820;
-                }
+                }*/
                 
                 if (Config.TooMuchInfo)
                     Monitor.Log($"It'll be a foggy morning, expiring at {FogExpirTime}");
