@@ -27,19 +27,17 @@ namespace ClimateOfFerngill
         public double BaseDebrisChance;
         public double DebrisChange;
 
-        public bool AllowDebris;
 
         public FerngillClimateTimeSpan()
         {
 
         }
 
-        public FerngillClimateTimeSpan(bool FrozenPrecip, bool AllowDebris, string Season, int BeginDay, int EndDay, 
+        public FerngillClimateTimeSpan(bool FrozenPrecip, string Season, int BeginDay, int EndDay, 
             double LowTempBase, double LowTempChange, double LowTempVariable, double HighTempBase, double HighTempChange,
             double HighTempVariable, double BaseRainChance, double RainChange, double RainVariability, double BaseStormChance,
             double StormChange, double StormVariability, double BaseDebrisChance, double DebrisChange)
         {
-            this.AllowDebris = AllowDebris;
             this.FrozenPrecip = FrozenPrecip;
 
             this.Season = Season;

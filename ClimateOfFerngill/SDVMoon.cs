@@ -160,8 +160,11 @@ namespace ClimateOfFerngill
         public void HandleMoonAfterWake(Beach b)
         {
             //new moon processing
-            if (SDVMoon.GetLunarPhase() == MoonPhase.NewMoon)
+            if (SDVMoon.GetLunarPhase() == MoonPhase.NewMoon || Config.ForceMoonRemoval)
             {
+                if (Config.TooMuchInfo)
+                    Monitor.Log($"It is a new moon with removal chance {BeachRemovalChance}");
+
                 List<KeyValuePair<Vector2, StardewValley.Object>> entries = (from o in b.objects
                                                                              where beachItems.Contains(o.Value.parentSheetIndex)
                                                                              select o).ToList();

@@ -37,6 +37,8 @@ namespace ClimateOfFerngill
         public double AutumnFogChance { get; set; }
         public double WinterFogChance { get; set; }
 
+        public bool ForceMoonRemoval { get; set; }
+
         public ClimateConfig()
         {
             //set defaults for mod specific stuff
@@ -83,6 +85,8 @@ namespace ClimateOfFerngill
             SummerFogChance = .001;
             AutumnFogChance = .20;
             WinterFogChance = .05;
+
+            ForceMoonRemoval = true;
         }
     }
 }

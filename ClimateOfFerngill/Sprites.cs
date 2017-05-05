@@ -1,6 +1,7 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using StardewValley;
+using StardewModdingAPI;
 using System;
 using System.IO;
 
@@ -33,13 +34,10 @@ namespace ClimateOfFerngill
         {
            public Texture2D source;
 
-           public Icons(string path)
+           public Icons(IContentHelper helper)
            {
-                using (FileStream stream = File.OpenRead(Path.Combine(path, "climatesheet2.png")))
-                {
-                    source = Texture2D.FromStream(Game1.graphics.GraphicsDevice, stream);
-                }   
-            }
+                source = helper.Load<Texture2D>("climatesheet2.png");
+           }
 
             public Rectangle GetMoonSprite(MoonPhase moon)
             {

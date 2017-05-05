@@ -544,7 +544,7 @@ namespace ClimateOfFerngill
         private void SaveEvents_AfterLoad(object sender, EventArgs e)
         {
             GameLoaded = true;
-            OurIcons = new Sprites.Icons(Helper.DirectoryPath);
+            OurIcons = new Sprites.Icons(Helper.Content);
             //UpdateWeather(CurrWeather);
             Luna.UpdateForNewDay();
             BadEvents.UpdateForNewDay();
@@ -616,7 +616,6 @@ namespace ClimateOfFerngill
             // Something such as "Today, the high is 12C, with low 8C. It'll be a very windy day. Tommorow, it'll be rainy."
             // since we don't predict weather in advance yet. (I don't want to rearchitecture it yet.)
             // That said, the TV channel starts with Tommorow, so we need to keep that in mind.
-
 
             // Alerts for frost/cold snap display all day. Alerts for heatwave last until 1830. 
             tvText = "The forecast for the Valley is: ";
@@ -701,8 +700,7 @@ namespace ClimateOfFerngill
                 Game1.outdoorLight = new Color(220, 163, 39);
 
                 double FogTimer = Dice.NextDouble();
-                FogExpirTime = 700;
-                /*
+
                 if (FogTimer > .90)
                 {
                     //Last for ~7 hours. This means it expires at 1300.
@@ -723,7 +721,7 @@ namespace ClimateOfFerngill
                 else if (FogTimer <= .30)
                 {
                     FogExpirTime = 820;
-                }*/
+                }
                 
                 if (Config.TooMuchInfo)
                     Monitor.Log($"It'll be a foggy morning, expiring at {FogExpirTime}");
