@@ -1,1 +1,0 @@
-﻿# Weather By Climate Overview

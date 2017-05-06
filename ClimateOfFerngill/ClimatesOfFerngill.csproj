@@ -75,12 +75,10 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="Changelog.md" />
-    <None Include="Docs\HazardousWeather.md" />
+    <None Include="Docs\DetailedClimateWriteup.md" />
     <None Include="manifest.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Include="Docs\weatherpatterns.md" />
-    <None Include="Docs\WeatherByClimate.md" />
     <None Include="packages.config" />
     <None Include="README.md" />
   </ItemGroup>
@@ -88,6 +86,14 @@
     <Content Include="climatesheet2.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
+    <Content Include="Docs\RainChances.png" />
+    <Content Include="Docs\SpringClimateData.png" />
+    <Content Include="Docs\SpringDebrisChancesNormalEnhanced.png" />
+    <Content Include="Docs\SpringRainChanceGraph.png" />
+    <Content Include="Docs\SpringRainChancesNormalEnhanced.png" />
+    <Content Include="Docs\SpringStormChancesNormalEnhanced.png" />
+    <Content Include="Docs\SpringSunnyChancesNormalEnhanced.png" />
+    <Content Include="Docs\SummerClimateData.png" />
     <Content Include="LICENSE.txt" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

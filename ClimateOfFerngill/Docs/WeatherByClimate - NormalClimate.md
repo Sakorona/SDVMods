@@ -1,3 +1,0 @@
-# Weather Overview: Normal Climate
-
-## 

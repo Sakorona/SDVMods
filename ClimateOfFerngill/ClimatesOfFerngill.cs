@@ -767,8 +767,7 @@ namespace ClimateOfFerngill
             }
 
 
-            //if (Dice.NextDouble() < FogChance && (!Game1.isDebrisWeather && !Game1.isRaining))
-            if (true)
+            if (Dice.NextDouble() < FogChance && (!Game1.isDebrisWeather && !Game1.isRaining))
             {
                 this.FogAlpha = .55f;
                 this.AmbientFog = true;
