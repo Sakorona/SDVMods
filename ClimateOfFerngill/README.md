@@ -19,6 +19,7 @@ See [https://github.com/JohnsonNicholas/climate-of-ferngill/blob/master/Changelo
 * Hostile weather events (Heatwaves, and Floods)
 * A Moon that causes events with the phases.
 * Console commands to customize the weather!
+* Morning fog!
 * A hotkey to show a weather popup!
 
 ## Maybe features?
@@ -26,7 +27,6 @@ See [https://github.com/JohnsonNicholas/climate-of-ferngill/blob/master/Changelo
 These features are a wishlist of options - may not be added, may be added.
 
 * Moving TV text options to a json/txt file for easier customization.
-* Morning fog!
 * Specifying climate options via json file
 * Making all strings able to be translated
 
@@ -40,6 +40,8 @@ These features are a wishlist of options - may not be added, may be added.
 This wouldn't have been possible without the inspiration from the original More Rain Mod and assistance from Entoraox and 
 Pathoschild. Credit goes to eemie for the sprites, and Pathoschild for the code this mod uses for the weather menu. (And
 Routine for the code used to figure out how to draw the fog)
+
+Routine for the CustomTV framework.
 
 This mod also owes thanks to spacechase0 and Routine for help when I went @.@ at the code. Thank you.
 

@@ -1,33 +1,28 @@
 ﻿using System;
 using System.IO;
-using System.Reflection;
 using System.Collections.Generic;
 
 //3P
 using NPack;
+using CustomTV;
+
+//XNA
+using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Input;
+using Microsoft.Xna.Framework.Graphics;
+
+//Stardew Valley Imports
 using StardewModdingAPI;
 using StardewModdingAPI.Events;
-
 using StardewValley;
-using StardewValley.Objects;
 using StardewValley.Monsters;
 using StardewValley.Locations;
 using StardewValley.Menus;
-
-using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Input;
-
-//DAMN YOU 1.2
-using SFarmer = StardewValley.Farmer;
-using Microsoft.Xna.Framework.Graphics;
 
 namespace ClimateOfFerngill
 {
     public class ClimatesOfFerngill : Mod
     {
-        /// <summary>
-        /// This function
-        /// </summary>
         public ClimateConfig Config { get; private set; }
         internal FerngillWeather CurrWeather { get; set; }
         public SDVMoon Luna { get; set; }
@@ -48,16 +43,6 @@ namespace ClimateOfFerngill
 
         //chances of specific weathers
         public FerngillClimate WeatherModel;
-
-        //tv overloading
-        private static FieldInfo Field = typeof(GameLocation).GetField("afterQuestion", BindingFlags.Instance | BindingFlags.NonPublic);
-        private static FieldInfo TVChannel = typeof(TV).GetField("currentChannel", BindingFlags.Instance | BindingFlags.NonPublic);
-        private static FieldInfo TVScreen = typeof(TV).GetField("screen", BindingFlags.Instance | BindingFlags.NonPublic);
-        private static FieldInfo TVScreenOverlay = typeof(TV).GetField("screenOverlay", BindingFlags.Instance | BindingFlags.NonPublic);
-        private static MethodInfo TVMethod = typeof(TV).GetMethod("getWeatherChannelOpening", BindingFlags.Instance | BindingFlags.NonPublic);
-        private static MethodInfo TVMethodOverlay = typeof(TV).GetMethod("setWeatherOverlay", BindingFlags.Instance | BindingFlags.NonPublic);
-        private static GameLocation.afterQuestionBehavior Callback;
-        private static TV Target;
 
         //fog elements
         private Rectangle FogSource = new Microsoft.Xna.Framework.Rectangle(640, 0, 64, 64);
@@ -88,21 +73,18 @@ namespace ClimateOfFerngill
             RainTotemUsedToday = false;
 
             //register event handlers
-            TimeEvents.DayOfMonthChanged += TimeEvents_DayOfMonthChanged;
-            MenuEvents.MenuChanged += MenuEvents_MenuChanged;
             SaveEvents.AfterLoad += SaveEvents_AfterLoad;
-            TimeEvents.TimeOfDayChanged += TimeEvents_TimeOfDayChanged;
             SaveEvents.BeforeSave += SaveEvents_BeforeSave;
+            SaveEvents.AfterReturnToTitle += SaveEvents_AfterReturnToTitle;
+            TimeEvents.TimeOfDayChanged += TimeEvents_TimeOfDayChanged;
+            TimeEvents.AfterDayStarted += TimeEvents_AfterDayStarted;
             GameEvents.QuarterSecondTick += GameEvents_QuarterSecondTick;
             GameEvents.UpdateTick += GameEvents_UpdateTick;
-            SaveEvents.AfterReturnToTitle += SaveEvents_AfterReturnToTitle;
-            //CurrWeather.SetBlizzard();
+            
 
-            //fog
+            //graphics events
             GraphicsEvents.OnPostRenderEvent += GraphicsEvents_OnPostRenderEvent;
-            // Game1.mapDisplayDevice = new MapDisplayDeviceIntercept((xTile.Display.XnaDisplayDevice)Game1.mapDisplayDevice);
-            // DrawMapEvents.DrawMapLayer += DrawMapEvents_DrawMapLayer;
-
+            
             //siiigh.
             helper.ConsoleCommands
                     .Add("world_changetmrweather", "Changes tomorrow's weather.\"rain,storm,snow,debris,festival,wedding,sun\" ", TmrwWeatherChangeFromConsole)
@@ -113,6 +95,8 @@ namespace ClimateOfFerngill
             //register keyboard handlers and other menu events
             ControlEvents.KeyPressed += (sender, e) => this.ReceiveKeyPress(e.KeyPressed, this.Config.Keyboard);
             MenuEvents.MenuClosed += (sender, e) => this.ReceiveMenuClosed(e.PriorMenu);
+
+            CustomTVMod.addChannel("weather", "Weather", HandleWeather);
 
             VerifyBundledWeatherFiles();
 
@@ -131,6 +115,105 @@ namespace ClimateOfFerngill
             }
             */
         }
+
+        private void TimeEvents_AfterDayStarted(object sender, EventArgs e)
+        {
+            if (!GameLoaded) //sanity check
+                return;
+
+            //update objects for new day.
+            BadEvents.UpdateForNewDay();
+            CurrWeather.UpdateForNewDay();
+            RainTotemUsedToday = false;
+            Luna.UpdateForNewDay();
+            DeathTime = 0;
+            ThreatenedCrops.Clear();
+            Luna.HandleMoonAfterWake(InternalUtility.GetBeach());
+
+            //update the weather
+            UpdateWeather(CurrWeather);
+
+            //set up fog.
+            double FogChance = 0;
+            switch (Game1.currentSeason)
+            {
+                case "spring":
+                    FogChance = Config.SpringFogChance;
+                    break;
+                case "summer":
+                    FogChance = Config.SummerFogChance;
+                    break;
+                case "fall":
+                    FogChance = Config.AutumnFogChance;
+                    break;
+                case "winter":
+                    FogChance = Config.WinterFogChance;
+                    break;
+                default:
+                    FogChance = 0;
+                    break;
+            }
+
+
+            if (Dice.NextDouble() < FogChance && (!Game1.isDebrisWeather && !Game1.isRaining))
+            {
+                this.FogAlpha = .55f;
+                this.AmbientFog = true;
+                this.FogColor = Color.White * 1.35f;
+                Game1.globalOutdoorLighting = .5f;
+
+                if (Dice.NextDouble() < .15)
+                {
+                    FogTypeDark = true;
+                    Game1.outdoorLight = new Color(227, 222, 211);
+                }
+                else
+                {
+                    Game1.outdoorLight = new Color(179, 176, 171);
+                }
+
+                FogExpirTime = new SDVTime(700);
+                double FogTimer = Dice.NextDouble();
+                /*
+                if (FogTimer > .90)
+                {
+                    //Last for ~7 hours. This means it expires at 1300.
+                    FogExpirTime = new SDVTime(1300);
+                }
+                else if (FogTimer > .75 && FogTimer <= .90)
+                {
+                    FogExpirTime = new SDVTime(1120);
+                }
+                else if (FogTimer > .55 && FogTimer <= .75)
+                {
+                    FogExpirTime = new SDVTime(1030);
+                }
+                else if (FogTimer > .30 && FogTimer <= .55)
+                {
+                    FogExpirTime = new SDVTime(930);
+                }
+                else if (FogTimer <= .30)
+                {
+                    FogExpirTime = new SDVTime(820);
+                }
+                */
+                if (Config.TooMuchInfo)
+                    Monitor.Log($"It'll be a foggy morning, expiring at {FogExpirTime}");
+
+            }
+        }
+
+        public void HandleWeather(TV tv, TemporaryAnimatedSprite sprite, StardewValley.Farmer who, string answer)
+        {
+            TemporaryAnimatedSprite WeatherCaster = new TemporaryAnimatedSprite(
+                Game1.mouseCursors, new Rectangle(497, 305, 42, 28), 9999f, 1, 999999, 
+                tv.getScreenPosition(), false, false, 
+                (float)((double)(tv.boundingBox.Bottom - 1) / 10000.0 + 9.99999974737875E-06), 
+                0.0f, Color.White, tv.getScreenSizeModifier(), 0.0f, 0.0f, 0.0f, false);
+
+            CustomTVMod.showProgram(WeatherCaster, Game1.parseText(GetWeatherForecast()), CustomTVMod.endProgram);
+        }
+
 
         private void GraphicsEvents_OnPostRenderEvent(object sender, EventArgs e)
         {
@@ -628,46 +711,7 @@ namespace ClimateOfFerngill
             RainTotemUsedToday = false;
         }
 
-        private void MenuEvents_MenuChanged(object sender, EventArgsClickableMenuChanged e)
-        {
-            TryHookTelevision();
-        }
 
-        #region TVOverride
-        public void TryHookTelevision()
-        {
-            if (Game1.currentLocation != null && Game1.currentLocation is DecoratableLocation && Game1.activeClickableMenu != null && Game1.activeClickableMenu is DialogueBox)
-            {
-                Callback = (GameLocation.afterQuestionBehavior)Field.GetValue(Game1.currentLocation);
-                if (Callback != null && Callback.Target.GetType() == typeof(TV))
-                {
-                    Field.SetValue(Game1.currentLocation, new GameLocation.afterQuestionBehavior(InterceptCallback));
-                    Target = (TV)Callback.Target;
-                }
-            }
-        }
-    
-        public void InterceptCallback(SFarmer who, string answer)
-        {
-            if (answer != "Weather")
-            {
-                Callback(who, answer);
-                return;
-            }
-            TVChannel.SetValue(Target, 2);
-            TVScreen.SetValue(Target, new TemporaryAnimatedSprite(Game1.mouseCursors, new Rectangle(413, 305, 42, 28), 150f, 2, 999999, Target.getScreenPosition(), false, false, (float)((double)(Target.boundingBox.Bottom - 1) / 10000.0 + 9.99999974737875E-06), 0.0f, Color.White, Target.getScreenSizeModifier(), 0.0f, 0.0f, 0.0f, false));
-            Game1.drawObjectDialogue(Game1.parseText((string)TVMethod.Invoke(Target, null)));
-            Game1.afterDialogues = NextScene;
-        }
-
-        public void NextScene()
-        {
-            TVScreen.SetValue(Target, new TemporaryAnimatedSprite(Game1.mouseCursors, new Rectangle(497, 305, 42, 28), 9999f, 1, 999999, Target.getScreenPosition(), false, false, (float)((double)(Target.boundingBox.Bottom - 1) / 10000.0 + 9.99999974737875E-06), 0.0f, Color.White, Target.getScreenSizeModifier(), 0.0f, 0.0f, 0.0f, false));
-            Game1.drawObjectDialogue(Game1.parseText(GetWeatherForecast()));
-            TVMethodOverlay.Invoke(Target, null);
-            Game1.afterDialogues = Target.proceedToNextScene;
-        }
-        #endregion
 
         public string GetWeatherForecast()
         {
@@ -728,93 +772,6 @@ namespace ClimateOfFerngill
             return tvText;
         }
        
-        public void TimeEvents_DayOfMonthChanged(object sender, EventArgsIntChanged e)
-        {
-            if (!GameLoaded) //sanity check
-                return;
-
-            //update objects for new day.
-            BadEvents.UpdateForNewDay();
-            CurrWeather.UpdateForNewDay();
-            RainTotemUsedToday = false;
-            Luna.UpdateForNewDay();
-            DeathTime = 0;
-            ThreatenedCrops.Clear();
-            Luna.HandleMoonAfterWake(InternalUtility.GetBeach());
-
-            //update the weather
-            UpdateWeather(CurrWeather);
-
-            //set up fog.
-            double FogChance = 0;
-            switch (Game1.currentSeason)
-            {
-                case "spring":
-                    FogChance = Config.SpringFogChance;
-                    break;
-                case "summer":
-                    FogChance = Config.SummerFogChance;
-                    break;
-                case "fall":
-                    FogChance = Config.AutumnFogChance;
-                    break;
-                case "winter":
-                    FogChance = Config.WinterFogChance;
-                    break;
-                default:
-                    FogChance = 0;
-                    break;
-            }
-
-
-            if (Dice.NextDouble() < FogChance && (!Game1.isDebrisWeather && !Game1.isRaining))
-            {
-                this.FogAlpha = .55f;
-                this.AmbientFog = true;
-                this.FogColor = Color.White * 1.35f;
-                Game1.globalOutdoorLighting = .5f;
-
-                if (Dice.NextDouble() < .15)
-                {
-                    FogTypeDark = true;   
-                    Game1.outdoorLight = new Color(227, 222, 211);
-                }
-                else
-                {
-                    Game1.outdoorLight = new Color(179, 176, 171);
-                }
-
-                FogExpirTime = new SDVTime(700);
-                double FogTimer = Dice.NextDouble();
-                /*
-                if (FogTimer > .90)
-                {
-                    //Last for ~7 hours. This means it expires at 1300.
-                    FogExpirTime = new SDVTime(1300);
-                }
-                else if (FogTimer > .75 && FogTimer <= .90)
-                {
-                    FogExpirTime = new SDVTime(1120);
-                }
-                else if (FogTimer > .55 && FogTimer <= .75)
-                {
-                    FogExpirTime = new SDVTime(1030);
-                }
-                else if (FogTimer > .30 && FogTimer <= .55)
-                {
-                    FogExpirTime = new SDVTime(930);
-                }
-                else if (FogTimer <= .30)
-                {
-                    FogExpirTime = new SDVTime(820);
-                }
-                */
-                if (Config.TooMuchInfo)
-                    Monitor.Log($"It'll be a foggy morning, expiring at {FogExpirTime}");
-
-            }
-        }
-
 
         void UpdateWeather(FerngillWeather weatherOutput, bool weddingOverride = false)
         {
