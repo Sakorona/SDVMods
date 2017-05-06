@@ -37,8 +37,8 @@ namespace ClimateOfFerngill
         public double AutumnFogChance { get; set; }
         public double WinterFogChance { get; set; }
 
-        public bool ForceMoonRemoval { get; set; }
-
+        public bool AllowDarkFog { get; set; }
+        
         public ClimateConfig()
         {
             //set defaults for mod specific stuff
@@ -73,6 +73,7 @@ namespace ClimateOfFerngill
             FrostHardiness = .45; // 45% of all crops will survive the frost wave.
             DeathTemp = 41; //105.8F
             AllowCropHeatDeath = false;
+            AllowDarkFog = true;
 
             //moon options
             GhostsDoNotSpawn = false;
@@ -85,8 +86,6 @@ namespace ClimateOfFerngill
             SummerFogChance = .001;
             AutumnFogChance = .20;
             WinterFogChance = .05;
-
-            ForceMoonRemoval = true;
         }
     }
 }

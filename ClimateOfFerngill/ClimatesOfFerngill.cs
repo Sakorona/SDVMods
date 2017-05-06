@@ -66,6 +66,7 @@ namespace ClimateOfFerngill
         private Color FogColor;
         private float FogAlpha;
         private SDVTime FogExpirTime;
+        private bool FogTypeDark;
 
         //snow elements
         private Vector2 snowPos;
@@ -474,23 +475,47 @@ namespace ClimateOfFerngill
                 Game1.globalOutdoorLighting = .98f;
                 Game1.outdoorLight = new Color(240, 229, 206);
              */
-
-            if (e.NewInt == (FogExpirTime - 30).ReturnIntTime())
+            if (FogTypeDark)
             {
-                Game1.globalOutdoorLighting = .98f;
-                Game1.outdoorLight = new Color(227, 222, 211);
+                if (e.NewInt == (FogExpirTime - 30).ReturnIntTime())
+                {
+                    Game1.globalOutdoorLighting = .98f;
+                    Game1.outdoorLight = new Color(200, 198, 196);
+                }
+
+                if (e.NewInt == (FogExpirTime - 20).ReturnIntTime())
+                {
+                    Game1.globalOutdoorLighting = .99f;
+                    Game1.outdoorLight = new Color(179, 176, 171);
+                }
+
+                if (e.NewInt == (FogExpirTime - 10).ReturnIntTime())
+                {
+                    Game1.globalOutdoorLighting = 1f;
+                    Game1.outdoorLight = new Color(110, 109, 107);
+                }
             }
-
-            if (e.NewInt == (FogExpirTime - 20).ReturnIntTime())
+            else
             {
-                Game1.globalOutdoorLighting = .99f;
-                Game1.outdoorLight = new Color(179, 176, 171);
-            }
 
-            if (e.NewInt == (FogExpirTime - 10).ReturnIntTime())
-            {
-                Game1.globalOutdoorLighting = 1f;
-                Game1.outdoorLight = new Color(110, 109, 107);
+                if (e.NewInt == (FogExpirTime - 30).ReturnIntTime())
+                {
+                    Game1.globalOutdoorLighting = .80f;
+                    Game1.outdoorLight = new Color(168, 142, 99);
+                }
+
+                if (e.NewInt == (FogExpirTime - 20).ReturnIntTime())
+                {
+                    Game1.globalOutdoorLighting = .92f;
+                    Game1.outdoorLight = new Color(117, 142, 99);
+
+                }
+
+                if (e.NewInt == (FogExpirTime - 10).ReturnIntTime())
+                {
+                    Game1.globalOutdoorLighting = .96f;
+                    Game1.outdoorLight = new Color(110, 109, 107);
+                }
             }
 
             //it helps if you implement the fog cutoff!
@@ -544,7 +569,7 @@ namespace ClimateOfFerngill
              * night time events
              * //////////////////////////////////////////////// */
 
-            if (Luna.CheckForGhostSpawn()) SpawnGhostOffScreen();
+                if (Luna.CheckForGhostSpawn()) SpawnGhostOffScreen();
 
             // sanity check if the player hits 0 Stamina ( the game doesn't track this )
             if (Game1.player.Stamina <= 0f)
@@ -742,16 +767,27 @@ namespace ClimateOfFerngill
             }
 
 
-            if (Dice.NextDouble() < FogChance && !Game1.isDebrisWeather)
+            //if (Dice.NextDouble() < FogChance && (!Game1.isDebrisWeather && !Game1.isRaining))
+            if (true)
             {
                 this.FogAlpha = .55f;
                 this.AmbientFog = true;
                 this.FogColor = Color.White * 1.35f;
-                Game1.globalOutdoorLighting = .98f;
-                Game1.outdoorLight = new Color(240, 229, 206);
+                Game1.globalOutdoorLighting = .5f;
 
+                if (Dice.NextDouble() < .15)
+                {
+                    FogTypeDark = true;   
+                    Game1.outdoorLight = new Color(227, 222, 211);
+                }
+                else
+                {
+                    Game1.outdoorLight = new Color(179, 176, 171);
+                }
+
+                FogExpirTime = new SDVTime(700);
                 double FogTimer = Dice.NextDouble();
-
+                /*
                 if (FogTimer > .90)
                 {
                     //Last for ~7 hours. This means it expires at 1300.
@@ -773,7 +809,7 @@ namespace ClimateOfFerngill
                 {
                     FogExpirTime = new SDVTime(820);
                 }
-
+                */
                 if (Config.TooMuchInfo)
                     Monitor.Log($"It'll be a foggy morning, expiring at {FogExpirTime}");
 

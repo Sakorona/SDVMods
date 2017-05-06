@@ -160,7 +160,7 @@ namespace ClimateOfFerngill
         public void HandleMoonAfterWake(Beach b)
         {
             //new moon processing
-            if (SDVMoon.GetLunarPhase() == MoonPhase.NewMoon || Config.ForceMoonRemoval)
+            if (SDVMoon.GetLunarPhase() == MoonPhase.NewMoon)
             {
                 if (Config.TooMuchInfo)
                     Monitor.Log($"It is a new moon with removal chance {BeachRemovalChance}");
