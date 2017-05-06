@@ -18,6 +18,7 @@ using StardewValley;
 using StardewValley.Monsters;
 using StardewValley.Locations;
 using StardewValley.Menus;
+using StardewValley.Objects;
 
 namespace ClimateOfFerngill
 {
