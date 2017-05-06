@@ -81,7 +81,6 @@ namespace ClimateOfFerngill
             TimeEvents.AfterDayStarted += TimeEvents_AfterDayStarted;
             GameEvents.QuarterSecondTick += GameEvents_QuarterSecondTick;
             GameEvents.UpdateTick += GameEvents_UpdateTick;
-            CurrWeather.SetBlizzard();
 
             //graphics events
             GraphicsEvents.OnPostRenderEvent += GraphicsEvents_OnPostRenderEvent;
@@ -97,7 +96,8 @@ namespace ClimateOfFerngill
             ControlEvents.KeyPressed += (sender, e) => this.ReceiveKeyPress(e.KeyPressed, this.Config.Keyboard);
             MenuEvents.MenuClosed += (sender, e) => this.ReceiveMenuClosed(e.PriorMenu);
 
-            CustomTVMod.addChannel("weather", "Weather", HandleWeather);
+            CustomTVMod.removeChannel("Weather");
+            CustomTVMod.addChannel("CustomWeather", "Weather Channel", HandleWeather);
 
             VerifyBundledWeatherFiles();
 
@@ -173,9 +173,8 @@ namespace ClimateOfFerngill
                     Game1.outdoorLight = new Color(179, 176, 171);
                 }
 
-                FogExpirTime = new SDVTime(700);
                 double FogTimer = Dice.NextDouble();
-                /*
+                
                 if (FogTimer > .90)
                 {
                     //Last for ~7 hours. This means it expires at 1300.
@@ -197,7 +196,7 @@ namespace ClimateOfFerngill
                 {
                     FogExpirTime = new SDVTime(820);
                 }
-                */
+                
                 if (Config.TooMuchInfo)
                     Monitor.Log($"It'll be a foggy morning, expiring at {FogExpirTime}");
 

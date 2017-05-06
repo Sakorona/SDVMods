@@ -80,15 +80,15 @@
 
         public bool SetBlizzard()
         {
-            /*
+            
             if (CurrentWeather == SDVWeather.Snow)
-            { */
+            { 
                 IsBlizzard = true;
                 return true;
-            /*} 
+            } 
 
             return false;
-            */
+            
         }
 
         public bool SetHeatwave()
@@ -131,7 +131,7 @@
 
         public void Reset()
         {
-            IsBlizzard = true;
+            IsBlizzard = false;
             IsHeatwave = false;
             IsFrost = false;
             CurrentWeather = SDVWeather.None;
