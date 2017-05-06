@@ -54,6 +54,7 @@
     <Compile Include="FerngillClimate.cs" />
     <Compile Include="HazardousWeatherEvents.cs" />
     <Compile Include="Helpers\SDVDate.cs" />
+    <Compile Include="Helpers\SDVTime.cs" />
     <Compile Include="Pathoschild.Stardew.UIF\DrawHelper.cs" />
     <Compile Include="FerngillWeather.cs" />
     <Compile Include="Pathoschild.Stardew.UIF\FormattedText.cs" />
