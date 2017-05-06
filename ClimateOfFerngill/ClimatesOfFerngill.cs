@@ -81,7 +81,7 @@ namespace ClimateOfFerngill
             TimeEvents.AfterDayStarted += TimeEvents_AfterDayStarted;
             GameEvents.QuarterSecondTick += GameEvents_QuarterSecondTick;
             GameEvents.UpdateTick += GameEvents_UpdateTick;
-            
+            CurrWeather.SetBlizzard();
 
             //graphics events
             GraphicsEvents.OnPostRenderEvent += GraphicsEvents_OnPostRenderEvent;
