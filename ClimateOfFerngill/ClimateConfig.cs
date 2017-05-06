@@ -62,8 +62,8 @@ namespace ClimateOfFerngill
 
             //set storm penalty stuff
             StormyPenalty = true;
-            DiseaseChance = .475;
-            StaminaPenalty = 2;
+            DiseaseChance = .33;
+            StaminaPenalty = 3;
             OnlyOneColdADay = true;
 
             //set harsh weather events - currently unused.

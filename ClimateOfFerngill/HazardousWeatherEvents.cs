@@ -101,7 +101,8 @@ namespace ClimateOfFerngill
 
             //alert code - 30% chance of appearing
             // configured to properly appear now
-            if (IsExhausted && Dice.NextDouble() < 0.3)
+            // Fix: 15%
+            if (IsExhausted && Dice.NextDouble() < .15)
             {
                 InternalUtility.ShowMessage("You have a cold, and feel worn out!");
             }          
