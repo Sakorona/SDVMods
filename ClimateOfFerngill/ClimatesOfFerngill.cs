@@ -65,8 +65,10 @@ namespace ClimateOfFerngill
         private Vector2 FogPosition;
         private Color FogColor;
         private float FogAlpha;
-        private int FogTime;
         private int FogExpirTime;
+
+        //snow elements
+        private Vector2 snowPos;
 
         /// <summary>Initialise the mod.</summary>
         /// <param name="helper">Provides methods for interacting with the mod directory, such as read/writing a config file or custom JSON files.</param>
@@ -92,7 +94,7 @@ namespace ClimateOfFerngill
             GameEvents.QuarterSecondTick += GameEvents_QuarterSecondTick;
             GameEvents.UpdateTick += GameEvents_UpdateTick;
             SaveEvents.AfterReturnToTitle += SaveEvents_AfterReturnToTitle;
-
+            //CurrWeather.SetBlizzard();
 
             //fog
             GraphicsEvents.OnPostRenderEvent += GraphicsEvents_OnPostRenderEvent;
@@ -134,11 +136,45 @@ namespace ClimateOfFerngill
             {
                 DrawFog();
             }
+
+            //snow handling
+            if (GameLoaded && Game1.currentLocation.isOutdoors && !(Game1.currentLocation is Desert))
+            {
+                DrawSnow();
+            }
+        }
+
+        private void DrawSnow()
+        {
+            if (CurrWeather.IsBlizzard)
+            {
+                //snowPos = Game1.updateFloatingObjectPositionForMovement(snowPos, new Vector2(Game1.viewport.X, Game1.viewport.Y),
+                //          Game1.previousViewportPosition, -1f);
+                snowPos.X = snowPos.X % (16 * Game1.pixelZoom);
+                Vector2 position = new Vector2();
+                float num1 = -16 * Game1.pixelZoom + snowPos.X % (16 * Game1.pixelZoom);
+                while ((double)num1 < Game1.viewport.Width)
+                {
+                    float num2 = -16 * Game1.pixelZoom + snowPos.Y % (16 * Game1.pixelZoom);
+                    while (num2 < (double)Game1.viewport.Height)
+                    {
+                        position.X = (int)num1;
+                        position.Y = (int)num2;
+                        Game1.spriteBatch.Draw(Game1.mouseCursors, position, new Microsoft.Xna.Framework.Rectangle?
+                            (new Microsoft.Xna.Framework.Rectangle
+                            (245 + (int)(Game1.currentGameTime.TotalGameTime.TotalMilliseconds % 1200.0) / 75 * 16, 192, 16, 16)),
+                            Color.White * Game1.options.snowTransparency, 0.0f, Vector2.Zero,
+                            Game1.pixelZoom + 1f / 1000f, SpriteEffects.None, 1f);
+                        num2 += 16 * Game1.pixelZoom;
+                    }
+                    num1 += 16 * Game1.pixelZoom;
+                }
+            }
         }
 
         private void DrawFog()
         {
-            if ((double)this.FogAlpha > 0.0 || this.AmbientFog)
+            if (FogAlpha > 0.0 || AmbientFog)
             {
                 Vector2 position = new Vector2();
                 float num1 = -64 * Game1.pixelZoom + (int)(FogPosition.X % (double)(64 * Game1.pixelZoom));
@@ -150,10 +186,10 @@ namespace ClimateOfFerngill
                         position.X = (int)num1;
                         position.Y = (int)num2;
                         Game1.spriteBatch.Draw(Game1.mouseCursors, position, new Microsoft.Xna.Framework.Rectangle?
-                            (this.FogSource), (double)this.FogAlpha > 0.0 ? this.FogColor * this.FogAlpha : Color.Black * 0.95f, 0.0f, Vector2.Zero, (float)Game1.pixelZoom + 1f / 1000f, SpriteEffects.None, 1f);
-                        num2 += (float)(64 * Game1.pixelZoom);
+                            (FogSource), FogAlpha > 0.0 ? FogColor * FogAlpha : Color.Black * 0.95f, 0.0f, Vector2.Zero, Game1.pixelZoom + 1f / 1000f, SpriteEffects.None, 1f);
+                        num2 += 64 * Game1.pixelZoom;
                     }
-                    num1 += (float)(64 * Game1.pixelZoom);
+                    num1 += 64 * Game1.pixelZoom;
                 }
             }
         }
@@ -274,29 +310,21 @@ namespace ClimateOfFerngill
         private int prevToEatStack = -1;
 
         private void GameEvents_UpdateTick(object sender, EventArgs e)
-        {
-            if (this.FogTime > 0 && Game1.shouldTimePass())
-            { 
-                if ((double)this.FogAlpha < 1.0)
-                {
-                    this.FogAlpha = this.FogAlpha + 0.01f;
-                }
+        {          
+            if (AmbientFog)
+            {
+                FogPosition = Game1.updateFloatingObjectPositionForMovement(FogPosition, 
+                    new Vector2(Game1.viewport.X, Game1.viewport.Y), Game1.previousViewportPosition, -1f);
+                FogPosition.X = (FogPosition.X + 0.5f) % (64 * Game1.pixelZoom);
+                FogPosition.Y = (FogPosition.Y + 0.5f) % (64 * Game1.pixelZoom);
+            }
 
-                this.FogPosition = Game1.updateFloatingObjectPositionForMovement(this.FogPosition, 
-                    new Vector2((float)Game1.viewport.X, (float)Game1.viewport.Y), Game1.previousViewportPosition, -1f);
-                this.FogPosition.X = (this.FogPosition.X + 0.5f) % (float)(64 * Game1.pixelZoom);
-                this.FogPosition.Y = (this.FogPosition.Y + 0.5f) % (float)(64 * Game1.pixelZoom);
-            }
-            else if ((double)this.FogAlpha > 0.0)
+            if (CurrWeather.IsBlizzard)
             {
-                this.FogAlpha = this.FogAlpha - 0.01f;
-            }
-            else if (this.AmbientFog)
-            {
-                this.FogPosition = Game1.updateFloatingObjectPositionForMovement(this.FogPosition, 
-                    new Vector2((float)Game1.viewport.X, (float)Game1.viewport.Y), Game1.previousViewportPosition, -1f);
-                this.FogPosition.X = (this.FogPosition.X + 0.5f) % (float)(64 * Game1.pixelZoom);
-                this.FogPosition.Y = (this.FogPosition.Y + 0.5f) % (float)(64 * Game1.pixelZoom);
+                snowPos = Game1.updateFloatingObjectPositionForMovement(snowPos,
+                    new Vector2(Game1.viewport.X, Game1.viewport.Y), Game1.previousViewportPosition, -1f);
+                snowPos.X = (FogPosition.X + 0.5f) % (64 * Game1.pixelZoom);
+                snowPos.Y = (FogPosition.Y + 0.5f) % (64 * Game1.pixelZoom);
             }
 
             if (Game1.isEating != wasEating)
@@ -445,7 +473,6 @@ namespace ClimateOfFerngill
             if (e.NewInt == FogExpirTime)
             {
                 this.AmbientFog = false;
-                this.FogTime = 0;
                 Game1.globalOutdoorLighting = 1f;
                 Game1.outdoorLight = Color.White;
             }
@@ -690,17 +717,19 @@ namespace ClimateOfFerngill
             }
 
 
-            if (Dice.NextDouble() < FogChance && !Game1.isDebrisWeather)
+            //if (Dice.NextDouble() < FogChance && !Game1.isDebrisWeather)
+            if(true)
             {
                 this.FogAlpha = .55f;
                 this.AmbientFog = true;
-                this.FogTime = 10000;
                 this.FogColor = Color.White * 1.35f;
                 Game1.globalOutdoorLighting = .82f; // .3f is spoopy. :| .6f is SUPER THICK FOG. .78f isn't much better. 
                 Game1.outdoorLight = new Color(220, 163, 39);
 
                 double FogTimer = Dice.NextDouble();
+                FogExpirTime = 700;
 
+                /*
                 if (FogTimer > .90)
                 {
                     //Last for ~7 hours. This means it expires at 1300.
@@ -721,7 +750,7 @@ namespace ClimateOfFerngill
                 else if (FogTimer <= .30)
                 {
                     FogExpirTime = 820;
-                }
+                }*/
                 
                 if (Config.TooMuchInfo)
                     Monitor.Log($"It'll be a foggy morning, expiring at {FogExpirTime}");

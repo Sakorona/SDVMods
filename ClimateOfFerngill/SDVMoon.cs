@@ -173,6 +173,9 @@ namespace ClimateOfFerngill
                 {
                         if (Dice.NextDouble() < BeachRemovalChance)
                         {
+                            if (Config.TooMuchInfo)
+                                Monitor.Log($"Removing {rem.Value.parentSheetIndex} at ({rem.Key.X}, {rem.Key.Y})");
+
                             b.objects.Remove(rem.Key);
                         }
                 }
@@ -185,6 +188,9 @@ namespace ClimateOfFerngill
                 Rectangle rectangle = new Rectangle(65, 11, 25, 12);
                 for (int index = 0; index < 5; ++index)
                 {
+                    if (Config.TooMuchInfo)
+                        Monitor.Log("Spawning item");
+
                     //get the item ID to spawn
                     parentSheetIndex = moonBeachItems.GetRandomItem(Dice);
                     if (Dice.NextDouble() < .0001)
