@@ -41,6 +41,9 @@ namespace ClimateOfFerngill
         private bool wasEating = false;
         private int prevToEatStack = -1;
 
+        private int numberOfTicksPerSpan;
+        private int numberOfTicksOutside;
+
         /// <summary>Initialise the mod.</summary>
         /// <param name="helper">Provides methods for interacting with the mod directory, such as read/writing a config file or custom JSON files.</param>
         public override void Entry(IModHelper helper)
@@ -101,7 +104,7 @@ namespace ClimateOfFerngill
         {
             if (!GameLoaded) //sanity check
                 return;
-
+            
             //update objects for new day.
             BadEvents.UpdateForNewDay();
             CurrWeather.UpdateForNewDay();
@@ -115,6 +118,9 @@ namespace ClimateOfFerngill
 
             if (CurrWeather.IsFog(Game1.currentSeason, Dice)) 
             {
+                if (Config.TooMuchInfo)
+                    Monitor.Log("We have fog!!!!");
+
                 OurFog.CreateFog(FogAlpha: .55f, AmbientFog: true, FogColor: (Color.White * 1.35f));
                 Game1.globalOutdoorLighting = .5f;
 
@@ -301,7 +307,14 @@ namespace ClimateOfFerngill
         
         private void GameEvents_UpdateTick(object sender, EventArgs e)
         {
+            if (!GameLoaded)
+                return;
+
             OurFog.MoveFog();
+
+            numberOfTicksPerSpan++;
+            if (Game1.currentLocation.isOutdoors)
+                numberOfTicksOutside++;
 
             if (Game1.isEating != wasEating)
             {
@@ -440,10 +453,27 @@ namespace ClimateOfFerngill
        
         private void TimeEvents_TimeOfDayChanged(object sender, EventArgsIntChanged e)
         {
+            if (!GameLoaded)
+                return;
+
             OurFog.UpdateFog(e.NewInt);
 
             if (Config.StormyPenalty)
                 CurrWeather.CatchACold();
+
+            double outsidePercentage = (double)numberOfTicksOutside / numberOfTicksPerSpan;
+
+            if (Config.TooMuchInfo)
+                Monitor.Log($"The outside percentage is {outsidePercentage} for {numberOfTicksPerSpan} ticks per span and {numberOfTicksOutside} ticks outside");
+
+            if (outsidePercentage > .586)
+                CurrWeather.HandleStaminaChanges(true);
+            else
+                CurrWeather.HandleStaminaChanges(false);
+
+            //reset the numbers
+            numberOfTicksOutside = 0;
+            numberOfTicksPerSpan = 0;
 
             //specific time stuff
             if (e.NewInt == 610)

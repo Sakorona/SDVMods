@@ -1,6 +1,7 @@
 ﻿using NPack;
 using StardewModdingAPI;
 using StardewValley;
+using System;
 
 namespace ClimateOfFerngill
 {
@@ -63,11 +64,37 @@ namespace ClimateOfFerngill
                     HasGottenColdToday = true;
                 }
             }
+        }
+
+        public void HandleStaminaChanges(bool passedThresholdOutside)
+        {
+            int HighStaminaPenalty = (int)Math.Ceiling(Config.StaminaPenalty * 1.5);
 
             //disease code.
             if (IsExhausted)
             {
                 Game1.player.stamina = Game1.player.stamina - Config.StaminaPenalty;
+            }
+
+            //heatwave or blizzard code.
+            if (IsHeatwave && passedThresholdOutside)
+            {
+                if (Config.TooMuchInfo) {
+                    Logger.Log($"Running the heatwave stamina penalty with {passedThresholdOutside} and stamina penalty of {HighStaminaPenalty}");
+                    Logger.Log($"Running with the time to stop assessing the penalty being {Game1.getStartingToGetDarkTime()}");
+                }
+
+                if (Game1.timeOfDay < Game1.getStartingToGetDarkTime())
+                {
+                    Game1.player.stamina -= HighStaminaPenalty;
+                }
+            }
+
+            if (IsBlizzard && passedThresholdOutside)
+            {
+                if (Config.TooMuchInfo)
+                    Logger.Log($"Running the blizzard stamina penalty with {passedThresholdOutside} and stamina penalty of {HighStaminaPenalty}");
+                Game1.player.stamina -= HighStaminaPenalty;
             }
 
             //alert code - 30% chance of appearing
@@ -76,6 +103,11 @@ namespace ClimateOfFerngill
             if (IsExhausted && pRNG.NextDouble() < .15)
             {
                 InternalUtility.ShowMessage("You have a cold, and feel worn out!");
+            }
+
+            if ((IsBlizzard || IsHeatwave) && pRNG.NextDouble() < .15)
+            {
+                InternalUtility.ShowMessage("The harsh weather conditions have tired you out!");
             }
         }
 
@@ -138,7 +170,7 @@ namespace ClimateOfFerngill
             return this.TodayLow;
         }
 
-        public bool CheckBlizzard(MersenneTwister Dice)
+        public bool CheckBlizzard()
         {            
             if (CurrentWeather == SDVWeather.Snow)
             { 
@@ -225,8 +257,11 @@ namespace ClimateOfFerngill
                     break;
             }
 
+            //move these out of the main loop.
+            if (CurrentConditions() == SDVWeather.Rainy || CurrentConditions() == SDVWeather.Debris)
+                return false;
             
-            if (Dice.NextDouble() < FogChance && (!Game1.isDebrisWeather && !Game1.isRaining))
+            if (Dice.NextDouble() < FogChance)
             {
                 return true;
             }

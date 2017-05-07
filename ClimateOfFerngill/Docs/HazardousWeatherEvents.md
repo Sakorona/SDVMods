@@ -49,17 +49,19 @@ This occurs at -3.33C/26 F. The crops killed here are any above, and:
 * Cranberry
 * Ancient
 * SweetGemBerry    
-
-
  
 ## Heatwave
 
-Coming soon~
+Heatwaves occur at temps above a value (configured as `HeatwaveWarning` (default 37C or 98.6F). If you do not have `AllowCropHeatDeath` set to true, this will only dewater the crops. During a heatwave, stamina is drained if the player is outside for over 65% of the ticks. The penalty is 1.5* the configured storm penalty configured to be the rounded up value.
+
+If you have `AllowCropHeatDeath` set to true, you will need to water the plants within 3 hours (180 minutes) or the crops die. The threshold for that is controlled by `DeathTemp`, default set to 41C/101.5F
+
+The stamina penalty is configured to stop at twilight.
 
 ## Blizzard
 
-Coming soon~
+Blizzards are considered similar to snow storms, and will occur at [TODO CHANCE]. They only occur in Winter, no matter what snow is configured, and will carry the same stamina penalty as heatwaves with the same odds of activation.
 
 ## Storms
 
-Coming soon~
+During any stormy day, every 10 minutes, a stamina penalty, configured by `StaminaPenalty` is hit against the player. Drinking a Muscle Tonic will remove the cold. By default, you can only get a cold once a day, but you can turn that safety off by setting `OnlyOneColdADay` to false.

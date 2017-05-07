@@ -52,6 +52,7 @@ namespace ClimateOfFerngill
 
         public void UpdateFog(int time)
         {
+
             if (FogTypeDark)
             {
                 if (time == (FogExpirTime - 30).ReturnIntTime())
