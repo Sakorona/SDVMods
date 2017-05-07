@@ -15,7 +15,6 @@ using Microsoft.Xna.Framework.Graphics;
 using StardewModdingAPI;
 using StardewModdingAPI.Events;
 using StardewValley;
-using StardewValley.Monsters;
 using StardewValley.Locations;
 using StardewValley.Menus;
 using StardewValley.Objects;
@@ -671,8 +670,6 @@ namespace ClimateOfFerngill
             BadEvents.UpdateForNewDay();
             RainTotemUsedToday = false;
         }
-
-
 
         public string GetWeatherForecast()
         {

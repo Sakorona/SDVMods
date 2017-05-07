@@ -195,7 +195,7 @@ namespace ClimateOfFerngill
                 contentBatch.Begin(SpriteSortMode.Deferred, BlendState.NonPremultiplied, SamplerState.PointClamp, null, new RasterizerState { ScissorTestEnable = true });
 
                 // draw portrait
-                spriteBatch.Draw(IconSheet.source, new Vector2(x + leftOffset, y + topOffset), IconSheet.GetWeatherSprite(WeatherHelper.GetTodayWeather()), Color.White);
+                spriteBatch.Draw(IconSheet.source, new Vector2(x + leftOffset, y + topOffset), IconSheet.GetWeatherSprite(InternalUtility.GetTodayWeather()), Color.White);
                 leftOffset += 72;
 
                 // draw fields
@@ -222,9 +222,9 @@ namespace ClimateOfFerngill
 
                         //Output today's weather
                         string weatherString = "";
-                        if (WeatherHelper.GetTodayWeather() != SDVWeather.Festival)
+                        if (InternalUtility.GetTodayWeather() != SDVWeather.Festival)
                         {
-                            weatherString = $"Today, the weather is {WeatherHelper.DescWeather(WeatherHelper.GetTodayWeather(), Game1.currentSeason)} with {Temperature}";
+                            weatherString = $"Today, the weather is {WeatherHelper.DescWeather(InternalUtility.GetTodayWeather(), Game1.currentSeason)} with {Temperature}";
                         }
                         else
                         {

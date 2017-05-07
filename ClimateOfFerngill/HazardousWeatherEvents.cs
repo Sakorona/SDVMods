@@ -65,6 +65,7 @@ namespace ClimateOfFerngill
         {
             return CropTemps[(SDVCrops)currentCrop];
         }
+
         public bool HasACold()
         {
             return this.IsExhausted;

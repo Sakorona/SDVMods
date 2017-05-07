@@ -1,14 +1,16 @@
 # Hazardous Weather Events
 
-The mod has several right now: Frost, Blizzard and Heatwaves.
+The mod has several right now: Frost, Blizzard and Heatwaves. All of these events require `HarshWeather` in the config to be set to true
 
 ## Frost
 
-The mod checks against the low temp, and then kills them at night. They are killed under the following tiers
+The mod checks against the low temp, and then kills them at night. In order to ensure that you don't have a full die off (you can edit this to create a full die off), the variable `FrostHardiness` in the configuration controls if things die. It's set to .45, which means 45% of all crops die. To make more crops die, increase it, to make less crops dies, decrease it.
+
+They are killed under the following tiers
 
 ### Light Frost
 
-This occurs at 1.66 C/35 F. The crops killed here are any above, and:   
+This occurs at 1.66 C/35 F. The crops killed here are:   
 * Corn  
 * Wheat 
 * Amaranth

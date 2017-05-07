@@ -70,7 +70,7 @@ namespace ClimateOfFerngill
             HarshWeather = false;
             HeatwaveWarning = 37; //98.6F 
             FrostWarning = 2; //35.6F
-            FrostHardiness = .45; // 45% of all crops will survive the frost wave.
+            FrostHardiness = .45; // 55% of all crops will survive the frost wave.
             DeathTemp = 41; //105.8F
             AllowCropHeatDeath = false;
             AllowDarkFog = true;
