@@ -81,6 +81,7 @@
   <ItemGroup>
     <None Include="Changelog.md" />
     <None Include="Docs\DetailedClimateWriteup.md" />
+    <None Include="Docs\HazardousWeatherEvents.md" />
     <None Include="manifest.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>

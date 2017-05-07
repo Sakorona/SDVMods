@@ -1,6 +1,5 @@
 ﻿using System;
 using Microsoft.Xna.Framework;
-using StardewModdingAPI;
 using NPack;
 using StardewValley;
 using System.Collections.Generic;
@@ -11,7 +10,6 @@ namespace ClimateOfFerngill
 {
     static class InternalUtility
     {
-
        public static Dictionary<SDVDate, int> ForceDays = new Dictionary<SDVDate, int>
        {
             { new SDVDate("spring", 1), Game1.weather_sunny },
