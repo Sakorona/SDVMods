@@ -193,6 +193,26 @@ namespace ClimateOfFerngill
             return Game1.getLocationFromName("Beach") as Beach;
         }
 
+        public static SDVWeather GetTodayWeather()
+        {
+            if (Game1.isRaining)
+            {
+                if (Game1.isLightning) return SDVWeather.Stormy;
+                else return SDVWeather.Rainy;
+            }
+
+            if (Game1.isSnowing) return SDVWeather.Snow;
+            if (Game1.isDebrisWeather) return SDVWeather.Debris;
+
+            if (Game1.weddingToday == true)
+                return SDVWeather.Wedding;
+
+            if (Utility.isFestivalDay(Game1.dayOfMonth, Game1.currentSeason))
+                return SDVWeather.Festival;
+
+            return SDVWeather.Sunny;
+        }
+
         internal static SDVSeasons GetSeason(string currentSeason)
         {
             if (currentSeason == "spring")
@@ -207,6 +227,33 @@ namespace ClimateOfFerngill
             return SDVSeasons.none;
         }
 
+        public static bool IsSeason(SDVSeasons season)
+        {
+            return (season.ToString()).ToLower() == Game1.currentSeason;
+        }
+
+        public static string WeatherToString(int weather)
+        {
+            switch (weather)
+            {
+                case 0:
+                    return "Sunny";
+                case 1:
+                    return "Rain";
+                case 2:
+                    return "Debris";
+                case 3:
+                    return "Lightning";
+                case 4:
+                    return "Festival";
+                case 5:
+                    return "Snow";
+                case 6:
+                    return "Wedding";
+                default:
+                    return "<ERROR>";
+            }
+        }
 
         public static void SpawnGhostOffScreen(MersenneTwister Dice)
         {

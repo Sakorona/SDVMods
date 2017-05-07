@@ -7,56 +7,6 @@ namespace ClimateOfFerngill
 {
     static class WeatherHelper
     {
-        public static bool IsSeason(SDVSeasons season)
-        {
-            return (season.ToString()).ToLower() == Game1.currentSeason;
-        }
-
-        /// <summary>
-        /// This function just attempts to fix the TV for tomorrow to match forced weather.
-        /// </summary>
-        /// <returns>True if it was fixed, false elsewise</returns>
-        public static bool FixTV()
-        {
-            if (Game1.currentSeason == "spring" && Game1.year == 1 && Game1.dayOfMonth == 1)
-            {
-                Game1.weatherForTomorrow = Game1.weather_sunny;
-                return true;
-            }
-
-            if (Game1.currentSeason == "spring" && Game1.year == 1 && Game1.dayOfMonth == 2)
-            {
-                Game1.weatherForTomorrow = Game1.weather_rain;
-                return true;
-            }
-
-            if (Game1.currentSeason == "spring" && Game1.year == 1 && Game1.dayOfMonth == 3)
-            {
-                Game1.weatherForTomorrow = Game1.weather_sunny;
-                return true;
-            }
-
-            if (Game1.currentSeason == "summer" && Game1.dayOfMonth == 12)
-            {
-                Game1.weatherForTomorrow = Game1.weather_lightning;
-                return true;
-            }
-
-            if (Game1.currentSeason == "summer" && Game1.dayOfMonth == 25)
-            {
-                Game1.weatherForTomorrow = Game1.weather_lightning;
-                return true;
-            }
-
-            if (Game1.dayOfMonth == 28)
-            {
-                Game1.weatherForTomorrow = Game1.weather_sunny;
-                return true;
-            }
-
-            return false;
-        }
-
         public static string DescWeather(int weather, string season)
         {
             switch (weather)
@@ -66,7 +16,10 @@ namespace ClimateOfFerngill
                 case 1:
                     return "Rainy";
                 case 2:
-                    return "Windy with" + (season == "spring" ? " pollen in the air" :  " leaves blowing in the wind");
+                    if (season != "winter")
+                        return "Windy with" + (season == "spring" ? " pollen in the air" : " leaves blowing in the wind");
+                    else 
+                        return "Flurries";
                 case 3:
                     return "Stormy";
                 case 4:
@@ -144,26 +97,6 @@ namespace ClimateOfFerngill
             }
 
             return "ERROR";
-        }
-
-        public static SDVWeather GetTodayWeather()
-        {
-            if (Game1.isRaining)
-            {
-                if (Game1.isLightning) return SDVWeather.Stormy;
-                else return SDVWeather.Rainy;
-            }
-
-            if (Game1.isSnowing) return SDVWeather.Snow;
-            if (Game1.isDebrisWeather) return SDVWeather.Debris;
-
-            if (Game1.weddingToday == true)
-                return SDVWeather.Wedding;
-
-            if (Utility.isFestivalDay(Game1.dayOfMonth, Game1.currentSeason))
-                return SDVWeather.Festival;
-
-            return SDVWeather.Sunny;
         }
 
         public static string GetWeatherDesc(MersenneTwister dice, SDVWeather weather, bool today, IMonitor logger, bool debugFlag)
@@ -266,41 +199,8 @@ namespace ClimateOfFerngill
             return "Angry suns descend on us! Run! (ERROR)";
         }
 
-        public static string WeatherToString(int weather)
-        {
-            switch (weather)
-            {
-                case 0:
-                    return "Sunny";
-                case 1:
-                    return "Rain";
-                case 2:
-                    return "Debris";
-                case 3:
-                    return "Lightning";
-                case 4:
-                    return "Festival";
-                case 5:
-                    return "Snow";
-                case 6:
-                    return "Wedding";
-                default:
-                    return "<ERROR>";                    
-            }
-        }
 
-        internal static bool WeatherForceDay(string currentSeason, int dayOfMonth, int year)
-        {
-            if (dayOfMonth == 1) //all day 1 are forced
-                return true;
-            if (Utility.isFestivalDay(dayOfMonth, currentSeason))
-                return true;
-            if (year == 1 && currentSeason == "spring" && (dayOfMonth == 2 || dayOfMonth == 3 || dayOfMonth == 4))
-                return true;
-            if (currentSeason == "summer" && (dayOfMonth == 13 || dayOfMonth == 26))
-                return true;
 
-            return false;
-        }
+ 
     }
 }

@@ -721,7 +721,7 @@ namespace ClimateOfFerngill
                 if (Config.TooMuchInfo) Monitor.Log(tvText);
 
                 //today weather
-                tvText = tvText + WeatherHelper.GetWeatherDesc(Dice, WeatherHelper.GetTodayWeather(), true, Monitor, Config.TooMuchInfo);
+                tvText = tvText + WeatherHelper.GetWeatherDesc(Dice, InternalUtility.GetTodayWeather(), true, Monitor, Config.TooMuchInfo);
 
                 //get WeatherForTommorow and set text
                 tvText = tvText + "#Tommorow, ";
@@ -798,7 +798,7 @@ namespace ClimateOfFerngill
             if (Game1.currentSeason == "winter" && (Game1.weatherForTomorrow == Game1.weather_rain || Game1.weatherForTomorrow == Game1.weather_lightning ) && !Config.AllowRainInWinter)
             {
                 if (Config.TooMuchInfo)
-                    Monitor.Log($"Fixing {WeatherHelper.WeatherToString(Game1.weatherForTomorrow)} in winter. Force setting to snow");
+                    Monitor.Log($"Fixing {InternalUtility.WeatherToString(Game1.weatherForTomorrow)} in winter. Force setting to snow");
 
                 Game1.weatherForTomorrow = Game1.weather_snow;
             }
