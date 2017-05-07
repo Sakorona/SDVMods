@@ -230,8 +230,8 @@ namespace ClimateOfFerngill
 
         private void DrawSnow()
         {
-            if (CurrWeather.IsBlizzard)
-            {
+            /* if (CurrWeather.IsBlizzard)
+            { */
                 //snowPos = Game1.updateFloatingObjectPositionForMovement(snowPos, new Vector2(Game1.viewport.X, Game1.viewport.Y),
                 //          Game1.previousViewportPosition, -1f);
                 snowPos.X = snowPos.X % (16 * Game1.pixelZoom);
@@ -253,7 +253,7 @@ namespace ClimateOfFerngill
                     }
                     num1 += 16 * Game1.pixelZoom;
                 }
-            }
+            /* } */
         }
 
         private void DrawFog()
