@@ -36,7 +36,7 @@ namespace ClimateOfFerngill
 
         //event fields
         private List<Vector2> ThreatenedCrops { get; set; }
-        private int DeathTime { get; set; }
+        private SDVTime DeathTime { get; set; }
 
         public MersenneTwister Dice;
         private IClickableMenu PreviousMenu;
@@ -56,6 +56,10 @@ namespace ClimateOfFerngill
 
         //snow elements
         private Vector2 snowPos;
+
+        //eating code
+        private bool wasEating = false;
+        private int prevToEatStack = -1;
 
         /// <summary>Initialise the mod.</summary>
         /// <param name="helper">Provides methods for interacting with the mod directory, such as read/writing a config file or custom JSON files.</param>
@@ -84,21 +88,17 @@ namespace ClimateOfFerngill
 
             //graphics events
             GraphicsEvents.OnPostRenderEvent += GraphicsEvents_OnPostRenderEvent;
-            
+
             //siiigh.
             helper.ConsoleCommands
                     .Add("world_changetmrweather", "Changes tomorrow's weather.\"rain,storm,snow,debris,festival,wedding,sun\" ", TmrwWeatherChangeFromConsole)
                     .Add("world_changeweather", "Changes CURRENT weather. \"rain,storm,snow,debris,sun\"", WeatherChangeFromConsole)
-                    .Add("player_removecold", "Removes the cold from the player.", RemovePlayerCode);
+                    .Add("player_removecold", "Removes the cold from the player.", RemovePlayerCold);
 
 
             //register keyboard handlers and other menu events
             ControlEvents.KeyPressed += (sender, e) => this.ReceiveKeyPress(e.KeyPressed, this.Config.Keyboard);
             MenuEvents.MenuClosed += (sender, e) => this.ReceiveMenuClosed(e.PriorMenu);
-
-            //CustomTVMod.changeAction("Weather", HandleWeather);
-            CustomTVMod.removeChannel("Weather");
-            CustomTVMod.addChannel("weather", "Weather Report", HandleWeather);
 
             VerifyBundledWeatherFiles();
 
@@ -128,7 +128,7 @@ namespace ClimateOfFerngill
             CurrWeather.UpdateForNewDay();
             RainTotemUsedToday = false;
             Luna.UpdateForNewDay();
-            DeathTime = 0;
+            DeathTime = null;
             ThreatenedCrops.Clear();
             Luna.HandleMoonAfterWake(InternalUtility.GetBeach());
 
@@ -297,7 +297,7 @@ namespace ClimateOfFerngill
             } */
         }
 
-        private void RemovePlayerCode(string arg1, string[] arg2)
+        private void RemovePlayerCold(string arg1, string[] arg2)
         {
             BadEvents.RemoveCold();
         }
@@ -392,9 +392,6 @@ namespace ClimateOfFerngill
             }
         }
         
-        private bool wasEating = false;
-        private int prevToEatStack = -1;
-
         private void GameEvents_UpdateTick(object sender, EventArgs e)
         {          
             if (AmbientFog)
@@ -510,7 +507,7 @@ namespace ClimateOfFerngill
             CurrWeather.UpdateForNewDay();
             OurIcons = null;
             Luna.Reset();
-            DeathTime = 0;
+            DeathTime = null;
             ThreatenedCrops.Clear();
             GameLoaded = false;
             RainTotemUsedToday = false;
@@ -627,7 +624,8 @@ namespace ClimateOfFerngill
                 if (CurrWeather.GetTodayHigh() > (int)Config.HeatwaveWarning && 
                     !Utility.isFestivalDay(Game1.dayOfMonth, Game1.currentSeason) && (!Game1.isRaining || !Game1.isLightning))
                 {
-                    DeathTime = InternalUtility.GetNewValidTime(e.NewInt, 300, InternalUtility.TIMEADD); //3 hours.
+                    DeathTime = new SDVTime(e.NewInt);
+                    DeathTime = DeathTime + 180;
                     ThreatenedCrops = BadEvents.ProcessHeatwave(Game1.getFarm(), CurrWeather);
 
                     if (ThreatenedCrops.Count > 0)
@@ -644,7 +642,7 @@ namespace ClimateOfFerngill
             }
 
             //killer heatwave crop death time
-            if (Game1.timeOfDay == DeathTime && Config.AllowCropHeatDeath)
+            if (Game1.timeOfDay == DeathTime.ReturnIntTime() && Config.AllowCropHeatDeath)
             {
                 BadEvents.WiltHeatwave(ThreatenedCrops);
             }
@@ -653,7 +651,8 @@ namespace ClimateOfFerngill
              * night time events
              * //////////////////////////////////////////////// */
 
-                if (Luna.CheckForGhostSpawn()) SpawnGhostOffScreen();
+                if (Luna.CheckForGhostSpawn() && Game1.currentLocation is Farm)
+                    InternalUtility.SpawnGhostOffScreen(Dice);
 
             // sanity check if the player hits 0 Stamina ( the game doesn't track this )
             if (Game1.player.Stamina <= 0f)
@@ -662,49 +661,10 @@ namespace ClimateOfFerngill
             }
         }
 
-        public void SpawnGhostOffScreen()
-        {
-            Vector2 zero = Vector2.Zero;
-
-            if (Game1.getFarm() is Farm ourFarm)
-            {
-                switch (Game1.random.Next(4))
-                {
-                    case 0:
-                        zero.X = (float)Dice.Next(ourFarm.map.Layers[0].LayerWidth);
-                        break;
-                    case 1:
-                        zero.X = (float)(ourFarm.map.Layers[0].LayerWidth - 1);
-                        zero.Y = (float)Dice.Next(ourFarm.map.Layers[0].LayerHeight);
-                        break;
-                    case 2:
-                        zero.Y = (float)(ourFarm.map.Layers[0].LayerHeight - 1);
-                        zero.X = (float)Dice.Next(ourFarm.map.Layers[0].LayerWidth);
-                        break;
-                    case 3:
-                        zero.Y = (float)Game1.random.Next(ourFarm.map.Layers[0].LayerHeight);
-                        break;
-                }
-
-                if (Utility.isOnScreen(zero * (float)Game1.tileSize, Game1.tileSize))
-                    zero.X -= (float)Game1.viewport.Width;
-
-                List<NPC> characters = ourFarm.characters;
-                Ghost bat = new Ghost(zero * Game1.tileSize)
-                {
-                    focusedOnFarmers = true,
-                    wildernessFarmMonster = true
-                };
-                characters.Add((NPC)bat);
-
-                if (!Game1.currentLocation.Equals((object)this))
-                    return;
-            }
-        }
-
         private void SaveEvents_AfterLoad(object sender, EventArgs e)
         {
             GameLoaded = true;
+            CustomTVMod.changeAction("weather", HandleWeather); //replace weather
             OurIcons = new Sprites.Icons(Helper.Content);
             //UpdateWeather(CurrWeather);
             Luna.UpdateForNewDay();
@@ -828,7 +788,7 @@ namespace ClimateOfFerngill
             }
 
             //handle forced weather from the game - this function will actually set the weather itself, if true.
-            if (GameWillForceTomorrow(GetTommorowInGame()))
+            if (GameWillForceTomorrow(InternalUtility.GetTommorowInGame()))
             {
                 forceSet = true;
                 if (Config.TooMuchInfo) Monitor.Log("The game is forcing weather tommorow. Setting flag.");
@@ -871,115 +831,27 @@ namespace ClimateOfFerngill
                 Monitor.Log($"Checking if set. Generated Weather: {WeatherHelper.DescWeather(TmrwWeather, Game1.currentSeason)} and set weather is: {WeatherHelper.DescWeather(Game1.weatherForTomorrow, Game1.currentSeason)}");
         }
 
+
         private bool GameWillForceTomorrow(SDVDate Tomorrow)
         {
-            switch (Tomorrow.Season)
+
+            if (Game1.year == 1 && Tomorrow.Season == "spring" && Tomorrow.Day == 3)
             {
-                case "spring":
-                    if (Game1.year == 1 && Tomorrow.Day == 2 || Tomorrow.Day == 4)
-                    {
-                        Game1.weatherForTomorrow = Game1.weather_sunny;
-                        return true;
-                    }
+                Game1.weatherForTomorrow = Game1.weather_rain;
+                return true;
+            }
 
-                    else if (Game1.year == 1 && Tomorrow.Day == 3)
-                    {
-                        Game1.weatherForTomorrow = Game1.weather_rain;
-                        return true;
-                    }
-
-                    else if (Tomorrow.Day == 1)
-                    {
-                        Game1.weatherForTomorrow = Game1.weather_sunny;
-                        return true;
-                    }
-                    else if (Tomorrow.Day == 13 || Tomorrow.Day == 24)
-                    {
-                        Game1.weatherForTomorrow = Game1.weather_festival;
-                        return true;
-                    }
-                    break;
-                case "summer":
-                    if (Tomorrow.Day == 1)
-                    {
-                        Game1.weatherForTomorrow = Game1.weather_sunny;
-                        return true;
-                    }
-                    else if (Tomorrow.Day == 11 || Tomorrow.Day == 28)
-                    {
-                        Game1.weatherForTomorrow = Game1.weather_festival;
-                        return true;
-                    }
-
-                    else if (Tomorrow.Day == 13 || Tomorrow.Day == 25 || Tomorrow.Day == 26)
-                    {
-                        Game1.weatherForTomorrow = Game1.weather_lightning;
-                        return true;
-                    }
-                    break;
-                case "fall":
-                    if (Tomorrow.Day == 1)
-                    {
-                        return true;
-                    }
-                    else if (Tomorrow.Day == 16 || Tomorrow.Day == 27)
-                    {
-                        Game1.weatherForTomorrow = Game1.weather_festival;
-                        return true;
-                    }
-                    break;
-                case "winter":
-                    if (Tomorrow.Day == 1)
-                    {
-                        Game1.weatherForTomorrow = Game1.weather_sunny;
-                        return true;
-                    }
-                    else if (Tomorrow.Day == 8 || Tomorrow.Day == 25)
-                    {
-                        Game1.weatherForTomorrow = Game1.weather_festival;
-                        return true;
-                    }
-                    break;
-                default:
-                    return false;
+            foreach(KeyValuePair<SDVDate, int> entry in InternalUtility.ForceDays)
+            {
+                if (entry.Key == Tomorrow)
+                {
+                    Game1.weatherForTomorrow = entry.Value;
+                    return true;
+                }
             }
 
             return false;
-        }
-
-        private SDVDate GetTommorowInGame()
-        {
-            int day = 1;
-            string season = "spring";
-
-            if (Game1.dayOfMonth == 28)
-            {
-                day = 1;
-                season = GetNextSeason(Game1.currentSeason);
-            }
-            else
-            {
-                season = Game1.currentSeason;
-                day = Game1.dayOfMonth + 1;
-            }
-
-            return new SDVDate(season, day);
-            
-        }
-
-        private string GetNextSeason(string currentSeason)
-        {
-            if (currentSeason == "spring")
-                return "summer";
-            if (currentSeason == "summer")
-                return "fall";
-            if (currentSeason == "fall")
-                return "winter";
-            if (currentSeason == "winter")
-                return "spring";
-
-            return "error";
-        }
+          }
 
 
         #region Menu

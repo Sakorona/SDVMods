@@ -1,16 +1,71 @@
 ﻿using System;
 using Microsoft.Xna.Framework;
 using StardewModdingAPI;
+using NPack;
 using StardewValley;
 using System.Collections.Generic;
 using StardewValley.Locations;
+using StardewValley.Monsters;
 
 namespace ClimateOfFerngill
 {
     static class InternalUtility
     {
-        internal static int TIMEADD = 9001;
-        internal static int TIMESUB = 9002;
+
+       public static Dictionary<SDVDate, int> ForceDays = new Dictionary<SDVDate, int>
+       {
+            { new SDVDate("spring", 1), Game1.weather_sunny },
+            { new SDVDate("spring", 2), Game1.weather_sunny },
+            { new SDVDate("spring", 4), Game1.weather_sunny },
+            { new SDVDate("spring", 13), Game1.weather_festival },
+            { new SDVDate("spring", 24), Game1.weather_festival },
+            { new SDVDate("summer", 1), Game1.weather_sunny },
+            { new SDVDate("summer", 11), Game1.weather_festival },
+            { new SDVDate("summer", 13), Game1.weather_lightning },
+            { new SDVDate("summer", 25), Game1.weather_lightning },
+            { new SDVDate("summer", 26), Game1.weather_lightning },
+            { new SDVDate("summer", 28), Game1.weather_festival },
+            { new SDVDate("fall",  1), Game1.weather_sunny },
+            { new SDVDate("fall", 16), Game1.weather_festival },
+            { new SDVDate("fall", 27), Game1.weather_festival },
+            { new SDVDate("winter",  1), Game1.weather_sunny },
+            { new SDVDate("winter", 8), Game1.weather_festival },
+            { new SDVDate("winter", 25), Game1.weather_festival }
+       };
+
+        public static SDVDate GetTommorowInGame()
+        {
+            int day = 1;
+            string season = "spring";
+
+            if (Game1.dayOfMonth == 28)
+            {
+                day = 1;
+                season = GetNextSeason(Game1.currentSeason);
+            }
+            else
+            {
+                season = Game1.currentSeason;
+                day = Game1.dayOfMonth + 1;
+            }
+
+            return new SDVDate(season, day);
+
+        }
+
+        public static string GetNextSeason(string currentSeason)
+        {
+            if (currentSeason == "spring")
+                return "summer";
+            if (currentSeason == "summer")
+                return "fall";
+            if (currentSeason == "fall")
+                return "winter";
+            if (currentSeason == "winter")
+                return "spring";
+
+            return "error";
+        }
 
         public static void ShakeScreenOnLowStamina()
         {
@@ -106,54 +161,6 @@ namespace ClimateOfFerngill
             return true;
         }
 
-        internal static int GetNewValidTime(int originVal, int changeVal, int mode)
-        {
-            int oHour = 0, oMin = 0, cHour = 0, cMin = 0, retVal = 0;
-
-            oHour = (int)Math.Floor((double)originVal / 100);
-            oMin = (int)Math.Floor((double)originVal % 100);
-
-            cHour = (int)Math.Floor((double)changeVal / 100);
-            cMin = (int)Math.Floor((double)changeVal % 100);
-            
-            //check for boundaries, and original value.
-            if (mode == TIMEADD)
-            {
-                retVal = (oHour + cHour) * 100;
-                int testMin = oMin + cMin;
-                while (testMin > 59)
-                {
-                    retVal += 100;
-                    testMin -= 60;
-
-                    if (testMin < 0) //sanity check.
-                        testMin = 0;
-                }
-
-                retVal = retVal + testMin;
-            }
-            else if (mode == TIMESUB)
-            {
-                retVal = (oHour - cHour) * 100;
-                int testMin = oMin - cMin;
-                while (testMin < -59)
-                {
-                    retVal -= 100;
-                    testMin += 60;
-
-                    if (testMin > 0)
-                        testMin = 0;
-                }
-            }
-
-            if (retVal < 0600)
-                return 0600;
-            if (retVal > 2600)
-                return 2600;
-
-            return retVal; 
-        }
-
         internal static void FaintPlayer()
         {
             Game1.player.Stamina = 0;
@@ -198,6 +205,44 @@ namespace ClimateOfFerngill
                 return SDVSeasons.winter;
 
             return SDVSeasons.none;
+        }
+
+
+        public static void SpawnGhostOffScreen(MersenneTwister Dice)
+        {
+            Vector2 zero = Vector2.Zero;
+
+            if (Game1.getFarm() is Farm ourFarm)
+            {
+                switch (Game1.random.Next(4))
+                {
+                    case 0:
+                        zero.X = (float)Dice.Next(ourFarm.map.Layers[0].LayerWidth);
+                        break;
+                    case 1:
+                        zero.X = (float)(ourFarm.map.Layers[0].LayerWidth - 1);
+                        zero.Y = (float)Dice.Next(ourFarm.map.Layers[0].LayerHeight);
+                        break;
+                    case 2:
+                        zero.Y = (float)(ourFarm.map.Layers[0].LayerHeight - 1);
+                        zero.X = (float)Dice.Next(ourFarm.map.Layers[0].LayerWidth);
+                        break;
+                    case 3:
+                        zero.Y = (float)Game1.random.Next(ourFarm.map.Layers[0].LayerHeight);
+                        break;
+                }
+
+                if (Utility.isOnScreen(zero * (float)Game1.tileSize, Game1.tileSize))
+                    zero.X -= (float)Game1.viewport.Width;
+
+                List<NPC> characters = ourFarm.characters;
+                Ghost bat = new Ghost(zero * Game1.tileSize)
+                {
+                    focusedOnFarmers = true,
+                    wildernessFarmMonster = true
+                };
+                characters.Add((NPC)bat);
+            }
         }
     }
 }
