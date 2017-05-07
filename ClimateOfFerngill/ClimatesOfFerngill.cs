@@ -115,6 +115,8 @@ namespace ClimateOfFerngill
             //update the weather
             UpdateWeather(CurrWeather);
             CurrWeather.SetCurrentWeather();
+            CurrWeather.SetTodayHigh(100);
+            CurrWeather.ForceHeatwave();
 
             if (CurrWeather.IsFog(Game1.currentSeason, Dice)) 
             {

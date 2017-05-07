@@ -66,12 +66,15 @@ namespace ClimateOfFerngill
                 if (Config.AllowCropHeatDeath)
                     DeathTime = new SDVTime(Game1.timeOfDay) + 180;
 
+                if (Config.TooMuchInfo)
+                    Logger.Log("Killing crops.... ");
+
                 foreach (KeyValuePair<Vector2, TerrainFeature> tf in f.terrainFeatures)
                 {
                     if (count >= Config.WiltLimit)
                         break;
 
-                    if (tf.Value is HoeDirt curr)
+                    if (tf.Value is HoeDirt curr && curr.crop != null)
                     {
                         if (Dice.NextDouble() <= Config.ChanceOfWilting)
                         {
@@ -180,6 +183,8 @@ namespace ClimateOfFerngill
                     !Utility.isFestivalDay(Game1.dayOfMonth, Game1.currentSeason) && (!Game1.isRaining || !Game1.isLightning))
                 {
                     ProcessHeatwave(Game1.getFarm());
+                    if (Config.TooMuchInfo)
+                        Logger.Log($"We dried {ThreatenedCrops.Count} crops");
                 }
             }
 
@@ -187,6 +192,8 @@ namespace ClimateOfFerngill
             if (time == DeathTime.ReturnIntTime() && Config.AllowCropHeatDeath)
             {
                 WiltHeatwave();
+                if (Config.TooMuchInfo)
+                    Logger.Log($"We killed {ThreatenedCrops.Count} crops");
             }
         }
     }

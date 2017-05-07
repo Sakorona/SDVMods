@@ -80,8 +80,8 @@ namespace ClimateOfFerngill
             if (IsHeatwave && passedThresholdOutside)
             {
                 if (Config.TooMuchInfo) {
-                    Logger.Log($"Running the heatwave stamina penalty with {passedThresholdOutside} and stamina penalty of {HighStaminaPenalty}");
-                    Logger.Log($"Running with the time to stop assessing the penalty being {Game1.getStartingToGetDarkTime()}");
+                    Logger.Log($"Running the heatwave stamina penalty:{HighStaminaPenalty} until" +
+                        $" {Game1.getStartingToGetDarkTime()}");
                 }
 
                 if (Game1.timeOfDay < Game1.getStartingToGetDarkTime())
@@ -91,9 +91,7 @@ namespace ClimateOfFerngill
             }
 
             if (IsBlizzard && passedThresholdOutside)
-            {
-                if (Config.TooMuchInfo)
-                    Logger.Log($"Running the blizzard stamina penalty with {passedThresholdOutside} and stamina penalty of {HighStaminaPenalty}");
+            {     
                 Game1.player.stamina -= HighStaminaPenalty;
             }
 
@@ -117,6 +115,11 @@ namespace ClimateOfFerngill
                 return true;
             else
                 return false;
+        }
+
+        public void ForceHeatwave()
+        {
+            IsHeatwave = true;
         }
 
         public string GetHazardMessage()
