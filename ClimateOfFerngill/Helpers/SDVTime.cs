@@ -2,7 +2,7 @@
 
 namespace ClimateOfFerngill
 {
-    struct SDVTime
+    public struct SDVTime
     {
         int hour;
         int minute;

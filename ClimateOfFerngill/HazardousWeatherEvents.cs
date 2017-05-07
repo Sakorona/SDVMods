@@ -13,19 +13,16 @@ namespace ClimateOfFerngill
         private IMonitor Logger;
         private ClimateConfig Config;
         private MersenneTwister Dice;
-        private bool HasGottenColdToday;
-
+        private List<Vector2> ThreatenedCrops { get; set; }
+        private SDVTime DeathTime { get; set; }
         private static Dictionary<SDVCrops, double> CropTemps { get; set; }
-
-        //internal trackers
-        private bool IsExhausted;
 
         internal HazardousWeatherEvents(IMonitor modlogger, ClimateConfig modconfig, MersenneTwister moddice)
         {
             Logger = modlogger;
             Config = modconfig;
             Dice = moddice;
-            HasGottenColdToday = false;
+            ThreatenedCrops = new List<Vector2>();
 
             CropTemps = new Dictionary<SDVCrops, double>
             {
@@ -49,103 +46,61 @@ namespace ClimateOfFerngill
 
         internal void UpdateForNewDay()
         {
-            IsExhausted = false;
-            HasGottenColdToday = false;
-        }
-
-        internal bool IsFallCrop(int crop)
-        {
-            if (Enum.IsDefined(typeof(SDVCrops), crop))
-                return true;
-            else
-                return false;
+            ThreatenedCrops.Clear(); //purge the list
         }
 
         internal double CheckCropTolerance(int currentCrop)
         {
-            return CropTemps[(SDVCrops)currentCrop];
+            if (CropTemps.ContainsKey((SDVCrops)currentCrop))
+                return CropTemps[(SDVCrops)currentCrop];
+            else
+                return -100;
         }
 
-        public bool HasACold()
+        public void ProcessHeatwave(Farm f)
         {
-            return this.IsExhausted;
-        }
-
-        public void RemoveCold()
-        {
-            IsExhausted = false;
-            Game1.addHUDMessage(new HUDMessage("You are no longer exhausted!"));
-        }
-
-        public void CatchACold()
-        {
-            //run non specific code first
-            if (Game1.currentLocation.IsOutdoors && Game1.isLightning && !HasGottenColdToday)
-            {
-                double diceChance = Dice.NextDouble();
-                if (Config.TooMuchInfo)
-                    Logger.Log($"The chance of exhaustion is: {diceChance} with the configured chance of {Config.DiseaseChance}");
-
-                if (diceChance < Config.DiseaseChance)
-                {
-                    IsExhausted = true;
-                    InternalUtility.ShowMessage("The storm has caused you to get a cold!");
-                    HasGottenColdToday = true;
-                }
-            }
-
-            //disease code.
-            if (IsExhausted)
-            {
-                Game1.player.stamina = Game1.player.stamina - Config.StaminaPenalty;
-            }
-
-            //alert code - 30% chance of appearing
-            // configured to properly appear now
-            // Fix: 15%
-            if (IsExhausted && Dice.NextDouble() < .15)
-            {
-                InternalUtility.ShowMessage("You have a cold, and feel worn out!");
-            }          
-        }
-
-        public List<Vector2> ProcessHeatwave(Farm f, FerngillWeather CurrWeather)
-        {
-            var ThreatenedCrops = new List<Vector2>();
             int count = 0;
 
             if (f != null)
             {
+                if (Config.AllowCropHeatDeath)
+                    DeathTime = new SDVTime(Game1.timeOfDay) + 180;
+
                 foreach (KeyValuePair<Vector2, TerrainFeature> tf in f.terrainFeatures)
                 {
-                    if (count >= 15)
-                        return ThreatenedCrops;
+                    if (count >= Config.WiltLimit)
+                        break;
 
                     if (tf.Value is HoeDirt curr)
                     {
-                        if (Dice.NextDouble() > .65)
+                        if (Dice.NextDouble() <= Config.ChanceOfWilting)
                         {
-                            if (CurrWeather.GetTodayHigh() >= Config.DeathTemp)
-                            {
                                 ThreatenedCrops.Add(tf.Key);
                                 curr.state = 0;
                                 count++;
-                            }
                         }
                     }
                 }
-            }
 
-            return ThreatenedCrops;
+                if (ThreatenedCrops.Count > 0)
+                {
+                    if (!Config.AllowCropHeatDeath)
+                        InternalUtility.ShowMessage("The extreme heat has caused some of your crops to become dry....!");
+                    else
+                    {
+                        InternalUtility.ShowMessage("The extreme heat has caused some of your crops to dry out. If you don't water them, they'll die!");
+                    }
+                }
+            }
         }
 
-        public void WiltHeatwave(List<Vector2> UnluckyCrops)
+        public void WiltHeatwave()
         {
             //if it's still de watered - kill it.
             Farm f = Game1.getFarm();
             bool cDead = false;
 
-            foreach (Vector2 v in UnluckyCrops)
+            foreach (Vector2 v in ThreatenedCrops)
             {
                 HoeDirt hd = (HoeDirt)f.terrainFeatures[v];
                 if (hd.state == 0)
@@ -161,38 +116,78 @@ namespace ClimateOfFerngill
 
         public void EarlyFrost(FerngillWeather currWeather)
         {
+            if (Config.TooMuchInfo)
+                Logger.Log("Invoking Frost.", LogLevel.Trace);
+
             //If it's not cold enough or not fall (or potentially spring later), return.
-            if (currWeather.GetTodayLow() > 2 && Game1.currentSeason != "fall")
+            if (currWeather.GetTodayLow() > 1.8 && (Game1.currentSeason == "fall" || Game1.currentSeason == "spring"))
                 return;
-            
+
             //iterate through the farm for crops
             Farm f = Game1.getFarm();
             bool cropsKilled = false;
 
-            if (f != null)
+            if (Game1.currentSeason == "spring" && (Game1.year > 1 || Config.DangerousFrost))
             {
-                foreach (KeyValuePair<Vector2, TerrainFeature> tf in f.terrainFeatures)
+                if (Config.TooMuchInfo)
+                    Logger.Log("Invoking Frost - Spring Version.", LogLevel.Trace);
+
+                //spring frosts operate differnetly
+                if (f != null)
                 {
-                    if (tf.Value is HoeDirt curr && curr.crop != null && IsFallCrop(curr.crop.indexOfHarvest)) 
+                    foreach (KeyValuePair<Vector2, TerrainFeature> tf in f.terrainFeatures)
                     {
-                        if (currWeather.GetTodayLow() <= CheckCropTolerance(curr.crop.indexOfHarvest) && 
-                            Dice.NextDouble() < Config.FrostHardiness)
+                        if (tf.Value is HoeDirt curr && curr.crop != null && curr.crop.currentPhase < 2)
                         {
-                            cropsKilled = true;
-                            curr.crop.dead = true;
+                                cropsKilled = true;
+                                curr.crop.dead = true;
                         }
                     }
                 }
             }
-
-            if (cropsKilled)
+            else
             {
-                InternalUtility.ShowMessage("During the night, some crops died to the frost...");
                 if (Config.TooMuchInfo)
-                    Logger.Log("Setting frost test via queued message");
+                    Logger.Log("Invoking Frost - Fall Version.", LogLevel.Trace);
+
+                if (f != null)
+                {
+                    foreach (KeyValuePair<Vector2, TerrainFeature> tf in f.terrainFeatures)
+                    {
+                        if (tf.Value is HoeDirt curr && curr.crop != null)
+                        {
+                            if (currWeather.GetTodayLow() <= CheckCropTolerance(curr.crop.indexOfHarvest) &&
+                                Dice.NextDouble() < Config.FrostHardiness)
+                            {
+                                cropsKilled = true;
+                                curr.crop.dead = true;
+                            }
+                        }
+                    }
+                }
             }
+            if (cropsKilled)
+                InternalUtility.ShowMessage("During the night, some crops died to the frost...");
         }
 
-     
+        internal void CheckForHazardousWeather(int time, double temp)
+        {
+            //heatwave event
+            if (time == 1700)
+            {
+                //the heatwave can't happen if it's a festval day, and if it's rainy or lightening.
+                if (temp > Config.HeatwaveWarning &&
+                    !Utility.isFestivalDay(Game1.dayOfMonth, Game1.currentSeason) && (!Game1.isRaining || !Game1.isLightning))
+                {
+                    ProcessHeatwave(Game1.getFarm());
+                }
+            }
+
+            //killer heatwave crop death time
+            if (time == DeathTime.ReturnIntTime() && Config.AllowCropHeatDeath)
+            {
+                WiltHeatwave();
+            }
+        }
     }
 }

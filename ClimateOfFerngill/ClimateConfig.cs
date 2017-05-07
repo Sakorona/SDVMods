@@ -23,6 +23,9 @@ namespace ClimateOfFerngill
 
         public bool HarshWeather { get; set; }
         public int HeatwaveWarning { get; set; }
+        public int WiltLimit { get; set; }
+        public double ChanceOfWilting { get; set; }
+
         public int DeathTemp { get; set; }
         public bool AllowCropHeatDeath { get; set; }
         public int FrostWarning { get; set; }
@@ -38,6 +41,7 @@ namespace ClimateOfFerngill
         public double WinterFogChance { get; set; }
 
         public bool AllowDarkFog { get; set; }
+        public bool DangerousFrost { get; set; }
         
         public ClimateConfig()
         {
@@ -68,11 +72,14 @@ namespace ClimateOfFerngill
 
             //set harsh weather events - currently unused.
             HarshWeather = false;
+            WiltLimit = 25;
+            ChanceOfWilting = .5;
             HeatwaveWarning = 37; //98.6F 
             FrostWarning = 2; //35.6F
             FrostHardiness = .45; // 55% of all crops will survive the frost wave.
             DeathTemp = 41; //105.8F
             AllowCropHeatDeath = false;
+            DangerousFrost = false;
             AllowDarkFog = true;
 
             //moon options

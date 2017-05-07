@@ -1,4 +1,8 @@
-﻿namespace ClimateOfFerngill
+﻿using NPack;
+using StardewModdingAPI;
+using StardewValley;
+
+namespace ClimateOfFerngill
 {
     public class FerngillWeather
     {
@@ -6,17 +10,73 @@
         private double TodayLow { get; set; }
         private SDVWeather CurrentWeather { get; set; }
         private ClimateConfig Config { get; set; }
-
+        private MersenneTwister pRNG;
+        private IMonitor Logger;
+        private bool IsExhausted;
+        private bool HasGottenColdToday;
         public bool IsBlizzard { get; private set; }
         public bool IsHeatwave { get; private set; }
         public bool IsFrost { get; private set; }
 
-        public FerngillWeather(ClimateConfig config)
+        public FerngillWeather(ClimateConfig config, MersenneTwister Dice, IMonitor log)
         {
             IsBlizzard = false;
             IsHeatwave = false;
             IsFrost = false;
+            HasGottenColdToday = false;
+            IsExhausted = false;
             Config = config;
+            Logger = log;
+            pRNG = Dice;
+        }
+
+        public void CheckForHazardConditions(MersenneTwister Dice)
+        {
+            CheckHeatwave();
+            CheckFrost();
+        }
+
+        public bool HasACold()
+        {
+            return this.IsExhausted;
+        }
+
+        public void RemoveCold()
+        {
+            IsExhausted = false;
+            Game1.addHUDMessage(new HUDMessage("You are no longer exhausted!"));
+        }
+
+        public void CatchACold()
+        {
+            //run non specific code first
+            if (Game1.currentLocation.IsOutdoors && Game1.isLightning && !HasGottenColdToday)
+            {
+                double diceChance = pRNG.NextDouble();
+                if (Config.TooMuchInfo)
+                    Logger.Log($"The chance of exhaustion is: {diceChance} with the configured chance of {Config.DiseaseChance}");
+
+                if (diceChance < Config.DiseaseChance)
+                {
+                    IsExhausted = true;
+                    InternalUtility.ShowMessage("The storm has caused you to get a cold!");
+                    HasGottenColdToday = true;
+                }
+            }
+
+            //disease code.
+            if (IsExhausted)
+            {
+                Game1.player.stamina = Game1.player.stamina - Config.StaminaPenalty;
+            }
+
+            //alert code - 30% chance of appearing
+            // configured to properly appear now
+            // Fix: 15%
+            if (IsExhausted && pRNG.NextDouble() < .15)
+            {
+                InternalUtility.ShowMessage("You have a cold, and feel worn out!");
+            }
         }
 
         public bool IsDangerousWeather()
@@ -78,38 +138,33 @@
             return this.TodayLow;
         }
 
-        public bool SetBlizzard()
-        {
-            
+        public bool CheckBlizzard(MersenneTwister Dice)
+        {            
             if (CurrentWeather == SDVWeather.Snow)
             { 
                 IsBlizzard = true;
                 return true;
             } 
-
-            return false;
-            
+            return false;            
         }
 
-        public bool SetHeatwave()
+        public bool CheckHeatwave()
         {
             if (TodayHigh > Config.HeatwaveWarning)
             {
                 IsHeatwave = true;
                 return true;
             }
-
             return false;
         }
 
-        public bool SetFrost()
+        public bool CheckFrost()
         {
             if (TodayLow < Config.FrostWarning)
             {
                 IsFrost = true;
                 return true;
             }
-
             return false;
         }
 
@@ -124,6 +179,11 @@
             TodayLow = TodayHigh - temp;
         }
 
+        public SDVWeather CurrentConditions()
+        {
+            return CurrentWeather;
+        }
+
         public void UpdateForNewDay()
         {
             Reset();
@@ -131,12 +191,96 @@
 
         public void Reset()
         {
+            HasGottenColdToday = false;
             IsBlizzard = false;
             IsHeatwave = false;
             IsFrost = false;
+            IsExhausted = false;
             CurrentWeather = SDVWeather.None;
             TodayHigh = -1000;
             TodayLow = -1000;
+        }
+
+
+        public bool IsFog(string season, MersenneTwister Dice)
+        {
+            //set up fog.
+            double FogChance = 0;
+            switch (season)
+            {
+                case "spring":
+                    FogChance = Config.SpringFogChance;
+                    break;
+                case "summer":
+                    FogChance = Config.SummerFogChance;
+                    break;
+                case "fall":
+                    FogChance = Config.AutumnFogChance;
+                    break;
+                case "winter":
+                    FogChance = Config.WinterFogChance;
+                    break;
+                default:
+                    FogChance = 0;
+                    break;
+            }
+
+            
+            if (Dice.NextDouble() < FogChance && (!Game1.isDebrisWeather && !Game1.isRaining))
+            {
+                return true;
+            }
+            else
+                return false;
+        }
+
+        public void SetCurrentWeather()
+        {
+            if (Game1.isRaining)
+            {
+                if (Game1.isLightning)
+                    CurrentWeather = SDVWeather.Stormy;
+                else
+                    CurrentWeather = SDVWeather.Rainy;
+            }
+
+            else if (Game1.isSnowing)
+                CurrentWeather = SDVWeather.Snow;
+            else if (Game1.isDebrisWeather)
+                CurrentWeather = SDVWeather.Debris;
+
+            else if (Game1.weddingToday == true)
+                CurrentWeather = SDVWeather.Wedding;
+
+            else if (Utility.isFestivalDay(Game1.dayOfMonth, Game1.currentSeason))
+                CurrentWeather = SDVWeather.Festival;
+            else
+                CurrentWeather = SDVWeather.Sunny;
+        }
+
+        public SDVTime GetFogExpireTime(MersenneTwister dice)
+        {
+            double FogTimer = dice.NextDouble();
+            SDVTime FogExpirTime = new SDVTime(1200);
+
+            if (FogTimer > .75 && FogTimer <= .90)
+            {
+                FogExpirTime = new SDVTime(1120);
+            }
+            else if (FogTimer > .55 && FogTimer <= .75)
+            {
+                FogExpirTime = new SDVTime(1030);
+            }
+            else if (FogTimer > .30 && FogTimer <= .55)
+            {
+                FogExpirTime = new SDVTime(930);
+            }
+            else if (FogTimer <= .30)
+            {
+                FogExpirTime = new SDVTime(820);
+            }
+
+            return FogExpirTime;
         }
 
         public override string ToString()
@@ -154,5 +298,7 @@
 
             return s;
         }
+
+
     }
 }

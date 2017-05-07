@@ -191,26 +191,6 @@ namespace ClimateOfFerngill
             return Game1.getLocationFromName("Beach") as Beach;
         }
 
-        public static SDVWeather GetTodayWeather()
-        {
-            if (Game1.isRaining)
-            {
-                if (Game1.isLightning) return SDVWeather.Stormy;
-                else return SDVWeather.Rainy;
-            }
-
-            if (Game1.isSnowing) return SDVWeather.Snow;
-            if (Game1.isDebrisWeather) return SDVWeather.Debris;
-
-            if (Game1.weddingToday == true)
-                return SDVWeather.Wedding;
-
-            if (Utility.isFestivalDay(Game1.dayOfMonth, Game1.currentSeason))
-                return SDVWeather.Festival;
-
-            return SDVWeather.Sunny;
-        }
-
         internal static SDVSeasons GetSeason(string currentSeason)
         {
             if (currentSeason == "spring")

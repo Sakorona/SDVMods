@@ -27,34 +27,15 @@ namespace ClimateOfFerngill
         internal FerngillWeather CurrWeather { get; set; }
         public SDVMoon Luna { get; set; }
         private Sprites.Icons OurIcons { get; set; }
-
-        //trackers
         private bool GameLoaded;
         private bool RainTotemUsedToday;
         private SDVWeather EndWeather;
-
-        //event fields
-        private List<Vector2> ThreatenedCrops { get; set; }
-        private SDVTime DeathTime { get; set; }
-
         public MersenneTwister Dice;
         private IClickableMenu PreviousMenu;
         private HazardousWeatherEvents BadEvents;
-
-        //chances of specific weathers
-        public FerngillClimate WeatherModel;
-
-        //fog elements
-        private Rectangle FogSource = new Microsoft.Xna.Framework.Rectangle(640, 0, 64, 64);
-        private bool AmbientFog;
-        private Vector2 FogPosition;
-        private Color FogColor;
-        private float FogAlpha;
-        private SDVTime FogExpirTime;
-        private bool FogTypeDark;
-
-        //snow elements
-        private Vector2 snowPos;
+        public FerngillClimate WeatherModel;  //chances of specific weathers
+        private FerngillFog OurFog; //fog elements
+        private Vector2 snowPos; //snow elements
 
         //eating code
         private bool wasEating = false;
@@ -66,9 +47,8 @@ namespace ClimateOfFerngill
         {
             Dice = new MersenneTwister();
             Config = helper.ReadConfig<ClimateConfig>();
-            CurrWeather = new FerngillWeather(Config);
-            ThreatenedCrops = new List<Vector2>();
-            FogExpirTime = new SDVTime(600); //avoid NRE.
+            CurrWeather = new FerngillWeather(Config, Dice, Monitor);
+            OurFog = new FerngillFog();
 
             Luna = new SDVMoon(Monitor, Config, Dice);
             BadEvents = new HazardousWeatherEvents(Monitor, Config, Dice);
@@ -127,44 +107,20 @@ namespace ClimateOfFerngill
             CurrWeather.UpdateForNewDay();
             RainTotemUsedToday = false;
             Luna.UpdateForNewDay();
-            ThreatenedCrops.Clear();
             Luna.HandleMoonAfterWake(InternalUtility.GetBeach());
 
             //update the weather
             UpdateWeather(CurrWeather);
+            CurrWeather.SetCurrentWeather();
 
-            //set up fog.
-            double FogChance = 0;
-            switch (Game1.currentSeason)
+            if (CurrWeather.IsFog(Game1.currentSeason, Dice)) 
             {
-                case "spring":
-                    FogChance = Config.SpringFogChance;
-                    break;
-                case "summer":
-                    FogChance = Config.SummerFogChance;
-                    break;
-                case "fall":
-                    FogChance = Config.AutumnFogChance;
-                    break;
-                case "winter":
-                    FogChance = Config.WinterFogChance;
-                    break;
-                default:
-                    FogChance = 0;
-                    break;
-            }
-
-
-            if (Dice.NextDouble() < FogChance && (!Game1.isDebrisWeather && !Game1.isRaining))
-            {
-                this.FogAlpha = .55f;
-                this.AmbientFog = true;
-                this.FogColor = Color.White * 1.35f;
+                OurFog.CreateFog(FogAlpha: .55f, AmbientFog: true, FogColor: (Color.White * 1.35f));
                 Game1.globalOutdoorLighting = .5f;
 
                 if (Dice.NextDouble() < .15)
                 {
-                    FogTypeDark = true;
+                    OurFog.IsDarkFog();
                     Game1.outdoorLight = new Color(227, 222, 211);
                 }
                 else
@@ -172,32 +128,10 @@ namespace ClimateOfFerngill
                     Game1.outdoorLight = new Color(179, 176, 171);
                 }
 
-                double FogTimer = Dice.NextDouble();
-                
-                if (FogTimer > .90)
-                {
-                    //Last for ~7 hours. This means it expires at 1300.
-                    FogExpirTime = new SDVTime(1300);
-                }
-                else if (FogTimer > .75 && FogTimer <= .90)
-                {
-                    FogExpirTime = new SDVTime(1120);
-                }
-                else if (FogTimer > .55 && FogTimer <= .75)
-                {
-                    FogExpirTime = new SDVTime(1030);
-                }
-                else if (FogTimer > .30 && FogTimer <= .55)
-                {
-                    FogExpirTime = new SDVTime(930);
-                }
-                else if (FogTimer <= .30)
-                {
-                    FogExpirTime = new SDVTime(820);
-                }
-                
-                if (Config.TooMuchInfo)
-                    Monitor.Log($"It'll be a foggy morning, expiring at {FogExpirTime}");
+               OurFog.FogExpirTime = CurrWeather.GetFogExpireTime(Dice);
+               
+               if (Config.TooMuchInfo)
+                    Monitor.Log($"It'll be a foggy morning, expiring at {OurFog.FogExpirTime}");
 
             }
         }
@@ -213,16 +147,16 @@ namespace ClimateOfFerngill
             CustomTVMod.showProgram(WeatherCaster, Game1.parseText(GetWeatherForecast()), CustomTVMod.endProgram);
         }
 
-
         private void GraphicsEvents_OnPostRenderEvent(object sender, EventArgs e)
         {
             if (GameLoaded && Game1.currentLocation.IsOutdoors)
             {
-                DrawFog();
+                OurFog.DrawFog();
             }
 
             //snow handling
-            if (GameLoaded && Game1.currentLocation.isOutdoors && !(Game1.currentLocation is Desert))
+            if (GameLoaded && Game1.currentLocation.isOutdoors && !(Game1.currentLocation is Desert) 
+                && CurrWeather.IsBlizzard)
             {
                 DrawSnow();
             }
@@ -230,75 +164,47 @@ namespace ClimateOfFerngill
 
         private void DrawSnow()
         {
-            if (CurrWeather.IsBlizzard)
-            { 
-                snowPos = Game1.updateFloatingObjectPositionForMovement(snowPos, new Vector2(Game1.viewport.X, Game1.viewport.Y),
-                          Game1.previousViewportPosition, -1f);
-                snowPos.X = snowPos.X % (16 * Game1.pixelZoom);
-                Vector2 position = new Vector2();
-                float num1 = -16 * Game1.pixelZoom + snowPos.X % (16 * Game1.pixelZoom);
-                while ((double)num1 < Game1.viewport.Width)
-                {
-                    float num2 = -16 * Game1.pixelZoom + snowPos.Y % (16 * Game1.pixelZoom);
-                    while (num2 < (double)Game1.viewport.Height)
-                    {
-                        position.X = (int)num1;
-                        position.Y = (int)num2;
-                        Game1.spriteBatch.Draw(Game1.mouseCursors, position, new Microsoft.Xna.Framework.Rectangle?
-                            (new Microsoft.Xna.Framework.Rectangle
-                            (368 + (int)((Game1.currentGameTime.TotalGameTime.TotalMilliseconds + 150) % 1200.0) / 75 * 16, 192, 16, 16)),
-                            Color.White * Game1.options.snowTransparency, 0.0f, Vector2.Zero,
-                            Game1.pixelZoom + 1f / 1000f, SpriteEffects.None, 1f);
-                        num2 += 16 * Game1.pixelZoom;
-                    }
-                    num1 += 16 * Game1.pixelZoom;
-                }
-
-             }
-        }
-
-        private void DrawFog()
-        {
-            if (FogAlpha > 0.0 || AmbientFog)
+            snowPos = Game1.updateFloatingObjectPositionForMovement(snowPos, new Vector2(Game1.viewport.X, Game1.viewport.Y),
+                        Game1.previousViewportPosition, -1f);
+            snowPos.X = snowPos.X % (16 * Game1.pixelZoom);
+            Vector2 position = new Vector2();
+            float num1 = -16 * Game1.pixelZoom + snowPos.X % (16 * Game1.pixelZoom);
+            while ((double)num1 < Game1.viewport.Width)
             {
-                Vector2 position = new Vector2();
-                float num1 = -64 * Game1.pixelZoom + (int)(FogPosition.X % (double)(64 * Game1.pixelZoom));
-                while (num1 < (double)Game1.graphics.GraphicsDevice.Viewport.Width)
+                float num2 = -16 * Game1.pixelZoom + snowPos.Y % (16 * Game1.pixelZoom);
+                while (num2 < (double)Game1.viewport.Height)
                 {
-                    float num2 = -64 * Game1.pixelZoom + (int)(FogPosition.Y % (double)(64 * Game1.pixelZoom));
-                    while ((double)num2 < Game1.graphics.GraphicsDevice.Viewport.Height)
-                    {
-                        position.X = (int)num1;
-                        position.Y = (int)num2;
-                        Game1.spriteBatch.Draw(Game1.mouseCursors, position, new Microsoft.Xna.Framework.Rectangle?
-                            (FogSource), FogAlpha > 0.0 ? FogColor * FogAlpha : Color.Black * 0.95f, 0.0f, Vector2.Zero, Game1.pixelZoom + 1f / 1000f, SpriteEffects.None, 1f);
-                        num2 += 64 * Game1.pixelZoom;
-                    }
-                    num1 += 64 * Game1.pixelZoom;
+                    position.X = (int)num1;
+                    position.Y = (int)num2;
+                    Game1.spriteBatch.Draw(Game1.mouseCursors, position, new Microsoft.Xna.Framework.Rectangle?
+                        (new Microsoft.Xna.Framework.Rectangle
+                        (368 + (int)((Game1.currentGameTime.TotalGameTime.TotalMilliseconds + 150) % 1200.0) / 75 * 16, 192, 16, 16)),
+                        Color.White * Game1.options.snowTransparency, 0.0f, Vector2.Zero,
+                        Game1.pixelZoom + 1f / 1000f, SpriteEffects.None, 1f);
+                    num2 += 16 * Game1.pixelZoom;
                 }
-            }
+                num1 += 16 * Game1.pixelZoom;
+            } 
         }
 
         private void VerifyBundledWeatherFiles()
         {
-           /* if (!File.Exists(Path.Combine(Helper.DirectoryPath, "weather/normal.json")))
+            /* if (!File.Exists(Path.Combine(Helper.DirectoryPath, "weather/normal.json")))
             {
                 FerngillClimate NormalClimate = new FerngillClimate();
                 NormalClimate.ClimateSequences.Add(
                     new FerngillClimateTimeSpan(Season: "spring", BeginDay: 1, EndDay: 9, FrozenPrecip: false,
-                        LowTempBase: 4, LowTempChange: .725, LowTempVariable: .5, HighTempBase: 8.5, HighTempChange: .745,
+                        LowTempBase: 3, LowTempChange: .725, LowTempVariable: .85, HighTempBase: 8.5, HighTempChange: .745,
                         HighTempVariable: .65, BaseRainChance: .55, RainChange: -.024, RainVariability: .001, BaseStormChance: .145, StormChange: 0,
-                        StormVariability: .01, BaseDebrisChance: .25, DebrisChange: 0, AllowDebris: true));
-                NormalClimate.ClimateSequences.Add(
-                    new FerngillClimateTimeSpan(Season: "spring", BeginDay: 10, EndDay: 18, FrozenPrecip: false,
-                        LowTempBase:));
+                        StormVariability: .01, BaseDebrisChance: .25, DebrisChange: 0));
+
                 Helper.WriteJsonFile<FerngillClimate>(Path.Combine(Helper.DirectoryPath, "weather/normal.json"), NormalClimate);
             } */
-        }
+        } 
 
         private void RemovePlayerCold(string arg1, string[] arg2)
         {
-            BadEvents.RemoveCold();
+            CurrWeather.RemoveCold();
         }
 
         private void WeatherChangeFromConsole(string arg1, string[] arg2)
@@ -344,6 +250,8 @@ namespace ClimateOfFerngill
             }
 
             Game1.updateWeatherIcon();
+            CurrWeather.SetCurrentWeather(); //update mod internals
+
             if (Config.TooMuchInfo)
                 Monitor.Log(InternalUtility.PrintCurrentWeatherStatus());
 
@@ -359,55 +267,41 @@ namespace ClimateOfFerngill
 
             string ChosenWeather = arg2[0];
             switch(ChosenWeather)
-                    {
-                        case "rain":
-                            Game1.weatherForTomorrow = Game1.weather_rain;
-                            Monitor.Log("The weather tommorow is now rain", LogLevel.Info);
-                            break;
-                        case "storm":
-                            Game1.weatherForTomorrow = Game1.weather_lightning;
-                            Monitor.Log("The weather tommorow is now storm", LogLevel.Info);
-                            break;
-                        case "snow":
-                            Game1.weatherForTomorrow = Game1.weather_snow;
-                            Monitor.Log("The weather tommorow is now snow", LogLevel.Info);
-                            break;
-                        case "debris":
-                            Game1.weatherForTomorrow = Game1.weather_debris;
-                            Monitor.Log("The weather tommorow is now debris", LogLevel.Info);
-                            break;
-                        case "festival":
-                            Game1.weatherForTomorrow = Game1.weather_festival;
-                            Monitor.Log("The weather tommorow is now festival", LogLevel.Info);
-                            break;
-                        case "sun":
-                            Game1.weatherForTomorrow = Game1.weather_sunny;
-                            Monitor.Log("The weather tommorow is now sun", LogLevel.Info);
-                            break;
-                        case "wedding":
-                            Game1.weatherForTomorrow = Game1.weather_wedding;
-                            Monitor.Log("The weather tommorow is now wedding", LogLevel.Info);
-                            break;
+            {
+                case "rain":
+                    Game1.weatherForTomorrow = Game1.weather_rain;
+                    Monitor.Log("The weather tommorow is now rain", LogLevel.Info);
+                    break;
+                case "storm":
+                    Game1.weatherForTomorrow = Game1.weather_lightning;
+                    Monitor.Log("The weather tommorow is now storm", LogLevel.Info);
+                    break;
+                case "snow":
+                    Game1.weatherForTomorrow = Game1.weather_snow;
+                    Monitor.Log("The weather tommorow is now snow", LogLevel.Info);
+                    break;
+                case "debris":
+                    Game1.weatherForTomorrow = Game1.weather_debris;
+                    Monitor.Log("The weather tommorow is now debris", LogLevel.Info);
+                    break;
+                case "festival":
+                    Game1.weatherForTomorrow = Game1.weather_festival;
+                    Monitor.Log("The weather tommorow is now festival", LogLevel.Info);
+                    break;
+                case "sun":
+                    Game1.weatherForTomorrow = Game1.weather_sunny;
+                    Monitor.Log("The weather tommorow is now sun", LogLevel.Info);
+                    break;
+                case "wedding":
+                    Game1.weatherForTomorrow = Game1.weather_wedding;
+                    Monitor.Log("The weather tommorow is now wedding", LogLevel.Info);
+                    break;
             }
         }
         
         private void GameEvents_UpdateTick(object sender, EventArgs e)
-        {          
-            if (AmbientFog)
-            {
-                FogPosition = Game1.updateFloatingObjectPositionForMovement(FogPosition, 
-                    new Vector2(Game1.viewport.X, Game1.viewport.Y), Game1.previousViewportPosition, -1f);
-                FogPosition.X = (FogPosition.X + 0.5f) % (64 * Game1.pixelZoom);
-                FogPosition.Y = (FogPosition.Y + 0.5f) % (64 * Game1.pixelZoom);
-            }
-
-            if (CurrWeather.IsBlizzard)
-            {
-                snowPos = Game1.updateFloatingObjectPositionForMovement(snowPos,
-                    new Vector2(Game1.viewport.X, Game1.viewport.Y), Game1.previousViewportPosition, -1f);
-                snowPos.X = (FogPosition.X + 0.5f) % (64 * Game1.pixelZoom);
-                snowPos.Y = (FogPosition.Y + 0.5f) % (64 * Game1.pixelZoom);
-            }
+        {
+            OurFog.MoveFog();
 
             if (Game1.isEating != wasEating)
             {
@@ -422,12 +316,12 @@ namespace ClimateOfFerngill
 
                         if (Game1.player.itemToEat.parentSheetIndex == 351 && Game1.isEating)
                         {
-                            if (BadEvents.HasACold())
+                            if (CurrWeather.HasACold())
                             {
                                 if (Config.TooMuchInfo)
                                     Monitor.Log("Removing the cold after having drunk a muscle relaxant");
 
-                                BadEvents.RemoveCold();
+                                CurrWeather.RemoveCold();
                             }
                         }
                     }
@@ -448,7 +342,6 @@ namespace ClimateOfFerngill
 
         private void GameEvents_QuarterSecondTick(object sender, EventArgs e)
         {
-
             if (Config.StormTotem)
             {
                 if (Game1.weatherForTomorrow != (int)EndWeather && !RainTotemUsedToday)
@@ -505,12 +398,10 @@ namespace ClimateOfFerngill
             BadEvents.UpdateForNewDay();
             CurrWeather.UpdateForNewDay();
             OurIcons = null;
+            OurFog.Reset();
             Luna.Reset();
-            DeathTime = new SDVTime();
-            ThreatenedCrops.Clear();
             GameLoaded = false;
             RainTotemUsedToday = false;
-            AmbientFog = false;
         }
 
         private void ReceiveKeyPress(Keys key, Keys config)
@@ -542,122 +433,34 @@ namespace ClimateOfFerngill
         {
             //run all night time processing. Events do their own checking if enabled
             if (Config.HarshWeather)
-            {
-                BadEvents.EarlyFrost(CurrWeather);
-            }
+               BadEvents.EarlyFrost(CurrWeather);
 
             Luna.HandleMoonBeforeSleep(Game1.getFarm()); //run lunar events           
         }
        
         private void TimeEvents_TimeOfDayChanged(object sender, EventArgsIntChanged e)
         {
-            /*
-                Game1.globalOutdoorLighting = .98f;
-                Game1.outdoorLight = new Color(240, 229, 206);
-             */
-            if (FogTypeDark)
-            {
-                if (e.NewInt == (FogExpirTime - 30).ReturnIntTime())
-                {
-                    Game1.globalOutdoorLighting = .98f;
-                    Game1.outdoorLight = new Color(200, 198, 196);
-                }
-
-                if (e.NewInt == (FogExpirTime - 20).ReturnIntTime())
-                {
-                    Game1.globalOutdoorLighting = .99f;
-                    Game1.outdoorLight = new Color(179, 176, 171);
-                }
-
-                if (e.NewInt == (FogExpirTime - 10).ReturnIntTime())
-                {
-                    Game1.globalOutdoorLighting = 1f;
-                    Game1.outdoorLight = new Color(110, 109, 107);
-                }
-            }
-            else
-            {
-
-                if (e.NewInt == (FogExpirTime - 30).ReturnIntTime())
-                {
-                    Game1.globalOutdoorLighting = .80f;
-                    Game1.outdoorLight = new Color(168, 142, 99);
-                }
-
-                if (e.NewInt == (FogExpirTime - 20).ReturnIntTime())
-                {
-                    Game1.globalOutdoorLighting = .92f;
-                    Game1.outdoorLight = new Color(117, 142, 99);
-
-                }
-
-                if (e.NewInt == (FogExpirTime - 10).ReturnIntTime())
-                {
-                    Game1.globalOutdoorLighting = .96f;
-                    Game1.outdoorLight = new Color(110, 109, 107);
-                }
-            }
-
-            //it helps if you implement the fog cutoff!
-            if (e.NewInt == FogExpirTime.ReturnIntTime())
-            {
-                this.AmbientFog = false;
-                Game1.globalOutdoorLighting = 1f;
-                Game1.outdoorLight = Color.White;
-                FogAlpha = 0f; //fixes it lingering.
-            }
+            OurFog.UpdateFog(e.NewInt);
 
             if (Config.StormyPenalty)
-                BadEvents.CatchACold();
+                CurrWeather.CatchACold();
 
             //specific time stuff
             if (e.NewInt == 610)
-            {
                 CurrWeather.MessageForDangerousWeather();
-            }
 
-            //heatwave event
-            if (e.NewInt == 1700)
-            {
-                //the heatwave can't happen if it's a festval day, and if it's rainy or lightening.
-                if (CurrWeather.GetTodayHigh() > (int)Config.HeatwaveWarning && 
-                    !Utility.isFestivalDay(Game1.dayOfMonth, Game1.currentSeason) && (!Game1.isRaining || !Game1.isLightning))
-                {
-                    DeathTime = new SDVTime(e.NewInt);
-                    DeathTime = DeathTime + 180;
-                    ThreatenedCrops = BadEvents.ProcessHeatwave(Game1.getFarm(), CurrWeather);
-
-                    if (ThreatenedCrops.Count > 0)
-                    {
-                        if (!Config.AllowCropHeatDeath)
-                            InternalUtility.ShowMessage("The extreme heat has caused some of your crops to become dry....!");
-                        else
-                        {
-                            InternalUtility.ShowMessage("The extreme heat has caused some of your crops to dry out. If you don't water them, they'll die!");
-                        }
-                    }
-                    
-                }
-            }
-
-            //killer heatwave crop death time
-            if (Game1.timeOfDay == DeathTime.ReturnIntTime() && Config.AllowCropHeatDeath)
-            {
-                BadEvents.WiltHeatwave(ThreatenedCrops);
-            }
+            BadEvents.CheckForHazardousWeather(e.NewInt, CurrWeather.GetTodayHigh());
 
             /* /////////////////////////////////////////////////
              * night time events
              * //////////////////////////////////////////////// */
 
-                if (Luna.CheckForGhostSpawn() && Game1.currentLocation is Farm)
-                    InternalUtility.SpawnGhostOffScreen(Dice);
+            if (Luna.CheckForGhostSpawn() && Game1.currentLocation is Farm)
+                InternalUtility.SpawnGhostOffScreen(Dice);
 
             // sanity check if the player hits 0 Stamina ( the game doesn't track this )
             if (Game1.player.Stamina <= 0f)
-            {
                 InternalUtility.FaintPlayer();
-            }
         }
 
         private void SaveEvents_AfterLoad(object sender, EventArgs e)
@@ -718,7 +521,7 @@ namespace ClimateOfFerngill
                 if (Config.TooMuchInfo) Monitor.Log(tvText);
 
                 //today weather
-                tvText = tvText + WeatherHelper.GetWeatherDesc(Dice, InternalUtility.GetTodayWeather(), true, Monitor, Config.TooMuchInfo);
+                tvText = tvText + WeatherHelper.GetWeatherDesc(Dice, CurrWeather.CurrentConditions(), true, Monitor, Config.TooMuchInfo);
 
                 //get WeatherForTommorow and set text
                 tvText = tvText + "#Tommorow, ";
@@ -831,7 +634,6 @@ namespace ClimateOfFerngill
 
         private bool GameWillForceTomorrow(SDVDate Tomorrow)
         {
-
             if (Game1.year == 1 && Tomorrow.Season == "spring" && Tomorrow.Day == 3)
             {
                 Game1.weatherForTomorrow = Game1.weather_rain;
@@ -848,8 +650,7 @@ namespace ClimateOfFerngill
             }
 
             return false;
-          }
-
+        }
 
         #region Menu
         private void ToggleMenu()
