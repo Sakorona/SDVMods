@@ -127,7 +127,6 @@ namespace ClimateOfFerngill
             CurrWeather.UpdateForNewDay();
             RainTotemUsedToday = false;
             Luna.UpdateForNewDay();
-            DeathTime = null;
             ThreatenedCrops.Clear();
             Luna.HandleMoonAfterWake(InternalUtility.GetBeach());
 
@@ -506,7 +505,7 @@ namespace ClimateOfFerngill
             CurrWeather.UpdateForNewDay();
             OurIcons = null;
             Luna.Reset();
-            DeathTime = null;
+            DeathTime = new SDVTime();
             ThreatenedCrops.Clear();
             GameLoaded = false;
             RainTotemUsedToday = false;
