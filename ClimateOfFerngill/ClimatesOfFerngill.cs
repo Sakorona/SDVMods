@@ -96,8 +96,9 @@ namespace ClimateOfFerngill
             ControlEvents.KeyPressed += (sender, e) => this.ReceiveKeyPress(e.KeyPressed, this.Config.Keyboard);
             MenuEvents.MenuClosed += (sender, e) => this.ReceiveMenuClosed(e.PriorMenu);
 
+            //CustomTVMod.changeAction("Weather", HandleWeather);
             CustomTVMod.removeChannel("Weather");
-            CustomTVMod.addChannel("CustomWeather", "Weather Channel", HandleWeather);
+            CustomTVMod.addChannel("weather", "Weather Report", HandleWeather);
 
             VerifyBundledWeatherFiles();
 
