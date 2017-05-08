@@ -77,6 +77,7 @@
     <Compile Include="Common\InternalUtility.cs" />
     <Compile Include="Sprites.cs" />
     <Compile Include="Helpers\WeatherHelper.cs" />
+    <Compile Include="TVStrings.cs" />
     <Compile Include="WeatherMenu.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -88,6 +89,9 @@
     </None>
     <None Include="packages.config" />
     <None Include="README.md" />
+    <None Include="TvStrings.en.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <Content Include="climatesheet2.png">

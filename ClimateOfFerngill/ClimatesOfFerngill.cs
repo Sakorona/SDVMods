@@ -30,6 +30,7 @@ namespace ClimateOfFerngill
         private bool GameLoaded;
         private bool RainTotemUsedToday;
         private SDVWeather EndWeather;
+        internal TVStrings ourText;
         public MersenneTwister Dice;
         private IClickableMenu PreviousMenu;
         private HazardousWeatherEvents BadEvents;
@@ -52,6 +53,13 @@ namespace ClimateOfFerngill
             Config = helper.ReadConfig<ClimateConfig>();
             CurrWeather = new FerngillWeather(Config, Dice, Monitor);
             OurFog = new FerngillFog();
+
+            ourText = helper.ReadJsonFile<TVStrings>("TvStrings.en.json");
+
+            if (ourText is null)
+                Monitor.Log("Our Text is null!", LogLevel.Error);
+            if (ourText.springClearText is null)
+                throw new Exception("The deserialiation failed");
 
             Luna = new SDVMoon(Monitor, Config, Dice);
             BadEvents = new HazardousWeatherEvents(Monitor, Config, Dice);
@@ -115,8 +123,6 @@ namespace ClimateOfFerngill
             //update the weather
             UpdateWeather(CurrWeather);
             CurrWeather.SetCurrentWeather();
-            CurrWeather.SetTodayHigh(100);
-            CurrWeather.ForceHeatwave();
 
             if (CurrWeather.IsFog(Game1.currentSeason, Dice)) 
             {
@@ -553,14 +559,14 @@ namespace ClimateOfFerngill
                 if (Config.TooMuchInfo) Monitor.Log(tvText);
 
                 //today weather
-                tvText = tvText + WeatherHelper.GetWeatherDesc(Dice, CurrWeather.CurrentConditions(), true, Monitor, Config.TooMuchInfo);
+                tvText = tvText + WeatherHelper.GetWeatherDesc(ourText,Dice, CurrWeather.CurrentConditions(), true, Monitor, Config.TooMuchInfo);
 
                 //get WeatherForTommorow and set text
                 tvText = tvText + "#Tommorow, ";
             }
 
             //tommorow weather
-            tvText = tvText + WeatherHelper.GetWeatherDesc(Dice, (SDVWeather)Game1.weatherForTomorrow, false, Monitor, Config.TooMuchInfo);
+            tvText = tvText + WeatherHelper.GetWeatherDesc(ourText, Dice, (SDVWeather)Game1.weatherForTomorrow, false, Monitor, Config.TooMuchInfo);
 
             return tvText;
         }
