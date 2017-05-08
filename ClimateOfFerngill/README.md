@@ -22,20 +22,15 @@ See [https://github.com/JohnsonNicholas/climate-of-ferngill/blob/master/Changelo
 * A Moon that causes events with the phases.
 * Console commands to customize the weather!
 * Morning fog!
+* Blizzards!
 * A hotkey to show a weather popup!
-
-## Maybe features?
-
-These features are a wishlist of options - may not be added, may be added.
-
 * Moving TV text options to a json/txt file for easier customization.
 * Specifying climate options via json file
-* Making all strings able to be translated
+
 
 ## Known Issues
 
 * Weddings may cause heatwave and frost HUD messages to not display
-
 
 ## Thanks and Acknowledgements
 
@@ -43,9 +38,9 @@ This wouldn't have been possible without the inspiration from the original More 
 Pathoschild. Credit goes to eemie for the sprites, and Pathoschild for the code this mod uses for the weather menu. (And
 Routine for the code used to figure out how to draw the fog)
 
-Routine for the CustomTV framework.
+Platonymous for the CustomTV framework.
 
-This mod also owes thanks to spacechase0 and Routine for help when I went @.@ at the code. Thank you.
+This mod also owes thanks to spacechase0 and Platonymous for help when I went @.@ at the code. Thank you.
 
 ## License
 

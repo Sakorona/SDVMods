@@ -423,7 +423,5 @@ namespace ClimateOfFerngill
 
             return s;
         }
-
-
     }
 }

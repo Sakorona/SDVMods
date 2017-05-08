@@ -662,7 +662,7 @@ namespace ClimateOfFerngill
             Game1.weatherForTomorrow = (int)TmrwWeather;
 
             if (Config.TooMuchInfo)
-                Monitor.Log($"Checking if set. Generated Weather: {WeatherHelper.DescWeather(TmrwWeather, Game1.currentSeason)} and set weather is: {WeatherHelper.DescWeather(Game1.weatherForTomorrow, Game1.currentSeason)}");
+                Monitor.Log($"Checking if set. Generated Weather: {WeatherHelper.DescWeather(TmrwWeather, Game1.currentSeason)} and set weather is: {WeatherHelper.DescWeather((SDVWeather)Game1.weatherForTomorrow, Game1.currentSeason)}");
         }
 
 

@@ -6,32 +6,6 @@ namespace ClimateOfFerngill
 {
     static class WeatherHelper
     {
-        public static string DescWeather(int weather, string season)
-        {
-            switch (weather)
-            {
-                case 0:
-                    return "Sunny";
-                case 1:
-                    return "Rainy";
-                case 2:
-                    if (season != "winter")
-                        return "Windy with" + (season == "spring" ? " pollen in the air" : " leaves blowing in the wind");
-                    else 
-                        return "Flurries";
-                case 3:
-                    return "Stormy";
-                case 4:
-                    return "Festival";
-                case 5:
-                    return "Snowy";
-                case 6:
-                    return "Wedding";
-                default:
-                    return "Weather not present in base game";
-            }
-        }
-
         public static string DescWeather(SDVWeather weather, string season)
         {
             switch (weather)
@@ -41,7 +15,7 @@ namespace ClimateOfFerngill
                 case SDVWeather.Rainy:
                     return "Rainy";
                 case SDVWeather.Debris:
-                    return "Windy with" + (season == "spring" ? " pollen in the air" : " leaves blowing in the wind");
+                    return "Windy with" + (season == "spring" ? " pollen in the air" : (season == "fall" ? " leaves blowing in the wind" : "flurries of snow"));
                 case SDVWeather.Stormy:
                     return "Stormy";
                 case SDVWeather.Festival:
@@ -58,8 +32,6 @@ namespace ClimateOfFerngill
                     return "Weather not present in base game";
             }
         }
-
-
 
         public static string GetWeatherDesc(TVStrings ourText, MersenneTwister dice, SDVWeather weather, FerngillWeather conditions, 
             bool today, IMonitor logger, bool debugFlag)
@@ -154,10 +126,6 @@ namespace ClimateOfFerngill
             ret.Replace("[low_scale]", conditions.GetTempScale().ToString());
 
             return ret;
-        }
-
-
-
- 
+        } 
     }
 }
