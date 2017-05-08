@@ -37,6 +37,93 @@ namespace ClimateOfFerngill
             CheckFrost();
         }
 
+        public double GetTodayHighInScale() => TempInScale(TodayHigh);
+        public double GetTodayLowInScale() => TempInScale(TodayLow);
+
+        public double TempInScale(double temp)
+        {
+            if (Config.TempGauge == "celsius") return temp;
+            if (Config.TempGauge == "kelvin") return (temp + 273.15);
+            if (Config.TempGauge == "rankine") return ((temp + 273.15) * 1.8);
+            if (Config.TempGauge == "fahrenheit") return ((temp * 1.8) + 32);
+            if (Config.TempGauge == "romer") return ((temp * 1.904761905) + 7.5);
+            if (Config.TempGauge == "delisle") return ((100 - temp) * 1.5);
+            if (Config.TempGauge == "reaumur") return (temp *.8);
+
+            return temp;
+        }
+
+        public string DisplayHighTemperature() => DisplayTemperature(Config.TempGauge, TodayHigh);
+        public string DisplayLowTemperature() => DisplayTemperature(Config.TempGauge, TodayLow);
+
+        public string DisplayHighTemperatureSG() => DisplayTemperature(Config.SecondScaleGauge, TodayHigh);
+        public string DisplayLowTemperatureSG() => DisplayTemperature(Config.SecondScaleGauge, TodayLow);
+
+        private string DisplayTemperature(string tempGauge, double temp)
+        {
+            //base temps are always in celsius
+            if (tempGauge == "celsius")
+            {
+                return temp + " C";
+            }
+
+            if (tempGauge == "kelvin")
+            {
+                return (temp + 273.15) + " K";
+            }
+
+            if (tempGauge == "rankine")
+            {
+                double tmpTemp = (temp + 273.15) * 1.8;
+                return string.Format("{0:0.00}", tmpTemp) + " Ra";
+            }
+
+            if (tempGauge == "fahrenheit")
+            {
+                double tmpTemp = (temp * 1.8) + 32;
+                return string.Format("{0:0.00}", tmpTemp) + " F";
+            }
+
+            if (tempGauge == "romer")
+            {
+                return string.Format("{0:0.00}", (temp * 1.904761905) + 7.5) + " Ro";
+            }
+
+            if (tempGauge == "delisle")
+            {
+                return string.Format("{0:0.00}", ((100 - temp) * 1.5)) + " De";
+            }
+
+            if (tempGauge == "reaumur")
+            {
+                return string.Format("{0:0.00}", temp * .8) + " Re";
+            }
+
+            return "ERROR";
+        }
+
+        public string GetTempScale()
+        {
+            switch (Config.TempGauge)
+            {
+                case "reaumur":
+                    return "Re";
+                case "delisle":
+                    return "De";
+                case "romer":
+                    return "Ro";
+                case "celsius":
+                    return "C";
+                case "kelvin":
+                    return "K";
+                case "rankine":
+                    return "Ra";
+                case "fahrenheit":
+                    return "F";
+            }
+            return "C";
+        }
+
         public bool HasACold()
         {
             return this.IsExhausted;

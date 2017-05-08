@@ -211,15 +211,15 @@ namespace ClimateOfFerngill
                         topOffset += descSize.Y;
                         topOffset += lineHeight;
                         //build the temperature display
-                        string Temperature = $"the high: {WeatherHelper.DisplayTemperature(CurrentWeather.GetTodayHigh(), OurConfig.TempGauge)} ";
+                        string Temperature = $"the high: {CurrentWeather.DisplayHighTemperature()} ";
                         
                         if (OurConfig.DisplaySecondScale)
-                            Temperature += $" ({WeatherHelper.DisplayTemperature(CurrentWeather.GetTodayHigh(), OurConfig.SecondScaleGauge)}) ";
+                            Temperature += $" ({CurrentWeather.DisplayHighTemperatureSG()}) ";
 
-                        Temperature += $"and low:  {WeatherHelper.DisplayTemperature(CurrentWeather.GetTodayLow(), OurConfig.TempGauge)} ";
+                        Temperature += $"and low:  {CurrentWeather.DisplayLowTemperature()} ";
 
                         if (OurConfig.DisplaySecondScale)
-                            Temperature += $" ({WeatherHelper.DisplayTemperature(CurrentWeather.GetTodayLow(), OurConfig.SecondScaleGauge)}) ";
+                            Temperature += $" ({CurrentWeather.DisplayLowTemperatureSG()}) ";
 
                         //Output today's weather
                         string weatherString = "";

@@ -15,6 +15,8 @@ namespace ClimateOfFerngill
         Stormy = 3,
         Festival = 4,
         Snow = 5,
-        Wedding = 6       
+        Wedding = 6,
+        Blizzard = 97,
+        Thundersnow = 98
     }
 }

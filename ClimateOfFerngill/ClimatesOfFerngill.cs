@@ -30,7 +30,7 @@ namespace ClimateOfFerngill
         private bool GameLoaded;
         private bool RainTotemUsedToday;
         private SDVWeather EndWeather;
-        internal TVStrings ourText;
+        public TVStrings ourText;
         public MersenneTwister Dice;
         private IClickableMenu PreviousMenu;
         private HazardousWeatherEvents BadEvents;
@@ -55,11 +55,6 @@ namespace ClimateOfFerngill
             OurFog = new FerngillFog();
 
             ourText = helper.ReadJsonFile<TVStrings>("TvStrings.en.json");
-
-            if (ourText is null)
-                Monitor.Log("Our Text is null!", LogLevel.Error);
-            if (ourText.springClearText is null)
-                throw new Exception("The deserialiation failed");
 
             Luna = new SDVMoon(Monitor, Config, Dice);
             BadEvents = new HazardousWeatherEvents(Monitor, Config, Dice);
@@ -540,33 +535,34 @@ namespace ClimateOfFerngill
             // Alerts for frost/cold snap display all day. Alerts for heatwave last until 1830. 
             tvText = "The forecast for the Valley is: ";
 
+            /*
             if (CurrWeather.GetTodayHigh() > Config.HeatwaveWarning && Game1.timeOfDay < 1830)
                 tvText = tvText + "That it will be unusually hot outside. Stay hydrated and be careful not to stay too long in the sun. ";
             if (CurrWeather.GetTodayHigh() < -5)
                 tvText = tvText + "There's an extreme cold snap passing through the valley. Stay warm. ";
             if (CurrWeather.GetTodayLow() < 2 && Config.HarshWeather)
                 tvText = tvText + "Warning. We're getting frost tonight! Be careful what you plant! ";
-
+            */
 
             if (Game1.timeOfDay < 1800) //don't display today's weather 
             {
                 tvText += "The high for today is ";
                 if (!Config.DisplaySecondScale)
-                    tvText += WeatherHelper.DisplayTemperature(CurrWeather.GetTodayHigh(), Config.TempGauge) + ", with the low being " + WeatherHelper.DisplayTemperature(CurrWeather.GetTodayLow(), Config.TempGauge) + ". ";
+                    tvText += $"{CurrWeather.DisplayHighTemperature()} , with the low being {CurrWeather.DisplayLowTemperature()} ";
                 else //derp.
-                    tvText += WeatherHelper.DisplayTemperature(CurrWeather.GetTodayHigh(), Config.TempGauge) + " (" + WeatherHelper.DisplayTemperature(CurrWeather.GetTodayHigh(), Config.SecondScaleGauge) + ") , with the low being " + WeatherHelper.DisplayTemperature(CurrWeather.GetTodayLow(), Config.TempGauge) + " (" + WeatherHelper.DisplayTemperature(CurrWeather.GetTodayHigh(), Config.SecondScaleGauge) + ") . ";
+                    tvText += $"{CurrWeather.DisplayHighTemperature()} ({CurrWeather.DisplayHighTemperatureSG()}), with the low being {CurrWeather.DisplayLowTemperature()} ({CurrWeather.DisplayLowTemperatureSG()}) . ";
 
                 if (Config.TooMuchInfo) Monitor.Log(tvText);
 
                 //today weather
-                tvText = tvText + WeatherHelper.GetWeatherDesc(ourText,Dice, CurrWeather.CurrentConditions(), true, Monitor, Config.TooMuchInfo);
+                tvText = tvText + WeatherHelper.GetWeatherDesc(ourText,Dice, CurrWeather.CurrentConditions(), CurrWeather, true, Monitor, Config.TooMuchInfo);
 
                 //get WeatherForTommorow and set text
                 tvText = tvText + "#Tommorow, ";
             }
 
             //tommorow weather
-            tvText = tvText + WeatherHelper.GetWeatherDesc(ourText, Dice, (SDVWeather)Game1.weatherForTomorrow, false, Monitor, Config.TooMuchInfo);
+            tvText = tvText + WeatherHelper.GetWeatherDesc(ourText, Dice, (SDVWeather)Game1.weatherForTomorrow, CurrWeather, false, Monitor, Config.TooMuchInfo);
 
             return tvText;
         }

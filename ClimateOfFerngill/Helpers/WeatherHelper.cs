@@ -50,137 +50,110 @@ namespace ClimateOfFerngill
                     return "Snowy";
                 case SDVWeather.Wedding:
                     return "Wedding";
+                case SDVWeather.Blizzard:
+                    return "Blizzard";
+                case SDVWeather.Thundersnow:
+                    return "Thundersnow";
                 default:
                     return "Weather not present in base game";
             }
         }
 
-        public static string DisplayTemperature(double temp, string tempGauge)
+
+
+        public static string GetWeatherDesc(TVStrings ourText, MersenneTwister dice, SDVWeather weather, FerngillWeather conditions, 
+            bool today, IMonitor logger, bool debugFlag)
         {
-            //base temps are always in celsius
-            if (tempGauge == "celsius")
-            {
-                return temp + " C";
-            }
+            string ret = "";
+            if (today)
+                ret = "It is ";
+            else
+                ret = "it will be ";
 
-            if (tempGauge == "kelvin")
-            {
-                return (temp + 273.15) + " K";
-            }
-
-            if (tempGauge == "rankine")
-            {
-                double tmpTemp = (temp + 273.15) * 1.8;
-                return string.Format("{0:0.00}", tmpTemp) + " Ra";
-            }
-
-            if (tempGauge == "fahrenheit")
-            {
-                double tmpTemp = (temp * 1.8) + 32;
-                return string.Format("{0:0.00}", tmpTemp) + " F";
-            }
-
-            if (tempGauge == "romer")
-            {
-                return string.Format("{0:0.00}", (temp * 1.904761905) + 7.5) + " Ro";
-            }
-
-            if (tempGauge == "delisle")
-            {
-                return string.Format("{0:0.00}", ((100 - temp) * 1.5)) + " De";
-            }
-
-            if (tempGauge == "reaumur")
-            {
-                return string.Format("{0:0.00}", temp * .8) + " Re";
-            }
-
-            return "ERROR";
-        }
-
-        public static string GetWeatherDesc(TVStrings ourText, MersenneTwister dice, SDVWeather weather, bool today, IMonitor logger, bool debugFlag)
-        {
             if (debugFlag)
                 logger.Log($"[DESC] The weather tommorow at start is: {WeatherHelper.DescWeather(weather, Game1.currentSeason)}");
 
             if ((int)weather == Game1.weather_festival)
                 return "It'll be good weather for the " + InternalUtility.GetTommorowFestivalName() + "! Sunny and clear.";
 
+
             if (today && weather == SDVWeather.Wedding)
-                return ourText.weddingWeather.GetRandomItem(dice) + " ";
+                ret += ourText.WeddingWeather.GetRandomItem(dice) + " ";
 
             if (Game1.countdownToWedding == 1 && !today)//fixes wedding forecast not properly stated. 
-                return ourText.weddingWeather.GetRandomItem(dice) + " ";
+                ret += ourText.WeddingWeather.GetRandomItem(dice) + " ";
 
             if (Game1.dayOfMonth == 28 && Game1.currentSeason != "winter") //some customization for next day is a new season
-				return ourText.nextDayIsNextSeason + " " + InternalUtility.GetNewSeason(Game1.currentSeason) + " ";
+                ret += ourText.NextDayIsNextSeason + " " + InternalUtility.GetNewSeason(Game1.currentSeason) + " ";
 
 			if (Game1.dayOfMonth == 28 && Game1.currentSeason == "winter") //end of year message.
-				return ourText.nextDayIsNewYear + " ";
+                ret += ourText.NextDayIsNewYear + " ";
 
             //spring
             if (Game1.currentSeason == "spring" && (int)weather == Game1.weather_debris)
-                return ourText.springWindText.GetRandomItem(dice) + " ";
+                ret += ourText.SpringWindText.GetRandomItem(dice) + " ";
 
             if (Game1.currentSeason == "spring" && (int)weather == Game1.weather_sunny)
-                return ourText.springClearText.GetRandomItem(dice) + " ";
+                ret += ourText.SpringClearText.GetRandomItem(dice) + " ";
 
             if (Game1.currentSeason == "spring" && (int)weather == Game1.weather_snow)
-                return ourText.springSnowText.GetRandomItem(dice) + " ";
+                ret += ourText.SpringSnowText.GetRandomItem(dice) + " ";
 
             if (Game1.currentSeason == "spring" && (int)weather == Game1.weather_lightning)
-                return ourText.springStormText.GetRandomItem(dice) + " ";
+                ret += ourText.SpringStormText.GetRandomItem(dice) + " ";
 
             if (Game1.currentSeason == "spring" && (int)weather == Game1.weather_rain)
-                return ourText.springRainText.GetRandomItem(dice) + " ";
+                ret += ourText.SpringRainText.GetRandomItem(dice) + " ";
 
             //summer
             if (Game1.currentSeason == "summer" && (int)weather == Game1.weather_sunny)
-                return ourText.summerClearText.GetRandomItem(dice) + " ";
+                ret += ourText.SummerClearText.GetRandomItem(dice) + " ";
 
             if (Game1.currentSeason == "summer" && (int)weather == Game1.weather_lightning)
-                return ourText.summerStormText.GetRandomItem(dice) + " ";
+                ret += ourText.SummerStormText.GetRandomItem(dice) + " ";
+
+            if (Game1.currentSeason == "summer" && (int)weather == Game1.weather_lightning)
+                ret += ourText.SummerWindText.GetRandomItem(dice) + " ";
 
             if (Game1.currentSeason == "summer" && (int)weather == Game1.weather_rain)
-                return ourText.summerRainText.GetRandomItem(dice) + " ";
+                ret += ourText.SummerRainText.GetRandomItem(dice) + " ";
 
             //fall
             if (Game1.currentSeason == "fall" && (int)weather == Game1.weather_debris)
-                return ourText.fallWindText.GetRandomItem(dice) + " ";
+                ret += ourText.FallWindText.GetRandomItem(dice) + " ";
 
             if (Game1.currentSeason == "fall" && (int)weather == Game1.weather_sunny)
-                return ourText.fallClearText.GetRandomItem(dice) + " ";
+                ret += ourText.FallClearText.GetRandomItem(dice) + " ";
 
             if (Game1.currentSeason == "fall" && (int)weather == Game1.weather_lightning)
-                return ourText.fallStormText.GetRandomItem(dice) + " ";
+                ret += ourText.FallStormText.GetRandomItem(dice) + " ";
 
             if (Game1.currentSeason == "fall" && (int)weather == Game1.weather_rain)
-                return ourText.fallRainText.GetRandomItem(dice) + " ";
+                ret += ourText.FallRainText.GetRandomItem(dice) + " ";
 
             if (Game1.currentSeason == "fall" && (int)weather == Game1.weather_snow)
-                return ourText.fallSnowText.GetRandomItem(dice) + " ";
+                ret += ourText.FallSnowText.GetRandomItem(dice) + " ";
 
             if (Game1.currentSeason == "fall" && (int)weather == Game1.weather_snow && Game1.dayOfMonth == 27)
-                return "Winter is just around the bend, with snow predicted for tommorow!";
+                ret += "Winter is just around the bend, with snow predicted for tommorow!";
 
             //winter
             if (Game1.currentSeason == "winter" && (int)weather == Game1.weather_sunny)
-                return ourText.winterClearText.GetRandomItem(dice) + " ";
+                ret += ourText.WinterClearText.GetRandomItem(dice) + " ";
             if (Game1.currentSeason == "winter" && (int)weather == Game1.weather_sunny)
-                return ourText.winterWindText.GetRandomItem(dice) + " ";
+                ret += ourText.WinterWindText.GetRandomItem(dice) + " ";
             if (Game1.currentSeason == "winter" && (int)weather == Game1.weather_snow)
-                return ourText.winterSnowText.GetRandomItem(dice) + " ";
+                ret += ourText.WinterSnowText.GetRandomItem(dice) + " ";
             if (Game1.currentSeason == "winter" && (int)weather == Game1.weather_rain)
-                return ourText.winterRainText.GetRandomItem(dice) + " ";
+                ret += ourText.WinterRainText.GetRandomItem(dice) + " ";
 
-            //error!
-            logger.Log($"The weather desc has reached an error. It is being called for {(today? "Today" : "Tommorow")}." +
-                       $"Current season is {Game1.currentSeason} and the internal weather is {weather}" +
-                       $" with the game weather flags being: Raining: {Game1.isRaining}, Windy: {Game1.isDebrisWeather}," +
-                       $" Stormy: {Game1.isLightning}, and Snowy: {Game1.isSnowing} with tommorow's weather: "
-                       + DescWeather(Game1.weatherForTomorrow, Game1.currentSeason), LogLevel.Error);
+            //token replace
+            ret.Replace("[high]", conditions.GetTodayHighInScale().ToString("{0:0.00}"));
+            ret.Replace("[high_scale]", conditions.GetTempScale().ToString());
+            ret.Replace("[low]", conditions.GetTodayLowInScale().ToString("{0:0.00}"));
+            ret.Replace("[low_scale]", conditions.GetTempScale().ToString());
 
-            return "Angry suns descend on us! Run! (ERROR)";
+            return ret;
         }
 
 

@@ -1,33 +1,38 @@
 ﻿namespace ClimateOfFerngill
 {
-    internal class TVStrings
+    public class TVStrings
     {
-        internal string[] springRainText { get; set; }
-        internal string[] springStormText { get; set; }
-        internal string[] springSnowText { get; set; }
-        internal string[] springWindText { get; set; }
-        internal string[] springClearText { get; set; }
+        public string[] SpringRainText { get; set; }
+        public string[] SpringStormText { get; set; }
+        public string[] SpringSnowText { get; set; }
+        public string[] SpringWindText { get; set; }
+        public string[] SpringClearText { get; set; }
 
-        internal string[] summerRainText { get; set; }
-        internal string[] summerStormText { get; set; }
-        internal string[] summerSnowText { get; set; }
-        internal string[] summerClearText { get; set; }
+        public string[] SummerRainText { get; set; }
+        public string[] SummerStormText { get; set; }
+        public string[] SummerSnowText { get; set; }
+        public string[] SummerWindText { get; set; }
+        public string[] SummerClearText { get; set; }
 
-        internal string[] fallRainText { get; set; }
-        internal string[] fallStormText { get; set; }
-        internal string[] fallSnowText { get; set; }
-        internal string[] fallWindText { get; set; }
-        internal string[] fallClearText { get; set; }
+        public string[] FallRainText { get; set; }
+        public string[] FallStormText { get; set; }
+        public string[] FallSnowText { get; set; }
+        public string[] FallWindText { get; set; }
+        public string[] FallClearText { get; set; }
 
-        internal string[] winterRainText { get; set; }
-        internal string[] winterStormText { get; set; }
-        internal string[] winterSnowText { get; set; }
-        internal string[] winterWindText { get; set; }
-        internal string[] winterClearText { get; set; }
+        public string[] WinterRainText { get; set; }
+        public string[] WinterStormText { get; set; }
+        public string[] WinterSnowText { get; set; }
+        public string[] WinterWindText { get; set; }
+        public string[] WinterClearText { get; set; }
 
-        internal string nextDayIsNextSeason { get; set; }
-        internal string nextDayIsNewYear { get; set; }
+        public string NextDayIsNextSeason { get; set; }
+        public string NextDayIsNewYear { get; set; }
 
-        internal string[] weddingWeather { get; set; }
+        public string[] WeddingWeather { get; set; }
+        public string[] BlizzardWarning { get; set; }
+        public string[] HeatwaveWarning { get; set; }
+        public string[] ThundersnowText { get; set; }
+        public string[] FrostWarning { get; set; }
     }
 }
