@@ -56,21 +56,111 @@ Loosely based off of Seattle, springs under this climate are initially wet but d
 
 #### Spring
 
-Rain starts at 81% and rapidly drops to 35% on Day 10, where it drops slower (to 23% on Day 20) before remaining flat at those odds for the rest of the month. Storms vary between 15-30% chance all month, and it is extremely windy in the middle part of the season. This means that the best times for sun are in the end of the season. Temperatures start cold (~3C) but increase to 23C by the end of the month. Lows can differ as much as 10C towards the end.
+Rain starts at 81% and rapidly drops to 35% on Day 10, where it drops slower (to 23% on Day 20) before remaining flat at those odds for the rest of the month. Storms vary between 15-30% chance all month, and it is extremely windy in the middle part of the season. This means that the best times for sun are in the end of the season. Temperatures start cold (~3C) but increase to ~26C by the end of the month. Lows can differ as much as 10C towards the end.
+
+![Image of Spring Climate](SpringClimateChart.png)
 
 ##### Formulas - Day 1 to 9
 
 * Rain: `f(x) = .85 - day*.04`
 * Rain Variability: `±.04`
 * Storm: `.25`
+* Storm Variability: `±.1`
 * Debris: `f(x) = .05 + day*.025`
-* Low Temperature: `2 + day*2.5`
+* Debris Variability: `±.08`
+* Snow: `0`
+* Snow Variability: `0`
+* Low Temperature: `f(x) = .02 + day*.015`
 * Low Temperature Variability: `±3`
+* High Temperature: `f(x) = .04 + day*.0125`(clamp so that it's always higher than low)
+* High Temperature Variability: `±4`(clamp so that it's always higher than low)
+* Fog Chance: `.55`
+ 
+#### Formulas - Day 10 to 19
 
+* Rain: `f(x) = .49 - day*.014`
+* Rain Variability: `±.02`
+* Storm: `.15`
+* Storm Variability: `±.1`
+* Debris: `f(x) = .275 + day*.0065`
+* Debris Variability: `±.08`
+* Snow: `0`
+* Snow Variability: `0`
+* Low Temperature: `f(x) = 2 + day*1.05`
+* Low Temperature Variability: `±3`
+* High Temperature: `f(x) = .04 + day*.0115`(clamp so that it's always higher than low)
+* High Temperature Variability: `±4`(clamp so that it's always higher than low)
+* Fog Chance: `.35`
+
+#### Formulas - Day 20 to 28
+
+* Rain: `f(x) = .24 - day*.0005`
+* Rain Variability: `±.07`
+* Storm: `f(x) = .10 + day*.0065`
+* Storm Variability: `±.1`
+* Debris: `f(x) = .3925 - day*.0075`
+* Debris Variability: `±.14`
+* Snow: `0`
+* Snow Variability: `0`
+* Low Temperature: `f(x) = .02 + day*.00805`
+* Low Temperature Variability: `±3`
+* High Temperature: `f(x) = .04 + day*.00875`(clamp so that it's always higher than low)
+* High Temperature Variability: `±4`(clamp so that it's always higher than low)
+* Fog Chance: `.35`
 
 #### Summer
 
 While very dry at the beginning of the season (~20%), it increases slowly until a sudden sharp increase to ~45% at the end of the month. Summers in Stardew Valley are known for being overwhelmingly sunny, with a very good chance of storms if it does rain in the middle of the month. Due to the very flat winds, summers are also rather humid and hot, with temperatures staying a minimum of 23C, but as warm as 32C or more in the middle of it. Lows hover at 5 to 8 degrees below the high.
+
+![Image of Summer Climate](SummerClimateChart.png)
+
+##### Formulas - Day 1 to 9
+
+* Rain: `f(x) = .20 - day*.001`
+* Rain Variability: `±.04`
+* Storm: `.4`
+* Storm Variability: `±.1`
+* Debris: `0`
+* Debris Variability: `0`
+* Snow: `0`
+* Snow Variability: `0`
+* Low Temperature: `f(x) = 24 + day*.1`
+* Low Temperature Variability: `±3`
+* High Temperature: `f(x) = 28 + day*.82`(clamp so that it's always higher than low)
+* High Temperature Variability: `±4`(clamp so that it's always higher than low)
+* Fog Chance: `.001`
+ 
+#### Formulas - Day 10 to 18
+
+* Rain: `f(x) = 20 - day*.0001`
+* Rain Variability: `±.02`
+* Storm: `.8`
+* Storm Variability: `±.1`
+* Debris: `0`
+* Debris Variability: `0`
+* Snow: `0`
+* Snow Variability: `0`
+* Low Temperature: `f(x) = 24 - day*.01`
+* Low Temperature Variability: `±3`
+* High Temperature: `f(x) = 28 + day*.62`(clamp so that it's always higher than low)
+* High Temperature Variability: `±4`(clamp so that it's always higher than low)
+* Fog Chance: `.001`
+
+#### Formulas - Day 19 to 28
+
+* Rain: `f(x) = -12 + day*.018`
+* Rain Variability: `±.07`
+* Storm: `f(x) = .80 - day*.0065`
+* Storm Variability: `±.1`
+* Debris: `0`
+* Debris Variability: `0`
+* Snow: `0`
+* Snow Variability: `0`
+* Low Temperature: `f(x) = 27 - day*.25`
+* Low Temperature Variability: `±3`
+* High Temperature: `f(x) = 57 + day*1.25`(clamp so that it's always higher than low)
+* High Temperature Variability: `±4`(clamp so that it's always higher than low)
+* Fog Chance: `.001`
 
 #### Fall
 

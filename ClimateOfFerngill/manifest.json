@@ -7,7 +7,7 @@
     "PatchVersion": 0,
     "Build": "rcX-20170507"
   },
-  "Description": "Create a unique climate system, as well as add weather related events and commands.",
+  "Description": "Create a unique climate system with custom weathers, as well as add weather related events and commands.",
   "UniqueID": "KoihimeNakamura.ClimatesOfFerngill",
   "EntryDll": "ClimateOfFerngill.dll"
 }
