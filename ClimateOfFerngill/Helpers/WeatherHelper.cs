@@ -43,10 +43,10 @@ namespace ClimateOfFerngill
                 ret = "it will be ";
 
             if (debugFlag)
-                logger.Log($"[DESC] The weather tommorow at start is: {WeatherHelper.DescWeather(weather, Game1.currentSeason)}");
+                logger.Log($"[DESC] The weather Tomorrow at start is: {WeatherHelper.DescWeather(weather, Game1.currentSeason)}");
 
             if ((int)weather == Game1.weather_festival)
-                return "It'll be good weather for the " + InternalUtility.GetTommorowFestivalName() + "! Sunny and clear.";
+                return "It'll be good weather for the " + InternalUtility.GetTomorrowFestivalName() + "! Sunny and clear.";
 
 
             if (today && weather == SDVWeather.Wedding)
@@ -107,7 +107,7 @@ namespace ClimateOfFerngill
                 ret += ourText.FallSnowText.GetRandomItem(dice) + " ";
 
             if (Game1.currentSeason == "fall" && (int)weather == Game1.weather_snow && Game1.dayOfMonth == 27)
-                ret += "Winter is just around the bend, with snow predicted for tommorow!";
+                ret += "Winter is just around the bend, with snow predicted for Tomorrow!";
 
             //winter
             if (Game1.currentSeason == "winter" && (int)weather == Game1.weather_sunny)

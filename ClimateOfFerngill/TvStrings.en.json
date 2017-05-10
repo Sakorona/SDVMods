@@ -25,7 +25,7 @@
   "SummerRainText": [ 
    "a warm rain is expected.",
    "there will be a warm refreshing rain as a front passes by.",
-   "rain tommorow will bring a slightly cooler day."
+   "rain Tomorrow will bring a slightly cooler day."
   ],
   "SummerStormText": [
     "expect storms throughout the day.",
@@ -80,7 +80,7 @@
   ],
   "WinterRainText" :[ 
 	"a rare day of ice-cold rain over the valley.", 
-	"it's warmed up enough outside that tommorow's winter day will be a chilly rain."
+	"it's warmed up enough outside that Tomorrow's winter day will be a chilly rain."
  ],
   "NextDayIsNextSeason" : "it'll be a fine day for the first day of",
   "NextDayIsNewYear" : "another year has come to an end, and we will greet the next year with a sunny spring day!",

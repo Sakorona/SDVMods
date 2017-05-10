@@ -31,7 +31,7 @@ namespace ClimateOfFerngill
             { new SDVDate("winter", 25), Game1.weather_festival }
        };
 
-        public static SDVDate GetTommorowInGame()
+        public static SDVDate GetTomorrowInGame()
         {
             int day = 1;
             string season = "spring";
@@ -86,7 +86,7 @@ namespace ClimateOfFerngill
             return GetFestivalName(Game1.dayOfMonth, Game1.currentSeason);
         }
 
-        public static string GetTommorowFestivalName()
+        public static string GetTomorrowFestivalName()
         {
             return GetFestivalName(Game1.dayOfMonth + 1, Game1.currentSeason);
         }

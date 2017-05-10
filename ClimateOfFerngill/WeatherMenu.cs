@@ -237,14 +237,14 @@ namespace ClimateOfFerngill
                         topOffset += lineHeight;
 
 
-                        //Output tommorow's weather
+                        //Output Tomorrow's weather
                         if (!(Utility.isFestivalDay(Game1.dayOfMonth +1, Game1.currentSeason)))
                         {
-                            weatherString = $"Tommorow, the weather will be { WeatherHelper.DescWeather((SDVWeather)Game1.weatherForTomorrow, Game1.currentSeason)}.";
+                            weatherString = $"Tomorrow, the weather will be { WeatherHelper.DescWeather((SDVWeather)Game1.weatherForTomorrow, Game1.currentSeason)}.";
                         }
                         else
                         {
-                            weatherString = $"Tommorow will be a special event: {InternalUtility.GetTommorowFestivalName()}";
+                            weatherString = $"Tomorrow will be a special event: {InternalUtility.GetTomorrowFestivalName()}";
                         }
 
                         Vector2 tomSize = contentBatch.DrawTextBlock(font, weatherString, new Vector2(x + leftOffset, y + topOffset), wrapWidth);

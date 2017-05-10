@@ -279,31 +279,31 @@ namespace ClimateOfFerngill
             {
                 case "rain":
                     Game1.weatherForTomorrow = Game1.weather_rain;
-                    Monitor.Log("The weather tommorow is now rain", LogLevel.Info);
+                    Monitor.Log("The weather Tomorrow is now rain", LogLevel.Info);
                     break;
                 case "storm":
                     Game1.weatherForTomorrow = Game1.weather_lightning;
-                    Monitor.Log("The weather tommorow is now storm", LogLevel.Info);
+                    Monitor.Log("The weather Tomorrow is now storm", LogLevel.Info);
                     break;
                 case "snow":
                     Game1.weatherForTomorrow = Game1.weather_snow;
-                    Monitor.Log("The weather tommorow is now snow", LogLevel.Info);
+                    Monitor.Log("The weather Tomorrow is now snow", LogLevel.Info);
                     break;
                 case "debris":
                     Game1.weatherForTomorrow = Game1.weather_debris;
-                    Monitor.Log("The weather tommorow is now debris", LogLevel.Info);
+                    Monitor.Log("The weather Tomorrow is now debris", LogLevel.Info);
                     break;
                 case "festival":
                     Game1.weatherForTomorrow = Game1.weather_festival;
-                    Monitor.Log("The weather tommorow is now festival", LogLevel.Info);
+                    Monitor.Log("The weather Tomorrow is now festival", LogLevel.Info);
                     break;
                 case "sun":
                     Game1.weatherForTomorrow = Game1.weather_sunny;
-                    Monitor.Log("The weather tommorow is now sun", LogLevel.Info);
+                    Monitor.Log("The weather Tomorrow is now sun", LogLevel.Info);
                     break;
                 case "wedding":
                     Game1.weatherForTomorrow = Game1.weather_wedding;
-                    Monitor.Log("The weather tommorow is now wedding", LogLevel.Info);
+                    Monitor.Log("The weather Tomorrow is now wedding", LogLevel.Info);
                     break;
             }
         }
@@ -526,11 +526,11 @@ namespace ClimateOfFerngill
 
             string tvText = " ";
 
-            //The TV should display: Alerts, today's weather, tommorow's weather, alerts.
+            //The TV should display: Alerts, today's weather, Tomorrow's weather, alerts.
 
-            // Something such as "Today, the high is 12C, with low 8C. It'll be a very windy day. Tommorow, it'll be rainy."
+            // Something such as "Today, the high is 12C, with low 8C. It'll be a very windy day. Tomorrow, it'll be rainy."
             // since we don't predict weather in advance yet. (I don't want to rearchitecture it yet.)
-            // That said, the TV channel starts with Tommorow, so we need to keep that in mind.
+            // That said, the TV channel starts with Tomorrow, so we need to keep that in mind.
 
             // Alerts for frost/cold snap display all day. Alerts for heatwave last until 1830. 
             tvText = "The forecast for the Valley is: ";
@@ -557,11 +557,11 @@ namespace ClimateOfFerngill
                 //today weather
                 tvText = tvText + WeatherHelper.GetWeatherDesc(ourText,Dice, CurrWeather.CurrentConditions(), CurrWeather, true, Monitor, Config.TooMuchInfo);
 
-                //get WeatherForTommorow and set text
-                tvText = tvText + "#Tommorow, ";
+                //get WeatherForTomorrow and set text
+                tvText = tvText + "#Tomorrow, ";
             }
 
-            //tommorow weather
+            //Tomorrow weather
             tvText = tvText + WeatherHelper.GetWeatherDesc(ourText, Dice, (SDVWeather)Game1.weatherForTomorrow, CurrWeather, false, Monitor, Config.TooMuchInfo);
 
             return tvText;
@@ -576,7 +576,7 @@ namespace ClimateOfFerngill
             bool forceSet = false;
 
             if (Config.TooMuchInfo)
-                Monitor.Log($"The weather tommorow at start is: {WeatherHelper.DescWeather(TmrwWeather, Game1.currentSeason)}");
+                Monitor.Log($"The weather Tomorrow at start is: {WeatherHelper.DescWeather(TmrwWeather, Game1.currentSeason)}");
 
             // The mod executes after the main loop and should only execute at the beginning of the
             //  day. This really means we have to make sure it runs or we'll have an issue with the tv
@@ -606,7 +606,7 @@ namespace ClimateOfFerngill
             if (TmrwWeather == SDVWeather.Festival)
             {
                 if (Config.TooMuchInfo)
-                    Monitor.Log("The weather tommorow is a festival.", LogLevel.Warn);
+                    Monitor.Log("The weather Tomorrow is a festival.", LogLevel.Warn);
                 forceSet = true;
             }
 
@@ -622,10 +622,10 @@ namespace ClimateOfFerngill
             }
 
             //handle forced weather from the game - this function will actually set the weather itself, if true.
-            if (GameWillForceTomorrow(InternalUtility.GetTommorowInGame()))
+            if (GameWillForceTomorrow(InternalUtility.GetTomorrowInGame()))
             {
                 forceSet = true;
-                if (Config.TooMuchInfo) Monitor.Log("The game is forcing weather tommorow. Setting flag.");
+                if (Config.TooMuchInfo) Monitor.Log("The game is forcing weather Tomorrow. Setting flag.");
 
             }
 
@@ -654,7 +654,7 @@ namespace ClimateOfFerngill
             }
             
             if (Config.TooMuchInfo)
-                Monitor.Log($"We've set the weather for tommorow. It is: {WeatherHelper.DescWeather(TmrwWeather, Game1.currentSeason)}");
+                Monitor.Log($"We've set the weather for Tomorrow. It is: {WeatherHelper.DescWeather(TmrwWeather, Game1.currentSeason)}");
 
             //set trackers
             EndWeather = TmrwWeather;
