@@ -4,7 +4,6 @@ using StardewValley;
 using StardewValley.TerrainFeatures;
 using System.Collections.Generic;
 using NPack;
-using System;
 
 namespace ClimateOfFerngill
 {
@@ -132,9 +131,6 @@ namespace ClimateOfFerngill
 
             if (Game1.currentSeason == "spring" && (Game1.year > 1 || Config.DangerousFrost))
             {
-                if (Config.TooMuchInfo)
-                    Logger.Log("Invoking Frost - Spring Version.", LogLevel.Trace);
-
                 //spring frosts operate differnetly
                 if (f != null)
                 {
@@ -150,8 +146,6 @@ namespace ClimateOfFerngill
             }
             else
             {
-                if (Config.TooMuchInfo)
-                    Logger.Log("Invoking Frost - Fall Version.", LogLevel.Trace);
 
                 if (f != null)
                 {

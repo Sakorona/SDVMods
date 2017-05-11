@@ -32,13 +32,7 @@ namespace ClimateOfFerngill
         public double FrostHardiness { get; set; } 
         public bool GhostsDoNotSpawn { get; set; }
         public bool StormTotem { get; set; }
-        public bool AllowRainInWinter { get; set; }
         public bool UseCustomWeather { get; set; }
-
-        public double SpringFogChance { get; set; }
-        public double SummerFogChance { get; set; }
-        public double AutumnFogChance { get; set; }
-        public double WinterFogChance { get; set; }
 
         public bool AllowDarkFog { get; set; }
         public bool DangerousFrost { get; set; }
@@ -87,12 +81,6 @@ namespace ClimateOfFerngill
 
             //other options
             StormTotem = false;
-            AllowRainInWinter = false;
-
-            SpringFogChance = .30;
-            SummerFogChance = .001;
-            AutumnFogChance = .20;
-            WinterFogChance = .05;
         }
     }
 }

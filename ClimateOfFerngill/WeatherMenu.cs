@@ -27,6 +27,7 @@ namespace ClimateOfFerngill
         /// <summary>Simplifies access to private game code.</summary>
         private readonly IReflectionHelper Reflection;
 
+        /// <summary> Configuration Options </summary>
         private ClimateConfig OurConfig;
         
         /// <summary>The aspect ratio of the page background.</summary>
@@ -35,12 +36,17 @@ namespace ClimateOfFerngill
         /// <summary>The spacing around the scroll buttons.</summary>
         private readonly int ScrollButtonGutter = 15;
 
+        /// <summary> To da Moon, Princess!  </summary>
         private SDVMoon OurMoon;
 
+        /// <summary> The current weather status </summary>
         private FerngillWeather CurrentWeather;
 
+        /// <summary> Our Icons </summary>
         private Sprites.Icons IconSheet;
-        //private Sprites.Letter OurLetter;
+
+        ///<summary>This contains the text for various things</summary>
+        private TVStrings OurText;
 
         /// <summary>Whether the game's draw mode has been validated for compatibility.</summary>
         private bool ValidatedDrawMode;
@@ -53,11 +59,11 @@ namespace ClimateOfFerngill
         ****/
         /// <summary>Construct an instance.</summary>
         /// <param name="monitor">Encapsulates logging and monitoring.</param>
-        public WeatherMenu(IMonitor monitor, IReflectionHelper reflectionHelper, Sprites.Icons Icon, FerngillWeather weat, SDVMoon Termina, ClimateConfig ModCon)
+        public WeatherMenu(IMonitor monitor, IReflectionHelper reflectionHelper, Sprites.Icons Icon, TVStrings Text, FerngillWeather weat, SDVMoon Termina, ClimateConfig ModCon)
         {
             // save data
             this.Monitor = monitor;
-
+            this.OurText = Text;
             this.Reflection = reflectionHelper;
             this.CurrentWeather = weat;
             this.IconSheet = Icon;
@@ -204,19 +210,19 @@ namespace ClimateOfFerngill
                 {
                     // draw high and low
                     {
-                        Vector2 descSize = contentBatch.DrawTextBlock(font, "Your weather, from KKWF Radio.", new Vector2(x + leftOffset, y + topOffset), wrapWidth);
+                        Vector2 descSize = contentBatch.DrawTextBlock(font, OurText.WeatherMenuOpening, new Vector2(x + leftOffset, y + topOffset), wrapWidth);
                         topOffset += descSize.Y;
                         
-                        Vector2 forSize = contentBatch.DrawTextBlock(font, $" The weather report for {Game1.dayOfMonth} {FirstCharToUpper(Game1.currentSeason)} is as follows", new Vector2(x + leftOffset, y + topOffset), wrapWidth);
+                        Vector2 forSize = contentBatch.DrawTextBlock(font, $" {OurText.WeatherReportOpening} {Game1.dayOfMonth} {FirstCharToUpper(Game1.currentSeason)} {OurText.WeatherReportBridge}", new Vector2(x + leftOffset, y + topOffset), wrapWidth);
                         topOffset += descSize.Y;
                         topOffset += lineHeight;
                         //build the temperature display
-                        string Temperature = $"the high: {CurrentWeather.DisplayHighTemperature()} ";
+                        string Temperature = $"{OurText.WRHigh} {CurrentWeather.DisplayHighTemperature()} ";
                         
                         if (OurConfig.DisplaySecondScale)
                             Temperature += $" ({CurrentWeather.DisplayHighTemperatureSG()}) ";
 
-                        Temperature += $"and low:  {CurrentWeather.DisplayLowTemperature()} ";
+                        Temperature += $"{OurText.WRLow}  {CurrentWeather.DisplayLowTemperature()} ";
 
                         if (OurConfig.DisplaySecondScale)
                             Temperature += $" ({CurrentWeather.DisplayLowTemperatureSG()}) ";
@@ -225,11 +231,11 @@ namespace ClimateOfFerngill
                         string weatherString = "";
                         if (CurrentWeather.CurrentConditions() != SDVWeather.Festival)
                         {
-                            weatherString = $"Today, the weather is {WeatherHelper.DescWeather(CurrentWeather.CurrentConditions(), Game1.currentSeason)} with {Temperature}";
+                            weatherString = $"{OurText.WRToday} {WeatherHelper.DescWeather(CurrentWeather.CurrentConditions(), Game1.currentSeason)} with {Temperature}";
                         }
                         else
                         {
-                            weatherString = $"Today, we have the {InternalUtility.GetFestivalName()} with {Temperature}";
+                            weatherString = $"{OurText.WRFestivalToday} {InternalUtility.GetFestivalName()} {OurText.WRWith} {Temperature}";
                         }
 
                         Vector2 nameSize = contentBatch.DrawTextBlock(font, weatherString, new Vector2(x + leftOffset, y + topOffset), wrapWidth);
@@ -240,11 +246,11 @@ namespace ClimateOfFerngill
                         //Output Tomorrow's weather
                         if (!(Utility.isFestivalDay(Game1.dayOfMonth +1, Game1.currentSeason)))
                         {
-                            weatherString = $"Tomorrow, the weather will be { WeatherHelper.DescWeather((SDVWeather)Game1.weatherForTomorrow, Game1.currentSeason)}.";
+                            weatherString = $"{OurText.WRTomorrow} { WeatherHelper.DescWeather((SDVWeather)Game1.weatherForTomorrow, Game1.currentSeason)}.";
                         }
                         else
                         {
-                            weatherString = $"Tomorrow will be a special event: {InternalUtility.GetTomorrowFestivalName()}";
+                            weatherString = $"{OurText.WRFestivalTomorrow} {InternalUtility.GetTomorrowFestivalName()}";
                         }
 
                         Vector2 tomSize = contentBatch.DrawTextBlock(font, weatherString, new Vector2(x + leftOffset, y + topOffset), wrapWidth);
@@ -257,7 +263,7 @@ namespace ClimateOfFerngill
                     
                     if (CurrentWeather.IsDangerousWeather())
                     {
-                        Vector2 statusSize = contentBatch.DrawTextBlock(font, $"WEATHER ALERT: {CurrentWeather.GetHazardMessage()}", new Vector2(x + leftOffset, y + topOffset), wrapWidth, bold: true);
+                        Vector2 statusSize = contentBatch.DrawTextBlock(font, $"{OurText.WRAlert} {CurrentWeather.GetHazardMessage()}", new Vector2(x + leftOffset, y + topOffset), wrapWidth, bold: true);
                         topOffset += statusSize.Y;
                         topOffset += lineHeight;
                     }
@@ -267,7 +273,7 @@ namespace ClimateOfFerngill
                 //draw moon info
                 spriteBatch.Draw(IconSheet.source, new Vector2(x + 15, y + topOffset), IconSheet.GetMoonSprite(OurMoon.CurrPhase), Color.White);
                 
-                Vector2 moonText = contentBatch.DrawTextBlock(font, $"Today's Moon Phase is {SDVMoon.DescribeMoonPhase(OurMoon.CurrPhase)}.", new Vector2(x + leftOffset, y + topOffset), wrapWidth);
+                Vector2 moonText = contentBatch.DrawTextBlock(font, $"{OurText.WRMoonPhase} {SDVMoon.DescribeMoonPhase(OurMoon.CurrPhase)}.", new Vector2(x + leftOffset, y + topOffset), wrapWidth);
 
 
                 // end draw

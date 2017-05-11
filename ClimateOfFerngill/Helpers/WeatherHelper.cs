@@ -33,7 +33,7 @@ namespace ClimateOfFerngill
             }
         }
 
-        public static string GetWeatherDesc(TVStrings ourText, MersenneTwister dice, SDVWeather weather, FerngillWeather conditions, 
+        public static string GetWeatherDesc(TVStrings OurText, MersenneTwister dice, SDVWeather weather, FerngillWeather conditions, 
             bool today, IMonitor logger, bool debugFlag)
         {
             string ret = "";
@@ -50,74 +50,74 @@ namespace ClimateOfFerngill
 
 
             if (today && weather == SDVWeather.Wedding)
-                ret += ourText.WeddingWeather.GetRandomItem(dice) + " ";
+                ret += OurText.WeddingWeather.GetRandomItem(dice) + " ";
 
             if (Game1.countdownToWedding == 1 && !today)//fixes wedding forecast not properly stated. 
-                ret += ourText.WeddingWeather.GetRandomItem(dice) + " ";
+                ret += OurText.WeddingWeather.GetRandomItem(dice) + " ";
 
             if (Game1.dayOfMonth == 28 && Game1.currentSeason != "winter") //some customization for next day is a new season
-                ret += ourText.NextDayIsNextSeason + " " + InternalUtility.GetNewSeason(Game1.currentSeason) + " ";
+                ret += OurText.NextDayIsNextSeason + " " + InternalUtility.GetNewSeason(Game1.currentSeason) + " ";
 
 			if (Game1.dayOfMonth == 28 && Game1.currentSeason == "winter") //end of year message.
-                ret += ourText.NextDayIsNewYear + " ";
+                ret += OurText.NextDayIsNewYear + " ";
 
             //spring
             if (Game1.currentSeason == "spring" && (int)weather == Game1.weather_debris)
-                ret += ourText.SpringWindText.GetRandomItem(dice) + " ";
+                ret += OurText.SpringWindText.GetRandomItem(dice) + " ";
 
             if (Game1.currentSeason == "spring" && (int)weather == Game1.weather_sunny)
-                ret += ourText.SpringClearText.GetRandomItem(dice) + " ";
+                ret += OurText.SpringClearText.GetRandomItem(dice) + " ";
 
             if (Game1.currentSeason == "spring" && (int)weather == Game1.weather_snow)
-                ret += ourText.SpringSnowText.GetRandomItem(dice) + " ";
+                ret += OurText.SpringSnowText.GetRandomItem(dice) + " ";
 
             if (Game1.currentSeason == "spring" && (int)weather == Game1.weather_lightning)
-                ret += ourText.SpringStormText.GetRandomItem(dice) + " ";
+                ret += OurText.SpringStormText.GetRandomItem(dice) + " ";
 
             if (Game1.currentSeason == "spring" && (int)weather == Game1.weather_rain)
-                ret += ourText.SpringRainText.GetRandomItem(dice) + " ";
+                ret += OurText.SpringRainText.GetRandomItem(dice) + " ";
 
             //summer
             if (Game1.currentSeason == "summer" && (int)weather == Game1.weather_sunny)
-                ret += ourText.SummerClearText.GetRandomItem(dice) + " ";
+                ret += OurText.SummerClearText.GetRandomItem(dice) + " ";
 
             if (Game1.currentSeason == "summer" && (int)weather == Game1.weather_lightning)
-                ret += ourText.SummerStormText.GetRandomItem(dice) + " ";
+                ret += OurText.SummerStormText.GetRandomItem(dice) + " ";
 
             if (Game1.currentSeason == "summer" && (int)weather == Game1.weather_lightning)
-                ret += ourText.SummerWindText.GetRandomItem(dice) + " ";
+                ret += OurText.SummerWindText.GetRandomItem(dice) + " ";
 
             if (Game1.currentSeason == "summer" && (int)weather == Game1.weather_rain)
-                ret += ourText.SummerRainText.GetRandomItem(dice) + " ";
+                ret += OurText.SummerRainText.GetRandomItem(dice) + " ";
 
             //fall
             if (Game1.currentSeason == "fall" && (int)weather == Game1.weather_debris)
-                ret += ourText.FallWindText.GetRandomItem(dice) + " ";
+                ret += OurText.FallWindText.GetRandomItem(dice) + " ";
 
             if (Game1.currentSeason == "fall" && (int)weather == Game1.weather_sunny)
-                ret += ourText.FallClearText.GetRandomItem(dice) + " ";
+                ret += OurText.FallClearText.GetRandomItem(dice) + " ";
 
             if (Game1.currentSeason == "fall" && (int)weather == Game1.weather_lightning)
-                ret += ourText.FallStormText.GetRandomItem(dice) + " ";
+                ret += OurText.FallStormText.GetRandomItem(dice) + " ";
 
             if (Game1.currentSeason == "fall" && (int)weather == Game1.weather_rain)
-                ret += ourText.FallRainText.GetRandomItem(dice) + " ";
+                ret += OurText.FallRainText.GetRandomItem(dice) + " ";
 
             if (Game1.currentSeason == "fall" && (int)weather == Game1.weather_snow)
-                ret += ourText.FallSnowText.GetRandomItem(dice) + " ";
+                ret += OurText.FallSnowText.GetRandomItem(dice) + " ";
 
             if (Game1.currentSeason == "fall" && (int)weather == Game1.weather_snow && Game1.dayOfMonth == 27)
                 ret += "Winter is just around the bend, with snow predicted for Tomorrow!";
 
             //winter
             if (Game1.currentSeason == "winter" && (int)weather == Game1.weather_sunny)
-                ret += ourText.WinterClearText.GetRandomItem(dice) + " ";
+                ret += OurText.WinterClearText.GetRandomItem(dice) + " ";
             if (Game1.currentSeason == "winter" && (int)weather == Game1.weather_sunny)
-                ret += ourText.WinterWindText.GetRandomItem(dice) + " ";
+                ret += OurText.WinterWindText.GetRandomItem(dice) + " ";
             if (Game1.currentSeason == "winter" && (int)weather == Game1.weather_snow)
-                ret += ourText.WinterSnowText.GetRandomItem(dice) + " ";
+                ret += OurText.WinterSnowText.GetRandomItem(dice) + " ";
             if (Game1.currentSeason == "winter" && (int)weather == Game1.weather_rain)
-                ret += ourText.WinterRainText.GetRandomItem(dice) + " ";
+                ret += OurText.WinterRainText.GetRandomItem(dice) + " ";
 
             //token replace
             ret.Replace("[high]", conditions.GetTodayHighInScale().ToString("{0:0.00}"));

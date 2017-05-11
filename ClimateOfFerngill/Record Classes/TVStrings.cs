@@ -34,5 +34,31 @@
         public string[] HeatwaveWarning { get; set; }
         public string[] ThundersnowText { get; set; }
         public string[] FrostWarning { get; set; }
+
+        /* ====================================================================
+         *  Strings used in description text.
+         * ==================================================================== 
+         */
+
+        /// <summary>
+        /// The text for the opening of the weather channel
+        /// </summary>
+        public string TVOpening { get; set; }
+
+        public string TVHigh { get; set; }
+        public string TVLow { get; set; }
+        public string TVTomorrowForecast { get; set; }
+        public string WeatherMenuOpening { get; set; }
+        public string WeatherReportOpening { get; set; }
+        public string WeatherReportBridge { get; set; }
+        public string WRHigh { get; set; }
+        public string WRWith { get; set; }
+        public string WRLow { get; set; }
+        public string WRToday { get; set; }
+        public string WRTomorrow { get; set; }
+        public string WRMoonPhase { get; set; }
+        public string WRFestivalToday { get; set; }
+        public string WRFestivalTomorrow { get; set; }
+        public string WRAlert { get; set; }
     }
 }

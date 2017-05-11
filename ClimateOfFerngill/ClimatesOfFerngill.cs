@@ -9,7 +9,6 @@ using CustomTV;
 //XNA
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Input;
-using Microsoft.Xna.Framework.Graphics;
 
 //Stardew Valley Imports
 using StardewModdingAPI;
@@ -23,26 +22,84 @@ namespace ClimateOfFerngill
 {
     public class ClimatesOfFerngill : Mod
     {
-        public ClimateConfig Config { get; private set; }
-        internal FerngillWeather CurrWeather { get; set; }
-        public SDVMoon Luna { get; set; }
-        private Sprites.Icons OurIcons { get; set; }
-        private bool GameLoaded;
-        private bool RainTotemUsedToday;
-        private SDVWeather EndWeather;
-        public TVStrings ourText;
-        public MersenneTwister Dice;
-        private IClickableMenu PreviousMenu;
+        /// <summary>
+        /// This handles hazardous events (frosts, heatwaves, etc.) and the various stamina penalties
+        /// </summary>
         private HazardousWeatherEvents BadEvents;
-        public FerngillClimate WeatherModel;  //chances of specific weathers
-        private FerngillFog OurFog; //fog elements
-        private Vector2 snowPos; //snow elements
 
-        //eating code
+        /// <summary>
+        /// This controls and draws fog to the screen.
+        /// </summary>
+        private FerngillFog OurFog; 
+
+        /// <summary>
+        /// This is used to allow the menu to revert back to a previous menu
+        /// </summary>
+        private IClickableMenu PreviousMenu;
+        
+        /// <summary>
+        /// This is used to display icons on the menu
+        /// </summary>
+        private Sprites.Icons OurIcons { get; set; }
+
+        /// <summary>
+        /// This flag is if the rain totem was used today.
+        /// </summary>
+        private bool RainTotemUsedToday;
+
+        /// <summary>
+        /// This tracks what the weather is at the end of the mod update loop
+        /// </summary>
+        private SDVWeather EndWeather;
+
+        /// <summary>
+        /// This is the weather conditions in game. 
+        /// </summary>
+        private FerngillWeather CurrWeather { get; set; }
+
+        /// <summary>
+        /// This is the config container for the mod.
+        /// </summary>
+        private ClimateConfig Config { get; set; }
+        
+        /// <summary>
+        /// This is the moon of the mod, which has a few events. Deliberatly marked public for another mod of mine.
+        /// </summary>
+        public SDVMoon Luna { get; set; }
+        
+        /// <summary>
+        /// This contains the text for all strings. 
+        /// </summary>
+        public TVStrings OurText;
+
+        /// <summary>
+        /// This tracks if the farmer has any buffs or debuffs from the weather.
+        /// </summary>
+        private FarmerStatus FarmerHealth;
+
+        /// <summary>
+        /// Our PRNG.
+        /// </summary>
+        public MersenneTwister Dice;
+    
+        /// <summary>
+        /// Tracking for if you were eating
+        /// </summary>
         private bool wasEating = false;
+
+        /// <summary>
+        /// The ID for what was being eaten
+        /// </summary>
         private int prevToEatStack = -1;
 
+        /// <summary>
+        /// The number of ticks per 10 minute span
+        /// </summary>
         private int numberOfTicksPerSpan;
+
+        /// <summary>
+        /// The number of ticks outside.
+        /// </summary>
         private int numberOfTicksOutside;
 
         /// <summary>Initialise the mod.</summary>
@@ -52,26 +109,22 @@ namespace ClimateOfFerngill
             Dice = new MersenneTwister();
             Config = helper.ReadConfig<ClimateConfig>();
             CurrWeather = new FerngillWeather(Config, Dice, Monitor);
+            FarmerHealth = new FarmerStatus(Config, Monitor, Dice);
             OurFog = new FerngillFog();
-
-            ourText = helper.ReadJsonFile<TVStrings>("TvStrings.en.json");
-
             Luna = new SDVMoon(Monitor, Config, Dice);
             BadEvents = new HazardousWeatherEvents(Monitor, Config, Dice);
-
+            OurText = helper.ReadJsonFile<TVStrings>("TvStrings.en.json");
+            
             //set flags
             RainTotemUsedToday = false;
 
             //register event handlers
             SaveEvents.AfterLoad += SaveEvents_AfterLoad;
-            SaveEvents.BeforeSave += SaveEvents_BeforeSave;
-            SaveEvents.AfterReturnToTitle += SaveEvents_AfterReturnToTitle;
-            TimeEvents.TimeOfDayChanged += TimeEvents_TimeOfDayChanged;
             TimeEvents.AfterDayStarted += TimeEvents_AfterDayStarted;
-            GameEvents.QuarterSecondTick += GameEvents_QuarterSecondTick;
+            SaveEvents.AfterReturnToTitle += SaveEvents_AfterReturnToTitle;
             GameEvents.UpdateTick += GameEvents_UpdateTick;
-
-            //graphics events
+            SaveEvents.BeforeSave += SaveEvents_BeforeSave;
+            TimeEvents.TimeOfDayChanged += TimeEvents_TimeOfDayChanged;
             GraphicsEvents.OnPostRenderEvent += GraphicsEvents_OnPostRenderEvent;
 
             //siiigh.
@@ -79,7 +132,6 @@ namespace ClimateOfFerngill
                     .Add("world_changetmrweather", "Changes tomorrow's weather.\"rain,storm,snow,debris,festival,wedding,sun\" ", TmrwWeatherChangeFromConsole)
                     .Add("world_changeweather", "Changes CURRENT weather. \"rain,storm,snow,debris,sun\"", WeatherChangeFromConsole)
                     .Add("player_removecold", "Removes the cold from the player.", RemovePlayerCold);
-
 
             //register keyboard handlers and other menu events
             ControlEvents.KeyPressed += (sender, e) => this.ReceiveKeyPress(e.KeyPressed, this.Config.Keyboard);
@@ -103,9 +155,33 @@ namespace ClimateOfFerngill
             */
         }
 
+        // *******************************
+        // Events 
+        // *******************************
+
+        /// <summary>
+        /// This function handles setting up the weather system for a new run. It also contains one-time run code.
+        /// </summary>
+        /// <param name="sender">Object sending</param>
+        /// <param name="e">event params</param>
+        private void SaveEvents_AfterLoad(object sender, EventArgs e)
+        {
+            CustomTVMod.changeAction("weather", HandleWeather); //replace weather
+            OurIcons = new Sprites.Icons(Helper.Content);
+            //UpdateWeather(CurrWeather);
+            Luna.UpdateForNewDay();
+            BadEvents.UpdateForNewDay();
+            RainTotemUsedToday = false;
+        }
+
+        /// <summary>
+        /// This handles the day flipping over, updating various objects and events
+        /// </summary>
+        /// <param name="sender">Object sending</param>
+        /// <param name="e">event params</param>
         private void TimeEvents_AfterDayStarted(object sender, EventArgs e)
         {
-            if (!GameLoaded) //sanity check
+            if (!Game1.hasLoadedGame) //sanity check
                 return;
             
             //update objects for new day.
@@ -113,89 +189,128 @@ namespace ClimateOfFerngill
             CurrWeather.UpdateForNewDay();
             RainTotemUsedToday = false;
             Luna.UpdateForNewDay();
-            Luna.HandleMoonAfterWake(InternalUtility.GetBeach());
+            Luna.HandleMoonAfterWake();
+            FarmerHealth.UpdateForNewDay();
 
             //update the weather
-            UpdateWeather(CurrWeather);
-            CurrWeather.SetCurrentWeather();
+            UpdateWeather(CurrWeather);         
+        }
 
-            if (CurrWeather.IsFog(Game1.currentSeason, Dice)) 
+        /// <summary>
+        ///  Handle the player returning to the main window.
+        /// </summary>
+        /// <param name="sender">Object sending</param>
+        /// <param name="e">event params</param>
+        private void SaveEvents_AfterReturnToTitle(object sender, EventArgs e)
+        {
+            BadEvents.UpdateForNewDay();
+            CurrWeather.UpdateForNewDay();
+            FarmerHealth.UpdateForNewDay();
+            OurFog.Reset();
+            Luna.Reset();
+            RainTotemUsedToday = false;
+        }
+
+        /// <summary>
+        /// This event handles drawing to the screen
+        /// </summary>
+        /// <param name="sender">Object sending</param>
+        /// <param name="e">event params</param>
+        private void GraphicsEvents_OnPostRenderEvent(object sender, EventArgs e)
+        {
+            if (!Game1.hasLoadedGame)
+              return;
+
+            if (Game1.currentLocation.IsOutdoors)
+                OurFog.DrawFog();
+
+            if (Game1.currentLocation.isOutdoors && !(Game1.currentLocation is Desert) && CurrWeather.IsBlizzard)
+                CurrWeather.DrawBlizzard();
+        }
+   
+        /// <summary>
+        /// This controls what is done every tick of the game. 
+        /// </summary>
+        /// <param name="sender">Object sending</param>
+        /// <param name="e">event params</param>
+        private void GameEvents_UpdateTick(object sender, EventArgs e)
+        {
+            if (!Game1.hasLoadedGame)
+                return;
+
+            OurFog.MoveFog();
+
+            numberOfTicksPerSpan++;
+            if (Game1.currentLocation.isOutdoors)
+                numberOfTicksOutside++;
+
+            //handle eating events
+            if (Game1.isEating != wasEating)
             {
-                if (Config.TooMuchInfo)
-                    Monitor.Log("We have fog!!!!");
-
-                OurFog.CreateFog(FogAlpha: .55f, AmbientFog: true, FogColor: (Color.White * 1.35f));
-                Game1.globalOutdoorLighting = .5f;
-
-                if (Dice.NextDouble() < .15)
+                if (!Game1.isEating)
                 {
-                    OurFog.IsDarkFog();
-                    Game1.outdoorLight = new Color(227, 222, 211);
-                }
-                else
-                {
-                    Game1.outdoorLight = new Color(179, 176, 171);
+                    // Apparently this happens when the ask to eat dialog opens, but they pressed no.
+                    // So make sure something was actually consumed.
+                    if (prevToEatStack != -1 && (prevToEatStack - 1 == Game1.player.itemToEat.Stack))
+                    {
+                        FarmerHealth.CheckToRemoveCold();
+                    }
                 }
 
-               OurFog.FogExpirTime = CurrWeather.GetFogExpireTime(Dice);
-               
-               if (Config.TooMuchInfo)
-                    Monitor.Log($"It'll be a foggy morning, expiring at {OurFog.FogExpirTime}");
+                prevToEatStack = (Game1.player.itemToEat != null ? Game1.player.itemToEat.Stack : -1);
+            }
 
+            wasEating = Game1.isEating;
+
+            if (Config.StormTotem)
+            {
+                if (Game1.weatherForTomorrow != (int)EndWeather && !RainTotemUsedToday)
+                {
+                    RainTotemUsedToday = true;
+
+                    if (Dice.NextDoublePositive() <= CurrWeather.GetStormOdds(SDVDate.Tomorrow))
+                    {
+                        Game1.weatherForTomorrow = Game1.weather_lightning;
+                        Game1.addHUDMessage(new HUDMessage("You hear a roll of thunder..."));
+                    }
+                }
             }
         }
 
+        /// <summary>
+        /// This handles all post sleep before save events (night time processing)
+        /// </summary>
+        /// <param name="sender">Object sending</param>
+        /// <param name="e">event params</param>
+        private void SaveEvents_BeforeSave(object sender, EventArgs e)
+        {
+            if (Config.HarshWeather)
+                BadEvents.EarlyFrost(CurrWeather);
+
+            Luna.HandleMoonAtSleep(Game1.getFarm());          
+        }
+
+        /// <summary>
+        /// This function handles the TV interception, putting up the sprite and outputting the text.
+        /// </summary>
+        /// <param name="tv">The TV being intercepted</param>
+        /// <param name="sprite">The sprite being used</param>
+        /// <param name="who">The Farmer being intercepted for</param>
+        /// <param name="answer">The string being answered with</param>
         public void HandleWeather(TV tv, TemporaryAnimatedSprite sprite, StardewValley.Farmer who, string answer)
         {
             TemporaryAnimatedSprite WeatherCaster = new TemporaryAnimatedSprite(
-                Game1.mouseCursors, new Rectangle(497, 305, 42, 28), 9999f, 1, 999999, 
-                tv.getScreenPosition(), false, false, 
-                (float)((double)(tv.boundingBox.Bottom - 1) / 10000.0 + 9.99999974737875E-06), 
+                Game1.mouseCursors, new Rectangle(497, 305, 42, 28), 9999f, 1, 999999,
+                tv.getScreenPosition(), false, false,
+                (float)((double)(tv.boundingBox.Bottom - 1) / 10000.0 + 9.99999974737875E-06),
                 0.0f, Color.White, tv.getScreenSizeModifier(), 0.0f, 0.0f, 0.0f, false);
 
             CustomTVMod.showProgram(WeatherCaster, Game1.parseText(GetWeatherForecast()), CustomTVMod.endProgram);
         }
-
-        private void GraphicsEvents_OnPostRenderEvent(object sender, EventArgs e)
-        {
-            if (GameLoaded && Game1.currentLocation.IsOutdoors)
-            {
-                OurFog.DrawFog();
-            }
-
-            //snow handling
-            if (GameLoaded && Game1.currentLocation.isOutdoors && !(Game1.currentLocation is Desert) 
-                && CurrWeather.IsBlizzard)
-            {
-                DrawSnow();
-            }
-        }
-
-        private void DrawSnow()
-        {
-            snowPos = Game1.updateFloatingObjectPositionForMovement(snowPos, new Vector2(Game1.viewport.X, Game1.viewport.Y),
-                        Game1.previousViewportPosition, -1f);
-            snowPos.X = snowPos.X % (16 * Game1.pixelZoom);
-            Vector2 position = new Vector2();
-            float num1 = -16 * Game1.pixelZoom + snowPos.X % (16 * Game1.pixelZoom);
-            while ((double)num1 < Game1.viewport.Width)
-            {
-                float num2 = -16 * Game1.pixelZoom + snowPos.Y % (16 * Game1.pixelZoom);
-                while (num2 < (double)Game1.viewport.Height)
-                {
-                    position.X = (int)num1;
-                    position.Y = (int)num2;
-                    Game1.spriteBatch.Draw(Game1.mouseCursors, position, new Microsoft.Xna.Framework.Rectangle?
-                        (new Microsoft.Xna.Framework.Rectangle
-                        (368 + (int)((Game1.currentGameTime.TotalGameTime.TotalMilliseconds + 150) % 1200.0) / 75 * 16, 192, 16, 16)),
-                        Color.White * Game1.options.snowTransparency, 0.0f, Vector2.Zero,
-                        Game1.pixelZoom + 1f / 1000f, SpriteEffects.None, 1f);
-                    num2 += 16 * Game1.pixelZoom;
-                }
-                num1 += 16 * Game1.pixelZoom;
-            } 
-        }
-
+        
+        /// <summary>
+        /// This function verifies the weather file!
+        /// </summary>
         private void VerifyBundledWeatherFiles()
         {
             /* if (!File.Exists(Path.Combine(Helper.DirectoryPath, "weather/normal.json")))
@@ -209,20 +324,28 @@ namespace ClimateOfFerngill
 
                 Helper.WriteJsonFile<FerngillClimate>(Path.Combine(Helper.DirectoryPath, "weather/normal.json"), NormalClimate);
             } */
-        } 
-
-        private void RemovePlayerCold(string arg1, string[] arg2)
-        {
-            CurrWeather.RemoveCold();
         }
 
+        /// <summary>
+        /// This function removes the cold (Console Command)
+        /// </summary>
+        /// <param name="arg1">The command used</param>
+        /// <param name="arg2">The console command parameters</param>
+        private void RemovePlayerCold(string arg1, string[] arg2)
+        {
+            FarmerHealth.RemoveCold();
+            Monitor.Log("The cold has been removed", LogLevel.Info);
+        }
+
+        /// <summary>
+        /// This function changes the weather (Console Command)
+        /// </summary>
+        /// <param name="arg1">The command used</param>
+        /// <param name="arg2">The console command parameters</param>
         private void WeatherChangeFromConsole(string arg1, string[] arg2)
         {
             if (arg2.Length < 1)
                 return;
-
-            if (Config.TooMuchInfo)
-                Monitor.Log($"The arguments passed are {arg1} and {InternalUtility.PrintStringArray(arg2)}");
 
             string ChosenWeather = arg2[0];
 
@@ -260,19 +383,17 @@ namespace ClimateOfFerngill
 
             Game1.updateWeatherIcon();
             CurrWeather.SetCurrentWeather(); //update mod internals
-
-            if (Config.TooMuchInfo)
-                Monitor.Log(InternalUtility.PrintCurrentWeatherStatus());
-
         }
 
+        /// <summary>
+        /// This function changes the weather for tomorrow (Console Command)
+        /// </summary>
+        /// <param name="arg1">The command used</param>
+        /// <param name="arg2">The console command parameters</param>
         private void TmrwWeatherChangeFromConsole(string arg1, string[] arg2)
         {
             if (arg2.Length < 1)
                 return;
-
-            if (Config.TooMuchInfo)
-                Monitor.Log($"The arguments passed are {arg1} and {arg2.ToString()}");
 
             string ChosenWeather = arg2[0];
             switch(ChosenWeather)
@@ -307,162 +428,16 @@ namespace ClimateOfFerngill
                     break;
             }
         }
-        
-        private void GameEvents_UpdateTick(object sender, EventArgs e)
-        {
-            if (!GameLoaded)
-                return;
-
-            OurFog.MoveFog();
-
-            numberOfTicksPerSpan++;
-            if (Game1.currentLocation.isOutdoors)
-                numberOfTicksOutside++;
-
-            if (Game1.isEating != wasEating)
-            {
-                if (!Game1.isEating)
-                {
-                    // Apparently this happens when the ask to eat dialog opens, but they pressed no.
-                    // So make sure something was actually consumed.
-                    if (prevToEatStack != -1 && (prevToEatStack - 1 == Game1.player.itemToEat.Stack))
-                    {
-                        if (Config.TooMuchInfo)
-                            Monitor.Log($"Detecting someone is eating something! This something is {Game1.player.itemToEat.parentSheetIndex}");
-
-                        if (Game1.player.itemToEat.parentSheetIndex == 351 && Game1.isEating)
-                        {
-                            if (CurrWeather.HasACold())
-                            {
-                                if (Config.TooMuchInfo)
-                                    Monitor.Log("Removing the cold after having drunk a muscle relaxant");
-
-                                CurrWeather.RemoveCold();
-                            }
-                        }
-                    }
-                }
-
-                if (Config.TooMuchInfo)
-                {
-                    Monitor.Log("Eating:" + Game1.isEating,LogLevel.Trace);
-                    Monitor.Log("prev:" + prevToEatStack, LogLevel.Trace);
-                    Monitor.Log("I:" + Game1.player.itemToEat + " " + ((Game1.player.itemToEat != null) ? Game1.player.itemToEat.getStack() : -1), LogLevel.Trace);
-                    Monitor.Log("A:" + Game1.player.ActiveObject + " " + ((Game1.player.ActiveObject != null) ? Game1.player.ActiveObject.getStack() : -1), LogLevel.Trace);
-                }
-                prevToEatStack = (Game1.player.itemToEat != null ? Game1.player.itemToEat.Stack : -1);
-            }
-
-            wasEating = Game1.isEating;
-        }
-
-        private void GameEvents_QuarterSecondTick(object sender, EventArgs e)
-        {
-            if (Config.StormTotem)
-            {
-                if (Game1.weatherForTomorrow != (int)EndWeather && !RainTotemUsedToday)
-                {
-                    RainTotemUsedToday = true;
-                    if (Config.TooMuchInfo)
-                        Monitor.Log("Storm totem code enabled and running");
-
-                    //use flat storm chances
-                    if (Game1.currentSeason == "spring")
-                    {
-                        if (Dice.NextDoublePositive() < .25)
-                        {
-                            Game1.weatherForTomorrow = Game1.weather_lightning;
-                            Game1.addHUDMessage(new HUDMessage("You hear a roll of thunder..."));
-                            if (Config.TooMuchInfo)
-                                Monitor.Log($"Setting the rain totem to stormy, based on a roll of under .6");
-                        }
-                    }
-
-                    //use flat storm chances
-                    if (Game1.currentSeason == "summer")
-                    {
-                        if (Dice.NextDoublePositive() < .4)
-                        {
-                            Game1.weatherForTomorrow = Game1.weather_lightning;
-                            Game1.addHUDMessage(new HUDMessage("You hear a roll of thunder..."));
-                            if (Config.TooMuchInfo)
-                                Monitor.Log($"Setting the rain totem to stormy, based on a roll of under .4");
-                        }
-                    }
-
-                    //use flat storm chances
-                    if (Game1.currentSeason == "autumn")
-                    {
-                        if (Dice.NextDoublePositive() < .6)
-                        {
-                            Game1.weatherForTomorrow = Game1.weather_lightning;
-                            Game1.addHUDMessage(new HUDMessage("You hear a roll of thunder..."));
-                            if (Config.TooMuchInfo)
-                                Monitor.Log($"Setting the rain totem to stormy, based on a roll of under .6");
-                        }
-                    }
-                }
-            }
-        }
-
-        
-        private void SaveEvents_AfterReturnToTitle(object sender, EventArgs e)
-        {
-            if (Config.TooMuchInfo)
-                Monitor.Log("Resetting the game state for returning to title");
-
-            BadEvents.UpdateForNewDay();
-            CurrWeather.UpdateForNewDay();
-            OurIcons = null;
-            OurFog.Reset();
-            Luna.Reset();
-            GameLoaded = false;
-            RainTotemUsedToday = false;
-        }
-
-        private void ReceiveKeyPress(Keys key, Keys config)
-        {
-            if (config != key)  //sanity force this to exit!
-                return;
-                
-            if (!GameLoaded)
-                return;
-
-            // perform bound action ONLY if there is no menu OR if the menu is a WeatherMenu
-            if (Game1.activeClickableMenu == null || Game1.activeClickableMenu is WeatherMenu)
-            {
-                this.ToggleMenu();
-            }
-        }
-
-        private void ReceiveMenuClosed(IClickableMenu closedMenu)
-        {
-            // restore the previous menu if it was hidden to show the lookup UI
-            if (closedMenu is WeatherMenu && this.PreviousMenu != null)
-            {
-                 Game1.activeClickableMenu = this.PreviousMenu;
-                 this.PreviousMenu = null;
-            }
-        }
-
-        private void SaveEvents_BeforeSave(object sender, EventArgs e)
-        {
-            //run all night time processing. Events do their own checking if enabled
-            if (Config.HarshWeather)
-               BadEvents.EarlyFrost(CurrWeather);
-
-            Luna.HandleMoonBeforeSleep(Game1.getFarm()); //run lunar events           
-        }
        
         private void TimeEvents_TimeOfDayChanged(object sender, EventArgsIntChanged e)
         {
-            if (!GameLoaded)
+            if (!Game1.hasLoadedGame)
                 return;
 
             OurFog.UpdateFog(e.NewInt);
 
             if (Config.StormyPenalty)
-                CurrWeather.CatchACold();
+                FarmerHealth.CatchACold();
 
             double outsidePercentage = (double)numberOfTicksOutside / numberOfTicksPerSpan;
 
@@ -496,26 +471,12 @@ namespace ClimateOfFerngill
                 InternalUtility.FaintPlayer();
         }
 
-        private void SaveEvents_AfterLoad(object sender, EventArgs e)
-        {
-            GameLoaded = true;
-            CustomTVMod.changeAction("weather", HandleWeather); //replace weather
-            OurIcons = new Sprites.Icons(Helper.Content);
-            //UpdateWeather(CurrWeather);
-            Luna.UpdateForNewDay();
-            BadEvents.UpdateForNewDay();
-            RainTotemUsedToday = false;
-        }
-
+        /// <summary>
+        /// This function gets the forecast of the weather for the TV. 
+        /// </summary>
+        /// <returns>A string describing the weather</returns>
         public string GetWeatherForecast()
         {
-            if (Config.TooMuchInfo)
-                Monitor.Log(
-                      "This is a long debug message.\n"
-                      + $"Wedding Today: {Game1.weddingToday}\n"
-                      + $"Spouse Status: {Game1.player.spouse}\n"
-                      + $"Countdown info: {Game1.countdownToWedding}");
-
             if (Game1.weddingToday) // sanity check
             {
                 if (Config.TooMuchInfo)
@@ -532,51 +493,42 @@ namespace ClimateOfFerngill
             // since we don't predict weather in advance yet. (I don't want to rearchitecture it yet.)
             // That said, the TV channel starts with Tomorrow, so we need to keep that in mind.
 
-            // Alerts for frost/cold snap display all day. Alerts for heatwave last until 1830. 
-            tvText = "The forecast for the Valley is: ";
-
-            /*
-            if (CurrWeather.GetTodayHigh() > Config.HeatwaveWarning && Game1.timeOfDay < 1830)
-                tvText = tvText + "That it will be unusually hot outside. Stay hydrated and be careful not to stay too long in the sun. ";
-            if (CurrWeather.GetTodayHigh() < -5)
-                tvText = tvText + "There's an extreme cold snap passing through the valley. Stay warm. ";
-            if (CurrWeather.GetTodayLow() < 2 && Config.HarshWeather)
-                tvText = tvText + "Warning. We're getting frost tonight! Be careful what you plant! ";
-            */
+            tvText = OurText.TVOpening;
 
             if (Game1.timeOfDay < 1800) //don't display today's weather 
             {
-                tvText += "The high for today is ";
+                tvText += OurText.TVHigh;
                 if (!Config.DisplaySecondScale)
-                    tvText += $"{CurrWeather.DisplayHighTemperature()} , with the low being {CurrWeather.DisplayLowTemperature()} ";
-                else //derp.
-                    tvText += $"{CurrWeather.DisplayHighTemperature()} ({CurrWeather.DisplayHighTemperatureSG()}), with the low being {CurrWeather.DisplayLowTemperature()} ({CurrWeather.DisplayLowTemperatureSG()}) . ";
+                    tvText += $"{CurrWeather.DisplayHighTemperature()} {OurText.TVLow} {CurrWeather.DisplayLowTemperature()} ";
+                else 
+                    tvText += $"{CurrWeather.DisplayHighTemperature()} ({CurrWeather.DisplayHighTemperatureSG()}), " +
+                        $"{OurText.TVLow} {CurrWeather.DisplayLowTemperature()} ({CurrWeather.DisplayLowTemperatureSG()}) . ";
 
                 if (Config.TooMuchInfo) Monitor.Log(tvText);
 
                 //today weather
-                tvText = tvText + WeatherHelper.GetWeatherDesc(ourText,Dice, CurrWeather.CurrentConditions(), CurrWeather, true, Monitor, Config.TooMuchInfo);
+                tvText = tvText + WeatherHelper.GetWeatherDesc(OurText,Dice, CurrWeather.CurrentConditions(), 
+                    CurrWeather, true, Monitor, Config.TooMuchInfo);
 
                 //get WeatherForTomorrow and set text
-                tvText = tvText + "#Tomorrow, ";
+                tvText = tvText + OurText.TVTomorrowForecast;
             }
 
             //Tomorrow weather
-            tvText = tvText + WeatherHelper.GetWeatherDesc(ourText, Dice, (SDVWeather)Game1.weatherForTomorrow, CurrWeather, false, Monitor, Config.TooMuchInfo);
+            tvText = tvText + WeatherHelper.GetWeatherDesc(OurText, Dice, (SDVWeather)Game1.weatherForTomorrow, CurrWeather, 
+                false, Monitor, Config.TooMuchInfo);
 
             return tvText;
-        }
-       
+        }       
 
-        void UpdateWeather(FerngillWeather weatherOutput, bool weddingOverride = false)
+        void UpdateWeather(FerngillWeather weatherOutput, bool BREAKME, bool weddingOverride = false)
         {
             //get start values
-            SDVSeasons CurSeason = InternalUtility.GetSeason(Game1.currentSeason);
             SDVWeather TmrwWeather = (SDVWeather)Game1.weatherForTomorrow;
             bool forceSet = false;
 
-            if (Config.TooMuchInfo)
-                Monitor.Log($"The weather Tomorrow at start is: {WeatherHelper.DescWeather(TmrwWeather, Game1.currentSeason)}");
+            string logMessage = $"The weather set for tomorrow at start is: " +
+                $"{WeatherHelper.DescWeather(TmrwWeather, Game1.currentSeason)}";
 
             // The mod executes after the main loop and should only execute at the beginning of the
             //  day. This really means we have to make sure it runs or we'll have an issue with the tv
@@ -622,7 +574,7 @@ namespace ClimateOfFerngill
             }
 
             //handle forced weather from the game - this function will actually set the weather itself, if true.
-            if (GameWillForceTomorrow(InternalUtility.GetTomorrowInGame()))
+            if (GameWillForceTomorrow(SDVDate.Tomorrow))
             {
                 forceSet = true;
                 if (Config.TooMuchInfo) Monitor.Log("The game is forcing weather Tomorrow. Setting flag.");
@@ -661,6 +613,10 @@ namespace ClimateOfFerngill
             // Game1.chanceToRainTomorrow = rainChance; //set for various events.
             Game1.weatherForTomorrow = (int)TmrwWeather;
 
+            //Fire off the events to say 'we've set weather, update trackers'
+            CurrWeather.SetCurrentWeather();
+            OurFog.CheckForFog(Dice, CurrWeather);
+
             if (Config.TooMuchInfo)
                 Monitor.Log($"Checking if set. Generated Weather: {WeatherHelper.DescWeather(TmrwWeather, Game1.currentSeason)} and set weather is: {WeatherHelper.DescWeather((SDVWeather)Game1.weatherForTomorrow, Game1.currentSeason)}");
         }
@@ -687,6 +643,43 @@ namespace ClimateOfFerngill
         }
 
         #region Menu
+        /// <summary>
+        /// This checks the keys being pressed if one of them is the weather menu, toggles it.
+        /// </summary>
+        /// <param name="key">The key being pressed</param>
+        /// <param name="config">The keys we're listening to.</param>
+        private void ReceiveKeyPress(Keys key, Keys config)
+        {
+            if (config != key)  //sanity force this to exit!
+                return;
+
+            if (!Game1.hasLoadedGame)
+                return;
+
+            // perform bound action ONLY if there is no menu OR if the menu is a WeatherMenu
+            if (Game1.activeClickableMenu == null || Game1.activeClickableMenu is WeatherMenu)
+            {
+                this.ToggleMenu();
+            }
+        }
+
+        /// <summary>
+        /// This function closes the menu. Will reopen the previous menu if it exists
+        /// </summary>
+        /// <param name="closedMenu">The menu being closed.</param>
+        private void ReceiveMenuClosed(IClickableMenu closedMenu)
+        {
+            // restore the previous menu if it was hidden to show the lookup UI
+            if (closedMenu is WeatherMenu && this.PreviousMenu != null)
+            {
+                Game1.activeClickableMenu = this.PreviousMenu;
+                this.PreviousMenu = null;
+            }
+        }
+
+        /// <summary>
+        /// Toggle the menu visiblity
+        /// </summary>
         private void ToggleMenu()
         {
             if (Game1.activeClickableMenu is WeatherMenu)
@@ -695,13 +688,19 @@ namespace ClimateOfFerngill
                 this.ShowMenu();
         }
 
+        /// <summary>
+        /// Show the menu
+        /// </summary>
         private void ShowMenu()
         {
             // show menu
             this.PreviousMenu = Game1.activeClickableMenu;
-            Game1.activeClickableMenu = new WeatherMenu(Monitor, this.Helper.Reflection, OurIcons, CurrWeather, Luna, Config);
+            Game1.activeClickableMenu = new WeatherMenu(Monitor, this.Helper.Reflection, OurIcons, OurText, CurrWeather, Luna, Config);
         }
 
+        /// <summary>
+        /// Hide the menu.
+        /// </summary>
         private void HideMenu()
         {
             if (Game1.activeClickableMenu is WeatherMenu)

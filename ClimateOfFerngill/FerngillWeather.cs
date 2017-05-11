@@ -1,31 +1,39 @@
-﻿using NPack;
+﻿using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
+using NPack;
 using StardewModdingAPI;
 using StardewValley;
 using System;
 
 namespace ClimateOfFerngill
 {
+    /// <summary>
+    /// This class controls the weather of the mod as well as many function to set it.
+    /// </summary>
     public class FerngillWeather
     {
+        public bool IsBlizzard { get; private set; }
+        public bool IsHeatwave { get; private set; }
+        public bool IsFrost { get; private set; }
+
         private double TodayHigh { get; set; }
         private double TodayLow { get; set; }
         private SDVWeather CurrentWeather { get; set; }
         private ClimateConfig Config { get; set; }
         private MersenneTwister pRNG;
         private IMonitor Logger;
-        private bool IsExhausted;
-        private bool HasGottenColdToday;
-        public bool IsBlizzard { get; private set; }
-        public bool IsHeatwave { get; private set; }
-        public bool IsFrost { get; private set; }
+        private Vector2 snowPos; //snow elements
+
+        /// <summary>
+        /// This contains the climate data used to generate chances.
+        /// </summary>
+        public FerngillClimate WeatherModel { get; private set; }
 
         public FerngillWeather(ClimateConfig config, MersenneTwister Dice, IMonitor log)
         {
             IsBlizzard = false;
             IsHeatwave = false;
             IsFrost = false;
-            HasGottenColdToday = false;
-            IsExhausted = false;
             Config = config;
             Logger = log;
             pRNG = Dice;
@@ -124,44 +132,9 @@ namespace ClimateOfFerngill
             return "C";
         }
 
-        public bool HasACold()
-        {
-            return this.IsExhausted;
-        }
-
-        public void RemoveCold()
-        {
-            IsExhausted = false;
-            Game1.addHUDMessage(new HUDMessage("You are no longer exhausted!"));
-        }
-
-        public void CatchACold()
-        {
-            //run non specific code first
-            if (Game1.currentLocation.IsOutdoors && Game1.isLightning && !HasGottenColdToday)
-            {
-                double diceChance = pRNG.NextDouble();
-                if (Config.TooMuchInfo)
-                    Logger.Log($"The chance of exhaustion is: {diceChance} with the configured chance of {Config.DiseaseChance}");
-
-                if (diceChance < Config.DiseaseChance)
-                {
-                    IsExhausted = true;
-                    InternalUtility.ShowMessage("The storm has caused you to get a cold!");
-                    HasGottenColdToday = true;
-                }
-            }
-        }
-
         public void HandleStaminaChanges(bool passedThresholdOutside)
         {
             int HighStaminaPenalty = (int)Math.Ceiling(Config.StaminaPenalty * 1.5);
-
-            //disease code.
-            if (IsExhausted)
-            {
-                Game1.player.stamina = Game1.player.stamina - Config.StaminaPenalty;
-            }
 
             //heatwave or blizzard code.
             if (IsHeatwave && passedThresholdOutside)
@@ -180,14 +153,6 @@ namespace ClimateOfFerngill
             if (IsBlizzard && passedThresholdOutside)
             {     
                 Game1.player.stamina -= HighStaminaPenalty;
-            }
-
-            //alert code - 30% chance of appearing
-            // configured to properly appear now
-            // Fix: 15%
-            if (IsExhausted && pRNG.NextDouble() < .15)
-            {
-                InternalUtility.ShowMessage("You have a cold, and feel worn out!");
             }
 
             if ((IsBlizzard || IsHeatwave) && pRNG.NextDouble() < .15)
@@ -313,52 +278,14 @@ namespace ClimateOfFerngill
 
         public void Reset()
         {
-            HasGottenColdToday = false;
             IsBlizzard = false;
             IsHeatwave = false;
             IsFrost = false;
-            IsExhausted = false;
             CurrentWeather = SDVWeather.None;
             TodayHigh = -1000;
             TodayLow = -1000;
         }
-
-
-        public bool IsFog(string season, MersenneTwister Dice)
-        {
-            //set up fog.
-            double FogChance = 0;
-            switch (season)
-            {
-                case "spring":
-                    FogChance = Config.SpringFogChance;
-                    break;
-                case "summer":
-                    FogChance = Config.SummerFogChance;
-                    break;
-                case "fall":
-                    FogChance = Config.AutumnFogChance;
-                    break;
-                case "winter":
-                    FogChance = Config.WinterFogChance;
-                    break;
-                default:
-                    FogChance = 0;
-                    break;
-            }
-
-            //move these out of the main loop.
-            if (CurrentConditions() == SDVWeather.Rainy || CurrentConditions() == SDVWeather.Debris)
-                return false;
-            
-            if (Dice.NextDouble() < FogChance)
-            {
-                return true;
-            }
-            else
-                return false;
-        }
-
+        
         public void SetCurrentWeather()
         {
             if (Game1.isRaining)
@@ -383,31 +310,6 @@ namespace ClimateOfFerngill
                 CurrentWeather = SDVWeather.Sunny;
         }
 
-        public SDVTime GetFogExpireTime(MersenneTwister dice)
-        {
-            double FogTimer = dice.NextDouble();
-            SDVTime FogExpirTime = new SDVTime(1200);
-
-            if (FogTimer > .75 && FogTimer <= .90)
-            {
-                FogExpirTime = new SDVTime(1120);
-            }
-            else if (FogTimer > .55 && FogTimer <= .75)
-            {
-                FogExpirTime = new SDVTime(1030);
-            }
-            else if (FogTimer > .30 && FogTimer <= .55)
-            {
-                FogExpirTime = new SDVTime(930);
-            }
-            else if (FogTimer <= .30)
-            {
-                FogExpirTime = new SDVTime(820);
-            }
-
-            return FogExpirTime;
-        }
-
         public override string ToString()
         {
             string s = $"High: {TodayHigh} C and Low: {TodayLow} C, with status {CurrentWeather.ToString()}";
@@ -422,6 +324,53 @@ namespace ClimateOfFerngill
                 s += " . It's very hot outside, expect a good chance of a heatwave.";
 
             return s;
+        }
+
+        public void SetForThunderSnow()
+        {
+            Game1.isRaining = false;
+            Game1.isLightning = true;
+            Game1.isSnowing = true;
+            Game1.isDebrisWeather = false;
+
+            Game1.debrisWeather.Clear();
+            this.CurrentWeather = SDVWeather.Thundersnow;
+        }
+
+        public void SetForBlizzard()
+        {
+            Game1.isRaining = false;
+            Game1.isLightning = false;
+            Game1.isSnowing = true;
+            Game1.isDebrisWeather = false;
+
+            Game1.debrisWeather.Clear();
+            this.CurrentWeather = SDVWeather.Blizzard;
+        }
+
+        public void DrawBlizzard()
+        {
+            snowPos = Game1.updateFloatingObjectPositionForMovement(snowPos, new Vector2(Game1.viewport.X, Game1.viewport.Y),
+                        Game1.previousViewportPosition, -1f);
+            snowPos.X = snowPos.X % (16 * Game1.pixelZoom);
+            Vector2 position = new Vector2();
+            float num1 = -16 * Game1.pixelZoom + snowPos.X % (16 * Game1.pixelZoom);
+            while ((double)num1 < Game1.viewport.Width)
+            {
+                float num2 = -16 * Game1.pixelZoom + snowPos.Y % (16 * Game1.pixelZoom);
+                while (num2 < (double)Game1.viewport.Height)
+                {
+                    position.X = (int)num1;
+                    position.Y = (int)num2;
+                    Game1.spriteBatch.Draw(Game1.mouseCursors, position, new Microsoft.Xna.Framework.Rectangle?
+                        (new Microsoft.Xna.Framework.Rectangle
+                        (368 + (int)((Game1.currentGameTime.TotalGameTime.TotalMilliseconds + 150) % 1200.0) / 75 * 16, 192, 16, 16)),
+                        Color.White * Game1.options.snowTransparency, 0.0f, Vector2.Zero,
+                        Game1.pixelZoom + 1f / 1000f, SpriteEffects.None, 1f);
+                    num2 += 16 * Game1.pixelZoom;
+                }
+                num1 += 16 * Game1.pixelZoom;
+            }
         }
     }
 }

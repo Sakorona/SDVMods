@@ -31,26 +31,6 @@ namespace ClimateOfFerngill
             { new SDVDate("winter", 25), Game1.weather_festival }
        };
 
-        public static SDVDate GetTomorrowInGame()
-        {
-            int day = 1;
-            string season = "spring";
-
-            if (Game1.dayOfMonth == 28)
-            {
-                day = 1;
-                season = GetNextSeason(Game1.currentSeason);
-            }
-            else
-            {
-                season = Game1.currentSeason;
-                day = Game1.dayOfMonth + 1;
-            }
-
-            return new SDVDate(season, day);
-
-        }
-
         public static string GetNextSeason(string currentSeason)
         {
             if (currentSeason == "spring")
@@ -176,38 +156,9 @@ namespace ClimateOfFerngill
             return "ERROR";
         }
 
-        internal static SDVSeasons GetNewSeason(SDVSeasons currentSeason)
-        {
-            if (currentSeason == SDVSeasons.spring) return SDVSeasons.summer;
-            if (currentSeason == SDVSeasons.summer) return SDVSeasons.fall;
-            if (currentSeason == SDVSeasons.fall) return SDVSeasons.winter;
-            if (currentSeason == SDVSeasons.winter) return SDVSeasons.spring;
-
-            return SDVSeasons.none;
-        }
-
         public static Beach GetBeach()
         {
             return Game1.getLocationFromName("Beach") as Beach;
-        }
-
-        internal static SDVSeasons GetSeason(string currentSeason)
-        {
-            if (currentSeason == "spring")
-                return SDVSeasons.spring;
-            if (currentSeason == "summer")
-                return SDVSeasons.summer;
-            if (currentSeason == "fall")
-                return SDVSeasons.fall;
-            if (currentSeason == "winter")
-                return SDVSeasons.winter;
-
-            return SDVSeasons.none;
-        }
-
-        public static bool IsSeason(SDVSeasons season)
-        {
-            return (season.ToString()).ToLower() == Game1.currentSeason;
         }
 
         public static string WeatherToString(int weather)

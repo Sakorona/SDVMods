@@ -5,27 +5,27 @@
     "it'll be a misty, wet day - make sure to pause when you can and enjoy it!"
   ],
   "SpringStormText": [
-    "early showers bring summer flowers! It'll be stormy outside.", 
-    "expect some lightning outside -  be careful!", 
+    "early showers bring summer flowers! It'll be stormy outside.",
+    "expect some lightning outside -  be careful!",
     "a storm front is blowing over the region, bringing rain and lightning."
-    ],
-   "SpringSnowText": [
+  ],
+  "SpringSnowText": [
     "a late snowfall blankets the region. Stay warm!"
   ],
-  "SpringWindText": [ 
+  "SpringWindText": [
     "it'll be a blustery day outside.",
     "a cold front is blowing through - if you have allergies, be careful.",
     "the wind will be blowing through the valley today, bringing plenty of spring pollen."
-    ],
+  ],
   "SpringClearText": [
     "a nice spring day, perfect for all those outside chores!",
     "clear and warm, it should be a perfect day.",
     "it will be a nice clear spring day."
   ],
-  "SummerRainText": [ 
-   "a warm rain is expected.",
-   "there will be a warm refreshing rain as a front passes by.",
-   "rain Tomorrow will bring a slightly cooler day."
+  "SummerRainText": [
+    "a warm rain is expected.",
+    "there will be a warm refreshing rain as a front passes by.",
+    "rain Tomorrow will bring a slightly cooler day."
   ],
   "SummerStormText": [
     "expect storms throughout the day.",
@@ -41,49 +41,49 @@
     "it'll be a hot and windy day throughout the valley."
   ],
   "SummerSnowText": [
-	  "expect snow, in an extremely rare occurance for this region."
+    "expect snow, in an extremely rare occurance for this region."
   ],
-  "FallRainText" : [
-     "expect a cold rain as a low pressure front passes overhead.", 
-     "moisture off the Gem Sea will make for a cold windy rain."
+  "FallRainText": [
+    "expect a cold rain as a low pressure front passes overhead.",
+    "moisture off the Gem Sea will make for a cold windy rain."
   ],
-  "FallStormText" :[
-	"expect storms throughout the day.", 
-	"it'll be a cold and stormy day.", 
-	"a variable pressure front coming down from the north will bring storms with it."
-	],
-  "FallWindText" :[ 
-	"it'll be a blustry cold day outside.", 
-	"expect blowing leaves - a cold front will be passing through."
+  "FallStormText": [
+    "expect storms throughout the day.",
+    "it'll be a cold and stormy day.",
+    "a variable pressure front coming down from the north will bring storms with it."
   ],
-  "FallClearText" :[ 
-	"a cold day in the morning, with a warmer afternoon - clear.", 
-	"another autumn day in eastern Ferngill, expect a chilly and clear day."
+  "FallWindText": [
+    "it'll be a blustry cold day outside.",
+    "expect blowing leaves - a cold front will be passing through."
   ],
-  "FallSnowText" :[ 
-		"an early snowfall reminds us that winter is on the way.",
-		"expect snow today, and make sure to protect what crops are left!"
+  "FallClearText": [
+    "a cold day in the morning, with a warmer afternoon - clear.",
+    "another autumn day in eastern Ferngill, expect a chilly and clear day."
   ],
-  "WinterSnowText" :[ 
+  "FallSnowText": [
+    "an early snowfall reminds us that winter is on the way.",
+    "expect snow today, and make sure to protect what crops are left!"
+  ],
+  "WinterSnowText": [
     "winter continues it's relentless assualt - expect snow. ",
-    "moisture blowing off the Gem Sea - expecting snowfall for the Stardew Valley, more in the mountains. ", 
-    "a curtain of white will descend on the valley starting at Point Drake. " 
-    ],
-  "WinterWindText" :[
-     "a light flurry of snow will be passing over Stardew Valley towards Point Drake today",
-     "the snow will be coming down, but very lightly today."
-    ],
-  "WinterClearText" :[ 
-	"it'll be a clear cold day.", 
-	"a cold winter day - keep warm!", 
-	"another chilly clear day over the Valley as a High pressure moves overhead."
+    "moisture blowing off the Gem Sea - expecting snowfall for the Stardew Valley, more in the mountains. ",
+    "a curtain of white will descend on the valley starting at Point Drake. "
   ],
-  "WinterRainText" :[ 
-	"a rare day of ice-cold rain over the valley.", 
-	"it's warmed up enough outside that Tomorrow's winter day will be a chilly rain."
- ],
-  "NextDayIsNextSeason" : "it'll be a fine day for the first day of",
-  "NextDayIsNewYear" : "another year has come to an end, and we will greet the next year with a sunny spring day!",
+  "WinterWindText": [
+    "a light flurry of snow will be passing over Stardew Valley towards Point Drake today",
+    "the snow will be coming down, but very lightly today."
+  ],
+  "WinterClearText": [
+    "it'll be a clear cold day.",
+    "a cold winter day - keep warm!",
+    "another chilly clear day over the Valley as a High pressure moves overhead."
+  ],
+  "WinterRainText": [
+    "a rare day of ice-cold rain over the valley.",
+    "it's warmed up enough outside that Tomorrow's winter day will be a chilly rain."
+  ],
+  "NextDayIsNextSeason": "it'll be a fine day for the first day of",
+  "NextDayIsNewYear": "another year has come to an end, and we will greet the next year with a sunny spring day!",
   "WeddingWeather": [
     "it'll be good weather for a Pelican Town Wedding! Congratulations to the newlyweds.",
     "it'll be bright and sunny weather. I've been informed that there's a wedding going on, so you've got perfect weather."
@@ -94,14 +94,31 @@
   ],
   "HeatwaveWarning": [
     "the above normal temperatures today will cause a heatwave to pass through the valley. Stay hydrated!",
-    "the high today of [high] [high_scale] will mean that it will be very hot and will possibly wilt crops. If you must go outside, do so for limited amounts of time."
+    "the high today will mean that it will be very hot and will possibly wilt crops. If you must go outside, do so for limited amounts of time."
   ],
   "ThundersnowText": [
     "the rare thundersnow is passing through the valley today, with lightning strikes throughout the snow."
   ],
   "FrostWarning": [
     "tonight, a frost will pass through the valley, potentially killing crops. Make sure to bundle up.",
-    "the low today of [low] [low_scale] will mean that that it will be cold today, so make sure to bundle up."
-  ]
+    "the low today of will mean that that it will be cold today, so make sure to bundle up."
+  ],
+  "TVOpening": "...concludes the weather for Zuzu City.#The forecast for Stardew Valley is as follows:",
+  "TVHigh": "The high for today is ",
+  "TVLow": ", with the low being",
+  "TVTomorrowForecast": "#Tomorrow, ",
+  "WeatherMenuOpening": "Your weather, from KKWF Radio",
+  "WeatherReportOpening": "The weather report for",
+  "WeatherReportBridge": " is: ",
+  "WRHigh": "the high:",
+  "WRLow": "the low:",
+  "WRFestivalToday": "Today, we have the ",
+  "WRToday": "Today, the weather is ",
+  "WRFestivalTomorrow": "Tomorrow will be a special event ",
+  "WRTomorrow": "Tomorrow, the weather will be ",
+  "WRWith": "with",
+  "WRMoonPhase":  "Today's Moon Phase is",
+  "WRAlert": "WEATHER ALERT:"
+
 
 }

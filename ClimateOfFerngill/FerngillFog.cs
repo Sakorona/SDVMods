@@ -1,18 +1,19 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using NPack;
 using StardewValley;
 
 namespace ClimateOfFerngill
 {
     public class FerngillFog
     {
-        public Rectangle FogSource = new Microsoft.Xna.Framework.Rectangle(640, 0, 64, 64);
-        public Color FogColor { get; set; }
-        public float FogAlpha { get; set; }
+        private Rectangle FogSource = new Microsoft.Xna.Framework.Rectangle(640, 0, 64, 64);
+        private Color FogColor { get; set; }
+        private float FogAlpha { get; set; }
         public SDVTime FogExpirTime { get; set; }
         public bool FogTypeDark { get; set; }
         public bool AmbientFog { get; set; }
-        public Vector2 FogPosition { get; set; }
+        private Vector2 FogPosition { get; set; }
 
         public FerngillFog()
         {
@@ -48,6 +49,82 @@ namespace ClimateOfFerngill
                 return true;
             else
                 return false;
+        }
+
+        public bool IsFog(MersenneTwister Dice, FerngillWeather CurrentWeather, string season)
+        {
+            //set up fog.
+            double FogChance = 0;
+            switch (season)
+            {
+                case "spring":
+                    FogChance = Config.SpringFogChance;
+                    break;
+                case "summer":
+                    FogChance = Config.SummerFogChance;
+                    break;
+                case "fall":
+                    FogChance = Config.AutumnFogChance;
+                    break;
+                case "winter":
+                    FogChance = Config.WinterFogChance;
+                    break;
+                default:
+                    FogChance = 0;
+                    break;
+            }
+
+            //move these out of the main loop.
+            if (CurrentWeather.CurrentConditions() == SDVWeather.Rainy || CurrentWeather.CurrentConditions() == SDVWeather.Debris)
+                return false;
+
+            if (Dice.NextDouble() < FogChance)
+            {
+                return true;
+            }
+            else
+                return false;
+        }
+
+        public void CheckForFog(MersenneTwister Dice, FerngillWeather CurrentWeather)
+        {
+            if (IsFog(Dice, CurrentWeather, Game1.currentSeason))
+            {
+                CreateFog(FogAlpha: .55f, AmbientFog: true, FogColor: (Color.White * 1.35f));
+                Game1.globalOutdoorLighting = .5f;
+
+                if (Dice.NextDouble() < .15)
+                {
+                    IsDarkFog();
+                    Game1.outdoorLight = new Color(227, 222, 211);
+                }
+                else
+                {
+                    Game1.outdoorLight = new Color(179, 176, 171);
+                }
+
+                double FogTimer = Dice.NextDouble();
+                SDVTime FogExpirTime = new SDVTime(1200);
+
+                if (FogTimer > .75 && FogTimer <= .90)
+                {
+                    FogExpirTime = new SDVTime(1120);
+                }
+                else if (FogTimer > .55 && FogTimer <= .75)
+                {
+                    FogExpirTime = new SDVTime(1030);
+                }
+                else if (FogTimer > .30 && FogTimer <= .55)
+                {
+                    FogExpirTime = new SDVTime(930);
+                }
+                else if (FogTimer <= .30)
+                {
+                    FogExpirTime = new SDVTime(820);
+                }
+
+                this.FogExpirTime = FogExpirTime;
+            }
         }
 
         public void UpdateFog(int time)

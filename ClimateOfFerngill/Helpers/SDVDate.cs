@@ -1,9 +1,14 @@
-﻿namespace ClimateOfFerngill
+﻿using StardewValley;
+
+namespace ClimateOfFerngill
 {
     public struct SDVDate
     {
         public string Season { get; set; }
         public int Day { get; set; }
+
+        public static SDVDate Today { get => new SDVDate(Game1.currentSeason, Game1.dayOfMonth); }
+        public static SDVDate Tomorrow { get => GetTomorrowInGame(); }
 
         public SDVDate(string s, int d)
         {
@@ -41,6 +46,25 @@
                 return false;
             else
                 return true;
+        }
+
+        public static SDVDate GetTomorrowInGame()
+        {
+            int day = 1;
+            string season = "spring";
+
+            if (Game1.dayOfMonth == 28)
+            {
+                day = 1;
+                season = InternalUtility.GetNextSeason(Game1.currentSeason);
+            }
+            else
+            {
+                season = Game1.currentSeason;
+                day = Game1.dayOfMonth + 1;
+            }
+
+            return new SDVDate(season, day);
         }
 
     }
