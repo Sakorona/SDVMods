@@ -160,7 +160,6 @@ namespace ClimateOfFerngill
                 InternalUtility.ShowMessage("The harsh weather conditions have tired you out!");
             }
         }
-
         public bool IsDangerousWeather()
         {
             if (IsBlizzard || IsFrost || IsHeatwave)

@@ -1,3 +1,21 @@
+1.1
+- Updated for SMAPI 1.13
+- Refactored to make it easier to add things in the future. 
+- Cleaned up some of the debug spam
+- Added new custom weathers: Thundersnow, Dry Lightning, Blizzards
+- Added fog in the mornings, and it should now fade out
+- Changed the weather system to run off of a .json, which also allows for custom user climates
+- Fixed an issue with the menu popping up when the key was type din a box
+- Heatwaves and Blizards now drain stamina.
+- Fixed the issue where drinking the muscle relaxer didn't stop the cold
+- TV now uses a mod to allow for other mods altering TV channels to work with this one
+- Tweaked the penalty for colds
+- Collection Enumeration error resolved
+- Fixed: Debris weather via console didn't trigger the debris. 
+- Moved TV strings to a .json file, and rewrote a few to flow better, to allow for customization down the line
+- Spellchecked the mod in places
+- Updated the documentation
+
 1.0
 - Final release for SDV 1.2
 - Updated for new functionality in 1.2

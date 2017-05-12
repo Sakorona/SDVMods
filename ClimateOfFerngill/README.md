@@ -22,11 +22,10 @@ See [https://github.com/JohnsonNicholas/climate-of-ferngill/blob/master/Changelo
 * A Moon that causes events with the phases.
 * Console commands to customize the weather!
 * Morning fog!
-* Blizzards!
+* Blizzards! Thundersnow! Dry Lightning!
 * A hotkey to show a weather popup!
 * Moving TV text options to a json/txt file for easier customization.
 * Specifying climate options via json file
-
 
 ## Known Issues
 

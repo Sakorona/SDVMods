@@ -1,12 +1,7 @@
 ﻿using StardewModdingAPI;
 using StardewModdingAPI.Events;
-using StardewValley.Objects;
-using StardewValley.Locations;
 using StardewValley;
 using System;
-using Microsoft.Xna.Framework;
-using System.Linq;
-using System.Reflection;
 
 namespace SolarEclipseEvent
 {
@@ -25,10 +20,21 @@ namespace SolarEclipseEvent
 
             SaveEvents.AfterLoad += SaveEvents_AfterLoad;
             SaveEvents.BeforeSave += SaveEvents_BeforeSave;
-            TimeEvents.DayOfMonthChanged += TimeEvents_DayOfMonthChanged;
+
+            TimeEvents.AfterDayStarted += TimeEvents_AfterDayStarted;
             TimeEvents.TimeOfDayChanged += TimeEvents_TimeOfDayChanged;
             LocationEvents.CurrentLocationChanged += LocationEvents_CurrentLocationChanged;
             
+        }
+
+        private void TimeEvents_AfterDayStarted(object sender, EventArgs e)
+        {
+            Random r = new Random();
+            if (r.NextDouble() < Config.EclipseChance)
+            {
+                IsEclipse = true;
+                Game1.addHUDMessage(new HUDMessage("It looks like a rare solar eclipse will darken the sky all day!"));
+            }
         }
 
         private void LocationEvents_CurrentLocationChanged(object sender, EventArgsCurrentLocationChanged e)
@@ -68,26 +74,7 @@ namespace SolarEclipseEvent
             }
         }
 
-        private void TimeEvents_DayOfMonthChanged(object sender, EventArgsIntChanged e)
-        {
-            Random r = new Random();
-            if (r.NextDouble() < Config.EclipseChance)
-            {
-                Type myType = Type.GetType("ClimatesOfFerngill.SDVMoon");
-                if (myType != null)
-                {
-                    Monitor.Log("We've detected the moon!", LogLevel.Trace);
-                    MethodInfo method = myType.GetMethod("GetLunarPhase", BindingFlags.Public | BindingFlags.Static);
-                    object resp = method.Invoke(null, new object[] { });
 
-                    if ((int)resp == 1001)
-                        return; //early termination.
-                }
-
-                IsEclipse = true;
-                Game1.addHUDMessage(new HUDMessage("It looks like a rare solar eclipse will darken the sky all day!"));
-            }
-        }
 
         private void SaveEvents_BeforeSave(object sender, System.EventArgs e)
         {

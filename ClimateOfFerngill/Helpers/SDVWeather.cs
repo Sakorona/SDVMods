@@ -17,6 +17,7 @@ namespace ClimateOfFerngill
         Snow = 5,
         Wedding = 6,
         Blizzard = 97,
-        Thundersnow = 98
+        Thundersnow = 98,
+        DryLightning = 99
     }
 }
