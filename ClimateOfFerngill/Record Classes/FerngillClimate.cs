@@ -12,29 +12,37 @@ namespace ClimateOfFerngill
 
         public double LowTempBase;
         public double LowTempChange;
-        public double LowTempVariable;
+        public double LowTempVariableLowerBound;
+        public double LowTempVariableHigherBound;
 
         public double HighTempBase;
         public double HighTempChange;
-        public double HighTempVariable;
+        public double HighTempVariableLowerBound;
+        public double HighTempVariableHigherBound;
 
         public double BaseRainChance;
         public double RainChange;
-        public double RainVariability;
+        public double RainVariabilityLowerBound;
+        public double RainVariabilityHigherBound;
 
         public double BaseStormChance;
         public double StormChange;
-        public double StormVariability;
+        public double StormVariabilityLowerBound;
+        public double StormVariabilityHigherBound;
 
         public double BaseDebrisChance;
         public double DebrisChange;
-        public double DebrisVariability;
+        public double DebrisVariabilityLowerBound;
+        public double DebrisVariabilityHigherBound;
 
         public double BaseSnowChance;
         public double SnowChange;
-        public double SnowVariability;
+        public double SnowVariabilityLowerBound;
+        public double SnowVariabilityHigherBound;
 
         public double FogChance;
+        public double FogVariabilityLowerBound;
+        public double FogVariabilityHigherBound;
 
         public FerngillClimateTimeSpan()
         {
@@ -42,10 +50,12 @@ namespace ClimateOfFerngill
         }
 
         public FerngillClimateTimeSpan(bool FrozenPrecip, string Season, int BeginDay, int EndDay, 
-            double LowTempBase, double LowTempChange, double LowTempVariable, double HighTempBase, double HighTempChange,
-            double HighTempVariable, double BaseRainChance, double RainChange, double RainVariability, double BaseStormChance,
-            double StormChange, double StormVariability, double BaseDebrisChance, double DebrisChange, double DebrisVariability,
-            double BaseSnowChance, double SnowChange, double SnowVariability, double FogChance)
+            double LowTempBase, double LowTempChange, double LowTempVariableLowerBound, double HighTempBase, double HighTempChange,
+            double HighTempVariableLowerBound, double BaseRainChance, double RainChange, double RainVariabilityLowerBound, 
+            double BaseStormChance, double StormChange, double StormVariabilityLowerBound, double BaseDebrisChance, double DebrisChange, 
+            double DebrisVariabilityLowerBound, double BaseSnowChance, double SnowChange, double SnowVariabilityLowerBound, double FogChance, 
+            double FogVariabilityLowerBound, double FogVariabilityHigherBound, double LowTempVariableHigherBound, double HighTempVariableHigherBound,
+            double RainVariabilityHigherBound, double SnowVariabilityHigherBound, double DebrisChanceHigherBound)
         {
             this.FrozenPrecip = FrozenPrecip;
 
@@ -55,11 +65,11 @@ namespace ClimateOfFerngill
 
             this.LowTempBase = LowTempBase;
             this.LowTempChange = LowTempChange;
-            this.LowTempVariable = LowTempVariable;
+            this.LowTempVariableLowerBound = LowTempVariableLowerBound;
 
             this.HighTempBase = HighTempBase;
             this.HighTempChange = HighTempChange;
-            this.HighTempVariable = HighTempVariable;
+            this.HighTempVariableLowerBound = HighTempVariableLowerBound;
 
             this.BaseRainChance = BaseRainChance;
             this.RainChange = RainChange;

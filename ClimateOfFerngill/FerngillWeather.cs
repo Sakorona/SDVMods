@@ -295,6 +295,9 @@ namespace ClimateOfFerngill
                     CurrentWeather = SDVWeather.Rainy;
             }
 
+            if (Game1.isLightning && !Game1.isRaining)
+                CurrentWeather = SDVWeather.DryLightning;
+
             else if (Game1.isSnowing)
                 CurrentWeather = SDVWeather.Snow;
             else if (Game1.isDebrisWeather)
