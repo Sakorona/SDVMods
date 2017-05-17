@@ -313,17 +313,12 @@ namespace ClimateOfFerngill
         /// </summary>
         private void VerifyBundledWeatherFiles()
         {
-            /* if (!File.Exists(Path.Combine(Helper.DirectoryPath, "weather/normal.json")))
+            if (!File.Exists(Path.Combine(Helper.DirectoryPath, "weather/normal.json")))
             {
                 FerngillClimate NormalClimate = new FerngillClimate();
-                NormalClimate.ClimateSequences.Add(
-                    new FerngillClimateTimeSpan(Season: "spring", BeginDay: 1, EndDay: 9, FrozenPrecip: false,
-                        LowTempBase: 3, LowTempChange: .725, LowTempVariable: .85, HighTempBase: 8.5, HighTempChange: .745,
-                        HighTempVariable: .65, BaseRainChance: .55, RainChange: -.024, RainVariability: .001, BaseStormChance: .145, StormChange: 0,
-                        StormVariability: .01, BaseDebrisChance: .25, DebrisChange: 0));
-
+                
                 Helper.WriteJsonFile<FerngillClimate>(Path.Combine(Helper.DirectoryPath, "weather/normal.json"), NormalClimate);
-            } */
+            } 
         }
 
         /// <summary>

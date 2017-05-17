@@ -2,92 +2,67 @@
 
 namespace ClimateOfFerngill
 {
+    public class WeatherParameters
+    {
+        public string WeatherType;
+        public double BaseValue;
+        public double ChangeRate;
+        public double VariableLowerBound;
+        public double VariableHigherBound;
+
+        public WeatherParameters()
+        {
+
+        }
+
+        public WeatherParameters(string wType, double bValue, double cRate, double vLowerBound, double vHigherBound)
+        {
+            this.WeatherType = wType;
+            this.BaseValue = bValue;
+            this.ChangeRate = cRate;
+            this.VariableLowerBound = vLowerBound;
+            this.VariableHigherBound = vHigherBound;
+        }
+
+        public WeatherParameters(WeatherParameters c)
+        {
+            this.WeatherType = c.WeatherType;
+            this.BaseValue = c.BaseValue;
+            this.ChangeRate = c.ChangeRate;
+            this.VariableLowerBound = c.VariableLowerBound;
+            this.VariableHigherBound = c.VariableHigherBound;
+        }
+    }
+
     public class FerngillClimateTimeSpan
     {
         public string Season;
         public int BeginDay;
         public int EndDay;
-
-        public bool FrozenPrecip;
-
-        public double LowTempBase;
-        public double LowTempChange;
-        public double LowTempVariableLowerBound;
-        public double LowTempVariableHigherBound;
-
-        public double HighTempBase;
-        public double HighTempChange;
-        public double HighTempVariableLowerBound;
-        public double HighTempVariableHigherBound;
-
-        public double BaseRainChance;
-        public double RainChange;
-        public double RainVariabilityLowerBound;
-        public double RainVariabilityHigherBound;
-
-        public double BaseStormChance;
-        public double StormChange;
-        public double StormVariabilityLowerBound;
-        public double StormVariabilityHigherBound;
-
-        public double BaseDebrisChance;
-        public double DebrisChange;
-        public double DebrisVariabilityLowerBound;
-        public double DebrisVariabilityHigherBound;
-
-        public double BaseSnowChance;
-        public double SnowChange;
-        public double SnowVariabilityLowerBound;
-        public double SnowVariabilityHigherBound;
-
-        public double FogChance;
-        public double FogVariabilityLowerBound;
-        public double FogVariabilityHigherBound;
-
+        public List<WeatherParameters> WeatherChances;
+       
         public FerngillClimateTimeSpan()
         {
 
         }
 
-        public FerngillClimateTimeSpan(bool FrozenPrecip, string Season, int BeginDay, int EndDay, 
-            double LowTempBase, double LowTempChange, double LowTempVariableLowerBound, double HighTempBase, double HighTempChange,
-            double HighTempVariableLowerBound, double BaseRainChance, double RainChange, double RainVariabilityLowerBound, 
-            double BaseStormChance, double StormChange, double StormVariabilityLowerBound, double BaseDebrisChance, double DebrisChange, 
-            double DebrisVariabilityLowerBound, double BaseSnowChance, double SnowChange, double SnowVariabilityLowerBound, double FogChance, 
-            double FogVariabilityLowerBound, double FogVariabilityHigherBound, double LowTempVariableHigherBound, double HighTempVariableHigherBound,
-            double RainVariabilityHigherBound, double SnowVariabilityHigherBound, double DebrisChanceHigherBound)
+        public FerngillClimateTimeSpan(List<WeatherParameters> wp)
         {
-            this.FrozenPrecip = FrozenPrecip;
+            foreach (WeatherParameters w in wp)
+            {
+                this.WeatherChances.Add(new WeatherParameters(w));
+            }
+        }
 
-            this.Season = Season;
-            this.BeginDay = BeginDay;
-            this.EndDay = EndDay;
+        public FerngillClimateTimeSpan(FerngillClimateTimeSpan CTS)
+        {
+            foreach (WeatherParameters w in CTS.WeatherChances)
+                this.WeatherChances.Add(new WeatherParameters(w));
+        }
 
-            this.LowTempBase = LowTempBase;
-            this.LowTempChange = LowTempChange;
-            this.LowTempVariableLowerBound = LowTempVariableLowerBound;
-
-            this.HighTempBase = HighTempBase;
-            this.HighTempChange = HighTempChange;
-            this.HighTempVariableLowerBound = HighTempVariableLowerBound;
-
-            this.BaseRainChance = BaseRainChance;
-            this.RainChange = RainChange;
-            this.RainVariability = RainVariability;
-
-            this.BaseStormChance = BaseStormChance;
-            this.StormChange = StormChange;
-            this.StormVariability = StormVariability;
-
-            this.BaseDebrisChance = BaseDebrisChance;
-            this.DebrisChange = DebrisChange;
-            this.DebrisVariability = DebrisVariability;
-
-            this.BaseSnowChance = BaseSnowChance;
-            this.SnowChange = SnowChange;
-            this.SnowVariability = SnowVariability;
-
-            this.FogChance = FogChance;
+        public void AddWeatherChances(WeatherParameters wp)
+        {
+            WeatherChances.Add(new WeatherParameters(wp));
         }
     }
 
@@ -98,6 +73,12 @@ namespace ClimateOfFerngill
         public FerngillClimate()
         {
             ClimateSequences = new List<FerngillClimateTimeSpan>();
+        }
+
+        public FerngillClimate(List<FerngillClimateTimeSpan> fCTS)
+        {
+            foreach (FerngillClimateTimeSpan CTS in fCTS)
+                this.ClimateSequences.Add(new FerngillClimateTimeSpan(CTS));
         }
     }
 }
