@@ -21,6 +21,7 @@ namespace ClimateOfFerngill
         private SDVWeather CurrentWeather { get; set; }
         private ClimateConfig Config { get; set; }
         private MersenneTwister pRNG;
+        private FerngillClimate GameClimate;
         private IMonitor Logger;
         private Vector2 snowPos; //snow elements
 
@@ -29,11 +30,12 @@ namespace ClimateOfFerngill
         /// </summary>
         public FerngillClimate WeatherModel { get; private set; }
 
-        public FerngillWeather(ClimateConfig config, MersenneTwister Dice, IMonitor log)
+        public FerngillWeather(ClimateConfig config, FerngillClimate climate, MersenneTwister Dice, IMonitor log)
         {
             IsBlizzard = false;
             IsHeatwave = false;
             IsFrost = false;
+            GameClimate = climate;
             Config = config;
             Logger = log;
             pRNG = Dice;

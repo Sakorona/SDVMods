@@ -32,7 +32,6 @@ namespace ClimateOfFerngill
         public double FrostHardiness { get; set; } 
         public bool GhostsDoNotSpawn { get; set; }
         public bool StormTotem { get; set; }
-        public bool UseCustomWeather { get; set; }
 
         public bool AllowDarkFog { get; set; }
         public bool DangerousFrost { get; set; }
@@ -48,7 +47,6 @@ namespace ClimateOfFerngill
             //set overrides
             AllowSnowOnFall28 = true;
             AllowStormsFirstSpring = false;
-            UseCustomWeather = false;
 
             //set climate information
             ClimateType = "normal";

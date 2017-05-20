@@ -164,7 +164,24 @@ While very dry at the beginning of the season (~20%), it increases slowly until 
 
 #### Fall
 
-Rain odds stay flat with minor variances at 45% for the first half of fall before increasing to ~60% by the end of the season. Fall is mostly known for it's wind, and there's almost no day without wind or rain. The temperatures are cooling rapidly, sometimes with early frosts near the end of the month due to lows. 
+Rain odds stay flat with minor variances at 45% for the first half of fall before increasing to ~60% by the end of the season. Fall is mostly known for it's wind, and there's almost no day without wind or rain later in the season. The temperatures are cooling rapidly, sometimes with early frosts near the end of the season due to lows.
+
+![Image of Fall Climate](FallNormalClimateChart.png)
+
+##### Formulas - Day 1 to 9
+
+* Rain: `f(x) = .20 - day*.001`
+* Rain Variability: `±.04`
+* Storm: `.4`
+* Storm Variability: `±.1`
+* Debris: `0`
+* Debris Variability: `0`
+* Snow: `0`
+* Snow Variability: `0`
+* Low Temperature: `f(x) = 24 + day*.1`
+* Low Temperature Variability: `±3`
+* High Temperature: `f(x) = 28 + day*.82`(clamp so that it's always higher than low)
+* High Temperature Variability: `±4`(clamp so that it's always higher than low) 
 
 #### Winter
 

@@ -106,53 +106,64 @@ namespace ClimateOfFerngill
         /// <param name="helper">Provides methods for interacting with the mod directory, such as read/writing a config file or custom JSON files.</param>
         public override void Entry(IModHelper helper)
         {
+            bool IsFailed = false;
+
             Dice = new MersenneTwister();
             Config = helper.ReadConfig<ClimateConfig>();
-            CurrWeather = new FerngillWeather(Config, Dice, Monitor);
+
             FarmerHealth = new FarmerStatus(Config, Monitor, Dice);
             OurFog = new FerngillFog();
             Luna = new SDVMoon(Monitor, Config, Dice);
             BadEvents = new HazardousWeatherEvents(Monitor, Config, Dice);
             OurText = helper.ReadJsonFile<TVStrings>("TvStrings.en.json");
-            
-            //set flags
-            RainTotemUsedToday = false;
 
-            //register event handlers
-            SaveEvents.AfterLoad += SaveEvents_AfterLoad;
-            TimeEvents.AfterDayStarted += TimeEvents_AfterDayStarted;
-            SaveEvents.AfterReturnToTitle += SaveEvents_AfterReturnToTitle;
-            GameEvents.UpdateTick += GameEvents_UpdateTick;
-            SaveEvents.BeforeSave += SaveEvents_BeforeSave;
-            TimeEvents.TimeOfDayChanged += TimeEvents_TimeOfDayChanged;
-            GraphicsEvents.OnPostRenderEvent += GraphicsEvents_OnPostRenderEvent;
+            VerifyBundledWeatherFiles(); 
 
-            //siiigh.
-            helper.ConsoleCommands
-                    .Add("world_changetmrweather", "Changes tomorrow's weather.\"rain,storm,snow,debris,festival,wedding,sun\" ", TmrwWeatherChangeFromConsole)
-                    .Add("world_changeweather", "Changes CURRENT weather. \"rain,storm,snow,debris,sun\"", WeatherChangeFromConsole)
-                    .Add("player_removecold", "Removes the cold from the player.", RemovePlayerCold);
+            string ClimateFileName = "weather\\" + Config.ClimateType + ".json";
+            string ClimateFilePath = Path.Combine(Path.Combine(Helper.DirectoryPath, ClimateFileName));
 
-            //register keyboard handlers and other menu events
-            ControlEvents.KeyPressed += (sender, e) => this.ReceiveKeyPress(e.KeyPressed, this.Config.Keyboard);
-            MenuEvents.MenuClosed += (sender, e) => this.ReceiveMenuClosed(e.PriorMenu);
-
-            VerifyBundledWeatherFiles();
-
-            /*
-            //load in custom weather object
-            if (Config.UseCustomWeather && File.Exists(Path.Combine(Helper.DirectoryPath, "userClimate.json"))){
-                //if the user object exists
-                if (Config.TooMuchInfo)
-                    Monitor.Log("Detected custom weather and enabled. Reading in now");
-
-                UserClimate = Helper.ReadJsonFile<CustomClimate>(Path.Combine(Helper.DirectoryPath, "userClimate.json"));
+            if (!File.Exists(ClimateFilePath))
+            {
+                Monitor.Log("The specified climate does not exist! Please verify your climate settings or reinstall the mod. Falling back to the base climate",
+                    LogLevel.Error);
+                ClimateFilePath = Path.Combine(Path.Combine(Helper.DirectoryPath, "weather\normal.json"));
+                if (!File.Exists(ClimateFilePath))
+                {
+                    Monitor.Log("The default climate does not exist! Please reinstall the mod.", LogLevel.Error);
+                    IsFailed = true;
+                }
             }
-            else if (!File.Exists(Path.Combine(Helper.DirectoryPath, "userClimate.json"))){
-                UserClimate = new CustomClimate();
-                Helper.WriteJsonFile<CustomClimate>(Path.Combine(Helper.DirectoryPath, "userClimate.json"), UserClimate);
+
+            if (!IsFailed)
+            {
+                FerngillClimate gameClimate = helper.ReadJsonFile<FerngillClimate>(ClimateFilePath);
+                CurrWeather = new FerngillWeather(Config, gameClimate, Dice, Monitor);
+                //set flags
+                RainTotemUsedToday = false;
+
+                //register event handlers
+                SaveEvents.AfterLoad += SaveEvents_AfterLoad;
+                TimeEvents.AfterDayStarted += TimeEvents_AfterDayStarted;
+                SaveEvents.AfterReturnToTitle += SaveEvents_AfterReturnToTitle;
+                GameEvents.UpdateTick += GameEvents_UpdateTick;
+                SaveEvents.BeforeSave += SaveEvents_BeforeSave;
+                TimeEvents.TimeOfDayChanged += TimeEvents_TimeOfDayChanged;
+                GraphicsEvents.OnPostRenderEvent += GraphicsEvents_OnPostRenderEvent;
+
+                //siiigh.
+                helper.ConsoleCommands
+                        .Add("world_changetmrweather", "Changes tomorrow's weather.\"rain,storm,snow,debris,festival,wedding,sun\" ", TmrwWeatherChangeFromConsole)
+                        .Add("world_changeweather", "Changes CURRENT weather. \"rain,storm,snow,debris,sun\"", WeatherChangeFromConsole)
+                        .Add("player_removecold", "Removes the cold from the player.", RemovePlayerCold);
+
+                //register keyboard handlers and other menu events
+                ControlEvents.KeyPressed += (sender, e) => this.ReceiveKeyPress(e.KeyPressed, this.Config.Keyboard);
+                MenuEvents.MenuClosed += (sender, e) => this.ReceiveMenuClosed(e.PriorMenu);
             }
-            */
+            else
+            {
+                Monitor.Log("The mod is not loaded.", LogLevel.Error);
+            }
         }
 
         // *******************************
@@ -311,14 +322,19 @@ namespace ClimateOfFerngill
         /// <summary>
         /// This function verifies the weather file!
         /// </summary>
-        private void VerifyBundledWeatherFiles()
+        private bool VerifyBundledWeatherFiles()
         {
+            bool FilesVerified = false;
             if (!File.Exists(Path.Combine(Helper.DirectoryPath, "weather/normal.json")))
             {
                 FerngillClimate NormalClimate = new FerngillClimate();
                 
                 Helper.WriteJsonFile<FerngillClimate>(Path.Combine(Helper.DirectoryPath, "weather/normal.json"), NormalClimate);
-            } 
+            }
+
+
+
+            return FilesVerified;
         }
 
         /// <summary>
