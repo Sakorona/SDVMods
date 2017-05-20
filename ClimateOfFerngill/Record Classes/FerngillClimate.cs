@@ -36,7 +36,8 @@ namespace ClimateOfFerngill
 
     public class FerngillClimateTimeSpan
     {
-        public string Season;
+        public string BeginSeason;
+        public string EndSeason;
         public int BeginDay;
         public int EndDay;
         public List<WeatherParameters> WeatherChances;
