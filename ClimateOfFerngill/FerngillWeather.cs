@@ -72,18 +72,11 @@ namespace ClimateOfFerngill
         private string DisplayTemperature(string tempGauge, double temp)
         {
             //base temps are always in celsius
-            if (tempGauge == "celsius")
-            {
-                return temp + " C";
-            }
-
-            if (tempGauge == "kelvin")
-            {
-                return (temp + 273.15) + " K";
-            }
-
+            if (tempGauge == "celsius") return temp + " C";
+            if (tempGauge == "kelvin") return (temp + 273.15) + " K";
+            
             if (tempGauge == "rankine")
-            {
+            { 
                 double tmpTemp = (temp + 273.15) * 1.8;
                 return string.Format("{0:0.00}", tmpTemp) + " Ra";
             }
