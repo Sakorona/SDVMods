@@ -181,7 +181,7 @@ Rain odds stay flat with minor variances at 45% for the first half of fall befor
 * Storm: `.62 - (day *.056)` 
 * Storm Variability: `±.1`
 * Debris: `f(x)= .05 + (day*.026)`
-* Debris Variability: `0`
+* Debris Variability: `+.1`
 * Snow: `0`
 * Snow Variability: `0`
 * Low Temperature: `f(x) = 21 - day*.78`
@@ -216,7 +216,7 @@ Rain odds stay flat with minor variances at 45% for the first half of fall befor
 * Storm Variability: `±.1`
 * Debris: `f(x) = 2.0222 -(day*.0722)`
 * Debris Variability: `+.1`
-* Snow: `.15`
+* Snow: `0`
 * Snow Variability: `0`
 * Low Temperature: `f(x) = 25 - day*1.11`
 * Low Temperature Variability: `±3`
