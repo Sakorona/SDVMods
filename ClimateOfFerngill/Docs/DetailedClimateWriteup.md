@@ -18,7 +18,7 @@ And then, you can derive:
 
 As such, the sunny odds are always derived rather than stated.
 
-It is possible that certain weathers are not allowed in seasons, and the `FerngillClimate` object has flags for that.  (A detailed writeup of that is at the end.) An example might be a Extended Winter day, for example:
+It is possible that certain weathers are not allowed in seasons, and this is determined by if the weather has more than 0% chance.  (A detailed writeup of that is at the end.) An example might be a Extended Winter day, for example:
 
 >0 <= x < 5 Rain
 >
@@ -70,9 +70,9 @@ Rain starts at 81% and rapidly drops to 35% on Day 10, where it drops slower (to
 * Debris Variability: `±.08`
 * Snow: `0`
 * Snow Variability: `0`
-* Low Temperature: `f(x) = .02 + day*.015`
+* Low Temperature: `f(x) = 2 + day*1.5`
 * Low Temperature Variability: `±3`
-* High Temperature: `f(x) = .04 + day*.0125`(clamp so that it's always higher than low)
+* High Temperature: `f(x) = 4 + day*1.25`(clamp so that it's always higher than low)
 * High Temperature Variability: `±4`(clamp so that it's always higher than low)
 * Fog Chance: `.55`
 * Fog Variability: `±.04`
@@ -87,9 +87,9 @@ Rain starts at 81% and rapidly drops to 35% on Day 10, where it drops slower (to
 * Debris Variability: `±.08`
 * Snow: `0`
 * Snow Variability: `0`
-* Low Temperature: `f(x) = 2 + day*1.05`
+* Low Temperature: `f(x) = 2 + day*.95`
 * Low Temperature Variability: `±3`
-* High Temperature: `f(x) = .04 + day*.0115`(clamp so that it's always higher than low)
+* High Temperature: `f(x) = 4 + day*1.05`(clamp so that it's always higher than low)
 * High Temperature Variability: `±4`(clamp so that it's always higher than low)
 * Fog Chance: `.35`
 * Fog Variability: `±.04`
@@ -104,9 +104,9 @@ Rain starts at 81% and rapidly drops to 35% on Day 10, where it drops slower (to
 * Debris Variability: `±.14`
 * Snow: `0`
 * Snow Variability: `0`
-* Low Temperature: `f(x) = .02 + day*.00805`
+* Low Temperature: `f(x) = 2 + day*.805`
 * Low Temperature Variability: `±3`
-* High Temperature: `f(x) = .04 + day*.00875`(clamp so that it's always higher than low)
+* High Temperature: `f(x) = 4 + day*.875`(clamp so that it's always higher than low)
 * High Temperature Variability: `±4`(clamp so that it's always higher than low)
 * Fog Chance: `.35`
 * Fog Variability: `±.04`
@@ -136,7 +136,7 @@ While very dry at the beginning of the season (~20%), it increases slowly until 
  
 #### Formulas - Day 10 to 18
 
-* Rain: `f(x) = 20 - day*.0001`
+* Rain: `f(x) = .20 - day*.0001`
 * Rain Variability: `±.02`
 * Storm: `.8`
 * Storm Variability: `±.1`
@@ -153,7 +153,7 @@ While very dry at the beginning of the season (~20%), it increases slowly until 
 
 #### Formulas - Day 19 to 28
 
-* Rain: `f(x) = -12 + day*.018`
+* Rain: `f(x) = -.12 + day*.0183`
 * Rain Variability: `±.07`
 * Storm: `f(x) = .80 - day*.0065`
 * Storm Variability: `±.1`
@@ -163,7 +163,7 @@ While very dry at the beginning of the season (~20%), it increases slowly until 
 * Snow Variability: `0`
 * Low Temperature: `f(x) = 27 - day*.25`
 * Low Temperature Variability: `±3`
-* High Temperature: `f(x) = 57 + day*1.25`(clamp so that it's always higher than low)
+* High Temperature: `f(x) = 57 - day*1.25`(clamp so that it's always higher than low)
 * High Temperature Variability: `±4`(clamp so that it's always higher than low)
 * Fog Chance: `.001`
 * Fog Variability: `±.04`
@@ -303,9 +303,9 @@ Rain odds fall from 65% instead of 81%.
 * Debris Variability: `±.08`
 * Snow: `0`
 * Snow Variability: `0`
-* Low Temperature: `f(x) = .02 + day*.015`
+* Low Temperature: `f(x) = 2 + day*1.5`
 * Low Temperature Variability: `±3`
-* High Temperature: `f(x) = .04 + day*.0125`(clamp so that it's always higher than low)
+* High Temperature: `f(x) = 4 + day*1.25`(clamp so that it's always higher than low)
 * High Temperature Variability: `±4`(clamp so that it's always higher than low)
 * Fog Chance: `.55`
 * Fog Variability: `±.04`
@@ -320,9 +320,9 @@ Rain odds fall from 65% instead of 81%.
 * Debris Variability: `±.08`
 * Snow: `0`
 * Snow Variability: `0`
-* Low Temperature: `f(x) = 2 + day*1.05`
+* Low Temperature: `f(x) = 2 + day*.95`
 * Low Temperature Variability: `±3`
-* High Temperature: `f(x) = .04 + day*.0115`(clamp so that it's always higher than low)
+* High Temperature: `f(x) = 4 + day*1.05`(clamp so that it's always higher than low)
 * High Temperature Variability: `±4`(clamp so that it's always higher than low)
 * Fog Chance: `.35`
 * Fog Variability: `±.04`
@@ -337,9 +337,9 @@ Rain odds fall from 65% instead of 81%.
 * Debris Variability: `±.14`
 * Snow: `0`
 * Snow Variability: `0`
-* Low Temperature: `f(x) = .02 + day*.00805`
+* Low Temperature: `f(x) = 2 + day*.805`
 * Low Temperature Variability: `±3`
-* High Temperature: `f(x) = .04 + day*.00875`(clamp so that it's always higher than low)
+* High Temperature: `f(x) = 4 + day*.875`(clamp so that it's always higher than low)
 * High Temperature Variability: `±4`(clamp so that it's always higher than low)
 * Fog Chance: `.35`
 * Fog Variability: `±.04`

@@ -4,6 +4,8 @@ using NPack;
 using StardewModdingAPI;
 using StardewValley;
 using System;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace ClimateOfFerngill
 {
@@ -125,6 +127,20 @@ namespace ClimateOfFerngill
                     return "F";
             }
             return "C";
+        }
+
+        //climate access functions
+        public FerngillClimateTimeSpan GetClimateForDate(SDVDate Target)
+        {
+            return this.GameClimate.ClimateSequences.Where(c => WeatherHelper.SeasonIsWithinRange(Target.Season, c.BeginSeason, c.EndSeason))
+                                                    .Where(c => Target.Day >= c.BeginDay && Target.Day <= c.EndDay)
+                                                    .First();
+        }
+
+
+        public double GetStormOdds(SDVDate Target)
+        {
+                return GetClimateForDate(Target).RetrieveOdds(pRNG, "storm", Target.Day);
         }
 
         public void HandleStaminaChanges(bool passedThresholdOutside)
