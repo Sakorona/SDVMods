@@ -24,6 +24,8 @@ namespace ClimateOfFerngill
         private ClimateConfig Config { get; set; }
         private MersenneTwister pRNG;
         private FerngillClimate GameClimate;
+        public ProbabilityDistribution<string> WeatherOdds { get; set; }
+        public ProbabilityDistribution<string> PrecipTypeOdds { get; set; }
         private IMonitor Logger;
         private Vector2 snowPos; //snow elements
 
@@ -41,6 +43,9 @@ namespace ClimateOfFerngill
             Config = config;
             Logger = log;
             pRNG = Dice;
+
+            WeatherOdds = new ProbabilityDistribution<double>();
+            PrecipTypeOdds = new ProbabilityDistribution<double>();
         }
 
         public void CheckForHazardConditions(MersenneTwister Dice)
@@ -284,6 +289,7 @@ namespace ClimateOfFerngill
         public void UpdateForNewDay()
         {
             Reset();
+            GenerateWeatherOdds(SDVDate.Today);
         }
 
         public void Reset()
@@ -294,6 +300,39 @@ namespace ClimateOfFerngill
             CurrentWeather = SDVWeather.None;
             TodayHigh = -1000;
             TodayLow = -1000;
+        }
+
+        public void GenerateWeatherOdds(SDVDate Target)
+        {
+            //first, pull the climate time span for this
+            FerngillClimateTimeSpan CurrentConditions = GetClimateForDate(Target);
+
+            //Now check for weathers. We will check in the pattern:
+            // Rain - debris. 
+            // Storms and Snow are treated as sub weathers, and as such occupy a 
+            // second track
+
+            double rainOdds = CurrentConditions.RetrieveOdds(pRNG, "rain", Target.Day);
+            double debrisOdds = CurrentConditions.RetrieveOdds(pRNG, "debris", Target.Day);
+            double stormOdds = CurrentConditions.RetrieveOdds(pRNG, "storm", Target.Day);
+            double snowOdds = CurrentConditions.RetrieveOdds(pRNG, "snow", Target.Day);
+
+            //config overflow
+            WeatherOdds.SetOverflowResult("sunny");
+
+            //weathers
+            WeatherOdds.AddNewEndPoint(rainOdds, "rain");
+
+            if (debrisOdds + rainOdds < 1)
+                WeatherOdds.AddNewEndPoint(debrisOdds, "debris");
+            else
+            {
+                double newOdds = debrisOdds - ((debrisOdds + rainOdds) - 1);
+                WeatherOdds.AddNewEndPoint(newOdds, "debris");
+            }
+
+
+
         }
         
         public void SetCurrentWeather()
