@@ -1,6 +1,7 @@
-﻿using NPack;
+﻿using TwilightCore.PRNG;
 using System.Collections.Generic;
 using System.Linq;
+using TwilightCore;
 
 namespace ClimateOfFerngill
 {

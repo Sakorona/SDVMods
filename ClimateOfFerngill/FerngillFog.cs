@@ -1,6 +1,7 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using NPack;
+using TwilightCore.PRNG;
+using TwilightCore.StardewValley;
 using StardewValley;
 
 namespace ClimateOfFerngill

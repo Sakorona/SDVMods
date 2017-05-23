@@ -2,11 +2,12 @@
 using System;
 using StardewModdingAPI;
 using StardewValley.TerrainFeatures;
-using NPack;
+using TwilightCore.PRNG;
 using System.Collections.Generic;
 using Microsoft.Xna.Framework;
 using StardewValley.Locations;
 using System.Linq;
+using TwilightCore.StardewValley;
 
 namespace ClimateOfFerngill
 {
@@ -198,7 +199,7 @@ namespace ClimateOfFerngill
 
         public void HandleMoonAfterWake()
         {
-            Beach b = InternalUtility.GetBeach();
+            Beach b = SDVUtilities.GetBeach();
             int itemsChanged = 0;
             string debugMessage = "";
             

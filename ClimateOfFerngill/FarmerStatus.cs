@@ -1,6 +1,7 @@
-﻿using NPack;
+﻿using TwilightCore.PRNG;
 using StardewModdingAPI;
 using StardewValley;
+using TwilightCore.StardewValley;
 
 namespace ClimateOfFerngill
 {
@@ -52,7 +53,7 @@ namespace ClimateOfFerngill
                 if (diceChance < Settings.DiseaseChance)
                 {
                     HasACold = true;
-                    InternalUtility.ShowMessage("The storm has caused you to get a cold!");
+                    SDVUtilities.ShowMessage("The storm has caused you to get a cold!");
                     HasGottenColdToday = true;
                 }
             }
@@ -64,7 +65,7 @@ namespace ClimateOfFerngill
             if (HasACold)
             {
                 Game1.player.stamina -= Settings.StaminaPenalty;
-                if (pRNG.NextDouble() < .15) InternalUtility.ShowMessage("You have a cold, and feel worn out!");
+                if (pRNG.NextDouble() < .15) SDVUtilities.ShowMessage("You have a cold, and feel worn out!");
             }            
         }
 

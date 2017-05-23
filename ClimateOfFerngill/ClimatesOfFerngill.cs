@@ -1,9 +1,11 @@
 ﻿using System;
 using System.IO;
 using System.Collections.Generic;
+using TwilightCore.PRNG;
+using TwilightCore.StardewValley;
+using TwilightCore;
 
 //3P
-using NPack;
 using CustomTV;
 
 //XNA
@@ -615,11 +617,11 @@ namespace ClimateOfFerngill
              * //////////////////////////////////////////////// */
 
             if (Luna.CheckForGhostSpawn() && Game1.currentLocation is Farm)
-                InternalUtility.SpawnGhostOffScreen(Dice);
+                SDVUtilities.SpawnGhostOffScreen(Dice);
 
             // sanity check if the player hits 0 Stamina ( the game doesn't track this )
             if (Game1.player.Stamina <= 0f)
-                InternalUtility.FaintPlayer();
+                SDVUtilities.FaintPlayer();
         }
 
         /// <summary>
@@ -738,7 +740,7 @@ namespace ClimateOfFerngill
             if (Game1.currentSeason == "winter" && (Game1.weatherForTomorrow == Game1.weather_rain || Game1.weatherForTomorrow == Game1.weather_lightning ) && !Config.AllowRainInWinter)
             {
                 if (Config.TooMuchInfo)
-                    Monitor.Log($"Fixing {InternalUtility.WeatherToString(Game1.weatherForTomorrow)} in winter. Force setting to snow");
+                    Monitor.Log($"Fixing {SDVUtilities.WeatherToString(Game1.weatherForTomorrow)} in winter. Force setting to snow");
 
                 Game1.weatherForTomorrow = Game1.weather_snow;
             }
@@ -784,7 +786,7 @@ namespace ClimateOfFerngill
                 return true;
             }
 
-            foreach(KeyValuePair<SDVDate, int> entry in InternalUtility.ForceDays)
+            foreach(KeyValuePair<SDVDate, int> entry in SDVUtilies.ForceDays)
             {
                 if (entry.Key == Tomorrow)
                 {

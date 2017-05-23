@@ -1,5 +1,4 @@
-﻿
-#region License
+﻿#region License
     // Copyright 2007-2008 Rory Plaire (codekaizen@gmail.com)
     /*
      * This license governs use of the accompanying software. If you use the software, you
@@ -120,7 +119,7 @@
 
     using System;
 
-    namespace NPack
+    namespace TwilightCore.PRNG
     {
     #pragma warning disable IDE1006 // Naming Styles
     /// <summary>

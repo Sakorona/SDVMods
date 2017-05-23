@@ -1,6 +1,8 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using NPack;
+using TwilightCore.StardewValley;
+using TwilightCore;
+using TwilightCore.PRNG;
 using StardewModdingAPI;
 using StardewValley;
 using System;
@@ -171,7 +173,7 @@ namespace ClimateOfFerngill
 
             if ((IsBlizzard || IsHeatwave) && pRNG.NextDouble() < .15)
             {
-                InternalUtility.ShowMessage("The harsh weather conditions have tired you out!");
+                SDVUtilities.ShowMessage("The harsh weather conditions have tired you out!");
             }
         }
         public bool IsDangerousWeather()
@@ -207,9 +209,9 @@ namespace ClimateOfFerngill
 
         public void MessageForDangerousWeather()
         {
-            if (IsBlizzard) InternalUtility.ShowMessage("There's a dangerous blizzard out today. Be careful!");
-            if (IsFrost) InternalUtility.ShowMessage("The temperature tonight will be dipping below freezing. Your crops may be vulnerable to frost!");
-            if (IsHeatwave) InternalUtility.ShowMessage("A massive heatwave is sweeping the valley. Stay hydrated!");
+            if (IsBlizzard) SDVUtilities.ShowMessage("There's a dangerous blizzard out today. Be careful!");
+            if (IsFrost) SDVUtilities.ShowMessage("The temperature tonight will be dipping below freezing. Your crops may be vulnerable to frost!");
+            if (IsHeatwave) SDVUtilities.ShowMessage("A massive heatwave is sweeping the valley. Stay hydrated!");
         }
 
         public void SetTemperatures(double high, double low)

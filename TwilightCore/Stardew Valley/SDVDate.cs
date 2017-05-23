@@ -1,6 +1,6 @@
 ﻿using StardewValley;
 
-namespace TwilightCore
+namespace TwilightCore.StardewValley
 {
     public struct SDVDate
     {
@@ -56,7 +56,7 @@ namespace TwilightCore
             if (Game1.dayOfMonth == 28)
             {
                 day = 1;
-                season = TwilightUtility.GetNextSeason(Game1.currentSeason);
+                season = SDVUtilities.GetNextSeason(Game1.currentSeason);
             }
             else
             {

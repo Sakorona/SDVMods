@@ -3,7 +3,8 @@ using StardewModdingAPI;
 using StardewValley;
 using StardewValley.TerrainFeatures;
 using System.Collections.Generic;
-using NPack;
+using TwilightCore.StardewValley;
+using TwilightCore.PRNG;
 
 namespace ClimateOfFerngill
 {
@@ -14,33 +15,15 @@ namespace ClimateOfFerngill
         private MersenneTwister Dice;
         private List<Vector2> ThreatenedCrops { get; set; }
         private SDVTime DeathTime { get; set; }
-        private static Dictionary<SDVCrops, double> CropTemps { get; set; }
+        private static List<CropInfo> CropTemps { get; set; }
 
-        internal HazardousWeatherEvents(IMonitor modlogger, ClimateConfig modconfig, MersenneTwister moddice)
+        internal HazardousWeatherEvents(List<CropInfo> data, IMonitor modlogger, ClimateConfig modconfig, MersenneTwister moddice)
         {
             Logger = modlogger;
             Config = modconfig;
             Dice = moddice;
             ThreatenedCrops = new List<Vector2>();
-
-            CropTemps = new Dictionary<SDVCrops, double>
-            {
-                { SDVCrops.Corn, 1.66 },
-                { SDVCrops.Wheat, 1.66 },
-                { SDVCrops.Amaranth, 1.66 },
-                { SDVCrops.Sunflower, 1.66 },
-                { SDVCrops.Pumpkin, 1.66 },
-                { SDVCrops.Eggplant, 1.66 },
-                { SDVCrops.Yam, 1.66 },
-                { SDVCrops.Artichoke, 0 },
-                { SDVCrops.BokChoy, 0 },
-                { SDVCrops.Grape, -.55 },
-                { SDVCrops.FairyRose, -2.22 },
-                { SDVCrops.Beet, -2.22 },
-                { SDVCrops.Cranberry, -3.33 },
-                { SDVCrops.Ancient, -3.33 },
-                { SDVCrops.SweetGemBerry, -3.33 }
-            };
+            CropTemps = data;           
         }
 
         internal void UpdateForNewDay()
@@ -50,10 +33,13 @@ namespace ClimateOfFerngill
 
         internal double CheckCropTolerance(int currentCrop)
         {
-            if (CropTemps.ContainsKey((SDVCrops)currentCrop))
-                return CropTemps[(SDVCrops)currentCrop];
-            else
-                return -100;
+           foreach (CropInfo c in CropTemps)
+            {
+                if (c.ParentSheetIndex == currentCrop)
+                    return c.FrostLimit;
+            }
+
+            return -100;
         }
 
         public void ProcessHeatwave(Farm f)
@@ -87,10 +73,10 @@ namespace ClimateOfFerngill
                 if (ThreatenedCrops.Count > 0)
                 {
                     if (!Config.AllowCropHeatDeath)
-                        InternalUtility.ShowMessage("The extreme heat has caused some of your crops to become dry....!");
+                        SDVUtilities.ShowMessage("The extreme heat has caused some of your crops to become dry....!");
                     else
                     {
-                        InternalUtility.ShowMessage("The extreme heat has caused some of your crops to dry out. If you don't water them, they'll die!");
+                        SDVUtilities.ShowMessage("The extreme heat has caused some of your crops to dry out. If you don't water them, they'll die!");
                     }
                 }
             }
@@ -113,7 +99,7 @@ namespace ClimateOfFerngill
             }
 
             if (cDead)
-                InternalUtility.ShowMessage("Some of the crops have died due to lack of water!");
+                SDVUtilities.ShowMessage("Some of the crops have died due to lack of water!");
         }
 
         public void EarlyFrost(FerngillWeather currWeather)
@@ -164,7 +150,7 @@ namespace ClimateOfFerngill
                 }
             }
             if (cropsKilled)
-                InternalUtility.ShowMessage("During the night, some crops died to the frost...");
+                SDVUtilities.ShowMessage("During the night, some crops died to the frost...");
         }
 
         internal void CheckForHazardousWeather(int time, double temp)

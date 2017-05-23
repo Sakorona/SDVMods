@@ -9,9 +9,9 @@ using StardewValley;
 using StardewValley.Menus;
 
 //3P
-using TwilightCore;
 using Pathoschild.Stardew.UIF;
 using System.Linq;
+using TwilightCore.StardewValley;
 
 namespace ClimateOfFerngill
 {
@@ -236,7 +236,7 @@ namespace ClimateOfFerngill
                         }
                         else
                         {
-                            weatherString = $"{OurText.WRFestivalToday} {InternalUtility.GetFestivalName()} {OurText.WRWith} {Temperature}";
+                            weatherString = $"{OurText.WRFestivalToday} {SDVUtilities.GetFestivalName()} {OurText.WRWith} {Temperature}";
                         }
 
                         Vector2 nameSize = contentBatch.DrawTextBlock(font, weatherString, new Vector2(x + leftOffset, y + topOffset), wrapWidth);
@@ -251,7 +251,7 @@ namespace ClimateOfFerngill
                         }
                         else
                         {
-                            weatherString = $"{OurText.WRFestivalTomorrow} {InternalUtility.GetTomorrowFestivalName()}";
+                            weatherString = $"{OurText.WRFestivalTomorrow} {SDVUtilities.GetTomorrowFestivalName()}";
                         }
 
                         Vector2 tomSize = contentBatch.DrawTextBlock(font, weatherString, new Vector2(x + leftOffset, y + topOffset), wrapWidth);

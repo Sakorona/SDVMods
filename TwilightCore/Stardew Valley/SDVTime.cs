@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace TwilightCore
+namespace TwilightCore.StardewValley
 {
     public struct SDVTime
     {

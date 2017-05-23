@@ -1,14 +1,14 @@
 ﻿using System;
 using Microsoft.Xna.Framework;
-using NPack;
 using StardewValley;
 using System.Collections.Generic;
 using StardewValley.Locations;
 using StardewValley.Monsters;
+using TwilightCore.PRNG;
 
-namespace TwilightCore
+namespace TwilightCore.StardewValley
 {
-    public static class TwilightUtility
+    public static class SDVUtilities
     {
        public static Dictionary<SDVDate, int> ForceDays = new Dictionary<SDVDate, int>
        {
@@ -139,14 +139,14 @@ namespace TwilightCore
             return true;
         }
 
-        internal static void FaintPlayer()
+        public static void FaintPlayer()
         {
             Game1.player.Stamina = 0;
             Game1.player.doEmote(36);
             Game1.farmerShouldPassOut = true;
         }
 
-        internal static string GetNewSeason(string currentSeason)
+        public static string GetNewSeason(string currentSeason)
         {
             if (currentSeason == "spring") return "summer";
             if (currentSeason == "summer") return "fall";

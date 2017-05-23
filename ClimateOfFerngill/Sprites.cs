@@ -19,16 +19,6 @@ namespace ClimateOfFerngill
             public static readonly Rectangle Sprite = new Rectangle(0, 0, 320, 180);
         }
 
-        /// <summary>A blank pixel which can be colorised and stretched to draw geometric shapes.</summary>
-        public static Texture2D Pixel => LazyPixel.Value;
-
-        private static readonly Lazy<Texture2D> LazyPixel = new Lazy<Texture2D>(() =>
-        {
-            Texture2D pixel = new Texture2D(Game1.graphics.GraphicsDevice, 1, 1);
-            pixel.SetData(new[] { Color.White });
-            return pixel;
-        });
-
         /// <summary> Sprites used for drawing various weather stuff </summary>
         public class Icons
         {
@@ -36,7 +26,7 @@ namespace ClimateOfFerngill
 
            public Icons(IContentHelper helper)
            {
-                source = helper.Load<Texture2D>("Assets\climatesheet2.png");
+                source = helper.Load<Texture2D>("Assets\\climatesheet2.png");
            }
 
             public Rectangle GetMoonSprite(MoonPhase moon)

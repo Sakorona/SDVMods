@@ -1,4 +1,4 @@
-﻿using NPack;
+﻿using TwilightCore.PRNG;
 using StardewModdingAPI;
 using StardewValley;
 using System;
@@ -109,7 +109,7 @@ namespace ClimateOfFerngill
                 logger.Log($"[DESC] The weather Tomorrow at start is: {WeatherHelper.DescWeather(weather, Game1.currentSeason)}");
 
             if ((int)weather == Game1.weather_festival)
-                return "It'll be good weather for the " + InternalUtility.GetTomorrowFestivalName() + "! Sunny and clear.";
+                return "It'll be good weather for the " + SDVUtilities.GetTomorrowFestivalName() + "! Sunny and clear.";
 
 
             if (today && weather == SDVWeather.Wedding)
@@ -119,7 +119,7 @@ namespace ClimateOfFerngill
                 ret += OurText.WeddingWeather.GetRandomItem(dice) + " ";
 
             if (Game1.dayOfMonth == 28 && Game1.currentSeason != "winter") //some customization for next day is a new season
-                ret += OurText.NextDayIsNextSeason + " " + InternalUtility.GetNewSeason(Game1.currentSeason) + " ";
+                ret += OurText.NextDayIsNextSeason + " " + SDVUtilities.GetNewSeason(Game1.currentSeason) + " ";
 
 			if (Game1.dayOfMonth == 28 && Game1.currentSeason == "winter") //end of year message.
                 ret += OurText.NextDayIsNewYear + " ";
