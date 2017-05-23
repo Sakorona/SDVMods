@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
-VisualStudioVersion = 15.0.26228.12
+VisualStudioVersion = 15.0.26403.0
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ClimatesOfFerngill", "ClimateOfFerngill\ClimatesOfFerngill.csproj", "{D0F25EF3-15F0-4CC6-849A-C2E9B1BBAAB1}"
 EndProject
@@ -18,6 +18,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".metadata", ".metadata", "{
 		README.md = README.md
 		stardewvalley.targets = stardewvalley.targets
 	EndProjectSection
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TwilightCore", "TwilightCore\TwilightCore.csproj", "{D316F761-A80B-4CCB-936D-1327F7AA63B5}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -37,6 +39,10 @@ Global
 		{3F10D072-54FD-47FA-B0AA-47A5A6F80931}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{3F10D072-54FD-47FA-B0AA-47A5A6F80931}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{3F10D072-54FD-47FA-B0AA-47A5A6F80931}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D316F761-A80B-4CCB-936D-1327F7AA63B5}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D316F761-A80B-4CCB-936D-1327F7AA63B5}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D316F761-A80B-4CCB-936D-1327F7AA63B5}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D316F761-A80B-4CCB-936D-1327F7AA63B5}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

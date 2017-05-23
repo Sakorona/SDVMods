@@ -25,7 +25,6 @@ namespace ClimateOfFerngill
         private MersenneTwister pRNG;
         private FerngillClimate GameClimate;
         public ProbabilityDistribution<string> WeatherOdds { get; set; }
-        public ProbabilityDistribution<string> PrecipTypeOdds { get; set; }
         private IMonitor Logger;
         private Vector2 snowPos; //snow elements
 
@@ -44,8 +43,7 @@ namespace ClimateOfFerngill
             Logger = log;
             pRNG = Dice;
 
-            WeatherOdds = new ProbabilityDistribution<double>();
-            PrecipTypeOdds = new ProbabilityDistribution<double>();
+            WeatherOdds = new ProbabilityDistribution<string>();
         }
 
         public void CheckForHazardConditions(MersenneTwister Dice)

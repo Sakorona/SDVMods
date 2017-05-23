@@ -1,4 +1,4 @@
-﻿namespace ClimateOfFerngill
+﻿namespace TwilightCore
 {
     /// <summary>
     /// generic pair struct

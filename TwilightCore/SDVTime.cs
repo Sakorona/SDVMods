@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace ClimateOfFerngill
+namespace TwilightCore
 {
     public struct SDVTime
     {

@@ -6,9 +6,9 @@ using System.Collections.Generic;
 using StardewValley.Locations;
 using StardewValley.Monsters;
 
-namespace ClimateOfFerngill
+namespace TwilightCore
 {
-    static class InternalUtility
+    public static class TwilightUtility
     {
        public static Dictionary<SDVDate, int> ForceDays = new Dictionary<SDVDate, int>
        {

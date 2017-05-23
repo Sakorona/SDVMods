@@ -1,9 +1,9 @@
 ﻿using System;
 using NPack;
 
-namespace ClimateOfFerngill
+namespace TwilightCore
 {
-    public static class OurExtensions
+    public static class TwilightExtensions
     {
         public static string GetRandomItem(this string[] array, Random r)
         {

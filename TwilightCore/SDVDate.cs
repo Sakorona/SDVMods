@@ -1,6 +1,6 @@
 ﻿using StardewValley;
 
-namespace ClimateOfFerngill
+namespace TwilightCore
 {
     public struct SDVDate
     {
@@ -56,7 +56,7 @@ namespace ClimateOfFerngill
             if (Game1.dayOfMonth == 28)
             {
                 day = 1;
-                season = InternalUtility.GetNextSeason(Game1.currentSeason);
+                season = TwilightUtility.GetNextSeason(Game1.currentSeason);
             }
             else
             {

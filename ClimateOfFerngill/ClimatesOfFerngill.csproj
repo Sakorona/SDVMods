@@ -40,9 +40,6 @@
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Drawing" />
-    <Reference Include="System.ValueTuple, Version=4.0.1.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
-      <HintPath>..\packages\System.ValueTuple.4.3.0\lib\netstandard1.0\System.ValueTuple.dll</HintPath>
-    </Reference>
     <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
@@ -57,25 +54,18 @@
     </Compile>
     <Compile Include="ClimatesOfFerngill.cs" />
     <Compile Include="FarmerStatus.cs" />
-    <Compile Include="Helpers\ProbabilityDistribution.cs" />
+    <Compile Include="Record Classes\CropInfo.cs" />
     <Compile Include="Record Classes\FerngillClimate.cs" />
     <Compile Include="HazardousWeatherEvents.cs" />
     <Compile Include="FerngillFog.cs" />
-    <Compile Include="Helpers\SDVDate.cs" />
-    <Compile Include="Helpers\SDVTime.cs" />
     <Compile Include="Pathoschild.Stardew.UIF\DrawHelper.cs" />
     <Compile Include="FerngillWeather.cs" />
     <Compile Include="Pathoschild.Stardew.UIF\FormattedText.cs" />
     <Compile Include="Pathoschild.Stardew.UIF\IFormattedText.cs" />
-    <Compile Include="Common\MersenneTwister.cs" />
-    <Compile Include="Common\OurExtensions.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="ClimateConfig.cs" />
-    <Compile Include="Helpers\SDVCrops.cs" />
-    <Compile Include="Common\RangePair.cs" />
     <Compile Include="SDVMoon.cs" />
     <Compile Include="Helpers\SDVWeather.cs" />
-    <Compile Include="Common\InternalUtility.cs" />
     <Compile Include="Sprites.cs" />
     <Compile Include="Helpers\WeatherHelper.cs" />
     <Compile Include="Record Classes\TVStrings.cs" />
@@ -83,6 +73,7 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="Changelog.md" />
+    <None Include="Data\cropdata.json" />
     <None Include="Docs\DetailedClimateWriteup.md" />
     <None Include="Docs\HazardousWeatherEvents.md" />
     <None Include="manifest.json">
@@ -90,17 +81,26 @@
     </None>
     <None Include="packages.config" />
     <None Include="README.md" />
-    <None Include="TvStrings.en.json">
+    <None Include="Data\TvStrings.en.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
   </ItemGroup>
   <ItemGroup>
-    <Content Include="climatesheet2.png">
+    <Content Include="Assets\climatesheet2.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <Content Include="Docs\SpringRainChanceGraph.png" />
     <Content Include="Docs\SpringRainChancesNormalEnhanced.png" />
     <Content Include="LICENSE.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\TwilightCore\TwilightCore.csproj">
+      <Project>{d316f761-a80b-4ccb-936d-1327f7aa63b5}</Project>
+      <Name>TwilightCore</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Common\" />
   </ItemGroup>
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
     <PropertyGroup>

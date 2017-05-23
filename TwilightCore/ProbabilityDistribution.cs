@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace ClimateOfFerngill
+namespace TwilightCore
 {
     /// <summary>
     /// This class allows for a probability distribution of multiple items to be controlled by one class

@@ -36,7 +36,7 @@ namespace ClimateOfFerngill
 
            public Icons(IContentHelper helper)
            {
-                source = helper.Load<Texture2D>("climatesheet2.png");
+                source = helper.Load<Texture2D>("Assets\climatesheet2.png");
            }
 
             public Rectangle GetMoonSprite(MoonPhase moon)
