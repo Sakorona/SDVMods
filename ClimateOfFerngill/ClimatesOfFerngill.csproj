@@ -57,7 +57,7 @@
     </Compile>
     <Compile Include="ClimatesOfFerngill.cs" />
     <Compile Include="FarmerStatus.cs" />
-    <Compile Include="Helpers\Class1.cs" />
+    <Compile Include="Helpers\ProbabilityDistribution.cs" />
     <Compile Include="Record Classes\FerngillClimate.cs" />
     <Compile Include="HazardousWeatherEvents.cs" />
     <Compile Include="FerngillFog.cs" />
