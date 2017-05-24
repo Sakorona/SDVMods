@@ -2,7 +2,7 @@
 
 namespace TwilightCore.StardewValley
 {
-    public struct SDVTime
+    public class SDVTime
     {
         int hour;
         int minute;
@@ -11,8 +11,8 @@ namespace TwilightCore.StardewValley
         {
             hour = t / 100;
 
-            if (hour > 24)
-                throw new Exception("Invalid Time passed to the constructor");
+            if (hour >= 26)
+                throw new ArgumentOutOfRangeException("Invalid Time passed to the constructor");
 
             t = t - (hour * 100);
 
@@ -21,8 +21,8 @@ namespace TwilightCore.StardewValley
             else
             {
                 hour++;
-                if (hour > 24)
-                    throw new Exception("Invalid Time passed to the constructor");
+                if (hour >= 26)
+                    throw new ArgumentOutOfRangeException("Invalid Time passed to the constructor");
                 minute = t - 60;
             }
         }
@@ -68,6 +68,9 @@ namespace TwilightCore.StardewValley
                 minute = 60 + minute;
             }
 
+            if (hour < 0)
+                hour = hour + 24;
+
         }
 
         public void AddTime(int time)
@@ -93,6 +96,11 @@ namespace TwilightCore.StardewValley
             {
                 hour++;
                 minute -= 60;
+            }
+
+            if (hour >= 26)
+            {
+                hour = hour - 24;
             }
         }
         //operator functions
@@ -132,7 +140,10 @@ namespace TwilightCore.StardewValley
 
         public override string ToString()
         {
-            return $"{hour}{minute.ToString().PadLeft(2, '0')}";
+            if (hour < 24)
+                return $"{hour.ToString().PadLeft(2,'0')}{minute.ToString().PadLeft(2, '0')}";
+            else
+                return $"{(hour - 24).ToString().PadLeft(2,'0')}{minute.ToString().PadLeft(2, '0')}";
         }
     }
 }

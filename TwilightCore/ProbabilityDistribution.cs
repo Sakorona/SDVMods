@@ -1,8 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace TwilightCore
 {
@@ -27,6 +25,11 @@ namespace TwilightCore
             OverflowResult = Overflow;
         }
 
+        public double GetCurrentEndPoint()
+        {
+            return CurrentPoint;
+        }
+
         public void SetOverflowResult(T Overflow)
         {
             OverflowResult = Overflow;
@@ -37,7 +40,7 @@ namespace TwilightCore
             if (NewProb < 0)
                 throw new ArgumentOutOfRangeException("The probability being added must be positive.");
             if (NewProb + CurrentPoint > 1)
-                throw new InvalidOperationException("The argument being added would cause the probability to exceed 100%.");
+                throw new ArgumentOutOfRangeException("The argument being added would cause the probability to exceed 100%.");
 
             CurrentPoint += NewProb;
             EndPoints.Add(CurrentPoint,Entry);
@@ -50,6 +53,13 @@ namespace TwilightCore
 
         public bool GetEntryFromProb(double Prob, out T Result, bool IncludeEnds = true)
         {
+            if (EndPoints.Keys.Count() == 0)
+                throw new InvalidOperationException("No probabilities have been added to this distribution");
+
+            if (Prob > 1 || Prob < 0)
+                throw new ArgumentOutOfRangeException("The Probability must be greather than 0 and less than or equal to 1.");
+
+
             double[] KeyValues = EndPoints.Keys.ToArray();
             for (int i = 0; i < KeyValues.Count(); i++)
             {

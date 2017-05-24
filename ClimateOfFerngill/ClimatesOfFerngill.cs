@@ -786,7 +786,7 @@ namespace ClimateOfFerngill
                 return true;
             }
 
-            foreach(KeyValuePair<SDVDate, int> entry in SDVUtilies.ForceDays)
+            foreach(KeyValuePair<SDVDate, int> entry in SDVUtilities.ForceDays)
             {
                 if (entry.Key == Tomorrow)
                 {

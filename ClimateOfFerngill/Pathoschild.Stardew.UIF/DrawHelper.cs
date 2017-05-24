@@ -84,7 +84,7 @@ namespace Pathoschild.Stardew.UIF
         /// <param name="color">The color to tint the sprite.</param>
         public static void DrawLine(this SpriteBatch batch, float x, float y, Vector2 size, Color? color = null)
         {
-            batch.Draw(ClimateOfFerngill.Sprites.Pixel, new Rectangle((int)x, (int)y, (int)size.X, (int)size.Y), color ?? Color.White);
+            batch.Draw(Sprites.Pixel, new Rectangle((int)x, (int)y, (int)size.X, (int)size.Y), color ?? Color.White);
         }
 
         /// <summary>Draw a block of text to the screen with the specified wrap width.</summary>

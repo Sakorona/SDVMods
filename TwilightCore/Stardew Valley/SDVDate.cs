@@ -1,8 +1,7 @@
 ﻿using StardewValley;
-
 namespace TwilightCore.StardewValley
 {
-    public struct SDVDate
+    public class SDVDate
     {
         public string Season { get; set; }
         public int Day { get; set; }

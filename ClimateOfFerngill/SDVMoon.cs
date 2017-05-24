@@ -130,7 +130,7 @@ namespace ClimateOfFerngill
                 {
                     if (TF.Value is HoeDirt curr && curr.crop != null && Dice.NextDouble() < CropGrowthChance)
                     {
-                        if (curr.state == 1) //make sure it's watered
+                        if (curr.state == HoeDirt.watered) //make sure it's watered
                         {
                             cropsAffected++;
                             int phaseDays = 0;
@@ -185,7 +185,7 @@ namespace ClimateOfFerngill
                             if (Dice.NextDouble() < CropNoGrowthChance)
                             {
                                 cropsAffected++;
-                                curr.state = 0; 
+                                curr.state = HoeDirt.dry; 
                             }
                         }
                     }

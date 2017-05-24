@@ -2,6 +2,7 @@
 using StardewModdingAPI;
 using StardewValley;
 using System;
+using TwilightCore.StardewValley;
 
 namespace ClimateOfFerngill
 {
