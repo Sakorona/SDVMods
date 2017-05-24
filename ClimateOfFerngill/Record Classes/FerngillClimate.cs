@@ -44,10 +44,10 @@ namespace ClimateOfFerngill
         public int BeginDay;
         public int EndDay;
         public List<WeatherParameters> WeatherChances;
-       
+
         public FerngillClimateTimeSpan()
         {
-
+            this.WeatherChances = new List<WeatherParameters>();
         }
 
         public FerngillClimateTimeSpan(string BeginSeason, string EndSeason, int BeginDay, int EndDay, List<WeatherParameters> wp)
@@ -57,6 +57,8 @@ namespace ClimateOfFerngill
 
             this.BeginDay = BeginDay;
             this.EndDay = EndDay;
+            this.WeatherChances = new List<WeatherParameters>();
+
             foreach (WeatherParameters w in wp)
             {
                 this.WeatherChances.Add(new WeatherParameters(w));
@@ -66,12 +68,16 @@ namespace ClimateOfFerngill
 
         public FerngillClimateTimeSpan(FerngillClimateTimeSpan CTS)
         {
+            this.WeatherChances = new List<WeatherParameters>();
             foreach (WeatherParameters w in CTS.WeatherChances)
                 this.WeatherChances.Add(new WeatherParameters(w));
         }
 
         public void AddWeatherChances(WeatherParameters wp)
         {
+            if (this.WeatherChances is null)
+                WeatherChances = new List<WeatherParameters>();
+
             WeatherChances.Add(new WeatherParameters(wp));
         }
 
@@ -122,6 +128,7 @@ namespace ClimateOfFerngill
 
         public FerngillClimate(List<FerngillClimateTimeSpan> fCTS)
         {
+            ClimateSequences = new List<FerngillClimateTimeSpan>();
             foreach (FerngillClimateTimeSpan CTS in fCTS)
                 this.ClimateSequences.Add(new FerngillClimateTimeSpan(CTS));
         }
