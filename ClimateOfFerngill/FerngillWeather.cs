@@ -134,18 +134,14 @@ namespace ClimateOfFerngill
             return "C";
         }
 
-        //climate access functions
-        public FerngillClimateTimeSpan GetClimateForDate(SDVDate Target)
-        {
-            return this.GameClimate.ClimateSequences.Where(c => WeatherHelper.SeasonIsWithinRange(Target.Season, c.BeginSeason, c.EndSeason))
-                                                    .Where(c => Target.Day >= c.BeginDay && Target.Day <= c.EndDay)
-                                                    .First();
-        }
-
-
         public double GetStormOdds(SDVDate Target)
         {
-                return GetClimateForDate(Target).RetrieveOdds(pRNG, "storm", Target.Day);
+                return this.GameClimate.GetClimateForDate(Target).RetrieveOdds(pRNG, "storm", Target.Day);
+        }
+
+        public double GetFogOdds(SDVDate Target)
+        {
+            return this.GameClimate.GetClimateForDate(Target).RetrieveOdds(pRNG, "fog", Target.Day);
         }
 
         public void HandleStaminaChanges(bool passedThresholdOutside)
@@ -200,11 +196,6 @@ namespace ClimateOfFerngill
                 return "FRAS Warning: Temepratures in your region will be dipping below the frost threshold. Your crops will be vulnerable.";
 
             return "";
-        }
-        public string TestHazardMessage()
-        {
-            string areasAffected = " Areas affected include Zuzu City, Pelican Town...";
-            return "FRWS Warning: An unnatural heatwave is affecting the region." + areasAffected;
         }
 
         public void MessageForDangerousWeather()
@@ -305,7 +296,7 @@ namespace ClimateOfFerngill
         public void GenerateWeatherOdds(SDVDate Target)
         {
             //first, pull the climate time span for this
-            FerngillClimateTimeSpan CurrentConditions = GetClimateForDate(Target);
+            FerngillClimateTimeSpan CurrentConditions = this.GameClimate.GetClimateForDate(Target);
 
             //Now check for weathers. We will check in the pattern:
             // Rain - debris. 
@@ -337,6 +328,9 @@ namespace ClimateOfFerngill
         
         public void SetCurrentWeather()
         {
+            if (CurrentWeather == SDVWeather.Blizzard)
+                return;
+
             if (Game1.isRaining)
             {
                 if (Game1.isLightning)

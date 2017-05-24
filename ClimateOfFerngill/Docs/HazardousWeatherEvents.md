@@ -52,9 +52,11 @@ This occurs at -3.33C/26 F. The crops killed here are any above, and:
  
 ## Heatwave
 
-Heatwaves occur at temps above a value (configured as `HeatwaveWarning` (default 37C or 98.6F). If you do not have `AllowCropHeatDeath` set to true, this will only dewater the crops. During a heatwave, stamina is drained if the player is outside for over 65% of the ticks. The penalty is 1.5* the configured storm penalty configured to be the rounded up value.
+Heatwaves occur at temps above a value (configured as `HeatwaveWarning` (default 37C or 98.6F). If you do not have `AllowCropHeatDeath` set to true, this will only dewater the crops. During a heatwave, stamina is drained if the player is outside for over 65% of the ticks. The penalty is `1.5* the configured storm penalty` rounded up.
 
 If you have `AllowCropHeatDeath` set to true, you will need to water the plants within 3 hours (180 minutes) or the crops die. The threshold for that is controlled by `DeathTemp`, default set to 41C/101.5F
+
+The Heatwave event that kills the crops runs at 1700 and will only occur if it's not a festival day and it's not raining.
 
 The stamina penalty is configured to stop at twilight.
 

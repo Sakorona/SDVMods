@@ -205,7 +205,7 @@ namespace ClimateOfFerngill
             FarmerHealth.UpdateForNewDay();
 
             //update the weather
-            UpdateWeather(CurrWeather);         
+            //UpdateWeather(CurrWeather);         
         }
 
         /// <summary>
@@ -296,8 +296,11 @@ namespace ClimateOfFerngill
         /// <param name="e">event params</param>
         private void SaveEvents_BeforeSave(object sender, EventArgs e)
         {
-            if (Config.HarshWeather)
+            if (Config.HarshWeather && CurrWeather.GetTodayLow() < 1.8 &&
+                (Game1.currentSeason == "fall" || Game1.currentSeason == "spring"))
+            {
                 BadEvents.EarlyFrost(CurrWeather);
+            }
 
             Luna.HandleMoonAtSleep(Game1.getFarm());          
         }
@@ -476,7 +479,7 @@ namespace ClimateOfFerngill
                 if (Config.TooMuchInfo)
                     Monitor.Log("There was a wedding today. Regenerating the weather.");
 
-                UpdateWeather(CurrWeather, weddingOverride: true);
+                //UpdateWeather(CurrWeather, weddingOverride: true);
             }
 
             string tvText = " ";
@@ -515,6 +518,7 @@ namespace ClimateOfFerngill
             return tvText;
         }       
 
+        /*
         void UpdateWeather(FerngillWeather weatherOutput, bool BREAKME, bool weddingOverride = false)
         {
             //get start values
@@ -616,7 +620,7 @@ namespace ClimateOfFerngill
 
             if (Config.TooMuchInfo)
                 Monitor.Log($"Checking if set. Generated Weather: {WeatherHelper.DescWeather(TmrwWeather, Game1.currentSeason)} and set weather is: {WeatherHelper.DescWeather((SDVWeather)Game1.weatherForTomorrow, Game1.currentSeason)}");
-        }
+        } */
 
 
         private bool GameWillForceTomorrow(SDVDate Tomorrow)

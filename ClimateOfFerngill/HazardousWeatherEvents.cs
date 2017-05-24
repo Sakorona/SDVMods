@@ -52,7 +52,7 @@ namespace ClimateOfFerngill
                     DeathTime = new SDVTime(Game1.timeOfDay) + 180;
 
                 if (Config.TooMuchInfo)
-                    Logger.Log("Killing crops.... ");
+                    Logger.Log("Processing the heatwave");
 
                 foreach (KeyValuePair<Vector2, TerrainFeature> tf in f.terrainFeatures)
                 {
@@ -91,7 +91,7 @@ namespace ClimateOfFerngill
             foreach (Vector2 v in ThreatenedCrops)
             {
                 HoeDirt hd = (HoeDirt)f.terrainFeatures[v];
-                if (hd.state == 0)
+                if (hd.state == HoeDirt.dry)
                 {
                     hd.crop.dead = true;
                     cDead = true;
@@ -106,10 +106,6 @@ namespace ClimateOfFerngill
         {
             if (Config.TooMuchInfo)
                 Logger.Log("Invoking Frost.", LogLevel.Trace);
-
-            //If it's not cold enough or not fall (or potentially spring later), return.
-            if (currWeather.GetTodayLow() > 1.8 && (Game1.currentSeason == "fall" || Game1.currentSeason == "spring"))
-                return;
 
             //iterate through the farm for crops
             Farm f = Game1.getFarm();
@@ -149,6 +145,7 @@ namespace ClimateOfFerngill
                     }
                 }
             }
+
             if (cropsKilled)
                 SDVUtilities.ShowMessage("During the night, some crops died to the frost...");
         }
@@ -158,9 +155,11 @@ namespace ClimateOfFerngill
             //heatwave event
             if (time == 1700)
             {
-                //the heatwave can't happen if it's a festval day, and if it's rainy or lightening.
+                //the heatwave can't happen if it's a festval day, and if it's rainy
+                //dry lightning is now a thing, and I see no reason it can't trigger a heatwave
                 if (temp > Config.HeatwaveWarning &&
-                    !Utility.isFestivalDay(Game1.dayOfMonth, Game1.currentSeason) && (!Game1.isRaining || !Game1.isLightning))
+                    !Utility.isFestivalDay(Game1.dayOfMonth, Game1.currentSeason) && 
+                    !Game1.isRaining)
                 {
                     ProcessHeatwave(Game1.getFarm());
                     if (Config.TooMuchInfo)

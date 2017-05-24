@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using TwilightCore;
+using TwilightCore.StardewValley;
 
 namespace ClimateOfFerngill
 {
@@ -132,5 +133,15 @@ namespace ClimateOfFerngill
             foreach (FerngillClimateTimeSpan CTS in fCTS)
                 this.ClimateSequences.Add(new FerngillClimateTimeSpan(CTS));
         }
+
+        //climate access functions
+        public FerngillClimateTimeSpan GetClimateForDate(SDVDate Target)
+        {
+            return this.ClimateSequences.Where(c => WeatherHelper.SeasonIsWithinRange(Target.Season, c.BeginSeason, c.EndSeason))
+                                                    .Where(c => Target.Day >= c.BeginDay && Target.Day <= c.EndDay)
+                                                    .First();
+        }
+
+
     }
 }

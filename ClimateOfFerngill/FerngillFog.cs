@@ -55,26 +55,8 @@ namespace ClimateOfFerngill
         public bool IsFog(MersenneTwister Dice, FerngillWeather CurrentWeather, string season)
         {
             //set up fog.
-            double FogChance = 0;
-            switch (season)
-            {
-                case "spring":
-                    FogChance = Config.SpringFogChance;
-                    break;
-                case "summer":
-                    FogChance = Config.SummerFogChance;
-                    break;
-                case "fall":
-                    FogChance = Config.AutumnFogChance;
-                    break;
-                case "winter":
-                    FogChance = Config.WinterFogChance;
-                    break;
-                default:
-                    FogChance = 0;
-                    break;
-            }
-
+            double FogChance = CurrentWeather.GetFogOdds(SDVDate.Today);
+            
             //move these out of the main loop.
             if (CurrentWeather.CurrentConditions() == SDVWeather.Rainy || CurrentWeather.CurrentConditions() == SDVWeather.Debris)
                 return false;
