@@ -84,6 +84,7 @@
     <None Include="Data\TvStrings.en.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
+    <None Include="Weather\normal.json" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Assets\climatesheet2.png">
