@@ -111,8 +111,7 @@ namespace ClimateOfFerngill
 
             if ((int)weather == Game1.weather_festival)
                 return "It'll be good weather for the " + SDVUtilities.GetTomorrowFestivalName() + "! Sunny and clear.";
-
-
+        
             if (today && weather == SDVWeather.Wedding)
                 ret += OurText.WeddingWeather.GetRandomItem(dice) + " ";
 
@@ -120,7 +119,7 @@ namespace ClimateOfFerngill
                 ret += OurText.WeddingWeather.GetRandomItem(dice) + " ";
 
             if (Game1.dayOfMonth == 28 && Game1.currentSeason != "winter") //some customization for next day is a new season
-                ret += OurText.NextDayIsNextSeason + " " + SDVUtilities.GetNewSeason(Game1.currentSeason) + " ";
+                ret += OurText.NextDayIsNextSeason + " " + SDVDate.GetNextSeason(Game1.currentSeason) + " ";
 
 			if (Game1.dayOfMonth == 28 && Game1.currentSeason == "winter") //end of year message.
                 ret += OurText.NextDayIsNewYear + " ";

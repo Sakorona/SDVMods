@@ -31,20 +31,6 @@ namespace TwilightCore.StardewValley
             { new SDVDate("winter", 25), Game1.weather_festival }
        };
 
-        public static string GetNextSeason(string currentSeason)
-        {
-            if (currentSeason == "spring")
-                return "summer";
-            if (currentSeason == "summer")
-                return "fall";
-            if (currentSeason == "fall")
-                return "winter";
-            if (currentSeason == "winter")
-                return "spring";
-
-            return "error";
-        }
-
         public static void ShakeScreenOnLowStamina()
         {
             Game1.staminaShakeTimer = 1000;
@@ -61,16 +47,9 @@ namespace TwilightCore.StardewValley
             }
         }
 
-        public static string GetFestivalName()
-        {
-            return GetFestivalName(Game1.dayOfMonth, Game1.currentSeason);
-        }
-
-        public static string GetTomorrowFestivalName()
-        {
-            return GetFestivalName(Game1.dayOfMonth + 1, Game1.currentSeason);
-        }
-
+        public static string GetFestivalName() => GetFestivalName(Game1.dayOfMonth, Game1.currentSeason);
+        public static string GetTomorrowFestivalName() => GetFestivalName(Game1.dayOfMonth + 1, Game1.currentSeason);
+        
         public static string PrintStringArray(string[] array)
         {
             string s = "";
@@ -128,37 +107,11 @@ namespace TwilightCore.StardewValley
             Game1.addHUDMessage(hudmsg);
         }
 
-        internal static bool VerifyValidTime(int time)
-        {
-            //basic bounds first
-            if (time >= 0600 && time <= 2600)
-                return false;
-            if ((time % 100) > 50)
-                return false;
-
-            return true;
-        }
-
         public static void FaintPlayer()
         {
             Game1.player.Stamina = 0;
             Game1.player.doEmote(36);
             Game1.farmerShouldPassOut = true;
-        }
-
-        public static string GetNewSeason(string currentSeason)
-        {
-            if (currentSeason == "spring") return "summer";
-            if (currentSeason == "summer") return "fall";
-            if (currentSeason == "fall") return "winter";
-            if (currentSeason == "winter") return "spring";
-
-            return "ERROR";
-        }
-
-        public static Beach GetBeach()
-        {
-            return Game1.getLocationFromName("Beach") as Beach;
         }
 
         public static string WeatherToString(int weather)

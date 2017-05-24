@@ -14,6 +14,7 @@
 - Fixed: Debris weather via console didn't trigger the debris. 
 - Moved TV strings to a .json file, and rewrote a few to flow better, to allow for customization down the line
 - Spellchecked the mod in places
+- Moved crops into it's own file for future consideration
 - Updated the documentation
 
 1.0

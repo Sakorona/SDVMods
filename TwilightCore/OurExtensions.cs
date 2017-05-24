@@ -11,11 +11,11 @@ namespace TwilightCore
             return array[r.Next(l)];
         }
 
-        public static bool Contains(this int[] array, int val)
+        public static bool Contains<T>(this T[] array, T val)
         {
-            foreach (int i in array)
+            foreach (T i in array)
             {
-                if (val == i)
+                if (val.Equals(i))
                     return true;
             }
 

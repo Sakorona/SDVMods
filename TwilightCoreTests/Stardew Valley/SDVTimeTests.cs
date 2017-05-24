@@ -75,6 +75,18 @@ namespace TwilightCore.StardewValley.Tests
         }
 
         [TestMethod]
+        public void TestIsValidIntTime()
+        {
+            Assert.AreEqual(false, SDVTime.VerifyValidIntTime(3000));
+            Assert.AreEqual(true, SDVTime.VerifyValidIntTime(2510));
+            Assert.AreEqual(false, SDVTime.VerifyValidIntTime(210));
+            Assert.AreEqual(true, SDVTime.VerifyValidIntTime(810));
+            Assert.AreEqual(false, SDVTime.VerifyValidIntTime(290));
+            Assert.AreEqual(true, SDVTime.VerifyValidIntTime(854));
+            Assert.AreEqual(false, SDVTime.VerifyValidIntTime(871));
+        }
+
+        [TestMethod]
         public void TestSubtractTimeAroundMidnight()
         {
             SDVTime Test = new SDVTime(2512) - new SDVTime(148);

@@ -7,8 +7,6 @@ using Microsoft.Xna.Framework.Input;
 using StardewModdingAPI;
 using StardewValley;
 using StardewValley.Menus;
-
-//3P
 using Pathoschild.Stardew.UIF;
 using System.Linq;
 using TwilightCore.StardewValley;
@@ -124,7 +122,7 @@ namespace ClimateOfFerngill
         ** Methods
         ****/
 
-            /// <summary>Handle a left-click from the player's mouse or controller.</summary>
+        /// <summary>Handle a left-click from the player's mouse or controller.</summary>
         /// <param name="x">The x-position of the cursor.</param>
         /// <param name="y">The y-position of the cursor.</param>
         public void HandleLeftClick(int x, int y)
@@ -146,9 +144,6 @@ namespace ClimateOfFerngill
         public override void draw(SpriteBatch spriteBatch)
         {
             // disable when game is using immediate sprite sorting
-            // (This prevents Lookup Anything from creating new sprite batches, which breaks its core rendering logic.
-            // Fortunately this very rarely happens; the only known case is the Stardew Valley Fair, when the only thing
-            // you can look up anyway is the farmer.)
             if (!this.ValidatedDrawMode)
             {
                 IPrivateField<SpriteSortMode> sortModeField =

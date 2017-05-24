@@ -138,6 +138,17 @@ namespace TwilightCore.StardewValley
             return (hour * 100) + minute;
         }
 
+        public static bool VerifyValidIntTime(int time)
+        {
+            //basic bounds first
+            if (time < 0600 || time > 2600)
+                return false;
+            if ((time % 100) > 59)
+                return false;
+
+            return true;
+        }
+
         public override string ToString()
         {
             if (hour < 24)

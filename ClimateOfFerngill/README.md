@@ -10,9 +10,12 @@ See [https://github.com/JohnsonNicholas/climate-of-ferngill/blob/master/Changelo
 
 ## Requirements
 * Stardew Valley: __1.2__ 
-* SMAPI: __1.12__ or greater
+* SMAPI: __1.13__ or greater
 * Platonymous' Custom Element Handler: __v1.2.1__ [http://www.nexusmods.com/stardewvalley/mods/1068/?]
 * Platonymous' Custom TV: __1.0.3.1+__ [http://www.nexusmods.com/stardewvalley/mods/1139/?]
+
+## Configuration
+TODO
 
 ## Features
 * Custom TV dialogue (English only)

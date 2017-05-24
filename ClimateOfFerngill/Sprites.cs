@@ -70,29 +70,6 @@ namespace ClimateOfFerngill
             }
 
             // These are the positions of each sprite on the sheet.
-            /*
-             * For Sheet 1:
-            public static readonly Rectangle NewMoon = new Rectangle(17, 21, 10, 9);
-            public static readonly Rectangle WaxingCrescent = new Rectangle(26, 21, 9, 9);
-            public static readonly Rectangle FirstQuarter = new Rectangle(35, 21, 10, 9);
-            public static readonly Rectangle WaxingGibbeous = new Rectangle(44, 21, 10, 9);
-
-            public static readonly Rectangle FullMoon = new Rectangle(17, 31, 10, 9);
-            public static readonly Rectangle WaningCrescent = new Rectangle(26, 31, 9, 9);
-            public static readonly Rectangle ThirdQuarter = new Rectangle(35, 31, 10, 9);
-            public static readonly Rectangle WaningGibbeous = new Rectangle(44, 31, 10, 9);
-
-            public static readonly Rectangle WeatherSunny = new Rectangle(17, 48, 10, 10);
-            public static readonly Rectangle WeatherRainy = new Rectangle(26, 48, 10, 10);
-            public static readonly Rectangle WeatherStormy = new Rectangle(35, 48, 10, 10);
-            public static readonly Rectangle WeatherSnowy = new Rectangle(44, 48, 10, 10);
-            public static readonly Rectangle WeatherWindy = new Rectangle(53, 48, 9, 10);
-            public static readonly Rectangle WeatherWedding = new Rectangle(62, 48, 9, 10);
-            public static readonly Rectangle WeatherFestival = new Rectangle(71, 48, 10, 10);
-            */
-
-            //for v2!
-            // will add the progression ones later. TODO.
             public static readonly Rectangle NewMoon = new Rectangle(24, 120, 37, 35);
             public static readonly Rectangle WaxingCrescent = new Rectangle(60, 120, 37, 34);
             public static readonly Rectangle FirstQuarter = new Rectangle(174, 117, 38, 36);
