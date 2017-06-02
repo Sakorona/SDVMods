@@ -68,11 +68,6 @@ namespace ClimateOfFerngill
         /// This is the moon of the mod, which has a few events. Deliberatly marked public for another mod of mine.
         /// </summary>
         public SDVMoon Luna { get; set; }
-        
-        /// <summary>
-        /// This contains the text for all strings. 
-        /// </summary>
-        public TVStrings OurText;
 
         /// <summary>
         /// This tracks if the farmer has any buffs or debuffs from the weather.
@@ -118,7 +113,6 @@ namespace ClimateOfFerngill
             Luna = new SDVMoon(Monitor, Config, Dice);
             List<CropInfo> OurCrops = helper.ReadJsonFile<List<CropInfo>>(@"data\cropdata.json");
             BadEvents = new HazardousWeatherEvents(OurCrops, Monitor, Config, Dice);
-            OurText = helper.ReadJsonFile<TVStrings>("TvStrings.en.json");
 
             string ClimateFileName = "weather\\" + Config.ClimateType + ".json";
             string ClimateFilePath = Path.Combine(Path.Combine(Helper.DirectoryPath, ClimateFileName));
@@ -151,11 +145,10 @@ namespace ClimateOfFerngill
                 TimeEvents.TimeOfDayChanged += TimeEvents_TimeOfDayChanged;
                 GraphicsEvents.OnPostRenderEvent += GraphicsEvents_OnPostRenderEvent;
 
-                //siiigh.
                 helper.ConsoleCommands
-                        .Add("world_changetmrweather", "Changes tomorrow's weather.\"rain,storm,snow,debris,festival,wedding,sun\" ", TmrwWeatherChangeFromConsole)
-                        .Add("world_changeweather", "Changes CURRENT weather. \"rain,storm,snow,debris,sun\"", WeatherChangeFromConsole)
-                        .Add("player_removecold", "Removes the cold from the player.", RemovePlayerCold);
+                        .Add("world_setweathertmrw", helper.Translation.Get("console-text.desc_tmrweather"), TmrwWeatherChangeFromConsole)
+                        .Add("world_setweather", helper.Translation.Get("console-text.desc_setweather"), WeatherChangeFromConsole)
+                        .Add("player_removecold", helper.Translation.Get("console-text.desc_removecold"), RemovePlayerCold);
 
                 //register keyboard handlers and other menu events
                 ControlEvents.KeyPressed += (sender, e) => this.ReceiveKeyPress(e.KeyPressed, this.Config.Keyboard);
@@ -283,7 +276,7 @@ namespace ClimateOfFerngill
                     if (Dice.NextDoublePositive() <= CurrWeather.GetStormOdds(SDVDate.Tomorrow))
                     {
                         Game1.weatherForTomorrow = Game1.weather_lightning;
-                        Game1.addHUDMessage(new HUDMessage("You hear a roll of thunder..."));
+                        Game1.addHUDMessage(new HUDMessage(Helper.Translation.Get("hud-text.desc_stormtotem")));
                     }
                 }
             }
@@ -331,7 +324,7 @@ namespace ClimateOfFerngill
         private void RemovePlayerCold(string arg1, string[] arg2)
         {
             FarmerHealth.RemoveCold();
-            Monitor.Log("The cold has been removed", LogLevel.Info);
+            Monitor.Log(Helper.Translation.Get("console-text.removecoldtext"), LogLevel.Info);
         }
 
         /// <summary>
@@ -352,29 +345,29 @@ namespace ClimateOfFerngill
                     Game1.isSnowing = Game1.isLightning = Game1.isDebrisWeather = false;
                     Game1.isRaining = true;
                     Game1.debrisWeather.Clear();
-                    Monitor.Log("The weather is now rain",LogLevel.Info);
+                    Monitor.Log(Helper.Translation.Get("console-text.weatherset_rain"),LogLevel.Info);
                     break;
                 case "storm":
                     Game1.isSnowing = Game1.isDebrisWeather = false;
                     Game1.isLightning = Game1.isRaining = true;
                     Game1.debrisWeather.Clear();
-                    Monitor.Log("The weather is now storm", LogLevel.Info);
+                    Monitor.Log(Helper.Translation.Get("console-text.weatherset_storm"), LogLevel.Info);
                     break;
                 case "snow":
                     Game1.isRaining = Game1.isLightning = Game1.isDebrisWeather = false;
                     Game1.isSnowing = true;
                     Game1.debrisWeather.Clear();
-                    Monitor.Log("The weather is now snow", LogLevel.Info);
+                    Monitor.Log(Helper.Translation.Get("console-text.weatherset_snow"), LogLevel.Info);
                     break;
                 case "debris":
                     Game1.isSnowing = Game1.isLightning = Game1.isRaining = false;
                     Game1.isDebrisWeather = true;
                     Game1.populateDebrisWeatherArray();
-                    Monitor.Log("The weather is now debris", LogLevel.Info);
+                    Monitor.Log(Helper.Translation.Get("console-text.weatherset_debris", LogLevel.Info);
                     break;
                 case "sunny":
                     Game1.isSnowing = Game1.isLightning = Game1.isRaining = Game1.isRaining = false;
-                    Monitor.Log("The weather is now sunny", LogLevel.Info);
+                    Monitor.Log(Helper.Translation.Get("console-text.weatherset_sun", LogLevel.Info);
                     break;
             }
 
@@ -397,31 +390,31 @@ namespace ClimateOfFerngill
             {
                 case "rain":
                     Game1.weatherForTomorrow = Game1.weather_rain;
-                    Monitor.Log("The weather Tomorrow is now rain", LogLevel.Info);
+                    Monitor.Log(Helper.Translation.Get("console-text.weatherset-tmrwrain"), LogLevel.Info);
                     break;
                 case "storm":
                     Game1.weatherForTomorrow = Game1.weather_lightning;
-                    Monitor.Log("The weather Tomorrow is now storm", LogLevel.Info);
+                    Monitor.Log(Helper.Translation.Get("console-text.weatherset-tmrwstorm"), LogLevel.Info);
                     break;
                 case "snow":
                     Game1.weatherForTomorrow = Game1.weather_snow;
-                    Monitor.Log("The weather Tomorrow is now snow", LogLevel.Info);
+                    Monitor.Log(Helper.Translation.Get("console-text.weatherset-tmrwsnow"), LogLevel.Info);
                     break;
                 case "debris":
                     Game1.weatherForTomorrow = Game1.weather_debris;
-                    Monitor.Log("The weather Tomorrow is now debris", LogLevel.Info);
+                    Monitor.Log(Helper.Translation.Get("console-text.weatherset-tmrwdebris"), LogLevel.Info);
                     break;
                 case "festival":
                     Game1.weatherForTomorrow = Game1.weather_festival;
-                    Monitor.Log("The weather Tomorrow is now festival", LogLevel.Info);
+                    Monitor.Log(Helper.Translation.Get("console-text.weatherset-tmrwfestival"), LogLevel.Info);
                     break;
                 case "sun":
                     Game1.weatherForTomorrow = Game1.weather_sunny;
-                    Monitor.Log("The weather Tomorrow is now sun", LogLevel.Info);
+                    Monitor.Log(Helper.Translation.Get("console-text.weatherset-tmrwsun"), LogLevel.Info);
                     break;
                 case "wedding":
                     Game1.weatherForTomorrow = Game1.weather_wedding;
-                    Monitor.Log("The weather Tomorrow is now wedding", LogLevel.Info);
+                    Monitor.Log(Helper.Translation.Get("console-text.weatherset-tmrwwedding"), LogLevel.Info);
                     break;
             }
         }
@@ -441,7 +434,7 @@ namespace ClimateOfFerngill
             if (Config.TooMuchInfo)
                 Monitor.Log($"The outside percentage is {outsidePercentage} for {numberOfTicksPerSpan} ticks per span and {numberOfTicksOutside} ticks outside");
 
-            if (outsidePercentage > .586)
+            if (outsidePercentage > Config.ChanceOfStaminaChange)
                 CurrWeather.HandleStaminaChanges(true);
             else
                 CurrWeather.HandleStaminaChanges(false);

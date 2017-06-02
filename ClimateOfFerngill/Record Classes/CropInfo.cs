@@ -8,7 +8,6 @@ namespace ClimateOfFerngill
 {
     public class CropInfo
     {
-        public string CropName { get; set; }
         public int ParentSheetIndex { get; set; }
         public double FrostLimit { get; set; }
 
@@ -17,9 +16,8 @@ namespace ClimateOfFerngill
 
         }
 
-        public CropInfo(string name, int index, double limit)
+        public CropInfo(int index, double limit)
         {
-            CropName = name;
             ParentSheetIndex = index;
             FrostLimit = limit;
         }

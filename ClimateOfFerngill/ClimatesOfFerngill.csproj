@@ -68,7 +68,6 @@
     <Compile Include="Helpers\SDVWeather.cs" />
     <Compile Include="Sprites.cs" />
     <Compile Include="Helpers\WeatherHelper.cs" />
-    <Compile Include="Record Classes\TVStrings.cs" />
     <Compile Include="WeatherMenu.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -76,14 +75,12 @@
     <None Include="Data\cropdata.json" />
     <None Include="Docs\DetailedClimateWriteup.md" />
     <None Include="Docs\HazardousWeatherEvents.md" />
+    <None Include="i18n\default.json" />
     <None Include="manifest.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <None Include="packages.config" />
     <None Include="README.md" />
-    <None Include="Data\TvStrings.en.json">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
     <None Include="Weather\normal.json" />
   </ItemGroup>
   <ItemGroup>

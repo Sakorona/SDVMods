@@ -25,6 +25,7 @@ namespace ClimateOfFerngill
         public int HeatwaveWarning { get; set; }
         public int WiltLimit { get; set; }
         public double ChanceOfWilting { get; set; }
+        public double ChanceOfStaminaChange { get; set; }
 
         public int DeathTemp { get; set; }
         public bool AllowCropHeatDeath { get; set; }
@@ -60,6 +61,7 @@ namespace ClimateOfFerngill
             StormyPenalty = true;
             DiseaseChance = .33;
             StaminaPenalty = 3;
+            ChanceOfStaminaChange = .586;
             OnlyOneColdADay = true;
 
             //set harsh weather events - currently unused.

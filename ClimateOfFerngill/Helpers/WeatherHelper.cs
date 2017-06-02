@@ -8,30 +8,40 @@ namespace ClimateOfFerngill
 {
     static class WeatherHelper
     {
-        public static string DescWeather(SDVWeather weather, string season)
+        public static string DescWeather(SDVWeather weather, string season, ITranslationHelper helper)
         {
             switch (weather)
             {
                 case SDVWeather.Sunny:
-                    return "Sunny";
+                    return helper.Get("weather-type.desc-sun");
                 case SDVWeather.Rainy:
-                    return "Rainy";
+                    return helper.Get("weather-type.desc_rain");
                 case SDVWeather.Debris:
-                    return "Windy with" + (season == "spring" ? " pollen in the air" : (season == "fall" ? " leaves blowing in the wind" : "flurries of snow"));
+                    switch (season)
+	                {
+                        case "spring":
+                            return helper.Get("weather-type.desc_debris-spring");
+                        case "winter":
+                            return helper.Get("weather-type.desc_debris-winter");
+                        case "fall":
+                            return helper.Get("weather-type.desc_debris-fall");
+                        default:
+                            return helper.Get("weather-type.desc_debris");
+                    }
                 case SDVWeather.Stormy:
-                    return "Stormy";
+                    return helper.Get("weather-type.desc_storm");
                 case SDVWeather.Festival:
-                    return "Festival";
+                    return helper.Get("weather-type.desc_festival");
                 case SDVWeather.Snow:
-                    return "Snowy";
+                    return helper.Get("weather-type.desc_snow");
                 case SDVWeather.Wedding:
-                    return "Wedding";
+                    return helper.Get("weather-type.desc_wedding");
                 case SDVWeather.Blizzard:
-                    return "Blizzard";
+                    return helper.Get("weather-type.desc_blizzard");
                 case SDVWeather.Thundersnow:
-                    return "Thundersnow";
+                    return helper.Get("weather-type.desc_thundersnow");
                 default:
-                    return "Weather not present in base game";
+                    return helper.Get("weather-type.desc_error");
             }
         }
 
@@ -96,7 +106,7 @@ namespace ClimateOfFerngill
 
             return false;
         }
-
+        /*
         public static string GetWeatherDesc(TVStrings OurText, MersenneTwister dice, SDVWeather weather, FerngillWeather conditions, 
             bool today, IMonitor logger, bool debugFlag)
         {
@@ -189,6 +199,6 @@ namespace ClimateOfFerngill
             ret.Replace("[low_scale]", conditions.GetTempScale().ToString());
 
             return ret;
-        } 
+        } */
     }
 }

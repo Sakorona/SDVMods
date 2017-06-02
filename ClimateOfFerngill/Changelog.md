@@ -1,5 +1,6 @@
 1.1
-- Updated for SMAPI 1.13
+- Updated for SMAPI 1.14
+- Console Commands are renamed
 - Refactored to make it easier to add things in the future. 
 - Cleaned up some of the debug spam
 - Added new custom weathers: Thundersnow, Dry Lightning, Blizzards
@@ -12,7 +13,7 @@
 - Tweaked the penalty for colds
 - Collection Enumeration error resolved
 - Fixed: Debris weather via console didn't trigger the debris. 
-- Moved TV strings to a .json file, and rewrote a few to flow better, to allow for customization down the line
+- Implemented the Translation API to make translations more available.
 - Spellchecked the mod in places
 - Moved crops into it's own file for future consideration
 - Updated the documentation

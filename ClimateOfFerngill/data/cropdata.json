@@ -1,76 +1,76 @@
 [
   {
-    "CropName": "Amaranth",
+    // "CropName": "Amaranth",
     "ParentSheetIndex": 300,
     "FrostLimit": 0.0
   },
   {
-    "CropName": "Sunflower",
+    // "CropName": "Sunflower",
     "ParentSheetIndex": 421,
     "FrostLimit": 0.0
   },
   {
-    "CropName": "Pumpkin",
+    // "CropName": "Pumpkin",
     "ParentSheetIndex": 276,
     "FrostLimit": 0.0
   },
   {
-    "CropName": "Eggplant",
+    // "CropName": "Eggplant",
     "ParentSheetIndex": 272,
     "FrostLimit": 0.0
   },
   {
-    "CropName": "Wheat",
+    // "CropName": "Wheat",
     "ParentSheetIndex": 246,
     "FrostLimit": 1.66
   },
   {
-    "CropName": "BokChoy",
+    // "CropName": "BokChoy",
     "ParentSheetIndex": 278,
     "FrostLimit": 0.0
   },
   {
-    "CropName": "Artichoke",
+    // "CropName": "Artichoke",
     "ParentSheetIndex": 274,
     "FrostLimit": 0.0
   },
   {
-    "CropName": "Yam",
+    // "CropName": "Yam",
     "ParentSheetIndex": 280,
     "FrostLimit": 1.66
   },
   {
-    "CropName": "Corn",
+    // "CropName": "Corn",
     "ParentSheetIndex": 270,
     "FrostLimit": 1.66
   },
   {
-    "CropName": "Beet",
+    // "CropName": "Beet",
     "ParentSheetIndex": 284,
     "FrostLimit": -2.22
   },
   {
-    "CropName": "FairyRose",
+    // "CropName": "FairyRose",
     "ParentSheetIndex": 595,
     "FrostLimit": -2.22
   },
   {
-    "CropName": "SweetGemBerry",
+    // "CropName": "SweetGemBerry",
     "ParentSheetIndex": 347,
     "FrostLimit": -3.33
   },
   {
-    "CropName": "AncientFruit",
+    // "CropName": "AncientFruit",
     "ParentSheetIndex": 454,
     "FrostLimit": -3.33
   },
   {
-    "CropName": "Cranberry",
+    // "CropName": "Cranberry",
     "ParentSheetIndex": 282,
     "FrostLimit": -3.33
   },
   {
-    "CropName": "Grape",
+    // "CropName": "Grape",
     "ParentSheetIndex": 398,
     "FrostLimit": -0.55
   }
