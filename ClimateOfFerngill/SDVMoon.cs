@@ -137,13 +137,6 @@ namespace ClimateOfFerngill
                         {
                             cropsAffected++;
                             int phaseDays = 0;
-                            /* Get the current day of phase
-                             *  1] Is it fully grown? 
-                             *  1a] If so, subtract a day from the current phase
-                             *  1b] If not, take the minimum of the day of phase +1 or if the count of the phase days is past 0, then
-                             *  1bi] pull the phase day count of the minimum of the current phase days count -1 or the the current phase
-                             *  1bii] or 0.
-                             */
                             if (curr.crop.fullyGrown) {
                                 curr.crop.dayOfCurrentPhase--;
                             }
@@ -155,14 +148,7 @@ namespace ClimateOfFerngill
                                 curr.crop.dayOfCurrentPhase = Math.Min(curr.crop.dayOfCurrentPhase + 1, phaseDays);
                             }
 
-                            /* 1] if the day of the current phase is greater than or equal to
-                             * 1a] if the current count of the phase days is greater than 0, then
-                             * 1ai] Get the count of the phase days of either this phase or the phase before.
-                             * 1aii] Else, return 0
-                             * 1b] and the current phase is less than the current crop phase day -1.
-                             * 
-                             * then, advance the phase.
-                             */
+                            
                             int phaseDayCount = (curr.crop.phaseDays.Count > 0 ? 
                                 curr.crop.phaseDays[Math.Min(curr.crop.phaseDays.Count - 1, curr.crop.currentPhase)] : 0);
 
@@ -176,6 +162,7 @@ namespace ClimateOfFerngill
                     }
                 }
             }
+
             if (SDVMoon.GetLunarPhase() == MoonPhase.NewMoon)
             {
                 debugMessage = $"Moon Events: Dewatering on a new moon, with {CropNoGrowthChance}";
