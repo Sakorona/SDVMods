@@ -17,7 +17,25 @@ This mod does the following:
 
 This mod works the same way most SMAPI mods do, by subscribing to events, mainly `UpdateTick`, `OnPostRenderEvent`, `AfterLoad`, `AfterDayStarted`, `AfterReturnToTitle`, `BeforeSave`, and `TimeOfDayChanged`.
 
-At base, it needs the `AfterDayStarted` event to run, but all of the other events handle various functionalities. 
+At base, it needs the `AfterDayStarted` event to run, but all of the other events handle various functionality. 
+
+### Subsystem: Moon
+
+The moon works on a 16-day cycle, such that each in game year is (128/16) 8 complete lunar cycles. The cycle runs like this:
+
+- Day 0/16 - New Moon
+- Days 1-3 - Waxing Crescent
+- Day 4 - First Quarter
+- Days 5-7 - Waxing Gibbeous
+- Day 8 - Full Moon
+- Day 9-11 - Waning Gibbeous
+- Day 12 - Third Quarter
+- Day 13-15 - Waning Crescent
+
+On the following phases:
+
+- **Full Moon**: 
+
 
 
  
