@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
-VisualStudioVersion = 15.0.26403.0
+VisualStudioVersion = 15.0.26430.6
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ClimatesOfFerngill", "ClimateOfFerngill\ClimatesOfFerngill.csproj", "{D0F25EF3-15F0-4CC6-849A-C2E9B1BBAAB1}"
 EndProject
@@ -26,6 +26,10 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ClimateTesting", "ClimateTesting\ClimateTesting.csproj", "{B5424F41-AF54-48B6-8FFC-1813CE60C19D}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ClimatesOfFerngillTests", "ClimatesOfFerngillTests\ClimatesOfFerngillTests.csproj", "{7D18D973-CF4A-4384-A77F-6CDD4EFCD57F}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ClimatesOfFerngillRebuild", "ClimatesOfFerngillRebuild\ClimatesOfFerngillRebuild.csproj", "{251AC91D-397E-42AF-925D-3C7D1A9C72D5}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "COFRTest", "COFRTest\COFRTest.csproj", "{6E837167-3F85-4797-AD87-368A5D514311}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -61,6 +65,14 @@ Global
 		{7D18D973-CF4A-4384-A77F-6CDD4EFCD57F}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{7D18D973-CF4A-4384-A77F-6CDD4EFCD57F}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{7D18D973-CF4A-4384-A77F-6CDD4EFCD57F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{251AC91D-397E-42AF-925D-3C7D1A9C72D5}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{251AC91D-397E-42AF-925D-3C7D1A9C72D5}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{251AC91D-397E-42AF-925D-3C7D1A9C72D5}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{251AC91D-397E-42AF-925D-3C7D1A9C72D5}.Release|Any CPU.Build.0 = Release|Any CPU
+		{6E837167-3F85-4797-AD87-368A5D514311}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6E837167-3F85-4797-AD87-368A5D514311}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6E837167-3F85-4797-AD87-368A5D514311}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6E837167-3F85-4797-AD87-368A5D514311}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

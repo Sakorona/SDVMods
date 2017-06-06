@@ -447,7 +447,7 @@ The most changed season, this reintroduces wind (which looks like small snowflak
 * Rain Variability: `±.07`
 * Storm: `=-.17+(day*.012)`
 * Storm Variability: `±.1`
-* Debris: `f(x)= 50 - (day*1.4)`
+* Debris: `f(x)= .50 - (day*.014)`
 * Debris Variability: `+.1`
 * Snow: `1`
 * Snow Variability: `0`
