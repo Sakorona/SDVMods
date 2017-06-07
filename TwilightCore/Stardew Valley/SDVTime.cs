@@ -2,6 +2,12 @@
 
 namespace TwilightCore.StardewValley
 {
+    public enum SDVTimeOptions
+    {
+        TimeNormal,
+        TimePlayable
+    }
+
     public class SDVTime
     {
         int hour;
@@ -21,7 +27,7 @@ namespace TwilightCore.StardewValley
             else
             {
                 hour++;
-                if (hour >= 26)
+                if (hour >= 28)
                     throw new ArgumentOutOfRangeException("Invalid Time passed to the constructor");
                 minute = t - 60;
             }
@@ -30,7 +36,7 @@ namespace TwilightCore.StardewValley
         public SDVTime(int h, int m)
         {
             hour = h;
-            if (hour > 26)
+            if (hour > 28)
                 throw new Exception("Invalid Time passed to the constructor");
 
             minute = m;
@@ -82,12 +88,17 @@ namespace TwilightCore.StardewValley
             int addmin = time - (60 * addhr);
 
             hour = hour + addhr;
+
             minute = minute + addmin;
             while (minute > 59)
             {
                 hour++;
                 minute -= 60;
             }
+
+            if (hour > 28)
+                hour = hour - 24;
+
         }
 
         public void AddTime(SDVTime sTime)
@@ -101,11 +112,12 @@ namespace TwilightCore.StardewValley
                 minute -= 60;
             }
 
-            if (hour >= 26)
+            if (hour >= 28)
             {
                 hour = hour - 24;
             }
         }
+
         //operator functions
         public static SDVTime operator +(SDVTime s1, SDVTime s2)
         {
