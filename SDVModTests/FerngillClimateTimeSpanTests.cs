@@ -14,8 +14,7 @@ namespace ClimateOfFerngill.Tests
         [TestMethod()]
         public void RetrieveTempTest()
         {
-            FerngillClimateTimeSpan Test = new FerngillClimateTimeSpan();
-            Test.AddWeatherChances
+            
         }
     }
 }

@@ -363,11 +363,11 @@ namespace ClimateOfFerngill
                     Game1.isSnowing = Game1.isLightning = Game1.isRaining = false;
                     Game1.isDebrisWeather = true;
                     Game1.populateDebrisWeatherArray();
-                    Monitor.Log(Helper.Translation.Get("console-text.weatherset_debris", LogLevel.Info);
+                    Monitor.Log(Helper.Translation.Get("console-text.weatherset_debris", LogLevel.Info));
                     break;
                 case "sunny":
                     Game1.isSnowing = Game1.isLightning = Game1.isRaining = Game1.isRaining = false;
-                    Monitor.Log(Helper.Translation.Get("console-text.weatherset_sun", LogLevel.Info);
+                    Monitor.Log(Helper.Translation.Get("console-text.weatherset_sun", LogLevel.Info));
                     break;
             }
 

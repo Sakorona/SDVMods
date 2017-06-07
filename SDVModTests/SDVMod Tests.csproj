@@ -4,11 +4,11 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{7D18D973-CF4A-4384-A77F-6CDD4EFCD57F}</ProjectGuid>
+    <ProjectGuid>{34CE4599-9236-4DD7-8C41-235E82A2B860}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>ClimatesOfFerngillTests</RootNamespace>
-    <AssemblyName>ClimatesOfFerngillTests</AssemblyName>
+    <RootNamespace>TwilightCoreTests</RootNamespace>
+    <AssemblyName>TwilightCoreTests</AssemblyName>
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <ProjectTypeGuids>{3AC096D0-A1C2-E12C-1390-A8335801FDAB};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
@@ -56,16 +56,20 @@
     <Otherwise />
   </Choose>
   <ItemGroup>
+    <Compile Include="FerngillClimateTimeSpanTests.cs" />
+    <Compile Include="FerngillMoonTesting.cs" />
+    <Compile Include="ProbabilityDistributionTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Record Classes\FerngillClimateTimeSpanTests.cs" />
+    <Compile Include="SDVDateTests.cs" />
+    <Compile Include="SDVTimeTests.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\ClimateOfFerngill\ClimatesOfFerngill.csproj">
-      <Project>{D0F25EF3-15F0-4CC6-849A-C2E9B1BBAAB1}</Project>
-      <Name>ClimatesOfFerngill</Name>
+    <ProjectReference Include="..\TwilightCore\TwilightCore.csproj">
+      <Project>{D316F761-A80B-4CCB-936D-1327F7AA63B5}</Project>
+      <Name>TwilightCore</Name>
     </ProjectReference>
   </ItemGroup>
   <Choose>
