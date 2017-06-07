@@ -30,10 +30,13 @@ namespace TwilightCore.StardewValley
         public SDVTime(int h, int m)
         {
             hour = h;
-            if (hour > 24)
+            if (hour > 26)
                 throw new Exception("Invalid Time passed to the constructor");
 
             minute = m;
+
+            if (m >= 60)
+                throw new ArgumentOutOfRangeException("There are only 60 minutes in an hour.");
         }
 
         public SDVTime(SDVTime c)
