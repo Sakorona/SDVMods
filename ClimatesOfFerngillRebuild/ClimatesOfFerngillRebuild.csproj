@@ -49,7 +49,9 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="data\weather\enhanced.json" />
+    <None Include="data\weather\monsoon.json" />
     <None Include="data\weather\normal.json" />
+    <None Include="data\weather\wet.json" />
     <None Include="manifest.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
