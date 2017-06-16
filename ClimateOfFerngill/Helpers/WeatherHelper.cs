@@ -45,67 +45,7 @@ namespace ClimateOfFerngill
             }
         }
 
-        public static bool SeasonIsWithinRange(string Season, string LowBound, string HighBound)
-        {
-           var Range = new Tuple<string, string>(LowBound, HighBound);
-
-            if (Range.Item1 == "spring" && Range.Item2 == "winter") return true;
-            if (Range.Item1 == "summer" && Range.Item2 == "spring") return true;
-            if (Range.Item1 == "fall" && Range.Item2 == "summer") return true;
-            if (Range.Item1 == "winter" && Range.Item2 == "fall") return true;
-
-            if (Range.Item1 == Range.Item2 && Season == Range.Item1) return true;
-
-            if (Range.Item1 == "spring" && Range.Item2 == "summer")
-            {
-                if (Season == "spring" || Season == "summer") return true;
-                return false;
-            }
-
-            if (Range.Item1 == "spring" && Range.Item2 == "fall")
-            {
-                if (Season == "spring" || Season == "summer" || Season == "fall") return true;
-                return false;
-            }
-
-            if (Range.Item1 == "summer" && Range.Item2 == "fall")
-            {
-                if (Season == "summer" || Season == "fall") return true;
-                return false;
-            }
-
-            if (Range.Item1 == "summer" && Range.Item2 == "winter")
-            {
-                if (Season == "summer" || Season == "fall" || Season == "winter") return true;
-                return false;
-            }
-
-            if (Range.Item1 == "fall" && Range.Item2 == "winter")
-            {
-                if (Season == "fall" || Season == "winter") return true;
-                return false;
-            }
-
-            if (Range.Item1 == "fall" && Range.Item2 == "spring")
-            {
-                if (Season == "fall" || Season == "winter" || Season == "spring") return true;
-                return false;
-            }
-
-            if (Range.Item1 == "winter" && Range.Item2 == "spring")
-            {
-                if (Season == "winter" || Season == "spring") return true;
-                return false;
-            }
-
-            if (Range.Item1 == "winter" && Range.Item2 == "summer")
-            {
-                if (Season == "winter" || Season == "spring" || Season == "summer") return true;
-                return false;
-            }
-
-            return false;
-        }
+    
         /*
         public static string GetWeatherDesc(TVStrings OurText, MersenneTwister dice, SDVWeather weather, FerngillWeather conditions, 
             bool today, IMonitor logger, bool debugFlag)

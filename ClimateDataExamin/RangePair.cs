@@ -1,6 +1,4 @@
-﻿using TwilightCore.PRNG;
-
-namespace TwilightCore
+﻿namespace ClimateDataExaminer
 {
     /// <summary>
     /// generic pair struct

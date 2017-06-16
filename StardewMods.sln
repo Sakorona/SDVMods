@@ -25,6 +25,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ClimatesOfFerngillRebuild",
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SDVMod Tests", "SDVModTests\SDVMod Tests.csproj", "{34CE4599-9236-4DD7-8C41-235E82A2B860}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ClimateDataExaminer", "ClimateDataExamin\ClimateDataExaminer.csproj", "{696260C4-50B9-4EE6-BCAD-B2DD085BE40E}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -55,6 +57,10 @@ Global
 		{34CE4599-9236-4DD7-8C41-235E82A2B860}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{34CE4599-9236-4DD7-8C41-235E82A2B860}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{34CE4599-9236-4DD7-8C41-235E82A2B860}.Release|Any CPU.Build.0 = Release|Any CPU
+		{696260C4-50B9-4EE6-BCAD-B2DD085BE40E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{696260C4-50B9-4EE6-BCAD-B2DD085BE40E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{696260C4-50B9-4EE6-BCAD-B2DD085BE40E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{696260C4-50B9-4EE6-BCAD-B2DD085BE40E}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

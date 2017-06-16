@@ -1,7 +1,6 @@
 ﻿using System;
-using StardewValley;
 
-namespace TwilightCore.StardewValley
+namespace ClimateDataExaminer
 {
     public class SDVDate
     {
@@ -15,9 +14,6 @@ namespace TwilightCore.StardewValley
             "fall",
             "winter"
         };
-
-        public static SDVDate Today { get => new SDVDate(Game1.currentSeason, Game1.dayOfMonth); }
-        public static SDVDate Tomorrow { get => GetTomorrowInGame(); }
 
         public SDVDate(string s, int d)
         {
@@ -48,68 +44,6 @@ namespace TwilightCore.StardewValley
         {
             return base.GetHashCode();
         }
-
-
-        public static bool NotEquals(SDVDate s1, string s2, int d2)
-        {
-            return (s1 != new SDVDate(s2, d2));
-        }
-
-        public static bool Equals(SDVDate s1, string s2, int d2)
-        {
-            return (s1 == new SDVDate(s2, d2));
-        }
-
-        public static bool GreaterThan(SDVDate s1, string s2, int d2)
-        {
-            return (s1 > new SDVDate(s2, d2));
-        }
-
-        public static bool GreaterOrEqualsThan(SDVDate s1, string s2, int d2)
-        {
-            return (s1 >= new SDVDate(s2, d2));
-        }
-
-        public static bool LesserThan(SDVDate s1, string s2, int d2)
-        {
-            return (s1 < new SDVDate(s2, d2));
-        }
-
-        public static bool LesserOrEqualsThan(SDVDate s1, string s2, int d2)
-        {
-            return (s1 <= new SDVDate(s2, d2));
-        }
-
-        public static bool NotEquals(string s1, int d1, string s2, int d2)
-        {
-            return (new SDVDate(s1, d1) != new SDVDate(s2, d2));
-        }
-
-        public static bool Equals(string s1, int d1, string s2, int d2)
-        {
-            return (new SDVDate(s1, d1) == new SDVDate(s2, d2));
-        }
-
-        public static bool GreaterThan(string s1, int d1, string s2, int d2)
-        {
-            return (new SDVDate(s1, d1) > new SDVDate(s2, d2));
-        }
-
-        public static bool GreaterOrEqualsThan(string s1, int d1, string s2, int d2)
-        {
-            return (new SDVDate(s1, d1) >= new SDVDate(s2, d2));
-        }
-
-        public static bool LesserThan(string s1, int d1, string s2, int d2)
-        {
-            return (new SDVDate(s1, d1) < new SDVDate(s2, d2));
-        }
-
-        public static bool LesserOrEqualsThan(string s1, int d1, string s2, int d2)
-        {
-            return (new SDVDate(s1, d1) <= new SDVDate(s2, d2));
-        }
-
 
         public static bool operator ==(SDVDate s1, SDVDate s2)
         {
@@ -145,6 +79,74 @@ namespace TwilightCore.StardewValley
             return new SDVDate(season, day);
         }
 
+        public static bool operator !=(SDVDate s1, SDVDate s2)
+        {
+            if (s1.Season == s2.Season && s1.Day == s2.Day)
+                return false;
+            else
+                return true;
+        }
+
+        public static bool NotEquals(SDVDate s1, string s2, int d2)
+        {
+            return (s1 != new SDVDate(s2, d2));
+        }
+
+        public static bool Equals(SDVDate s1, string s2, int d2)
+        {
+            return (s1 == new SDVDate(s2, d2));
+        }
+
+        public static bool GreaterThan(SDVDate s1, string s2, int d2)
+        {
+            return (s1 > new SDVDate(s2, d2));
+        }
+
+        public static bool GreaterOrEqualsThan(SDVDate s1, string s2, int d2)
+        {
+            return (s1 >= new SDVDate(s2, d2));
+        }
+
+        public static bool LesserThan(SDVDate s1, string s2, int d2)
+        {
+            return (s1 < new SDVDate(s2, d2));
+        }
+
+        public static bool LesserOrEqualsThan(SDVDate s1, string s2, int d2)
+        {
+            return (s1 <= new SDVDate(s2, d2));
+        }
+
+        public static bool NotEquals(string s1, int d1, string s2, int d2)
+        {
+            return (new SDVDate(s1,d1) != new SDVDate(s2, d2));
+        }
+
+        public static bool Equals(string s1, int d1, string s2, int d2)
+        {
+            return (new SDVDate(s1, d1) == new SDVDate(s2, d2));
+        }
+
+        public static bool GreaterThan(string s1, int d1, string s2, int d2)
+        {
+            return (new SDVDate(s1,d1) > new SDVDate(s2, d2));
+        }
+
+        public static bool GreaterOrEqualsThan(string s1, int d1, string s2, int d2)
+        {
+            return (new SDVDate(s1,d1) >= new SDVDate(s2, d2));
+        }
+
+        public static bool LesserThan(string s1, int d1, string s2, int d2)
+        {
+            return (new SDVDate(s1,d1) < new SDVDate(s2, d2));
+        }
+
+        public static bool LesserOrEqualsThan(string s1, int d1, string s2, int d2)
+        {
+            return (new SDVDate(s1,d1) <= new SDVDate(s2, d2));
+        }
+
         public static bool operator >(SDVDate s1, SDVDate s2)
         {
             //handle same season first.
@@ -155,14 +157,14 @@ namespace TwilightCore.StardewValley
 
             //handle different season
             if (s1.Season == "winter" && s2.Season != "winter")
-                return true;
-
+               return true;
+            
             if (s1.Season == "fall" && (s2.Season == "summer" || s2.Season == "spring"))
                 return true;
-
+            
             if (s1.Season == "summer" && s2.Season == "spring")
-                return true;
-
+               return true;
+            
             return false;
         }
 
@@ -228,31 +230,20 @@ namespace TwilightCore.StardewValley
             return false;
         }
 
-        public static bool operator !=(SDVDate s1, SDVDate s2)
+        public bool IsBetween(SDVDate lower, SDVDate higher)
         {
-            if (s1.Season == s2.Season && s1.Day == s2.Day)
-                return false;
-            else
+            if (this > lower && this < higher)
                 return true;
+            else
+                return false;
         }
 
-        public static SDVDate GetTomorrowInGame()
+        public bool IsBetweenInc(SDVDate lower, SDVDate higher)
         {
-            int day = 1;
-            string season = "spring";
-
-            if (Game1.dayOfMonth == 28)
-            {
-                day = 1;
-                season = SDVDate.GetNextSeason(Game1.currentSeason);
-            }
+            if (this >= lower && this <= higher)
+                return true;
             else
-            {
-                season = Game1.currentSeason;
-                day = Game1.dayOfMonth + 1;
-            }
-
-            return new SDVDate(season, day);
+                return false;
         }
 
         public static SDVDate GetNextDay(SDVDate current)
