@@ -45,6 +45,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="PRNG\MTwisterExtensions.cs" />
+    <Compile Include="Stardew Valley\SDVDate.cs" />
     <Compile Include="Stardew Valley\Pathoschild.Stardew.UIF\DrawHelper.cs" />
     <Compile Include="Stardew Valley\Pathoschild.Stardew.UIF\FormattedText.cs" />
     <Compile Include="Stardew Valley\Pathoschild.Stardew.UIF\IFormattedText.cs" />
@@ -53,7 +54,6 @@
     <Compile Include="ProbabilityDistribution.cs" />
     <Compile Include="RangePair.cs" />
     <Compile Include="Stardew Valley\Pathoschild.Stardew.UIF\Sprites.cs" />
-    <Compile Include="Stardew Valley\SDVDate.cs" />
     <Compile Include="Stardew Valley\SDVTime.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Stardew Valley\SDVUtilities.cs" />

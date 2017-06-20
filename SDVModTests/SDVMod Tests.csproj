@@ -56,12 +56,7 @@
     <Otherwise />
   </Choose>
   <ItemGroup>
-    <Compile Include="FerngillClimateTimeSpanTests.cs" />
-    <Compile Include="FerngillMoonTesting.cs" />
-    <Compile Include="ProbabilityDistributionTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="SDVDateTests.cs" />
-    <Compile Include="SDVTimeTests.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />

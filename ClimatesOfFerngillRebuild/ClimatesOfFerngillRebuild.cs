@@ -9,6 +9,7 @@ using TwilightCore.PRNG;
 using StardewModdingAPI;
 using StardewValley;
 using StardewModdingAPI.Events;
+using System.IO;
 
 namespace ClimatesOfFerngillRebuild
 {
@@ -20,17 +21,21 @@ namespace ClimatesOfFerngillRebuild
         /// <summary> The pRNG object </summary>
         private MersenneTwister Dice;
 
-        /// <summary> Fixed path for Weather Files </summary>
-        private static string WeatherPath = "data/Weather/";
-
         public override void Entry(IModHelper helper)
         {
             WeatherOpt = helper.ReadConfig<WeatherConfig>();
             Dice = new MersenneTwister();
+            string path = Path.Combine("data", "Weather", WeatherOpt.ClimateType + ".json");
+            FerngillClimate GameClimate = helper.ReadJsonFile<FerngillClimate>(path);
 
             //subscribe to events
             SaveEvents.AfterLoad += InitiateMod;
             TimeEvents.AfterDayStarted += HandleNewDay;
+        }
+
+        private void InitiateMod(object sender, EventArgs e)
+        {
+            
         }
 
         private void HandleNewDay(object sender, EventArgs e)
@@ -38,9 +43,9 @@ namespace ClimatesOfFerngillRebuild
             throw new NotImplementedException();
         }
 
-        private void InitiateMod(object sender, EventArgs e)
+        private void UpdateWeather()
         {
-            throw new NotImplementedException();
+
         }
     }
 }

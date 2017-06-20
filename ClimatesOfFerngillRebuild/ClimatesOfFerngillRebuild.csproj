@@ -43,15 +43,26 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Climate Files\FerngillClimate.cs" />
+    <Compile Include="Climate Files\FerngillClimateTimeSpan.cs" />
+    <Compile Include="Climate Files\WeatherParameters.cs" />
     <Compile Include="ClimatesOfFerngillRebuild.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="WeatherConfig.cs" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="data\weather\enhanced.json" />
-    <None Include="data\weather\monsoon.json" />
-    <None Include="data\weather\normal.json" />
-    <None Include="data\weather\wet.json" />
+    <None Include="data\weather\enhanced.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="data\weather\monsoon.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="data\weather\normal.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="data\weather\wet.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
     <None Include="manifest.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>

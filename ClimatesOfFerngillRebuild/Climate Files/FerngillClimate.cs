@@ -1,6 +1,9 @@
 ﻿using System.Collections.Generic;
+using TwilightCore;
+using TwilightCore.PRNG;
+using TwilightCore.StardewValley;
 
-namespace ClimateDataExaminer
+namespace ClimatesOfFerngillRebuild
 {
         public class FerngillClimate
         {

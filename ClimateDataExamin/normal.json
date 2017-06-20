@@ -1,4 +1,5 @@
 {
+  "AllowRainInWinter": false,
   "ClimateSequences": [
     {
       "BeginSeason": "spring",
@@ -443,13 +444,6 @@
           "VariableHigherBound": 0.04
         },
         {
-          "WeatherType": "snow",
-          "BaseValue": 1.0,
-          "ChangeRate": 0.0,
-          "VariableLowerBound": 0.0,
-          "VariableHigherBound": 0.0
-        },
-        {
           "WeatherType": "lowtemp",
           "BaseValue": -2.5,
           "ChangeRate": -0.05,
@@ -461,7 +455,7 @@
           "BaseValue": 0.0,
           "ChangeRate": -0.1579,
           "VariableLowerBound": -4.0,
-          "VariableHigherBound": 0.0
+          "VariableHigherBound": 2.0
         },
         {
           "WeatherType": "fog",
@@ -486,13 +480,6 @@
           "VariableHigherBound": 0.07
         },
         {
-          "WeatherType": "snow",
-          "BaseValue": 1.0,
-          "ChangeRate": 0.0,
-          "VariableLowerBound": 0.0,
-          "VariableHigherBound": 0.0
-        },
-        {
           "WeatherType": "lowtemp",
           "BaseValue": -24.0,
           "ChangeRate": 1.0,
@@ -501,10 +488,10 @@
         },
         {
           "WeatherType": "hightemp",
-          "BaseValue": 0.0,
+          "BaseValue": -1.0,
           "ChangeRate": -0.1579,
           "VariableLowerBound": -4.0,
-          "VariableHigherBound": 0.0
+          "VariableHigherBound": 1.0
         },
         {
           "WeatherType": "fog",
@@ -529,25 +516,18 @@
           "VariableHigherBound": 0.07
         },
         {
-          "WeatherType": "snow",
-          "BaseValue": 1.0,
-          "ChangeRate": 0.0,
-          "VariableLowerBound": 0.0,
-          "VariableHigherBound": 0.0
-        },
-        {
           "WeatherType": "lowtemp",
-          "BaseValue": -24.0,
-          "ChangeRate": 1.0,
+          "BaseValue": -16.0,
+          "ChangeRate": 0.5,
           "VariableLowerBound": -3.0,
           "VariableHigherBound": 3.0
         },
         {
           "WeatherType": "hightemp",
-          "BaseValue": 0.0,
-          "ChangeRate": -0.1579,
-          "VariableLowerBound": -4.0,
-          "VariableHigherBound": 0.0
+          "BaseValue": -2.9,
+          "ChangeRate": 0.056,
+          "VariableLowerBound": -2.0,
+          "VariableHigherBound": 2.5
         },
         {
           "WeatherType": "fog",

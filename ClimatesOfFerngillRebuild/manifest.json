@@ -8,7 +8,7 @@
     "Build": "alpha-201706"
   },
   "Description": "Create a unique climate system with custom weathers, as well as add weather related events and commands.",
-  "UniqueID": "KoihimeNakamura.ClimatesOfFerngill",
+  "UniqueID": "KoihimeNakamura.ClimatesOfFerngillRebuild",
   "EntryDll": "ClimateOfFerngillRebuild.dll",
   "MinimumApiVersion": "1.14"
 }

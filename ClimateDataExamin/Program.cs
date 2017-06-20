@@ -15,7 +15,7 @@ namespace ClimateDataExaminer
 
         static void Main(string[] args)
         {
-            FerngillClimate OurClimate = ReadJsonFile<FerngillClimate>("normal.json");
+            FerngillClimate OurClimate = ReadJsonFile<FerngillClimate>("enhanced.json");
             StringBuilder outputString = new StringBuilder();
 
             Console.WriteLine("Parsing Data..");
@@ -26,6 +26,9 @@ namespace ClimateDataExaminer
             //<newline>
             //Weather Parameters [1..n]: Type 'K', Equation: XD + Y , Variability: -A to +B
             //      Effective Range: [-C to +E] 
+
+            Console.WriteLine($"Settings: Allow Rain in Winter set to {OurClimate.AllowRainInWinter}");
+            outputString.AppendLine($"Settings: Allow Rain in Winter set to {OurClimate.AllowRainInWinter}");
 
             foreach (FerngillClimateTimeSpan span in OurClimate.ClimateSequences)
             {
@@ -68,23 +71,31 @@ namespace ClimateDataExaminer
                         for (int j = span.BeginDay; j <= 28; j++)
                         {
                             double val = span.WeatherChances[i].ChangeRate * j + span.WeatherChances[i].BaseValue;
+                            double lVal = val + span.WeatherChances[i].VariableLowerBound;
+                            double hVal = val + span.WeatherChances[i].VariableHigherBound;
 
-                            if (min > (val - span.WeatherChances[i].VariableLowerBound))
-                                min = val - span.WeatherChances[i].VariableLowerBound;
+                            Console.WriteLine($"Testing: Generated Value for day [{j}] is {lVal} and {hVal}");
+                            outputString.AppendLine($"Testing: Generated Value for day [{j}] is {lVal} and {hVal}");
 
-                            if (max < (val + span.WeatherChances[i].VariableHigherBound))
-                                max = val + span.WeatherChances[i].VariableHigherBound;
+                            if (lVal < min)
+                                min = lVal;
+                            if (hVal > max)
+                                max = hVal;
+                            
                         }
 
                         for (int j = 1; j <= span.EndDay; j++)
                         {
                             double val = span.WeatherChances[i].ChangeRate * j + span.WeatherChances[i].BaseValue;
+                            double lVal = val + span.WeatherChances[i].VariableLowerBound;
+                            double hVal = val + span.WeatherChances[i].VariableHigherBound;
+                            Console.WriteLine($"Testing: Generated Value for day [{j}] is {lVal} and {hVal}");
+                            outputString.AppendLine($"Testing: Generated Value for day [{j}] is {lVal} and {hVal}");
 
-                            if (min > (val - span.WeatherChances[i].VariableLowerBound))
-                                min = val - span.WeatherChances[i].VariableLowerBound;
-
-                            if (max < (val + span.WeatherChances[i].VariableHigherBound))
-                                max = val + span.WeatherChances[i].VariableHigherBound;
+                            if (lVal < min)
+                                min = lVal;
+                            if (hVal > max)
+                                max = hVal;
                         }
                     }
                     else
@@ -92,12 +103,15 @@ namespace ClimateDataExaminer
                         for (int j = start; j <= end; j++)
                         {
                             double val = span.WeatherChances[i].ChangeRate * j + span.WeatherChances[i].BaseValue;
+                            double lVal = val + span.WeatherChances[i].VariableLowerBound;
+                            double hVal = val + span.WeatherChances[i].VariableHigherBound;
+                            Console.WriteLine($"Testing: Generated Value for day [{j}] is {lVal} and {hVal}");
+                            outputString.AppendLine($"Testing: Generated Value for day [{j}] is {lVal} and {hVal}");
 
-                            if (min > (val - span.WeatherChances[i].VariableLowerBound))
-                                min = val - span.WeatherChances[i].VariableLowerBound;
-
-                            if (max < (val + span.WeatherChances[i].VariableHigherBound))
-                                max = val + span.WeatherChances[i].VariableHigherBound;
+                            if (lVal < min)
+                                min = lVal;
+                            if (hVal > max)
+                                max = hVal;
                         }
                     }
 
