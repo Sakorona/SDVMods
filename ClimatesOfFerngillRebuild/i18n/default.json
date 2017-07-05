@@ -1,0 +1,18 @@
+﻿{
+  //console command text
+  "console-text.desc_tmrwweather": "Changes tomorrow's weather.\"rain,storm,snow,debris,festival,wedding,sun\" ",
+  "console-text.desc_setweather": "Changes CURRENT weather. \"rain,storm,snow,debris,sun\"",
+  "console-text.weatherset_rain": "The weather is now rain",
+  "console-text.weatherset_storm": "The weather is now storm",
+  "console-text.weatherset_snow": "The weather is now snow",
+  "console-text.weatherset_debris": "The weather is now debris",
+  "console-text.weatherset_sun": "The weather is now sunny",
+  "console-text.weatherset-tmrwrain": "The weather set for tommorow is: rain",
+  "console-text.weatherset-tmrwstorm": "The weather set for tommorow is: storm",
+  "console-text.weatherset-tmrwsnow": "The weather set for tommorow is: snow",
+  "console-text.weatherset-tmrwdebris": "The weather set for tommorow is: debris",
+  "console-text.weatherset-tmrwfestival": "The weather set for tommorow is: festival",
+  "console-text.weatherset-tmrwsun": "The weather set for tommorow is: sunny",
+  "console-text.weatherset-tmrwwedding": "The weather set for tommorow is: wedding"
+
+}

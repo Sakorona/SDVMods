@@ -45,7 +45,6 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="PRNG\MTwisterExtensions.cs" />
-    <Compile Include="Stardew Valley\SDVDate.cs" />
     <Compile Include="Stardew Valley\Pathoschild.Stardew.UIF\DrawHelper.cs" />
     <Compile Include="Stardew Valley\Pathoschild.Stardew.UIF\FormattedText.cs" />
     <Compile Include="Stardew Valley\Pathoschild.Stardew.UIF\IFormattedText.cs" />
