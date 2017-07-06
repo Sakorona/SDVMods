@@ -38,6 +38,10 @@ namespace ClimatesOfFerngillRebuild
             if (Utility.isFestivalDay(SDate.Now().Day, SDate.Now().Season))
                 TodayWeather = Game1.weather_festival;
 
+            if (Game1.weddingToday)
+                TodayWeather = Game1.weather_wedding;
+
+
         }
     }
 }

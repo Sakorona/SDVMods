@@ -41,6 +41,7 @@ namespace ClimatesOfFerngillRebuild
             //subscribe to events
             SaveEvents.AfterLoad += InitiateMod;
             TimeEvents.AfterDayStarted += HandleNewDay;
+            SaveEvents.AfterReturnToTitle += ResetMod;
 
 
             //console commands
@@ -49,7 +50,11 @@ namespace ClimatesOfFerngillRebuild
                   .Add("weather_setweather", helper.Translation.Get("console-text.desc_setweather"), WeatherChangeFromConsole);
         }
 
- 
+        private void ResetMod(object sender, EventArgs e)
+        {
+            CurrentWeather = new WeatherConditions(); //reset to a null weather
+        }
+
         private void InitiateMod(object sender, EventArgs e)
         {
             //no information loaded, so
