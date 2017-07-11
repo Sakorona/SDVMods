@@ -5,7 +5,7 @@ namespace TwilightCore
     /// <summary>
     /// generic pair struct
     /// </summary>
-    public struct RangePair
+    public class RangePair
     {
         /// <summary>
         /// Lower bound
@@ -35,6 +35,16 @@ namespace TwilightCore
         public RangePair(double r)
         {
             this.LowerBound = this.HigherBound = r;
+        }
+
+        /// <summary>
+        /// Copy constructor
+        /// </summary>
+        /// <param name="c">The object being copied</param>
+        public RangePair(RangePair c)
+        {
+            this.LowerBound = c.LowerBound;
+            this.HigherBound = c.HigherBound;
         }
 
         /// <summary>

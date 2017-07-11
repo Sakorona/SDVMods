@@ -9,6 +9,7 @@ namespace ClimatesOfFerngillRebuild
     public class FerngillClimate
     {
         public bool AllowRainInWinter;
+        public bool AllowThunderSnow;
         public List<FerngillClimateTimeSpan> ClimateSequences;
 
         //constructor

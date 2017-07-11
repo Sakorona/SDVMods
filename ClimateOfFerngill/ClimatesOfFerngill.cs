@@ -616,26 +616,6 @@ namespace ClimateOfFerngill
         } */
 
 
-        private bool GameWillForceTomorrow(SDVDate Tomorrow)
-        {
-            if (Game1.year == 1 && Tomorrow.Season == "spring" && Tomorrow.Day == 3)
-            {
-                Game1.weatherForTomorrow = Game1.weather_rain;
-                return true;
-            }
-
-            foreach(KeyValuePair<SDVDate, int> entry in SDVUtilities.ForceDays)
-            {
-                if (entry.Key == Tomorrow)
-                {
-                    Game1.weatherForTomorrow = entry.Value;
-                    return true;
-                }
-            }
-
-            return false;
-        }
-
         #region Menu
         /// <summary>
         /// This checks the keys being pressed if one of them is the weather menu, toggles it.

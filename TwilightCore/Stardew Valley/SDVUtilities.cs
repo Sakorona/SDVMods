@@ -10,27 +10,6 @@ namespace TwilightCore.StardewValley
 {
     public static class SDVUtilities
     {
-       public static Dictionary<SDVDate, int> ForceDays = new Dictionary<SDVDate, int>
-       {
-            { new SDVDate("spring", 1), Game1.weather_sunny },
-            { new SDVDate("spring", 2), Game1.weather_sunny },
-            { new SDVDate("spring", 4), Game1.weather_sunny },
-            { new SDVDate("spring", 13), Game1.weather_festival },
-            { new SDVDate("spring", 24), Game1.weather_festival },
-            { new SDVDate("summer", 1), Game1.weather_sunny },
-            { new SDVDate("summer", 11), Game1.weather_festival },
-            { new SDVDate("summer", 13), Game1.weather_lightning },
-            { new SDVDate("summer", 25), Game1.weather_lightning },
-            { new SDVDate("summer", 26), Game1.weather_lightning },
-            { new SDVDate("summer", 28), Game1.weather_festival },
-            { new SDVDate("fall",  1), Game1.weather_sunny },
-            { new SDVDate("fall", 16), Game1.weather_festival },
-            { new SDVDate("fall", 27), Game1.weather_festival },
-            { new SDVDate("winter",  1), Game1.weather_sunny },
-            { new SDVDate("winter", 8), Game1.weather_festival },
-            { new SDVDate("winter", 25), Game1.weather_festival }
-       };
-
         public static void ShakeScreenOnLowStamina()
         {
             Game1.staminaShakeTimer = 1000;

@@ -6,6 +6,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using TwilightCore;
+using TwilightCore.StardewValley;
 
 namespace ClimatesOfFerngillRebuild
 {
@@ -16,6 +17,21 @@ namespace ClimatesOfFerngillRebuild
 
         public RangePair TomorrowTemps;
         public int TomorrowWeather;
+
+        public bool WillFog;
+        public SDVTime FogTime;
+        public SpecialWeather UnusualWeather;
+
+        public void Reset()
+        {
+            TodayTemps = null;
+            TomorrowTemps = null;
+            TodayWeather = 0;
+            TomorrowWeather = 0;
+            WillFog = false;
+            FogTime = new SDVTime(600);
+            UnusualWeather = SpecialWeather.None;
+        }
 
         public void GetTodayWeather()
         {
@@ -34,14 +50,11 @@ namespace ClimatesOfFerngillRebuild
             if (!Game1.isRaining && !Game1.isSnowing && !Game1.isLightning && Game1.isDebrisWeather)
                 TodayWeather = Game1.weather_debris;
 
-            //and now the more difficult ones to determine
             if (Utility.isFestivalDay(SDate.Now().Day, SDate.Now().Season))
                 TodayWeather = Game1.weather_festival;
 
             if (Game1.weddingToday)
                 TodayWeather = Game1.weather_wedding;
-
-
         }
     }
 }

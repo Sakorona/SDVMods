@@ -48,8 +48,10 @@
   <ItemGroup>
     <Compile Include="Climate Files\FerngillClimate.cs" />
     <Compile Include="Climate Files\FerngillClimateTimeSpan.cs" />
+    <Compile Include="Climate Files\SpecialWeather.cs" />
     <Compile Include="Climate Files\WeatherParameters.cs" />
     <Compile Include="ClimatesOfFerngillRebuild.cs" />
+    <Compile Include="FerngillFog.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="WeatherConditions.cs" />
     <Compile Include="WeatherConfig.cs" />
