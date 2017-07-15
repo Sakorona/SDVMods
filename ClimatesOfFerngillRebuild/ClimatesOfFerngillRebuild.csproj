@@ -46,10 +46,11 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Climate Files\FerngillClimate.cs" />
-    <Compile Include="Climate Files\FerngillClimateTimeSpan.cs" />
-    <Compile Include="Climate Files\SpecialWeather.cs" />
-    <Compile Include="Climate Files\WeatherParameters.cs" />
+    <Compile Include="CustomWeather.cs" />
+    <Compile Include="FerngillClimate.cs" />
+    <Compile Include="FerngillClimateTimeSpan.cs" />
+    <Compile Include="SpecialWeather.cs" />
+    <Compile Include="WeatherParameters.cs" />
     <Compile Include="ClimatesOfFerngillRebuild.cs" />
     <Compile Include="FerngillFog.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

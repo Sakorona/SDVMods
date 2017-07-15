@@ -13,6 +13,8 @@
   "console-text.weatherset-tmrwdebris": "The weather set for tommorow is: debris",
   "console-text.weatherset-tmrwfestival": "The weather set for tommorow is: festival",
   "console-text.weatherset-tmrwsun": "The weather set for tommorow is: sunny",
-  "console-text.weatherset-tmrwwedding": "The weather set for tommorow is: wedding"
+  "console-text.weatherset-tmrwwedding": "The weather set for tommorow is: wedding",
 
+  //HUD Messages
+  "hud-text.desc_stormtotem": "You hear a roll of thunder..."
 }

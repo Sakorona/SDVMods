@@ -57,6 +57,12 @@ namespace ClimatesOfFerngillRebuild
             return new RangePair(Weather.RetrieveTemp(dice, "lowtemp", Target.Day), 
                                  Weather.RetrieveTemp(dice, "hightemp", Target.Day));
         }
+
+        public double GetStormOdds(SDate Target, MersenneTwister dice)
+        {
+            return this.GetClimateForDate(Target).RetrieveOdds(dice, "storm", Target.Day);
+        }
+
     }
 }
 

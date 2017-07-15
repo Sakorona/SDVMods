@@ -1,10 +1,5 @@
 ﻿using StardewModdingAPI.Utilities;
 using StardewValley;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using TwilightCore;
 using TwilightCore.StardewValley;
 
@@ -31,6 +26,22 @@ namespace ClimatesOfFerngillRebuild
             WillFog = false;
             FogTime = new SDVTime(600);
             UnusualWeather = SpecialWeather.None;
+        }
+
+        public void ResetTodayTemps(double high, double low)
+        {
+            TodayTemps.HigherBound = high;
+            TodayTemps.LowerBound = low;
+        }
+
+        public double GetTodayHigh()
+        {
+            return TodayTemps.HigherBound;
+        }
+
+        public double GetTodayLow()
+        {
+            return TodayTemps.LowerBound;
         }
 
         public void GetTodayWeather()

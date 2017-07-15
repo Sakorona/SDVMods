@@ -11,6 +11,7 @@ using TwilightCore;
 using TwilightCore.StardewValley;
 using Microsoft.Xna.Framework;
 using System.Collections.Generic;
+using StardewValley.Locations;
 
 namespace ClimatesOfFerngillRebuild
 {
@@ -39,6 +40,7 @@ namespace ClimatesOfFerngillRebuild
 
         /// <summary> The options file </summary>
         private WeatherConfig WeatherOpt { get; set; }
+        public bool RainTotemUsedToday { get; private set; }
 
         /// <summary> The pRNG object </summary>
         private MersenneTwister Dice;
@@ -54,6 +56,13 @@ namespace ClimatesOfFerngillRebuild
         /// </summary>
         private FerngillFog OurFog;
 
+        /// <summary>
+        /// Tracker to track if changes happened to weahter
+        /// </summary>
+        private int EndWeather;
+
+        private CustomWeather WeatherCntrl;
+
         /// <summary> Main mod function. </summary>
         /// <param name="helper">The helper. </param>
 
@@ -61,6 +70,8 @@ namespace ClimatesOfFerngillRebuild
         {
             WeatherOpt = helper.ReadConfig<WeatherConfig>();
             Dice = new MersenneTwister();
+            OurFog = new FerngillFog();
+            WeatherCntrl = new CustomWeather();
 
             if (WeatherOpt.Verbose) Monitor.Log($"Loading climate type: {WeatherOpt.ClimateType} from file", LogLevel.Trace);
 
@@ -72,12 +83,75 @@ namespace ClimatesOfFerngillRebuild
             //subscribe to events
             SaveEvents.AfterLoad += InitiateMod;
             TimeEvents.AfterDayStarted += HandleNewDay;
+            TimeEvents.TimeOfDayChanged += TenMinuteUpdate;
+            GameEvents.UpdateTick += CheckForChanges;
             SaveEvents.AfterReturnToTitle += ResetMod;
+            GraphicsEvents.OnPostRenderEvent += DrawObjects;
 
             //console commands
             helper.ConsoleCommands
                   .Add("weather_settommorowweather", helper.Translation.Get("console-text.desc_tmrweather"), TmrwWeatherChangeFromConsole)
                   .Add("weather_setweather", helper.Translation.Get("console-text.desc_setweather"), WeatherChangeFromConsole);
+        }
+
+        /// <summary>
+        /// This checks for things every second.
+        /// </summary>
+        /// <param name="sender">Object sending</param>
+        /// <param name="e">event params</param>
+        private void CheckForChanges(object sender, EventArgs e)
+        {
+            if (!Game1.hasLoadedGame)
+                return;
+
+            OurFog.MoveFog();
+            
+            if (WeatherOpt.StormTotemChange)
+            {
+                if (Game1.weatherForTomorrow != (int)EndWeather && !RainTotemUsedToday)
+                {
+                    RainTotemUsedToday = true;
+
+                    if (Dice.NextDoublePositive() <= GameClimate.GetStormOdds(SDate.Now().AddDays(1), Dice))
+                    {
+                        Game1.weatherForTomorrow = Game1.weather_lightning;
+                        Game1.addHUDMessage(new HUDMessage(Helper.Translation.Get("hud-text.desc_stormtotem")));
+                    }
+                }
+            }
+        }
+
+
+        private void TenMinuteUpdate(object sender, EventArgsIntChanged e)
+        {
+            if (!Game1.hasLoadedGame)
+                return;
+
+            OurFog.UpdateFog(e.NewInt);
+
+            if (Game1.currentLocation.isOutdoors &&
+                (CurrentWeather.UnusualWeather == SpecialWeather.Thundersnow ||
+                 CurrentWeather.UnusualWeather == SpecialWeather.DryLightning)
+                 && Game1.timeOfDay < 2400)
+                Utility.performLightningUpdate();
+        }
+
+        /// <summary>
+        /// This event handles drawing to the screen.
+        /// </summary>
+        /// <param name="sender">Object sending</param>
+        /// <param name="e">event params</param>
+        private void DrawObjects(object sender, EventArgs e)
+        {
+            if (!Game1.hasLoadedGame)
+                return;
+
+            if (Game1.currentLocation.IsOutdoors)
+                OurFog.DrawFog();
+
+            if (Game1.currentLocation.isOutdoors && !(Game1.currentLocation is Desert) && 
+                CurrentWeather.UnusualWeather == SpecialWeather.Blizzard)
+                WeatherCntrl.DrawBlizzard();
         }
 
         private void ResetMod(object sender, EventArgs e)
@@ -98,6 +172,9 @@ namespace ClimatesOfFerngillRebuild
 
         private void UpdateWeatherOnNewDay()
         {
+            //Get starting value.
+            int TmrwWeather = Game1.weatherForTomorrow;
+
             //reset for new day
             CurrentWeather.WillFog = false;
             CurrentWeather.UnusualWeather = SpecialWeather.None;
@@ -158,9 +235,10 @@ namespace ClimatesOfFerngillRebuild
             if (Result == "rain")
             {
                 //snow applies first
-                double MidPointTemp = CurrentWeather.TodayTemps.HigherBound - ((CurrentWeather.TodayTemps.HigherBound - CurrentWeather.TodayTemps.LowerBound) / 2);
+                double MidPointTemp = CurrentWeather.GetTodayHigh() - 
+                    ((CurrentWeather.GetTodayHigh() - CurrentWeather.GetTodayLow()) / 2);
 
-                if (CurrentWeather.TodayTemps.HigherBound <= 2 || MidPointTemp <= 0)
+                if (CurrentWeather.GetTodayHigh() <= 2 || MidPointTemp <= 0)
                 {
                     if (WeatherOpt.Verbose)
                         Monitor.Log($"Snow is enabled, with the High for the day being: {CurrentWeather.TodayTemps.HigherBound}" +
@@ -229,7 +307,64 @@ namespace ClimatesOfFerngillRebuild
                 }
                 
                 //now special weathers
+                //there are three main special weathers. Blizard, only during snow; Dry Lightning, which is lightning minus rain; 
+                //  Thundersnow
 
+                // Conditions: Blizzard - occurs in weather_snow in "winter"
+                //             Dry Lightning - occurs in weather_clear in any season if temps are >24C.
+                //             Thundersnow  - as Blizzard, but really rare.
+
+                if (CurrentWeather.TodayWeather == Game1.weather_snow)
+                {
+                    double blizRoll = Dice.NextDoublePositive();
+                    if (blizRoll <= WeatherOpt.BlizzardOdds)
+                    {
+                        CurrentWeather.UnusualWeather = SpecialWeather.Blizzard;
+                        if (WeatherOpt.Verbose)
+                            Monitor.Log($"With roll {blizRoll} against {WeatherOpt.BlizzardOdds}, there will be blizzards today");
+                    }
+                }
+
+
+                //Dry Lightning is also here for such like the dry and arid climates 
+                //  which have so low rain chances they may never storm.
+                if (CurrentWeather.TodayWeather == Game1.weather_snow)
+                {
+                    double oddsRoll = Dice.NextDoublePositive();
+
+                    if (oddsRoll <= WeatherOpt.ThundersnowOdds)
+                    {
+                        CurrentWeather.UnusualWeather = SpecialWeather.Thundersnow;
+                        if (WeatherOpt.Verbose)
+                            Monitor.Log($"With roll {oddsRoll} against {WeatherOpt.ThundersnowOdds}, there will be thundersnow today");
+                    }
+                }
+
+                if (CurrentWeather.TodayWeather == Game1.weather_sunny)
+                {
+                    double oddsRoll = Dice.NextDoublePositive();
+
+                    if (oddsRoll <= WeatherOpt.DryLightning && CurrentWeather.GetTodayHigh() >= WeatherOpt.DryLightningMinTemp)
+                    {
+                        CurrentWeather.UnusualWeather = SpecialWeather.DryLightning;
+                        if (WeatherOpt.Verbose)
+                            Monitor.Log($"With roll {oddsRoll} against {WeatherOpt.ThundersnowOdds}, there will be thundersnow today");
+                    }
+                }
+
+                //tracking time!
+                //Snow fall on Fall 28, if the flag is set.
+                if (Game1.dayOfMonth == 28 && Game1.currentSeason == "fall" && WeatherOpt.SnowOnFall28)
+                {
+                    CurrentWeather.ResetTodayTemps(2, -1);
+                    Game1.weatherForTomorrow = Game1.weather_snow;
+                }
+
+                if (WeatherOpt.Verbose)
+                    Monitor.Log($"We've set the weather for Tomorrow. It is: {Game1.weatherForTomorrow}");  
+
+                //set trackers
+                EndWeather = Game1.weatherForTomorrow; 
             }
         }
 
