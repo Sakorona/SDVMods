@@ -1,5 +1,5 @@
 This repository contains my SMAPI mods for Stardew Valley. See the individual mods for
-documentation, licenses, and release notes.
+documentation, licenses, and release notes. May have other related projects that are here for tracking.
 
 ## Mods
 * **[Climates of Ferngill](http://www.nexusmods.com/stardewvalley/mods/604)** <small>([source](ClimateOfFerngill))</small>  
