@@ -233,14 +233,13 @@ namespace ClimatesOfFerngillRebuild
                         string weatherString = "";
                         if (CurrentWeather.TodayWeather != Game1.weather_festival)
                         {
-                            weatherString = Helper.Get("weather-menu.fore_today_notFest", new { currentConditions = "blah", Temperature = Temperature });
-                                
-                                //$"{OurText.WRToday} {WeatherHelper.DescWeather(CurrentWeather.CurrentConditions(), Game1.currentSeason)} with {Temperature}";
+                            weatherString = Helper.Get("weather-menu.fore_today_notFest", 
+                                new { currentConditions = "blah", Temperature = Temperature });
                         }
                         else
                         {
-                            weatherString = Helper.Get("weather-menu.fore_today_festival"), new { festival = SDVUtilities.GetFestivalName(), Temperature = Temperature });
-                            //$"{OurText.WRFestivalToday} {SDVUtilities.GetFestivalName()} {OurText.WRWith} {Temperature}";
+                            weatherString = Helper.Get("weather-menu.fore_today_festival", 
+                            new { festival = SDVUtilities.GetFestivalName(), Temperature = Temperature });
                         }
 
                         Vector2 nameSize = contentBatch.DrawTextBlock(font, weatherString, new Vector2(x + leftOffset, y + topOffset), wrapWidth);
