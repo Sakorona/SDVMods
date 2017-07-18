@@ -37,7 +37,7 @@
           "VariableHigherBound": 3.0
         },
         {
-          "WeatherType": "highTemp",
+          "WeatherType": "hightemp",
           "BaseValue": 3.0,
           "ChangeRate": 1.18,
           "VariableLowerBound": -4.0,

@@ -1,7 +1,6 @@
 ﻿using StardewModdingAPI.Utilities;
 using StardewValley;
 using TwilightCore;
-using TwilightCore.StardewValley;
 
 namespace ClimatesOfFerngillRebuild
 {
@@ -14,8 +13,12 @@ namespace ClimatesOfFerngillRebuild
         public int TomorrowWeather;
 
         public bool WillFog;
-        public SDVTime FogTime;
         public SpecialWeather UnusualWeather;
+
+        public WeatherConditions()
+        {
+            UnusualWeather = SpecialWeather.None;
+        }
 
         public void Reset()
         {
@@ -24,7 +27,6 @@ namespace ClimatesOfFerngillRebuild
             TodayWeather = 0;
             TomorrowWeather = 0;
             WillFog = false;
-            FogTime = new SDVTime(600);
             UnusualWeather = SpecialWeather.None;
         }
 
@@ -34,15 +36,17 @@ namespace ClimatesOfFerngillRebuild
             TodayTemps.LowerBound = low;
         }
 
-        public double GetTodayHigh()
-        {
-            return TodayTemps.HigherBound;
-        }
+        public double GetTodayHigh() => TodayTemps.HigherBound;
+        public double GetTodayLow() => TodayTemps.LowerBound;
+        public double GetTodayHighF() => ConvCtF(TodayTemps.HigherBound);
+        public double GetTodayLowF() => ConvCtF(TodayTemps.LowerBound);
 
-        public double GetTodayLow()
-        {
-            return TodayTemps.LowerBound;
-        }
+        public double GetTmrwHigh() => TomorrowTemps.HigherBound;
+        public double GetTmrwLow() => TomorrowTemps.LowerBound;
+        public double GetTmrwHighF() => ConvCtF(TomorrowTemps.HigherBound);
+        public double GetTmrwLowF() => ConvCtF(TomorrowTemps.LowerBound);
+
+        private double ConvCtF(double temp) => ((temp * 1.8) + 32);
 
         public void GetTodayWeather()
         {

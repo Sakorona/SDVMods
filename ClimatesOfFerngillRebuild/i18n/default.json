@@ -16,5 +16,66 @@
   "console-text.weatherset-tmrwwedding": "The weather set for tommorow is: wedding",
 
   //HUD Messages
-  "hud-text.desc_stormtotem": "You hear a roll of thunder..."
+  "hud-text.desc_stormtotem": "You hear a roll of thunder...",
+
+  //Lunar Messages
+  "moon-text.phase-full": "Full Moon",
+  "moon-text.phase-firstqrt": "First Quarter",
+  "moon-text.phase-thirdqrt": "Third Quarter",
+  "moon-text.phase-waningcres": "Waning Crescent",
+  "moon-text.phase-waxingcres": "Waxing Crescent",
+  "moon-text.phase-waninggibb": "Waning Gibbeous",
+  "moon-text.phase-waxinggibb": "Waxing Gibbeous",
+  "moon-text.phase-new": "New Moon",
+  "moon-text.error": "Error",
+
+  "moon-text.hud_message_full": "It's a full moon! The beaches may have more items, but the ghosts may be about.",
+  "moon-text.hud_message_new": "It's a new moon! The beaches may have less items than normal...",
+  "moon-text.fullmoon_eff": "The powers of the full moon have helped your crops grow..",
+  "moon-text.newmoon_eff": "The powers of the new moon have caused a few of your crops to grow more slower...",
+
+  //Weather Menu strings
+  "weather-menu.opening": "This is Kylie from KWWX Radio. It is {{season}} {{day}}, and here is your weather report.",
+  "weather-menu.temp_bothscales": "Today's high will be {{highTempC}} C ({{highTempF}} F) with the low being {{lowTempC}} C ({{lowTempF}} F)",
+  "weather-menu.temp_onlyscales": "Today's high will be {{highTempC}} C with the low being {{lowTempC}} C",
+  "weather-menu.fore_today_notFest": "Today's weather is {{currentConditions}}. {{Temperature}}",
+  "weather-menu.fore_today_festival": "Today is the {{festival}}. It will be a sunny day with {{Temperature}}",
+
+  //Weather description
+  "weather-desc.spring_sunny": " ",
+  "weather-desc.spring_rainy": " ",
+  "weather-desc.spring_stormy": " ",
+  "weather-desc.spring_snowy": "a very late snow",
+  "weather-desc.spring_debris": " ",
+  "weather-desc.spring_wedding": " ",
+
+  "weather-desc.summer_sunny": "hot sun",
+  "weather-desc.summer_rainy": "warm showers",
+  "weather-desc.summer_stormy": "summertime thunderstorms",
+  "weather-desc.summer_snowy": "a freak occurance of snow",
+  "weather-desc.summer_debris": "a hot wind",
+  "weather-desc.summer_wedding": " ",
+
+  "weather-desc.fall_sunny": " ",
+  "weather-desc.fall_rainy": " ",
+  "weather-desc.fall_stormy": " ",
+  "weather-desc.fall_snowy": "an early snow",
+  "weather-desc.fall_debris": " ",
+  "weather-desc.fall_wedding": " ",
+
+  "weather-desc.winter_sunny": " ",
+  "weather-desc.winter_rainy": " ",
+  "weather-desc.winter_stormy": " ",
+  "weather-desc.winter_snowy": "cold snow",
+  "weather-desc.winter_debris": " ",
+  "weather-desc.winter_wedding": " ",
+
+  "weather-desc.winter_blizzard": " ",
+  "weather-desc.winter_thundersnow": " ",
+  "weather-desc.summer_drylightning": " ",
+  "weather-desc.drylightning_nonsummer": " ",
+  "weather-desc.fall_frost": " ",
+  "weather-desc.summer_heatwave": " "
+
+
 }

@@ -1,5 +1,7 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
+using System.Text;
 using TwilightCore;
 using TwilightCore.PRNG;
 
@@ -49,14 +51,20 @@ namespace ClimatesOfFerngillRebuild
             WeatherChances.Add(new WeatherParameters(wp));
         }
 
-        public double RetrieveOdds(MersenneTwister dice, string weather, int day)
+        public double RetrieveOdds(MersenneTwister dice, string weather, int day, StringBuilder Output)
         {
             double Odd = 0;
 
-            List<WeatherParameters> wp = (List<WeatherParameters>)this.WeatherChances.Where(w => w.WeatherType == weather);
+            List<WeatherParameters> wp = this.WeatherChances.Where(w => w.WeatherType == weather).ToList<WeatherParameters>();
 
             if (wp.Count == 0)
+            {
+                Output.Append($"{weather} weather is not found in this time span.");
                 return 0;
+            }
+
+            Output.Append($"Retrieved data for {weather} on {day} with Base Value {wp[0].BaseValue} and Change Rate {wp[0].ChangeRate} " +
+                          $"with the variable bound of ({wp[0].VariableLowerBound} , {wp[0].VariableHigherBound}) {Environment.NewLine}");
 
             Odd = wp[0].BaseValue + (wp[0].ChangeRate * day);
             RangePair range = new RangePair(wp[0].VariableLowerBound, wp[0].VariableHigherBound);
@@ -69,13 +77,19 @@ namespace ClimatesOfFerngillRebuild
             return Odd;
         }
 
-        public double RetrieveTemp(MersenneTwister dice, string temp, int day)
+        public double RetrieveTemp(MersenneTwister dice, string temp, int day, StringBuilder Output)
         {
             double Temp = 0;
-            List<WeatherParameters> wp = (List<WeatherParameters>)this.WeatherChances.Where(w => w.WeatherType == temp);
+            List<WeatherParameters> wp = this.WeatherChances.Where(w => w.WeatherType == temp).ToList<WeatherParameters>();
 
             if (wp.Count == 0)
+            {
+                Output.Append($"{temp} weather is not found in this time span.");
                 return 0;
+            }
+
+            Output.Append($"Retrieved data for {temp} on {day} with Base Value {wp[0].BaseValue} and Change Rate {wp[0].ChangeRate} " +
+                          $"with the variable bound of ({wp[0].VariableLowerBound} , {wp[0].VariableHigherBound}) {Environment.NewLine}");
 
             Temp = wp[0].BaseValue + (wp[0].ChangeRate * day);
             RangePair range = new RangePair(wp[0].VariableLowerBound, wp[0].VariableHigherBound);

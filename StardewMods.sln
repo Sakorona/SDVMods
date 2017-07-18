@@ -25,6 +25,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ClimatesOfFerngillRebuild",
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ClimateDataExaminer", "ClimateDataExamin\ClimateDataExaminer.csproj", "{696260C4-50B9-4EE6-BCAD-B2DD085BE40E}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TreeOverhaul", "TreeOverhaul\TreeOverhaul.csproj", "{2CDC5732-A8E9-44C4-A9E0-8B6EF3B859EE}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -55,6 +57,10 @@ Global
 		{696260C4-50B9-4EE6-BCAD-B2DD085BE40E}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{696260C4-50B9-4EE6-BCAD-B2DD085BE40E}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{696260C4-50B9-4EE6-BCAD-B2DD085BE40E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{2CDC5732-A8E9-44C4-A9E0-8B6EF3B859EE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2CDC5732-A8E9-44C4-A9E0-8B6EF3B859EE}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2CDC5732-A8E9-44C4-A9E0-8B6EF3B859EE}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2CDC5732-A8E9-44C4-A9E0-8B6EF3B859EE}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

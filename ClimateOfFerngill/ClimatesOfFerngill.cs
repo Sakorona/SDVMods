@@ -669,7 +669,7 @@ namespace ClimateOfFerngill
         {
             // show menu
             this.PreviousMenu = Game1.activeClickableMenu;
-            Game1.activeClickableMenu = new WeatherMenu(Monitor, this.Helper.Reflection, OurIcons, OurText, CurrWeather, Luna, Config);
+            Game1.activeClickableMenu = new WeatherMenu(Monitor, this.Helper.Reflection, OurIcons, Helper.Translation, CurrWeather, Luna, Config);
         }
 
         /// <summary>
