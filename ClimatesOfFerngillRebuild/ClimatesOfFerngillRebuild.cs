@@ -435,6 +435,16 @@ namespace ClimatesOfFerngillRebuild
 
                 if (WeatherOpt.Verbose) Monitor.Log(DebugOutput.ToString());
             }
+
+            if (Result == "debris")
+            {
+                Game1.weatherForTomorrow = Game1.weather_debris;
+            }
+
+            if (Result == "sunny")
+            {
+                Game1.weatherForTomorrow = Game1.weather_sunny;
+            }
         }
 
         private bool CheckForForceDay(SDate Target)

@@ -37,6 +37,7 @@ namespace ClimateOfFerngill
             FogTypeDark = false;
             AmbientFog = false;
             FogAlpha = 0f;
+            FogExpirTime = new SDVTime(0600);
         }
 
         public void IsDarkFog()
