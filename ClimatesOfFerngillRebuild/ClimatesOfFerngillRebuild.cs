@@ -1,5 +1,6 @@
 ﻿using System;
 using System.IO;
+using Microsoft.Xna.Framework.Input;
 
 using StardewValley;
 using TwilightCore.PRNG;
@@ -110,7 +111,7 @@ namespace ClimatesOfFerngillRebuild
             GraphicsEvents.OnPostRenderEvent += DrawObjects;
             SaveEvents.AfterSave += InitMod;
 
-            ControlEvents.KeyPressed += (sender, e) => this.ReceiveKeyPress(e.KeyPressed, this.Config.Keyboard);
+            ControlEvents.KeyPressed += (sender, e) => this.ReceiveKeyPress(e.KeyPressed, this.WeatherOpt.Keyboard);
             MenuEvents.MenuClosed += (sender, e) => this.ReceiveMenuClosed(e.PriorMenu);
 
             //console commands
@@ -200,6 +201,7 @@ namespace ClimatesOfFerngillRebuild
             CurrentWeather.Reset();
             DebugOutput.Clear();
             OurFog.Reset();
+            RainTotemUsedToday = false;
         }
 
         private void HandleNewDay(object sender, EventArgs e)
@@ -655,7 +657,7 @@ namespace ClimatesOfFerngillRebuild
         {
             // show menu
             this.PreviousMenu = Game1.activeClickableMenu;
-            Game1.activeClickableMenu = new WeatherMenu(Monitor, this.Helper.Reflection, OurIcons, Helper.Translation, CurrentWeather, OurMoon, WeatherConfig);
+            Game1.activeClickableMenu = new WeatherMenu(Monitor, this.Helper.Reflection, OurIcons, Helper.Translation, CurrentWeather, OurMoon, WeatherOpt);
         }
 
         /// <summary>
