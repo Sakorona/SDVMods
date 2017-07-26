@@ -37,11 +37,11 @@
 
   //Weather Menu strings
   "weather-menu.opening": "This is Kylie from KWWX Radio. It is {{season}} {{day}}, and here is your weather report.",
-  "weather-menu.temp_bothscales": "Today's high will be {{highTempC}} C ({{highTempF}} F) with the low being {{lowTempC}} C ({{lowTempF}} F)",
-  "weather-menu.temp_onlyscales": "Today's high will be {{highTempC}} C with the low being {{lowTempC}} C",
+  "weather-menu.temp_bothscales": "high will be {{highTempC}} C ({{highTempF}} F) with the low being {{lowTempC}} C ({{lowTempF}} F)",
+  "weather-menu.temp_onlyscales": "high will be {{highTempC}} C with the low being {{lowTempC}} C",
   "weather-menu.fore_today_notFest": "Today's weather is {{currentConditions}}. {{Temperature}}",
   "weather-menu.fore_today_festival": "Today is the {{festival}}. It will be a sunny day with {{Temperature}}",
-  "weather-menu.fore_tomorrow_notFest": "Tomorrow's weather will be {{currentConditions}}. {{Temperature}}",
+  "weather-menu.fore_tomorrow_notFest": "Tomorrow's weather will be {{currentConditions}} with {{Temperature}}",
   "weather-menu.fore_tomorrow_festival": "Tomorrow will be the {{festival}}. It's expected to be a sunny day with {{Temperature}}",
 
   //Weather description
@@ -80,6 +80,10 @@
   "weather-desc.fall_frost1": "Early touch of the upcoming winter is passing through, with frosts expected across Raven's Point and Stardew Valley",
   "weather-desc.spring_frost1": "A late touch of the previous winter is passing through, with frosts expected across Raven's Point and Stardew Valley",
   "weather-desc.summer_heatwave1": "Massive heatwave is boiling through the region. Stay hydrated.",
-  "weather-menu.dangerous_condition": "FRCS Alert: A dangerous condition has been observed for the Zuzu City and Pelican Town areas: {{condition}}"
+  "weather-menu.dangerous_condition": "FRCS Alert: A dangerous condition has been observed for the Zuzu City and Pelican Town areas: {{condition}}",
 
+  //TV strings
+  "tv.opening-desc": "...concludes the weather for Zuzu City.#",
+  "tv.desc-today": "Today's temperature is {{temperature}}, with {{weathercondition}}.",
+  "tv.desc-tomorrow":  "Tomorrow's weather will be {{weathercondition}} with {{temperature}}"
 }

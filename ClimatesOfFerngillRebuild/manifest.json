@@ -3,12 +3,12 @@
   "Author": "KoihimeNakamura",
   "Version": {
     "MajorVersion": 0,
-    "MinorVersion": 8,
+    "MinorVersion": 9,
     "PatchVersion": 0,
     "Build": "alpha-201707"
   },
   "Description": "Create a unique climate system with custom weathers, as well as add weather related events and commands.",
   "UniqueID": "KoihimeNakamura.ClimatesOfFerngillRebuild",
   "EntryDll": "ClimatesOfFerngillRebuild.dll",
-  "MinimumApiVersion": "1.14"
+  "MinimumApiVersion": "1.15"
 }

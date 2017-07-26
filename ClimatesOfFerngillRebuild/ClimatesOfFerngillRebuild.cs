@@ -1,20 +1,22 @@
 ﻿using System;
 using System.IO;
+using System.Text;
+using System.Collections.Generic;
+using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Input;
 
-using StardewValley;
+using CustomTV;
+using TwilightCore;
+using TwilightCore.StardewValley;
 using TwilightCore.PRNG;
 
+using StardewValley;
 using StardewModdingAPI;
 using StardewModdingAPI.Events;
 using StardewModdingAPI.Utilities;
-using TwilightCore;
-using TwilightCore.StardewValley;
-using Microsoft.Xna.Framework;
-using System.Collections.Generic;
 using StardewValley.Locations;
-using System.Text;
 using StardewValley.Menus;
+using StardewValley.Objects;
 
 namespace ClimatesOfFerngillRebuild
 {
@@ -134,6 +136,60 @@ namespace ClimatesOfFerngillRebuild
         private void InitMod(object sender, EventArgs e)
         {
             OurIcons = new Sprites.Icons(Helper.Content);
+            CustomTVMod.changeAction("weather", HandleWeather); //replace weather
+        }
+
+        /// <summary>
+        /// This function gets the forecast of the weather for the TV. 
+        /// </summary>
+        /// <returns>A string describing the weather</returns>
+        public string GetWeatherForecast()
+        {
+            string tvText = " ";
+
+            //The TV should display: Alerts, today's weather, Tomorrow's weather, alerts.
+
+            // Something such as "Today, the high is 12C, with low 8C. It'll be a very windy day. Tomorrow, it'll be rainy."
+            // since we don't predict weather in advance yet. (I don't want to rearchitecture it yet.)
+            // That said, the TV channel starts with Tomorrow, so we need to keep that in mind.
+
+            tvText = Helper.Translation.Get("tv.opening-desc");
+
+            if (Game1.timeOfDay < 1800) //don't display today's weather 
+            {
+                tvText = Helper.Translation.Get("tv.desc-today", new
+                {
+                    temperature = CurrentWeather.GetTemperatureString(WeatherOpt.ShowBothScales, Helper.Translation),
+                    weathercondition = CurrentWeather.GetDescText(CurrentWeather.TodayWeather, SDate.Now(), Dice, Helper.Translation)
+                });
+            }
+
+            //Tomorrow weather
+            tvText += tvText = Helper.Translation.Get("tv.desc-tomorrow", new
+            {
+                temperature = CurrentWeather.GetTemperatureString(WeatherOpt.ShowBothScales, Helper.Translation),
+                weathercondition = CurrentWeather.GetDescText(CurrentWeather.TodayWeather, SDate.Now(), Dice, Helper.Translation)
+            });
+
+            return tvText;
+        }
+
+        /// <summary>
+        /// This function handles the TV interception, putting up the sprite and outputting the text.
+        /// </summary>
+        /// <param name="tv">The TV being intercepted</param>
+        /// <param name="sprite">The sprite being used</param>
+        /// <param name="who">The Farmer being intercepted for</param>
+        /// <param name="answer">The string being answered with</param>
+        public void HandleWeather(TV tv, TemporaryAnimatedSprite sprite, StardewValley.Farmer who, string answer)
+        {
+            TemporaryAnimatedSprite WeatherCaster = new TemporaryAnimatedSprite(
+                Game1.mouseCursors, new Rectangle(497, 305, 42, 28), 9999f, 1, 999999,
+                tv.getScreenPosition(), false, false,
+                (float)((double)(tv.boundingBox.Bottom - 1) / 10000.0 + 9.99999974737875E-06),
+                0.0f, Color.White, tv.getScreenSizeModifier(), 0.0f, 0.0f, 0.0f, false);
+
+            CustomTVMod.showProgram(WeatherCaster, Game1.parseText(GetWeatherForecast()), CustomTVMod.endProgram);
         }
 
         /// <summary>
@@ -462,6 +518,7 @@ namespace ClimatesOfFerngillRebuild
                 if (entry.Key.Day == Target.Day && entry.Key.Season == Target.Season)
                 {
                     Game1.weatherForTomorrow = entry.Value;
+                    EndWeather = entry.Value; 
                     return true;
                 }
             }
@@ -657,7 +714,8 @@ namespace ClimatesOfFerngillRebuild
         {
             // show menu
             this.PreviousMenu = Game1.activeClickableMenu;
-            Game1.activeClickableMenu = new WeatherMenu(Monitor, this.Helper.Reflection, OurIcons, Helper.Translation, CurrentWeather, OurMoon, WeatherOpt);
+            Game1.activeClickableMenu = new WeatherMenu(Monitor, this.Helper.Reflection, OurIcons, Helper.Translation, 
+                CurrentWeather, OurMoon, WeatherOpt, Dice);
         }
 
         /// <summary>

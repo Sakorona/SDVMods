@@ -69,6 +69,7 @@ namespace ClimatesOfFerngillRebuild
             // save data
             this.Monitor = monitor;
             this.Reflection = reflectionHelper;
+            this.Helper = Helper;
             this.CurrentWeather = weat;
             this.IconSheet = Icon;
             this.OurMoon = Termina;
@@ -220,21 +221,7 @@ namespace ClimatesOfFerngillRebuild
                         topOffset += descSize.Y;
                         topOffset += lineHeight;
                         //build the temperature display
-                        string Temperature = "";
-
-                        if (OurConfig.ShowBothScales)
-                            Temperature = Helper.Get("weather-menu.temp_bothscales", new
-                            { highTempC = CurrentWeather.GetTodayHigh(),
-                              lowTempC = CurrentWeather.GetTodayLow(),
-                              highTempF = CurrentWeather.GetTodayHighF(),
-                              lowTempF = CurrentWeather.GetTodayLowF(),
-                            });
-                        else
-                            Temperature = Helper.Get("weather-menu.temp_onlyscales", new
-                            {
-                                highTempC = CurrentWeather.GetTodayHigh(),
-                                lowTempC = CurrentWeather.GetTodayLow()
-                            });
+                        string Temperature = CurrentWeather.GetTemperatureString(OurConfig.ShowBothScales, Helper);
 
                         //Output today's weather
 

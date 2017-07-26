@@ -192,5 +192,27 @@ namespace ClimatesOfFerngillRebuild
 
             return retString;
         }
+
+        public string GetTemperatureString(bool Scales, ITranslationHelper Helper)
+        {
+            string Temperature = "";
+
+            if (Scales)
+                Temperature = Helper.Get("weather-menu.temp_bothscales", new
+                {
+                    highTempC = this.GetTodayHigh(),
+                    lowTempC = this.GetTodayLow(),
+                    highTempF = this.GetTodayHighF(),
+                    lowTempF = this.GetTodayLowF(),
+                });
+            else
+                Temperature = Helper.Get("weather-menu.temp_onlyscales", new
+                {
+                    highTempC = this.GetTodayHigh(),
+                    lowTempC = this.GetTodayLow()
+                });
+
+            return Temperature;
+        }
     }
 }

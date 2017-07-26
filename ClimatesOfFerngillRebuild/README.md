@@ -1,6 +1,6 @@
 ﻿# Climates of Ferngill (Rebuild) You Can (Not) Have Weather
 
-Current Version (15 July 2017): v0.5 alpha
+Current Version (26 July 2017): v0.8 alpha
 
 ## Overview
 
@@ -10,8 +10,22 @@ This mod does the following:
 - Adds in several custom weathers - Thundersnow! Blizzards! Dry Lightning!
 - Changes the rain totem to occasionally spawm storms as well.
 - Adds a moon overhead, which will act on the world
-- Adds a weather menu option
-- 
+- Adds a weather menu option, which will display information about the weather
+- The weather channel on the TV is also overriden
+
+##Known Issues
+- When foggy, swinging a tool or blade will cause the fog to blink.
+
+##To Do
+- Stamina drain for storms and blizzards not implemented
+- Frost and Heatwaves are not yet implemented 
+
+##Requirements
+
+- Stardew Valley: 1.2.30+
+- SMAPI: 1.15.1+
+- Platonymous' Custom Element Handler: v1.3.0+ [http://www.nexusmods.com/stardewvalley/mods/1068/?]
+- Platonymous' Custom TV: 1.0.5+ [http://www.nexusmods.com/stardewvalley/mods/1139/?]
 
 ## Config Options
 
