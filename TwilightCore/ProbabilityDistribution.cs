@@ -86,8 +86,10 @@ namespace TwilightCore
         {
             if (NewProb < 0)
                 throw new ArgumentOutOfRangeException("The probability being added must be positive.");
-            if (CurrentPoint >= 1 )
+            if (CurrentPoint > 1 )
                 throw new ArgumentOutOfRangeException("The argument being added would cause the probability to exceed 100%.");
+            if (CurrentPoint == 1)
+                return;
 
             if (NewProb + CurrentPoint > 1) //cap the probablity
                 NewProb = 1 - CurrentPoint;

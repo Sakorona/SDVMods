@@ -18,6 +18,14 @@ namespace TwilightCore
         public double HigherBound;
 
         /// <summary>
+        /// Default constructor
+        /// </summary>
+        public RangePair()
+        {
+
+        }
+
+        /// <summary>
         /// Constructor
         /// </summary>
         /// <param name="l">Lower bound</param>

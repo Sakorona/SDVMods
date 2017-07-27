@@ -37,8 +37,8 @@
 
   //Weather Menu strings
   "weather-menu.opening": "This is Kylie from KWWX Radio. It is {{season}} {{day}}, and here is your weather report.",
-  "weather-menu.temp_bothscales": "high will be {{highTempC}} C ({{highTempF}} F) with the low being {{lowTempC}} C ({{lowTempF}} F)",
-  "weather-menu.temp_onlyscales": "high will be {{highTempC}} C with the low being {{lowTempC}} C",
+  "weather-menu.temp_bothscales": "high {{highTempC}} C ({{highTempF}} F) with low {{lowTempC}} C ({{lowTempF}} F)",
+  "weather-menu.temp_onlyscales": "high {{highTempC}} C with low {{lowTempC}} C",
   "weather-menu.fore_today_notFest": "Today's weather is {{currentConditions}}. {{Temperature}}",
   "weather-menu.fore_today_festival": "Today is the {{festival}}. It will be a sunny day with {{Temperature}}",
   "weather-menu.fore_tomorrow_notFest": "Tomorrow's weather will be {{currentConditions}} with {{Temperature}}",
@@ -46,18 +46,30 @@
 
   //Weather description
   "weather-desc.spring_sunny1": "a nice warm sunny day outside",
+  "weather-desc.spring_sunny2": "a warm bright day outside",
   "weather-desc.spring_rainy1": "a relaxing spring shower",
+  "weather-desc.spring_rainy2": "a gently soaking rain",
   "weather-desc.spring_stormy1": "a early shower that will soon sprout flowers",
+  "weather-desc.spring_stormy2": "a rumbly wet day outside",
   "weather-desc.spring_snowy1": "a very late snow",
+  "weather-desc.spring_snowy2": "a late blast of winter",
   "weather-desc.spring_debris1": "a chill wind",
+  "weather-desc.spring_debris2": "a warm but chilly wind is blowing through",
   "weather-desc.spring_wedding1": "a nice spring Stardew Valley wedding",
+  "weather-desc.spring_wedding2": "a nice spring Stardew Valley wedding",
 
   "weather-desc.summer_sunny1": "hot sun",
+  "weather-desc.summer_sunny2": "a relentless warming sun",
   "weather-desc.summer_rainy1": "warm showers",
+  "weather-desc.summer_rainy2": "hot showers to cool down the valley",
   "weather-desc.summer_stormy1": "summertime thunderstorms",
+  "weather-desc.summer_stormy2": "thunderstorms are sweeping through the valley",
   "weather-desc.summer_snowy1": "a freak occurance of snow",
+  "weather-desc.summer_snowy2": "a unusual once-in-a-lifetime snowfall is passing through the region",
   "weather-desc.summer_debris1": "a hot wind",
+  "weather-desc.summer_debris2": "a wind blowing through today will bring some small relief from the heat",
   "weather-desc.summer_wedding1": "a warm summer Stardew Valley wedding",
+  "weather-desc.summer_wedding2": "a clear ideal summer Stardew Valley wedding",
 
   "weather-desc.fall_sunny1": "a cool autumn day",
   "weather-desc.fall_rainy1": "chilly showers",
@@ -84,6 +96,6 @@
 
   //TV strings
   "tv.opening-desc": "...concludes the weather for Zuzu City.#",
-  "tv.desc-today": "Today's temperature is {{temperature}}, with {{weathercondition}}.",
-  "tv.desc-tomorrow":  "Tomorrow's weather will be {{weathercondition}} with {{temperature}}"
+  "tv.desc-today": "Today's temperature will be {{temperature}}, with {{weathercondition}}.#",
+  "tv.desc-tomorrow": "Tomorrow's weather will be {{weathercondition}} with {{temperature}}"
 }

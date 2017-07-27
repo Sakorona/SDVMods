@@ -2,10 +2,10 @@
   "Name": "Climates of Ferngill [Rebuild]",
   "Author": "KoihimeNakamura",
   "Version": {
-    "MajorVersion": 0,
-    "MinorVersion": 9,
+    "MajorVersion": 1,
+    "MinorVersion": 1,
     "PatchVersion": 0,
-    "Build": "alpha-201707"
+    "Build": "alpha-201708"
   },
   "Description": "Create a unique climate system with custom weathers, as well as add weather related events and commands.",
   "UniqueID": "KoihimeNakamura.ClimatesOfFerngillRebuild",

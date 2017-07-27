@@ -217,8 +217,7 @@ namespace ClimatesOfFerngillRebuild
                         Vector2 descSize = contentBatch.DrawTextBlock(font, Helper.Get("weather-menu.opening", new { season = Game1.currentSeason, day = Game1.dayOfMonth }), 
                             new Vector2(x + leftOffset, y + topOffset), wrapWidth);
                         topOffset += descSize.Y;
-                                                
-                        topOffset += descSize.Y;
+
                         topOffset += lineHeight;
                         //build the temperature display
                         string Temperature = CurrentWeather.GetTemperatureString(OurConfig.ShowBothScales, Helper);

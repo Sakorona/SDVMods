@@ -573,6 +573,17 @@ namespace TwilightCore.PRNG
             // Why? (Is it the FMUL instruction? Does this count in .Net? Will the JITter notice?)
             //return BitConverter.Int64BitsToDouble((a << 26) + b));
         }
+
+        /// <summary>
+        /// This returns a (uint) number from 1 to the passed number. Added function, not part of original code.
+        /// </summary>
+        /// <param name="x">The passed number</param>
+        /// <returns>A number within [1, x].</returns>
+        public uint RollFrom1ToX(uint x)
+        {
+            return (uint)(x * NextDoublePositive() + 1);
+        }
+
     }
 #pragma warning restore IDE1006 // Naming Styles
 }

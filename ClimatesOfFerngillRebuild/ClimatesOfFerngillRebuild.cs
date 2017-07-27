@@ -5,7 +5,6 @@ using System.Collections.Generic;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Input;
 
-using CustomTV;
 using TwilightCore;
 using TwilightCore.StardewValley;
 using TwilightCore.PRNG;
@@ -17,6 +16,9 @@ using StardewModdingAPI.Utilities;
 using StardewValley.Locations;
 using StardewValley.Menus;
 using StardewValley.Objects;
+using SFarmer = StardewValley.Farmer;
+
+using CustomTV;
 
 namespace ClimatesOfFerngillRebuild
 {
@@ -94,33 +96,38 @@ namespace ClimatesOfFerngillRebuild
             WeatherCntrl = new CustomWeather();
             DebugOutput = new StringBuilder();
             OurMoon = new SDVMoon(Dice);
+            OurIcons = new Sprites.Icons(Helper.Content);
 
             if (WeatherOpt.Verbose) Monitor.Log($"Loading climate type: {WeatherOpt.ClimateType} from file", LogLevel.Trace);
 
             string path = Path.Combine("data", "Weather", WeatherOpt.ClimateType + ".json");
             GameClimate = helper.ReadJsonFile<FerngillClimate>(path);
 
-
             CurrentWeather = new WeatherConditions();
 
             //subscribe to events
             TimeEvents.AfterDayStarted += HandleNewDay;
             SaveEvents.BeforeSave += OnEndOfDay;
-
+            SaveEvents.AfterLoad += SaveEvents_AfterLoad;
             TimeEvents.TimeOfDayChanged += TenMinuteUpdate;
             GameEvents.UpdateTick += CheckForChanges;
             SaveEvents.AfterReturnToTitle += ResetMod;
             GraphicsEvents.OnPostRenderEvent += DrawObjects;
-            SaveEvents.AfterSave += InitMod;
 
             ControlEvents.KeyPressed += (sender, e) => this.ReceiveKeyPress(e.KeyPressed, this.WeatherOpt.Keyboard);
             MenuEvents.MenuClosed += (sender, e) => this.ReceiveMenuClosed(e.PriorMenu);
-
+         
             //console commands
             helper.ConsoleCommands
                   .Add("weather_settommorowweather", helper.Translation.Get("console-text.desc_tmrweather"), TmrwWeatherChangeFromConsole)
                   .Add("weather_setweather", helper.Translation.Get("console-text.desc_setweather"), WeatherChangeFromConsole)
                   .Add("debug_changecondt", "Changes conditions. Debug function.", DebugChgCondition);
+        }
+
+        private void SaveEvents_AfterLoad(object sender, EventArgs e)
+        {
+            //TV command
+            CustomTVMod.changeAction("weather", HandleWeather);
         }
 
         /// <summary>
@@ -133,10 +140,22 @@ namespace ClimatesOfFerngillRebuild
             OurMoon.HandleMoonAtSleep(Game1.getFarm(), Helper.Translation);
         }
 
-        private void InitMod(object sender, EventArgs e)
+        /// <summary>
+        /// This function handles the TV interception, putting up the sprite and outputting the text.
+        /// </summary>
+        /// <param name="tv">The TV being intercepted</param>
+        /// <param name="sprite">The sprite being used</param>
+        /// <param name="who">The Farmer being intercepted for</param>
+        /// <param name="answer">The string being answered with</param>
+        public void HandleWeather(TV tv, TemporaryAnimatedSprite sprite, StardewValley.Farmer who, string answer)
         {
-            OurIcons = new Sprites.Icons(Helper.Content);
-            CustomTVMod.changeAction("weather", HandleWeather); //replace weather
+            TemporaryAnimatedSprite WeatherCaster = new TemporaryAnimatedSprite(
+                Game1.mouseCursors, new Rectangle(497, 305, 42, 28), 9999f, 1, 999999,
+                tv.getScreenPosition(), false, false,
+                (float)((double)(tv.boundingBox.Bottom - 1) / 10000.0 + 9.99999974737875E-06),
+                0.0f, Color.White, tv.getScreenSizeModifier(), 0.0f, 0.0f, 0.0f, false);
+
+            CustomTVMod.showProgram(WeatherCaster, Game1.parseText(GetWeatherForecast()), CustomTVMod.endProgram);
         }
 
         /// <summary>
@@ -157,7 +176,7 @@ namespace ClimatesOfFerngillRebuild
 
             if (Game1.timeOfDay < 1800) //don't display today's weather 
             {
-                tvText = Helper.Translation.Get("tv.desc-today", new
+                tvText += Helper.Translation.Get("tv.desc-today", new
                 {
                     temperature = CurrentWeather.GetTemperatureString(WeatherOpt.ShowBothScales, Helper.Translation),
                     weathercondition = CurrentWeather.GetDescText(CurrentWeather.TodayWeather, SDate.Now(), Dice, Helper.Translation)
@@ -167,29 +186,11 @@ namespace ClimatesOfFerngillRebuild
             //Tomorrow weather
             tvText += tvText = Helper.Translation.Get("tv.desc-tomorrow", new
             {
-                temperature = CurrentWeather.GetTemperatureString(WeatherOpt.ShowBothScales, Helper.Translation),
-                weathercondition = CurrentWeather.GetDescText(CurrentWeather.TodayWeather, SDate.Now(), Dice, Helper.Translation)
+                temperature = CurrentWeather.GetTomorrowTemperatureString(WeatherOpt.ShowBothScales, Helper.Translation),
+                weathercondition = CurrentWeather.GetDescText(CurrentWeather.TomorrowWeather, SDate.Now().AddDays(1), Dice, Helper.Translation)
             });
 
             return tvText;
-        }
-
-        /// <summary>
-        /// This function handles the TV interception, putting up the sprite and outputting the text.
-        /// </summary>
-        /// <param name="tv">The TV being intercepted</param>
-        /// <param name="sprite">The sprite being used</param>
-        /// <param name="who">The Farmer being intercepted for</param>
-        /// <param name="answer">The string being answered with</param>
-        public void HandleWeather(TV tv, TemporaryAnimatedSprite sprite, StardewValley.Farmer who, string answer)
-        {
-            TemporaryAnimatedSprite WeatherCaster = new TemporaryAnimatedSprite(
-                Game1.mouseCursors, new Rectangle(497, 305, 42, 28), 9999f, 1, 999999,
-                tv.getScreenPosition(), false, false,
-                (float)((double)(tv.boundingBox.Bottom - 1) / 10000.0 + 9.99999974737875E-06),
-                0.0f, Color.White, tv.getScreenSizeModifier(), 0.0f, 0.0f, 0.0f, false);
-
-            CustomTVMod.showProgram(WeatherCaster, Game1.parseText(GetWeatherForecast()), CustomTVMod.endProgram);
         }
 
         /// <summary>
@@ -285,11 +286,12 @@ namespace ClimatesOfFerngillRebuild
             CurrentWeather.GetTodayWeather();
 
             if (CurrentWeather.TomorrowTemps == null)
-                CurrentWeather.TodayTemps = GameClimate.GetTemperatures(SDate.Now(), Dice, DebugOutput);
+                CurrentWeather.SetTodayTemps(GameClimate.GetTemperatures(SDate.Now(), Dice, DebugOutput));
             else
-                CurrentWeather.TodayTemps = new RangePair(CurrentWeather.TomorrowTemps);
+                CurrentWeather.SetTodayTemps(CurrentWeather.TomorrowTemps);
 
-            CurrentWeather.TomorrowTemps = GameClimate.GetTemperatures(SDate.Now().AddDays(1), Dice, DebugOutput);
+            CurrentWeather.SetTmrwTemps(GameClimate.GetTemperatures(SDate.Now().AddDays(1), Dice, DebugOutput));
+
             if (WeatherOpt.Verbose)
                 Monitor.Log($"Updated the temperature for tommorow and today. Setting weather for today... ", LogLevel.Trace);
 
@@ -299,7 +301,7 @@ namespace ClimatesOfFerngillRebuild
                 if (WeatherOpt.Verbose)
                     Monitor.Log("It is a wedding or festival today. Not attempting to run special weather or fog.");
 
-                if (WeatherOpt.Verbose) Monitor.Log(DebugOutput.ToString());
+                //if (WeatherOpt.Verbose) Monitor.Log(DebugOutput.ToString());
                 return;
             }
 
@@ -360,6 +362,9 @@ namespace ClimatesOfFerngillRebuild
             //             Dry Lightning - occurs in weather_clear in any season if temps are >24C.
             //             Thundersnow  - as Blizzard, but really rare.
 
+            if (WeatherOpt.Verbose)
+                Monitor.Log("Testing for special weathers - first, blizzard and thundrsnow");
+
             if (CurrentWeather.TodayWeather == Game1.weather_snow)
             {
                 double blizRoll = Dice.NextDoublePositive();
@@ -386,6 +391,9 @@ namespace ClimatesOfFerngillRebuild
                 }
             }
 
+            if (WeatherOpt.Verbose)
+                Monitor.Log("Testing for special weathers - dry lightning.");
+
             if (CurrentWeather.TodayWeather == Game1.weather_sunny)
             {
                 double oddsRoll = Dice.NextDoublePositive();
@@ -405,7 +413,7 @@ namespace ClimatesOfFerngillRebuild
                 if (WeatherOpt.Verbose)
                     Monitor.Log($"Festival tomorrow. Aborting processing.", LogLevel.Trace);
 
-                if (WeatherOpt.Verbose) Monitor.Log(DebugOutput.ToString());
+                //if (WeatherOpt.Verbose) Monitor.Log(DebugOutput.ToString());
                 return;
             }
 
@@ -423,9 +431,12 @@ namespace ClimatesOfFerngillRebuild
                 if (WeatherOpt.Verbose)
                     Monitor.Log($"The game will force tomorrow. Aborting processing.", LogLevel.Trace);
 
-                if (WeatherOpt.Verbose) Monitor.Log(DebugOutput.ToString());
+                //if (WeatherOpt.Verbose) Monitor.Log(DebugOutput.ToString());
                 return;
             }
+
+            if (WeatherOpt.Verbose)
+                Monitor.Log("Setting weather for tomorrow");
 
             //now set tomorrow's weather
             var OddsForTheDay = GameClimate.GetClimateForDate(SDate.Now().AddDays(1));
@@ -443,6 +454,9 @@ namespace ClimatesOfFerngillRebuild
                 Result = "sunny";
                 Monitor.Log("The weather has failed to process in some manner. Falling back to [sunny]", LogLevel.Info);
             }
+
+            if (WeatherOpt.Verbose)
+                Monitor.Log($"Weather result is {Result}");
 
             //now parse the result.
             if (Result == "rain")
@@ -485,13 +499,6 @@ namespace ClimatesOfFerngillRebuild
                     Game1.weatherForTomorrow = Game1.weather_snow;
                 }
 
-                if (WeatherOpt.Verbose)
-                    Monitor.Log($"We've set the weather for Tomorrow. It is: {Game1.weatherForTomorrow}");  
-
-                //set trackers
-                EndWeather = Game1.weatherForTomorrow;
-
-                if (WeatherOpt.Verbose) Monitor.Log(DebugOutput.ToString());
             }
 
             if (Result == "debris")
@@ -503,6 +510,14 @@ namespace ClimatesOfFerngillRebuild
             {
                 Game1.weatherForTomorrow = Game1.weather_sunny;
             }
+
+            if (WeatherOpt.Verbose)
+                Monitor.Log($"We've set the weather for Tomorrow. It is: {Game1.weatherForTomorrow}");
+
+            //set trackers
+            EndWeather = Game1.weatherForTomorrow;
+
+            //if (WeatherOpt.Verbose) Monitor.Log(DebugOutput.ToString());
         }
 
         private bool CheckForForceDay(SDate Target)

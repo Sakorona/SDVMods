@@ -8,10 +8,10 @@ namespace ClimatesOfFerngillRebuild
 {
     public class WeatherConditions
     {
-        public RangePair TodayTemps;
+        public RangePair TodayTemps { private set; get; }
         public int TodayWeather;
 
-        public RangePair TomorrowTemps;
+        public RangePair TomorrowTemps { private set; get; }
         public int TomorrowWeather;
 
         public bool WillFog;
@@ -20,6 +20,36 @@ namespace ClimatesOfFerngillRebuild
         public WeatherConditions()
         {
             UnusualWeather = SpecialWeather.None;
+        }
+
+        public void SetTodayTemps(RangePair a)
+        {
+            TodayTemps = new RangePair();
+            if (a.LowerBound > a.HigherBound)
+            {
+                TodayTemps.HigherBound = a.LowerBound;
+                TodayTemps.LowerBound = a.HigherBound;
+            }
+            else
+            {
+                TodayTemps.HigherBound = a.HigherBound;
+                TodayTemps.LowerBound = a.LowerBound;
+            }
+        }
+
+        public void SetTmrwTemps(RangePair a)
+        {
+            TomorrowTemps = new RangePair();
+            if (a.LowerBound > a.HigherBound)
+            {
+                TomorrowTemps.HigherBound = a.LowerBound;
+                TomorrowTemps.LowerBound = a.HigherBound;
+            }
+            else
+            {
+                TomorrowTemps.HigherBound = a.HigherBound;
+                TomorrowTemps.LowerBound = a.LowerBound;
+            }
         }
 
         public bool IsDangerousWeather()
@@ -89,67 +119,67 @@ namespace ClimatesOfFerngillRebuild
             {
                 case "spring":
                     if (weather == Game1.weather_sunny)
-                        retString = Helper.Get("weather-desc.spring-sunny" + Dice.Next(1, 1));
+                        retString = Helper.Get("weather-desc.spring_sunny1");
                     if (weather == Game1.weather_debris)
-                        retString = Helper.Get("weather-desc.spring-debris" + Dice.Next(1, 1));
+                        retString = Helper.Get("weather-desc.spring_debris1");
                     if (weather == Game1.weather_rain)
-                        retString = Helper.Get("weather-desc.spring-rainy" + Dice.Next(1, 1));
+                        retString = Helper.Get("weather-desc.spring_rainy1");
                     if (weather == Game1.weather_lightning)
-                        retString = Helper.Get("weather-desc.spring-stormy" + Dice.Next(1, 1));
+                        retString = Helper.Get("weather-desc.spring_stormy1");
                     if (weather == Game1.weather_snow)
-                        retString = Helper.Get("weather-desc.spring-snowy" + Dice.Next(1, 1));
+                        retString = Helper.Get("weather-desc.spring_snowy1");
                     if (weather == Game1.weather_wedding)
-                        retString = Helper.Get("weather-desc.spring-wedding" + Dice.Next(1, 1));
+                        retString = Helper.Get("weather-desc.spring_wedding1");
                     if (weather == Game1.weather_festival)
-                        retString = Helper.Get("weather-desc.spring-festival" + Dice.Next(1, 1));
+                        retString = Helper.Get("weather-desc.spring_festival1");
                     break;
                 case "summer":
                     if (weather == Game1.weather_sunny)
-                        retString = Helper.Get("weather-desc.summer-sunny" + Dice.Next(1, 1));
+                        retString = Helper.Get("weather-desc.summer_sunny1");
                     if (weather == Game1.weather_debris)
-                        retString = Helper.Get("weather-desc.summer-debris" + Dice.Next(1, 1));
+                        retString = Helper.Get("weather-desc.summer_debris1");
                     if (weather == Game1.weather_rain)
-                        retString = Helper.Get("weather-desc.summer-rainy" + Dice.Next(1, 1));
+                        retString = Helper.Get("weather-desc.summer_rainy1");
                     if (weather == Game1.weather_lightning)
-                        retString = Helper.Get("weather-desc.summer-stormy" + Dice.Next(1, 1));
+                        retString = Helper.Get("weather-desc.summer_stormy1");
                     if (weather == Game1.weather_snow)
-                        retString = Helper.Get("weather-desc.summer-snowy" + Dice.Next(1, 1));
+                        retString = Helper.Get("weather-desc.summer_snowy1");
                     if (weather == Game1.weather_wedding)
-                        retString = Helper.Get("weather-desc.summer-wedding" + Dice.Next(1, 1));
+                        retString = Helper.Get("weather-desc.summer_wedding1");
                     if (weather == Game1.weather_festival)
-                        retString = Helper.Get("weather-desc.summer-festival" + Dice.Next(1, 1));
+                        retString = Helper.Get("weather-desc.summer_festival1");
                     break;
                 case "fall":
                     if (weather == Game1.weather_sunny)
-                        retString = Helper.Get("weather-desc.fall-sunny" + Dice.Next(1, 1));
+                        retString = Helper.Get("weather-desc.fall_sunny1");
                     if (weather == Game1.weather_debris)
-                        retString = Helper.Get("weather-desc.fall-debris" + Dice.Next(1, 1));
+                        retString = Helper.Get("weather-desc.fall_debris1");
                     if (weather == Game1.weather_rain)
-                        retString = Helper.Get("weather-desc.fall-rainy" + Dice.Next(1, 1));
+                        retString = Helper.Get("weather-desc.fall_rainy1");
                     if (weather == Game1.weather_lightning)
-                        retString = Helper.Get("weather-desc.fall-stormy" + Dice.Next(1, 1));
+                        retString = Helper.Get("weather-desc.fall_stormy1");
                     if (weather == Game1.weather_snow)
-                        retString = Helper.Get("weather-desc.fall-snowy" + Dice.Next(1, 1));
+                        retString = Helper.Get("weather-desc.fall_snowy1");
                     if (weather == Game1.weather_wedding)
-                        retString = Helper.Get("weather-desc.fall-wedding" + Dice.Next(1, 1));
+                        retString = Helper.Get("weather-desc.fall_wedding1");
                     if (weather == Game1.weather_festival)
-                        retString = Helper.Get("weather-desc.fall-festival" + Dice.Next(1, 1));
+                        retString = Helper.Get("weather-desc.fall_festival1");
                     break;
                 case "winter":
                     if (weather == Game1.weather_sunny)
-                        retString = Helper.Get("weather-desc.winter-sunny" + Dice.Next(1, 1));
+                        retString = Helper.Get("weather-desc.winter_sunny1");
                     if (weather == Game1.weather_debris)
-                        retString = Helper.Get("weather-desc.winter-debris" + Dice.Next(1, 1));
+                        retString = Helper.Get("weather-desc.winter_debris1");
                     if (weather == Game1.weather_rain)
-                        retString = Helper.Get("weather-desc.winter-rainy" + Dice.Next(1, 1));
+                        retString = Helper.Get("weather-desc.winter_rainy1");
                     if (weather == Game1.weather_lightning)
-                        retString = Helper.Get("weather-desc.winter-stormy" + Dice.Next(1, 1));
+                        retString = Helper.Get("weather-desc.winter_stormy1");
                     if (weather == Game1.weather_snow)
-                        retString = Helper.Get("weather-desc.winter-snowy" + Dice.Next(1, 1));
+                        retString = Helper.Get("weather-desc.winter_snowy1");
                     if (weather == Game1.weather_wedding)
-                        retString = Helper.Get("weather-desc.winter-wedding" + Dice.Next(1, 1));
+                        retString = Helper.Get("weather-desc.winter_wedding1");
                     if (weather == Game1.weather_festival)
-                        retString = Helper.Get("weather-desc.winter-festival" + Dice.Next(1, 1));
+                        retString = Helper.Get("weather-desc.winter_festival1");
                     break;
                 default:
                     retString = "";
@@ -165,25 +195,25 @@ namespace ClimatesOfFerngillRebuild
             switch (UnusualWeather)
             {
                 case SpecialWeather.Blizzard:
-                    retString = Helper.Get("weather-desc.winter_blizzard" + Dice.Next(1, 1));
+                    retString = Helper.Get("weather-desc.winter_blizzard1");
                     break;
                 case SpecialWeather.Thundersnow:
-                    retString = Helper.Get("weather-desc.winter_thundersnow" + Dice.Next(1, 1));
+                    retString = Helper.Get("weather-desc.winter_thundersnow1");
                     break;
                 case SpecialWeather.DryLightning:
                     if (Date.Season != "summer")
-                    retString = Helper.Get("weather-desc.summer_thundersnow" + Dice.Next(1, 1));
+                    retString = Helper.Get("weather-desc.summer_thundersnow1");
                     else
-                    retString = Helper.Get("weather-desc.nonsummer_drylightning1" + Dice.Next(1, 1));
+                    retString = Helper.Get("weather-desc.nonsummer_drylightning1");
                     break;
                 case SpecialWeather.Frost:
                     if (Date.Season == "spring")
-                        retString = Helper.Get("weather-desc.spring_frost" + Dice.Next(1, 1));
+                        retString = Helper.Get("weather-desc.spring_frost1");
                     else if (Date.Season == "fall")
-                        retString = Helper.Get("weather-desc.fall_frost1" + Dice.Next(1, 1));
+                        retString = Helper.Get("weather-desc.fall_frost1");
                     break;
                 case SpecialWeather.Heatwave:
-                    retString = Helper.Get("weather-desc.summer_heatwave" + Dice.Next(1, 1));
+                    retString = Helper.Get("weather-desc.summer_heatwave1");
                     break;
                 default:
                     retString = "";
@@ -200,16 +230,38 @@ namespace ClimatesOfFerngillRebuild
             if (Scales)
                 Temperature = Helper.Get("weather-menu.temp_bothscales", new
                 {
-                    highTempC = this.GetTodayHigh(),
-                    lowTempC = this.GetTodayLow(),
-                    highTempF = this.GetTodayHighF(),
-                    lowTempF = this.GetTodayLowF(),
+                    highTempC = this.GetTodayHigh().ToString("N1"),
+                    lowTempC = this.GetTodayLow().ToString("N1"),
+                    highTempF = this.GetTodayHighF().ToString("N1"),
+                    lowTempF = this.GetTodayLowF().ToString("N1"),
                 });
             else
                 Temperature = Helper.Get("weather-menu.temp_onlyscales", new
                 {
-                    highTempC = this.GetTodayHigh(),
-                    lowTempC = this.GetTodayLow()
+                    highTempC = this.GetTodayHigh().ToString("N1"),
+                    lowTempC = this.GetTodayLow().ToString("N1")
+                });
+
+            return Temperature;
+        }
+
+        public string GetTomorrowTemperatureString(bool Scales, ITranslationHelper Helper)
+        {
+            string Temperature = "";
+
+            if (Scales)
+                Temperature = Helper.Get("weather-menu.temp_bothscales", new
+                {
+                    highTempC = this.GetTmrwHigh().ToString("N1"),
+                    lowTempC = this.GetTmrwLow().ToString("N1"),
+                    highTempF = this.GetTmrwHighF().ToString("N1"),
+                    lowTempF = this.GetTmrwLowF().ToString("N1"),
+                });
+            else
+                Temperature = Helper.Get("weather-menu.temp_onlyscales", new
+                {
+                    highTempC = this.GetTmrwHigh().ToString("N1"),
+                    lowTempC = this.GetTmrwLow().ToString("N1")
                 });
 
             return Temperature;

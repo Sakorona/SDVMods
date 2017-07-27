@@ -1,6 +1,6 @@
 ﻿# Climates of Ferngill (Rebuild) You Can (Not) Have Weather
 
-Current Version (26 July 2017): v0.8 alpha
+Current Version (26 July 2017): v1.0 alpha
 
 ## Overview
 
@@ -11,14 +11,17 @@ This mod does the following:
 - Changes the rain totem to occasionally spawm storms as well.
 - Adds a moon overhead, which will act on the world
 - Adds a weather menu option, which will display information about the weather
-- The weather channel on the TV is also overriden
+- Changes the text for the TV weather channel
 
 ##Known Issues
 - When foggy, swinging a tool or blade will cause the fog to blink.
 
 ##To Do
 - Stamina drain for storms and blizzards not implemented
-- Frost and Heatwaves are not yet implemented 
+- Frost and Heatwaves are not yet implemented
+
+## Wishlist
+- Readd an item to remove the stamina drain. (Pending on SMAPI 2.0+)
 
 ##Requirements
 
