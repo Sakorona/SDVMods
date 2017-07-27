@@ -2,6 +2,12 @@
 
 Current Version (26 July 2017): v1.0 alpha
 
+
+## What's New
+
+- Fog!
+- Blizzards, Thundersnow
+
 ## Overview
 
 This mod does the following:
