@@ -7,7 +7,8 @@ Current Version (26 July 2017): v1.0 alpha
 
 - Fog!
 - Blizzards, Thundersnow
-
+- A more customizable weather system
+ 
 ## Overview
 
 This mod does the following:
