@@ -1,6 +1,6 @@
 ﻿# Climates of Ferngill (Rebuild) You Can (Not) Have Weather
 
-Current Version (26 July 2017): v1.0 alpha
+Current Version (1 August 2017): v1.1.1 beta
 
 
 ## What's New
@@ -20,10 +20,10 @@ This mod does the following:
 - Adds a weather menu option, which will display information about the weather
 - Changes the text for the TV weather channel
 
-##Known Issues
+## Known Issues
 - When foggy, swinging a tool or blade will cause the fog to blink.
 
-##To Do
+## To Do
 - Stamina drain for storms and blizzards not implemented
 - Frost and Heatwaves are not yet implemented
 
