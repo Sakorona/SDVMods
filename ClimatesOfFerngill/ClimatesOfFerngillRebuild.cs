@@ -22,7 +22,7 @@ using CustomTV;
 
 namespace ClimatesOfFerngillRebuild
 {
-    public class ClimatesOfFerngillRebuild : Mod
+    public class ClimatesOfFerngill : Mod
     {
         public static Dictionary<SDate, int> ForceDays = new Dictionary<SDate, int>
             {
@@ -517,10 +517,10 @@ namespace ClimatesOfFerngillRebuild
             if (WeatherOpt.Verbose)
                 Monitor.Log($"We've set the weather for Tomorrow. It is: {Game1.weatherForTomorrow}");
 
+            CurrentWeather.TomorrowWeather = Game1.weatherForTomorrow; //would help if I updated this!
+
             //set trackers
             EndWeather = Game1.weatherForTomorrow;
-
-            //if (WeatherOpt.Verbose) Monitor.Log(DebugOutput.ToString());
         }
 
         private bool CheckForForceDay(SDate Target)
