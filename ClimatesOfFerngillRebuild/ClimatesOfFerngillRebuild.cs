@@ -313,6 +313,9 @@ namespace ClimatesOfFerngillRebuild
            
             if (fogRoll < fogChance && CurrentWeather.TodayWeather != Game1.weather_debris)
             {
+                if (WeatherOpt.Verbose)
+                    Monitor.Log("Executing fog analysis.. ");
+
                 CurrentWeather.WillFog = true;
 
                 OurFog.CreateFog(FogAlpha: .55f, AmbientFog: true, FogColor: (Color.White * 1.35f));
@@ -426,7 +429,7 @@ namespace ClimatesOfFerngillRebuild
                 return;
             }
 
-            if (CheckForForceDay(SDate.Now()))
+            if (CheckForForceDay(SDate.Now().AddDays(1)))
             {
                 if (WeatherOpt.Verbose)
                     Monitor.Log($"The game will force tomorrow. Aborting processing.", LogLevel.Trace);
