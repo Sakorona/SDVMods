@@ -19,6 +19,7 @@ using StardewValley.Objects;
 using SFarmer = StardewValley.Farmer;
 
 using CustomTV;
+using Microsoft.Xna.Framework.Graphics;
 
 namespace ClimatesOfFerngillRebuild
 {
@@ -113,6 +114,7 @@ namespace ClimatesOfFerngillRebuild
             GameEvents.UpdateTick += CheckForChanges;
             SaveEvents.AfterReturnToTitle += ResetMod;
             GraphicsEvents.OnPostRenderEvent += DrawObjects;
+            Vector2 snowPos = Vector2.Zero;
 
             ControlEvents.KeyPressed += (sender, e) => this.ReceiveKeyPress(e.KeyPressed, this.WeatherOpt.Keyboard);
             MenuEvents.MenuClosed += (sender, e) => this.ReceiveMenuClosed(e.PriorMenu);
@@ -242,14 +244,14 @@ namespace ClimatesOfFerngillRebuild
         /// <param name="e">event params</param>
         private void DrawObjects(object sender, EventArgs e)
         {
-            if (!Context.IsPlayerFree)
+            if (!Context.IsWorldReady)
                 return;
-            
+          
             if (Game1.currentLocation.IsOutdoors)
                 OurFog.DrawFog();
 
             if (Game1.currentLocation.isOutdoors && !(Game1.currentLocation is Desert) && 
-                CurrentWeather.UnusualWeather == SpecialWeather.Blizzard)
+                CurrentWeather.UnusualWeather == SpecialWeather.Blizzard) 
                 WeatherCntrl.DrawBlizzard(); 
         }
 
