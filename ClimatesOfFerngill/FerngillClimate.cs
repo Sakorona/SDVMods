@@ -10,6 +10,7 @@ namespace ClimatesOfFerngillRebuild
     {
         public bool AllowRainInWinter;
         public bool AllowThunderSnow;
+        public bool AllowSnowInFall;
         public List<FerngillClimateTimeSpan> ClimateSequences;
 
         //constructor

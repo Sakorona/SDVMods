@@ -1,6 +1,7 @@
 {
   "AllowRainInWinter": false,
   "AllowThunderSnow": true,
+  "AllowSnowInFall": true,
   "ClimateSequences": [
     {
       "BeginSeason": "spring",
@@ -360,14 +361,14 @@
         },
         {
           "WeatherType": "lowtemp",
-          "BaseValue": 25.0,
+          "BaseValue": 33.0,
           "ChangeRate": -1.11,
           "VariableLowerBound": -3.0,
           "VariableHigherBound": 3.0
         },
         {
           "WeatherType": "hightemp",
-          "BaseValue": 29.0,
+          "BaseValue": 37.0,
           "ChangeRate": -1.3522,
           "VariableLowerBound": -4.0,
           "VariableHigherBound": 4.0

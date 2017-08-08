@@ -70,8 +70,12 @@
     <Compile Include="WeatherConfig.cs" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="data\weather\arid.json" />
-    <None Include="data\weather\dry.json" />
+    <None Include="data\weather\arid.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="data\weather\dry.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
     <None Include="data\weather\enhanced.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>

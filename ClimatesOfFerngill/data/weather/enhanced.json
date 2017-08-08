@@ -1,6 +1,7 @@
 {
   "AllowRainInWinter": true,
   "AllowThunderSnow": true,
+  "AllowSnowInFall": true,
   "ClimateSequences": [
     {
       "BeginSeason": "spring",

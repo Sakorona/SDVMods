@@ -10,5 +10,11 @@
   "Description": "Create a unique climate system with custom weathers, as well as add weather related events and commands.",
   "UniqueID": "KoihimeNakamura.ClimatesOfFerngill",
   "EntryDll": "ClimatesOfFerngill.dll",
-  "MinimumApiVersion": "1.15"
+  "MinimumApiVersion": "1.15",
+  "Dependencies": [
+    {
+      "UniqueID": "Platonymous.CustomTV",
+      "MinimumVersion": "1.0.5" // optional. If specified, older versions won't meet the requirement.
+    }
+  ]
 }

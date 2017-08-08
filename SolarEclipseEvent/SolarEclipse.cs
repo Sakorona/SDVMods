@@ -20,7 +20,7 @@ namespace SolarEclipseEvent
 
             SaveEvents.AfterLoad += SaveEvents_AfterLoad;
             SaveEvents.BeforeSave += SaveEvents_BeforeSave;
-
+            Monitor.Log("Running modified release version");
             TimeEvents.AfterDayStarted += TimeEvents_AfterDayStarted;
             TimeEvents.TimeOfDayChanged += TimeEvents_TimeOfDayChanged;
             LocationEvents.CurrentLocationChanged += LocationEvents_CurrentLocationChanged;
