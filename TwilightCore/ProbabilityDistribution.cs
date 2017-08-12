@@ -77,6 +77,13 @@ namespace TwilightCore
             EndPoints.Add(CurrentPoint,Entry);
         }
 
+        public void Empty()
+        {
+            EndPoints.Clear();
+            CurrentPoint = 0;
+            OverflowResult = default(T);
+        }
+
         /// <summary>
         /// Adds the end point to the list. The probablity must be positive and should not add over 1
         /// </summary>
@@ -95,7 +102,9 @@ namespace TwilightCore
                 NewProb = 1 - CurrentPoint;
 
             CurrentPoint += NewProb;
-            EndPoints.Add(CurrentPoint, Entry);
+
+            if (!(EndPoints.Select(c => c.Key == CurrentPoint).Count() >= 1))
+                EndPoints.Add(CurrentPoint, Entry);
         }
 
         /// <summary>
