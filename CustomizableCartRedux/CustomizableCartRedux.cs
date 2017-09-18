@@ -5,11 +5,12 @@ using StardewValley;
 using StardewModdingAPI.Events;
 using StardewValley.Locations;
 using StardewModdingAPI.Utilities;
+using TwilightCore.PRNG;
 using Microsoft.Xna.Framework;
 
-namespace CustomizableTravelingCart
+namespace CustomizableCartRedux
 {
-    public class CustomizableTravelingCart : Mod
+    public class CustomizableCartRedux : Mod
     {
         public CartConfig OurConfig;
 
@@ -19,7 +20,7 @@ namespace CustomizableTravelingCart
             TimeEvents.AfterDayStarted += SetCartSpawn;
         }
 
-        private void SetCartSpawn(object Sender, EventArgs e)
+         private void SetCartSpawn(object Sender, EventArgs e)
         {
             Random r = new Random();
             double randChance = r.NextDouble(), dayChance = 0;
@@ -55,7 +56,54 @@ namespace CustomizableTravelingCart
                     break;
             }
 
-            if (dayChance > randChance)
+            /* Start of the Season - Day 1. End of the Season - Day 28. Both is obviously day 1 and 28 
+               Every other week is only on days 8-14 and 22-28) */
+
+            bool SetCartToOn = false;
+            if (OurConfig.AppearOnlyAtEndOfSeason)
+            {
+                if (Game1.dayOfMonth == 28)
+                    SetCartToOn = true;
+            }
+
+            else if (OurConfig.AppearOnlyAtStartAndEndOfSeason)
+            {
+                if (Game1.dayOfMonth == 28 || Game1.dayOfMonth == 1)
+                    SetCartToOn = true;
+            }
+
+            else if (OurConfig.AppearOnlyAtStartAndEndOfSeason)
+            {
+                if (Game1.dayOfMonth == 28 || Game1.dayOfMonth == 1)
+                    SetCartToOn = true;
+            }
+
+            else if (OurConfig.AppearOnlyAtStartOfSeason)
+            {
+                if (Game1.dayOfMonth == 1)
+                    SetCartToOn = true;
+            }
+
+            else if (OurConfig.AppearOnlyEveryOtherWeek)
+            {
+                if ((Game1.dayOfMonth >= 8 && Game1.dayOfMonth <= 14) || (Game1.dayOfMonth >= 22 && Game1.dayOfMonth <= 28))
+                {
+                    if (dayChance > randChance)
+                    {
+                        SetCartToOn = true;
+                    }
+                }
+            }
+
+            else
+            {
+                if (dayChance > randChance)
+                {
+                    SetCartToOn = true;
+                }
+            }
+
+            if (SetCartToOn)
             {
                 f.travelingMerchantDay = true;
                 f.travelingMerchantBounds = new List<Rectangle>

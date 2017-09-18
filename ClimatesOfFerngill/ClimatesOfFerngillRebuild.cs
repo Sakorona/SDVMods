@@ -266,6 +266,7 @@ namespace ClimatesOfFerngillRebuild
         private void HandleNewDay(object sender, EventArgs e)
         {
             DebugOutput.Clear();
+            OurMoon.UpdateForNewDay();
             UpdateWeatherOnNewDay();
             OurMoon.HandleMoonAfterWake(Helper.Translation);
         }

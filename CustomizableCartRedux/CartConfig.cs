@@ -1,4 +1,4 @@
-﻿namespace CustomizableTravelingCart
+﻿namespace CustomizableCartRedux
 {
     public class CartConfig
     {
@@ -10,8 +10,22 @@
         public double SaturdayChance { get; set; }
         public double SundayChance { get; set; }
 
+        public bool AppearOnlyAtStartOfSeason { get; set; }
+        public bool AppearOnlyAtEndOfSeason { get; set; }
+        public bool AppearOnlyAtStartAndEndOfSeason { get; set; }
+        public bool AppearOnlyEveryOtherWeek { get; set; }
+
+        public int AmountOfItems { get; set; }
+
         public CartConfig()
         {
+            AppearOnlyAtEndOfSeason = false;
+            AppearOnlyAtStartAndEndOfSeason = false;
+            AppearOnlyAtStartOfSeason = false;
+            AppearOnlyEveryOtherWeek = false;
+
+            AmountOfItems = 12;
+
             MondayChance = .2;
             TuesdayChance = .2;
             WednesdayChance = .2;

@@ -1,5 +1,5 @@
 ﻿{
-  "Name": "Customizable Traveling Cart",
+  "Name": "Customizable Cart Redux",
   "Author": "KoihimeNakamura",
   "Version": {
     "MajorVersion": 1,
@@ -8,7 +8,7 @@
     "Build": "beta-201708"
   },
   "Description": "Allows you to alter the chances of the traveling cart appearing. Credit to Yyeahdude for the original idea.",
-  "UniqueID": "KoihimeNakamura.CTC",
-  "EntryDll": "CustomizableTravelingCart.dll",
+  "UniqueID": "KoihimeNakamura.CCR",
+  "EntryDll": "CustomizableCartRedux.dll",
   "MinimumApiVersion": "1.15"
 }

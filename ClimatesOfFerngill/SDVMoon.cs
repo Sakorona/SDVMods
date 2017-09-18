@@ -53,6 +53,7 @@ namespace ClimatesOfFerngillRebuild
             BeachRemovalChance = .09;
             BeachSpawnChance = .35;
             GhostChance = .02;
+            CurrPhase = SDVMoon.GetLunarPhase();
         }
 
         public void UpdateForNewDay()
@@ -73,7 +74,9 @@ namespace ClimatesOfFerngillRebuild
         public static MoonPhase GetLunarPhase(int day)
         {
             //divide it by the cycle.
-            int currentDay = day - ((int)(Math.Floor(day / (double)cycleLength)) * cycleLength);
+            int currentCycle = (int)Math.Floor(day / (double)cycleLength);
+            int currentDay = day - (cycleLength * currentCycle);
+            //int currentDay = day - ((int)(Math.Floor(day / (double)cycleLength)) * cycleLength);
 
             //Day 0 and 16 are the New Moon, so Day 8 must be the Full Moon. Day 4 is 1Q, Day 12 is 3Q. Coorespondingly..
             switch (currentDay)
