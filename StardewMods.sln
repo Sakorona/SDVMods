@@ -29,6 +29,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "old_ClimatesOfFerngill", "O
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CustomizableCartRedux", "CustomizableCartRedux\CustomizableCartRedux.csproj", "{288636BE-8AE8-4C50-A07D-18223377BF98}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SlowerFenceDecayMod", "FenceSlowDecayMod\SlowerFenceDecayMod\SlowerFenceDecayMod.csproj", "{46289061-B4B9-4566-8E16-4205778EDB26}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -67,6 +69,10 @@ Global
 		{288636BE-8AE8-4C50-A07D-18223377BF98}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{288636BE-8AE8-4C50-A07D-18223377BF98}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{288636BE-8AE8-4C50-A07D-18223377BF98}.Release|Any CPU.Build.0 = Release|Any CPU
+		{46289061-B4B9-4566-8E16-4205778EDB26}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{46289061-B4B9-4566-8E16-4205778EDB26}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{46289061-B4B9-4566-8E16-4205778EDB26}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{46289061-B4B9-4566-8E16-4205778EDB26}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

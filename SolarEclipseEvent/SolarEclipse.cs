@@ -1,4 +1,5 @@
-﻿using StardewModdingAPI;
+﻿using Microsoft.Xna.Framework;
+using StardewModdingAPI;
 using StardewModdingAPI.Events;
 using StardewValley;
 using System;
@@ -10,6 +11,9 @@ namespace SolarEclipseEvent
         public EclipseConfig Config { get; set; }
         public bool GameLoaded { get; set; }
         public bool IsEclipse { get; set; }
+        public int resetTicker { get; set; }
+
+        private Color nightColor = new Color((int) byte.MaxValue, (int) byte.MaxValue, 0);
 
         public override void Entry(IModHelper helper)
         {
@@ -22,8 +26,22 @@ namespace SolarEclipseEvent
             SaveEvents.BeforeSave += SaveEvents_BeforeSave;
             TimeEvents.AfterDayStarted += TimeEvents_AfterDayStarted;
             TimeEvents.TimeOfDayChanged += TimeEvents_TimeOfDayChanged;
+            GameEvents.UpdateTick += GameEvents_UpdateTick;
             LocationEvents.CurrentLocationChanged += LocationEvents_CurrentLocationChanged;
-            
+
+            resetTicker = 0;
+        }
+
+        private void GameEvents_UpdateTick(object sender, EventArgs e)
+        {
+            if (IsEclipse && resetTicker > 0)
+            {
+                Game1.globalOutdoorLighting = .5f;
+                //Game1.outdoorLight = nightColor;
+                Game1.ambientLight = nightColor;
+                Game1.currentLocation.switchOutNightTiles();
+                resetTicker = 0;
+            }
         }
 
         private void TimeEvents_AfterDayStarted(object sender, EventArgs e)
@@ -40,7 +58,10 @@ namespace SolarEclipseEvent
         {
             if (IsEclipse)
             {
+                Game1.globalOutdoorLighting = .5f;
+                //Game1.outdoorLight = nightColor;
                 Game1.currentLocation.switchOutNightTiles();
+                Game1.ambientLight = nightColor;
             }
         }
 
@@ -49,8 +70,10 @@ namespace SolarEclipseEvent
             if (IsEclipse)
             {
                 Game1.globalOutdoorLighting = .5f;
-                Game1.outdoorLight = Game1.eveningColor;
+                //Game1.outdoorLight = nightColor;
+                Game1.ambientLight = nightColor;
                 Game1.currentLocation.switchOutNightTiles();
+                resetTicker = 1;
 
                 if ((Game1.farmEvent == null && Game1.random.NextDouble() < (0.25 - Game1.dailyLuck / 2.0))
                     && ((Config.SpawnMonsters && Game1.spawnMonstersAtNight) || (Config.SpawnMonstersAllFarms)))
@@ -91,7 +114,8 @@ namespace SolarEclipseEvent
             IsEclipse = true;
             Game1.globalOutdoorLighting = .5f; //force lightning change.
             Game1.currentLocation.switchOutNightTiles();
-            Game1.outdoorLight = Game1.eveningColor;
+            //Game1.outdoorLight = nightColor;
+            Game1.ambientLight = nightColor;
             Monitor.Log("Setting the eclipse event to true");
         }
 

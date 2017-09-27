@@ -18,8 +18,8 @@ using StardewValley.Menus;
 using StardewValley.Objects;
 using SFarmer = StardewValley.Farmer;
 
-using CustomTV;
 using Microsoft.Xna.Framework.Graphics;
+using System.Reflection;
 
 namespace ClimatesOfFerngillRebuild
 {
@@ -86,6 +86,17 @@ namespace ClimatesOfFerngillRebuild
         /// </summary>
         private IClickableMenu PreviousMenu;
 
+        //tv overloading
+        private static FieldInfo Field = typeof(GameLocation).GetField("afterQuestion", BindingFlags.Instance | BindingFlags.NonPublic);
+        private static FieldInfo TVChannel = typeof(TV).GetField("currentChannel", BindingFlags.Instance | BindingFlags.NonPublic);
+        private static FieldInfo TVScreen = typeof(TV).GetField("screen", BindingFlags.Instance | BindingFlags.NonPublic);
+        private static FieldInfo TVScreenOverlay = typeof(TV).GetField("screenOverlay", BindingFlags.Instance | BindingFlags.NonPublic);
+        private static MethodInfo TVMethod = typeof(TV).GetMethod("getWeatherChannelOpening", BindingFlags.Instance | BindingFlags.NonPublic);
+        private static MethodInfo TVMethodOverlay = typeof(TV).GetMethod("setWeatherOverlay", BindingFlags.Instance | BindingFlags.NonPublic);
+        private static GameLocation.afterQuestionBehavior Callback;
+        private static TV Target;
+
+
         /// <summary> Main mod function. </summary>
         /// <param name="helper">The helper. </param>
 
@@ -109,8 +120,8 @@ namespace ClimatesOfFerngillRebuild
             //subscribe to events
             TimeEvents.AfterDayStarted += HandleNewDay;
             SaveEvents.BeforeSave += OnEndOfDay;
-            SaveEvents.AfterLoad += SaveEvents_AfterLoad;
             TimeEvents.TimeOfDayChanged += TenMinuteUpdate;
+            MenuEvents.MenuChanged += MenuEvents_MenuChanged;
             GameEvents.UpdateTick += CheckForChanges;
             SaveEvents.AfterReturnToTitle += ResetMod;
             GraphicsEvents.OnPostRenderEvent += DrawObjects;
@@ -126,10 +137,9 @@ namespace ClimatesOfFerngillRebuild
                   .Add("debug_changecondt", "Changes conditions. Debug function.", DebugChgCondition);
         }
 
-        private void SaveEvents_AfterLoad(object sender, EventArgs e)
+        private void MenuEvents_MenuChanged(object sender, EventArgsClickableMenuChanged e)
         {
-            //TV command
-            CustomTVMod.changeAction("weather", HandleWeather);
+                TryHookTelevision();
         }
 
         /// <summary>
@@ -142,23 +152,42 @@ namespace ClimatesOfFerngillRebuild
             OurMoon.HandleMoonAtSleep(Game1.getFarm(), Helper.Translation);
         }
 
-        /// <summary>
-        /// This function handles the TV interception, putting up the sprite and outputting the text.
-        /// </summary>
-        /// <param name="tv">The TV being intercepted</param>
-        /// <param name="sprite">The sprite being used</param>
-        /// <param name="who">The Farmer being intercepted for</param>
-        /// <param name="answer">The string being answered with</param>
-        public void HandleWeather(TV tv, TemporaryAnimatedSprite sprite, StardewValley.Farmer who, string answer)
-        {
-            TemporaryAnimatedSprite WeatherCaster = new TemporaryAnimatedSprite(
-                Game1.mouseCursors, new Rectangle(497, 305, 42, 28), 9999f, 1, 999999,
-                tv.getScreenPosition(), false, false,
-                (float)((double)(tv.boundingBox.Bottom - 1) / 10000.0 + 9.99999974737875E-06),
-                0.0f, Color.White, tv.getScreenSizeModifier(), 0.0f, 0.0f, 0.0f, false);
 
-            CustomTVMod.showProgram(WeatherCaster, Game1.parseText(GetWeatherForecast()), CustomTVMod.endProgram);
+        #region TVOverride
+        public void TryHookTelevision()
+        {
+            if (Game1.currentLocation != null && Game1.currentLocation is DecoratableLocation && Game1.activeClickableMenu != null && Game1.activeClickableMenu is DialogueBox)
+            {
+                Callback = (GameLocation.afterQuestionBehavior)Field.GetValue(Game1.currentLocation);
+                if (Callback != null && Callback.Target.GetType() == typeof(TV))
+                {
+                    Field.SetValue(Game1.currentLocation, new GameLocation.afterQuestionBehavior(InterceptCallback));
+                    Target = (TV)Callback.Target;
+                }
+            }
         }
+
+        public void InterceptCallback(SFarmer who, string answer)
+        {
+            if (answer != "Weather")
+            {
+                Callback(who, answer);
+                return;
+            }
+            TVChannel.SetValue(Target, 2);
+            TVScreen.SetValue(Target, new TemporaryAnimatedSprite(Game1.mouseCursors, new Rectangle(413, 305, 42, 28), 150f, 2, 999999, Target.getScreenPosition(), false, false, (float)((double)(Target.boundingBox.Bottom - 1) / 10000.0 + 9.99999974737875E-06), 0.0f, Color.White, Target.getScreenSizeModifier(), 0.0f, 0.0f, 0.0f, false));
+            Game1.drawObjectDialogue(Game1.parseText((string)TVMethod.Invoke(Target, null)));
+            Game1.afterDialogues = NextScene;
+        }
+
+        public void NextScene()
+        {
+            TVScreen.SetValue(Target, new TemporaryAnimatedSprite(Game1.mouseCursors, new Rectangle(497, 305, 42, 28), 9999f, 1, 999999, Target.getScreenPosition(), false, false, (float)((double)(Target.boundingBox.Bottom - 1) / 10000.0 + 9.99999974737875E-06), 0.0f, Color.White, Target.getScreenSizeModifier(), 0.0f, 0.0f, 0.0f, false));
+            Game1.drawObjectDialogue(Game1.parseText(GetWeatherForecast()));
+            TVMethodOverlay.Invoke(Target, null);
+            Game1.afterDialogues = Target.proceedToNextScene;
+        }
+        #endregion
 
         /// <summary>
         /// This function gets the forecast of the weather for the TV. 

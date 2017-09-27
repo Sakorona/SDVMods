@@ -4,20 +4,11 @@
   "Version": {
     "MajorVersion": 1,
     "MinorVersion": 1,
-    "PatchVersion": 1,
-    "Build": "alpha-201708"
+    "PatchVersion": 8,
+    "Build": "alpha-201709"
   },
   "Description": "Create a unique climate system with custom weathers, as well as add weather related events and commands.",
   "UniqueID": "KoihimeNakamura.ClimatesOfFerngill",
   "EntryDll": "ClimatesOfFerngill.dll",
-  "MinimumApiVersion": "1.15",
-  "Dependencies": [
-    {
-      "UniqueID": "Platonymous.CustomElementHandler"
-    },
-    {
-      "UniqueID": "Platonymous.CustomTV",
-      "MinimumVersion": "1.0.5" // optional. If specified, older versions won't meet the requirement.
-    }
-  ]
+  "MinimumApiVersion": "1.15"
 }

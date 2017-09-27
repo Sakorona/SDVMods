@@ -115,6 +115,14 @@ namespace ClimatesOfFerngillRebuild
         public string GetDescText(int weather, SDate Date, MersenneTwister Dice, ITranslationHelper Helper)
         {
             string retString = "";
+
+            //why was this not done seperately? Will proc tommorow
+            if (weather == Game1.weather_festival)
+            {
+                ObviouslyBadCode;
+            }
+
+
             switch (Date.Season)
             {
                 case "spring":
