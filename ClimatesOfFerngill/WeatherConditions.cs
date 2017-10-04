@@ -3,6 +3,7 @@ using StardewModdingAPI.Utilities;
 using StardewValley;
 using TwilightCore;
 using TwilightCore.PRNG;
+using TwilightCore.StardewValley;
 
 namespace ClimatesOfFerngillRebuild
 {
@@ -116,13 +117,6 @@ namespace ClimatesOfFerngillRebuild
         {
             string retString = "";
 
-            //why was this not done seperately? Will proc tommorow
-            if (weather == Game1.weather_festival)
-            {
-                ObviouslyBadCode;
-            }
-
-
             switch (Date.Season)
             {
                 case "spring":
@@ -197,6 +191,17 @@ namespace ClimatesOfFerngillRebuild
             return retString;
         }
 
+        public bool isHeatwave()
+        {
+            if (UnusualWeather == SpecialWeather.DryLightningAndHeatwave || UnusualWeather == SpecialWeather.Heatwave)
+                return true;
+            else
+                return false;
+        }
+        
+        
+
+
         public string GetHazardousText(ITranslationHelper Helper, SDate Date, MersenneTwister Dice)
         {
             string retString = "";
@@ -222,6 +227,9 @@ namespace ClimatesOfFerngillRebuild
                     break;
                 case SpecialWeather.Heatwave:
                     retString = Helper.Get("weather-desc.summer_heatwave1");
+                    break;
+                case SpecialWeather.DryLightningAndHeatwave:
+                    retString = Helper.Get("weather-desc.summer_litheatwave1");
                     break;
                 default:
                     retString = "";

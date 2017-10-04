@@ -81,6 +81,11 @@ namespace ClimatesOfFerngillRebuild
 
         private SDVMoon OurMoon;
 
+        //for stamina management
+        private StaminaDrain StaminaMngr;
+        private int TicksOutside;
+        private int TicksTotal;
+
         /// <summary>
         /// This is used to allow the menu to revert back to a previous menu
         /// </summary>
@@ -96,6 +101,9 @@ namespace ClimatesOfFerngillRebuild
         private static GameLocation.afterQuestionBehavior Callback;
         private static TV Target;
 
+        private bool wasEating = false;
+        private int prevToEatStack = -1;
+
 
         /// <summary> Main mod function. </summary>
         /// <param name="helper">The helper. </param>
@@ -109,6 +117,10 @@ namespace ClimatesOfFerngillRebuild
             DebugOutput = new StringBuilder();
             OurMoon = new SDVMoon(Dice);
             OurIcons = new Sprites.Icons(Helper.Content);
+            StaminaMngr = new StaminaDrain(WeatherOpt, Helper.Translation);
+
+            TicksOutside = 0;
+            TicksTotal = 0;
 
             if (WeatherOpt.Verbose) Monitor.Log($"Loading climate type: {WeatherOpt.ClimateType} from file", LogLevel.Trace);
 
@@ -207,11 +219,23 @@ namespace ClimatesOfFerngillRebuild
 
             if (Game1.timeOfDay < 1800) //don't display today's weather 
             {
-                tvText += Helper.Translation.Get("tv.desc-today", new
+
+                //why was this not done seperately? Will proc tommorow
+                //does.. Game1.isFestival() work the way I think it does...?
+                if (Utility.isFestivalDay(Game1.dayOfMonth, Game1.currentSeason))
                 {
-                    temperature = CurrentWeather.GetTemperatureString(WeatherOpt.ShowBothScales, Helper.Translation),
-                    weathercondition = CurrentWeather.GetDescText(CurrentWeather.TodayWeather, SDate.Now(), Dice, Helper.Translation)
-                });
+                    tvText += Helper.Translation.Get("tv.desc-festival",
+                                  new { festival = SDVUtilities.GetFestivalName(), Temperature = CurrentWeather.GetTemperatureString(WeatherOpt.ShowBothScales, Helper.Translation)});
+                }
+                else
+                {
+
+                    tvText += Helper.Translation.Get("tv.desc-today", new
+                    {
+                        temperature = CurrentWeather.GetTemperatureString(WeatherOpt.ShowBothScales, Helper.Translation),
+                        weathercondition = CurrentWeather.GetDescText(CurrentWeather.TodayWeather, SDate.Now(), Dice, Helper.Translation)
+                    });
+                }
             }
 
             //Tomorrow weather
@@ -235,7 +259,37 @@ namespace ClimatesOfFerngillRebuild
                 return;
 
             OurFog.MoveFog();
-            
+
+            if (Game1.isEating != wasEating)
+            {
+                if (!Game1.isEating)
+                {
+                    // Apparently this happens when the ask to eat dialog opens, but they pressed no.
+                    // So make sure something was actually consumed.
+                    if (prevToEatStack != -1 && (prevToEatStack - 1 == Game1.player.itemToEat.Stack))
+                    {
+                        StardewValley.Object obj = Game1.player.itemToEat as StardewValley.Object;
+                        string[] info = Game1.objectInformation[obj.ParentSheetIndex].Split('/');
+
+                        if (obj.ParentSheetIndex == 351)
+                        {
+                            StaminaMngr.ClearDrain();
+                        }
+
+                        if (WeatherOpt.Verbose)
+                        {
+                            Monitor.Log("Eating:" + Game1.isEating);
+                            Monitor.Log("prev:" + prevToEatStack);
+                            Monitor.Log("I:" + Game1.player.itemToEat + " " + ((Game1.player.itemToEat != null) ? Game1.player.itemToEat.getStack() : -1));
+                            Monitor.Log("A:" + Game1.player.ActiveObject + " " + ((Game1.player.ActiveObject != null) ? Game1.player.ActiveObject.getStack() : -1));
+                        }
+
+                        prevToEatStack = (Game1.player.itemToEat != null ? Game1.player.itemToEat.Stack : -1);
+                    }
+                }
+            }
+            wasEating = Game1.isEating;
+
             if (WeatherOpt.StormTotemChange)
             {
                 if (Game1.weatherForTomorrow != (int)EndWeather && !RainTotemUsedToday)
@@ -249,6 +303,14 @@ namespace ClimatesOfFerngillRebuild
                     }
                 }
             }
+
+            if (Game1.currentLocation.isOutdoors)
+            {
+                TicksOutside++;
+            }
+
+            TicksTotal++;
+            
         }
 
 
@@ -264,6 +326,16 @@ namespace ClimatesOfFerngillRebuild
                  CurrentWeather.UnusualWeather == SpecialWeather.DryLightning)
                  && Game1.timeOfDay < 2400)
                 Utility.performLightningUpdate();
+
+            //frost works at night, heatwave works during the day
+
+            Game1.player.stamina += StaminaMngr.TenMinuteTick(CurrentWeather.UnusualWeather, TicksOutside, TicksTotal);
+
+            if (Game1.player.stamina <= 0)
+                SDVUtilities.FaintPlayer();
+
+            TicksTotal = 0;
+            TicksOutside = 0;
         }
 
         /// <summary>
@@ -289,6 +361,9 @@ namespace ClimatesOfFerngillRebuild
             CurrentWeather.Reset();
             DebugOutput.Clear();
             OurFog.Reset();
+            StaminaMngr.Reset();
+            TicksOutside = 0;
+            TicksTotal = 0;
             RainTotemUsedToday = false;
         }
 
@@ -298,6 +373,9 @@ namespace ClimatesOfFerngillRebuild
             OurMoon.UpdateForNewDay();
             UpdateWeatherOnNewDay();
             OurMoon.HandleMoonAfterWake(Helper.Translation);
+            StaminaMngr.OnNewDay(CurrentWeather);
+            TicksOutside = 0;
+            TicksTotal = 0;
         }
 
         private void UpdateWeatherOnNewDay()
@@ -397,6 +475,8 @@ namespace ClimatesOfFerngillRebuild
             //             Dry Lightning - occurs in weather_clear in any season if temps are >24C.
             //             Thundersnow  - as Blizzard, but really rare.
 
+            // And now, with stamina enabled, time to reenable heatwaves and frosts
+
             if (WeatherOpt.Verbose)
                 Monitor.Log("Testing for special weathers - first, blizzard and thundrsnow");
 
@@ -437,7 +517,15 @@ namespace ClimatesOfFerngillRebuild
                 {
                     CurrentWeather.UnusualWeather = SpecialWeather.DryLightning;
                     if (WeatherOpt.Verbose)
-                        Monitor.Log($"With roll {oddsRoll.ToString("N3")} against {WeatherOpt.ThundersnowOdds}, there will be thundersnow today");
+                        Monitor.Log($"With roll {oddsRoll.ToString("N3")} against {WeatherOpt.DryLightning}, there will be dry lightning today.");
+                }
+
+                if (CurrentWeather.GetTodayHigh() > WeatherOpt.TooHotOutside)
+                {
+                    if (CurrentWeather.UnusualWeather == SpecialWeather.DryLightning)
+                        CurrentWeather.UnusualWeather = SpecialWeather.DryLightningAndHeatwave;
+                    else
+                        CurrentWeather.UnusualWeather = SpecialWeather.Heatwave;
                 }
             }
 
@@ -525,6 +613,10 @@ namespace ClimatesOfFerngillRebuild
                     if (SDate.Now().Year == 1 && SDate.Now().Season == "spring" && !WeatherOpt.AllowStormsSpringYear1)
                         Game1.weatherForTomorrow = Game1.weather_rain;
                 }
+
+                //apply dry lightning check
+                if (CurrentWeather.UnusualWeather == SpecialWeather.DryLightningAndHeatwave || CurrentWeather.UnusualWeather == SpecialWeather.DryLightning)
+                    Game1.isLightning = true;
 
                 //tracking time!
                 //Snow fall on Fall 28, if the flag is set.

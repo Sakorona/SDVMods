@@ -13,6 +13,7 @@ namespace ClimatesOfFerngillRebuild
         Blizzard = 2,
         DryLightning = 3,
         Frost = 4,
-        Heatwave = 5
+        Heatwave = 5,
+        DryLightningAndHeatwave = 6
     }
 }

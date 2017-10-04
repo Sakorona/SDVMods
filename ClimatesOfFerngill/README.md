@@ -1,6 +1,6 @@
 ﻿# Climates of Ferngill (Rebuild) You Can (Not) Have Weather
 
-Current Version (1 August 2017): v1.1.1 beta
+Current Version (1 October 2017): v1.1.12 beta
 
 
 ## What's New
@@ -19,23 +19,22 @@ This mod does the following:
 - Adds a moon overhead, which will act on the world
 - Adds a weather menu option, which will display information about the weather
 - Changes the text for the TV weather channel
+- Going out in storms, blizzards, frosts and heatwaves is now more perilous, as it drains your stamina. Thankfully, 
+    a 'Muscle Redemy' has been found to cure even the hardiest flu
 
 ## Known Issues
-- When foggy, swinging a tool or blade will cause the fog to blink.
+- None at present
 
 ## To Do
-- Stamina drain for storms and blizzards not implemented
 - Frost and Heatwaves are not yet implemented
 
 ## Wishlist
-- Readd an item to remove the stamina drain. (Pending on SMAPI 2.0+)
+
 
 ##Requirements
 
-- Stardew Valley: 1.2.30+
-- SMAPI: 1.15.1+
-- Platonymous' Custom Element Handler: v1.3.0+ [http://www.nexusmods.com/stardewvalley/mods/1068/?]
-- Platonymous' Custom TV: 1.0.5+ [http://www.nexusmods.com/stardewvalley/mods/1139/?]
+- Stardew Valley: 1.2.33+
+- SMAPI: 1.15.4+ 
 
 ## Config Options
 
@@ -54,6 +53,14 @@ over a certain value.). Valid 0-1, but it's recommended that this is kept low. D
 - `DryLightningMinTemp` - This controls the minimum temperature to trigger the DryLightning event. 
   Defaults to `34`. Values are in Celsius. (34 C is 93.2 F)
 
+- 'TooColdOutside' - This controls the temperature required (the *low* temperature required) to trigger the Frost event. Note this is a Spring and Fall event, and will potentially kill crops
+  Defaults to '-3'. Values are in Celsius (1 C is 33.8 F). 
+  NOTE: Frosts trigger at dark
+
+- 'TooHotOutside' - This controls the temperature required (the *high* temperature required) to trigger the Heatwave event.
+  Defaults to '39'. Values are in Celsius (39 C is 102.2 F)
+  NOTE : Heatwaves taper off at night.
+
 - `SnowOnFall28` - If set to true, this will force snow fall and appropriate temperatures on Fall 28. Default: `false`,
   Valid: `true` or `false`
 
@@ -68,5 +75,16 @@ over a certain value.). Valid 0-1, but it's recommended that this is kept low. D
 - `DisplayBothScales` - Default: `false`. This will display both known scales. Set to `true`, if you want to see Farenheit as well.
 
 - `HazardousWeather` - Default: `false`. This turns on hazardous weather. It's normally turned off. Right now, it only turns on the heatwave and frost events
+	IMPORTANT NOTE: This only enables the stamina drain on them, and the dewatering of the heatwave. Frost's crop death will remain disabled, 
+	as well not watering the plants in time for a heatwave.
 
 - `AllowCropDeath` - Default: `false`. Normally, hazardous weather won't kill crops, just stop them growing. This reenables crop death.'
+
+- 'AffectedOutside' - The percentage outside you need to be within a 10 minute span to be affected by stamina events.
+ Defaults to '.65', valid values are between 0 and 1. To turn stamina drains off entirely, set it to 0. 
+
+ - 'SickMoreThanOnce' - By default, the false means you can only get sick once a day. Set it to true to be affected by multiple colds.
+
+ - 'Tier1Drain' - A tier 1 cold drains this much stamina per ten minutes. Default: '2'
+
+ - 'Tier2Drain' - A tier 2 cold drains this much stamina per ten minutes. Default: '4'

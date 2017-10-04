@@ -17,6 +17,8 @@
 
   //HUD Messages
   "hud-text.desc_stormtotem": "You hear a roll of thunder...",
+  "hud-text.desc_sick": "You have caught a cold...!",
+  "hud-text.desc_flu": "You have caught the flu and better take some medicine soon!",
 
   //Lunar Messages
   "moon-text.phase-full": "Full Moon",
@@ -92,10 +94,12 @@
   "weather-desc.fall_frost1": "Early touch of the upcoming winter is passing through, with frosts expected across Raven's Point and Stardew Valley",
   "weather-desc.spring_frost1": "A late touch of the previous winter is passing through, with frosts expected across Raven's Point and Stardew Valley",
   "weather-desc.summer_heatwave1": "Massive heatwave is boiling through the region. Stay hydrated.",
+  "weather-desc.summer_litheatwave1": "Massive heatwave is boiling through the region with dry lightning throughout the day. Stay hydrated and watch for lightning",
   "weather-menu.dangerous_condition": "FRCS Alert: A dangerous condition has been observed for the Zuzu City and Pelican Town areas: {{condition}}",
 
   //TV strings
   "tv.opening-desc": "...concludes the weather for Zuzu City.#",
   "tv.desc-today": "Today's temperature will be {{temperature}}, with {{weathercondition}}.#",
-  "tv.desc-tomorrow": "Tomorrow's weather will be {{weathercondition}} with {{temperature}}"
+  "tv.desc-tomorrow": "Tomorrow's weather will be {{weathercondition}} with {{temperature}}",
+  "tv.desc-festival": "It will be a sunny day for the {{festival}} in Pelican town, with {{Temperature}}"
 }

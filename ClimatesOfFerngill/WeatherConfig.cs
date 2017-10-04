@@ -18,6 +18,13 @@ namespace ClimatesOfFerngillRebuild
         public bool AllowCropDeath { get; set; }
         public bool AllowStormsSpringYear1 { get; set; }
         public bool ShowBothScales { get; set; }
+        public double TooColdOutside { get; set; }
+        public double TooHotOutside { get; set; }
+        public double AffectedOutside { get; set; }
+        public int Tier1Drain { get; set; }
+        public int Tier2Drain { get; set; }
+        public bool SickMoreThanOnce { get; set; }
+
         public bool Verbose { get; set; }
         
         public WeatherConfig()
@@ -34,12 +41,21 @@ namespace ClimatesOfFerngillRebuild
             DryLightning = .10; //10%
             DryLightningMinTemp = 34; //34 C, or 93.2 F
             HazardousWeather = false; //normally, hazardous weather is turned off
-            AllowCropDeath = false; //even if you turn hazardous weather on, it won't allow crop death
+            TooHotOutside = 39; //At this temp, it's too hot outside, and you can have a heatwave. 39 C or 102.2 F default
+            TooColdOutside = 1; //At this temp, it's too cold outside, and you have a hard frost. 1 C or 33.8 F default
+            AllowCropDeath = false; //even if you turn hazardous weather on, it won't enable crop death.
             SnowOnFall28 = false; //default setting - since if true, it will force
             StormTotemChange = true; //rain totems may spawn storms instead of rain totems.
             AllowStormsSpringYear1 = false; //default setting - maintains the fact that starting players may not 
             ShowBothScales = true; //default setting.
-             // be able to deal with lightning strikes
+
+            // be able to deal with lightning strikes
+
+            //stamina options
+            AffectedOutside = .65;
+            Tier1Drain = 2;
+            Tier2Drain = 4;
+            SickMoreThanOnce = false;
 
             //general mod options
             Verbose = true;
