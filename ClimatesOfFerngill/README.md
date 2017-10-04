@@ -30,6 +30,11 @@ This mod does the following:
 
 ## Wishlist
 
+## Changelog
+v1.1.12 beta
+- fixed an issue with festivals
+- added stamina drains back in
+- heatwaves and frosts are back in, and now it triggers during certain times.
 
 ##Requirements
 
