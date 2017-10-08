@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using StardewValley.Locations;
 using StardewValley.Monsters;
 using TwilightCore.PRNG;
+using StardewValley.TerrainFeatures;
 
 namespace TwilightCore.StardewValley
 {
@@ -114,6 +115,21 @@ namespace TwilightCore.StardewValley
                 default:
                     return "<ERROR>";
             }
+        }
+
+        public static int CropCountInFarm(Farm f)
+        {
+            int count = 0;
+
+            foreach (KeyValuePair<Vector2, TerrainFeature> tf in f.terrainFeatures)
+            {
+                if (tf.Value is HoeDirt curr && curr.crop != null)
+                {
+                    count++;
+                }
+            }
+
+            return count;
         }
 
         public static void SpawnGhostOffScreen(MersenneTwister Dice)

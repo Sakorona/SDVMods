@@ -93,3 +93,7 @@ over a certain value.). Valid 0-1, but it's recommended that this is kept low. D
  - 'Tier1Drain' - A tier 1 cold drains this much stamina per ten minutes. Default: '2'
 
  - 'Tier2Drain' - A tier 2 cold drains this much stamina per ten minutes. Default: '4'
+
+ - 'DeadCropPercentage' - The amount of crops that a heatwave and frost can kill. (Note: Frost will kill more than heatwaves). Default: '.1' Valid range is 0 to 1.
+
+ - 'CropResistance' - This represents the resistance an averagecrop has to heatwaves. Frosts have half this resistance. Default: '.4' Valid Range is 0 to 1.

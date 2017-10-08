@@ -24,6 +24,8 @@ namespace ClimatesOfFerngillRebuild
         public int Tier1Drain { get; set; }
         public int Tier2Drain { get; set; }
         public bool SickMoreThanOnce { get; set; }
+        public double DeadCropPercentage { get; set; }
+        public double CropResistance { get; set; }
 
         public bool Verbose { get; set; }
         
@@ -48,6 +50,8 @@ namespace ClimatesOfFerngillRebuild
             StormTotemChange = true; //rain totems may spawn storms instead of rain totems.
             AllowStormsSpringYear1 = false; //default setting - maintains the fact that starting players may not 
             ShowBothScales = true; //default setting.
+            DeadCropPercentage = .1; //default setting
+            CropResistance = .4; //default settting
 
             // be able to deal with lightning strikes
 

@@ -20,6 +20,7 @@ using SFarmer = StardewValley.Farmer;
 
 using Microsoft.Xna.Framework.Graphics;
 using System.Reflection;
+using StardewValley.TerrainFeatures;
 
 namespace ClimatesOfFerngillRebuild
 {
@@ -86,6 +87,13 @@ namespace ClimatesOfFerngillRebuild
         private int TicksOutside;
         private int TicksTotal;
 
+        //for events
+        private int ExpireTime;
+        private List<Vector2> CropList;
+
+        //queued string
+        private HUDMessage queuedMsg;
+
         /// <summary>
         /// This is used to allow the menu to revert back to a previous menu
         /// </summary>
@@ -117,10 +125,13 @@ namespace ClimatesOfFerngillRebuild
             DebugOutput = new StringBuilder();
             OurMoon = new SDVMoon(Dice);
             OurIcons = new Sprites.Icons(Helper.Content);
+            CropList = new List<Vector2>();
             StaminaMngr = new StaminaDrain(WeatherOpt, Helper.Translation);
+            queuedMsg = null;
 
             TicksOutside = 0;
             TicksTotal = 0;
+            ExpireTime = 0;
 
             if (WeatherOpt.Verbose) Monitor.Log($"Loading climate type: {WeatherOpt.ClimateType} from file", LogLevel.Trace);
 
@@ -161,8 +172,43 @@ namespace ClimatesOfFerngillRebuild
         /// <param name="e"></param>
         private void OnEndOfDay(object sender, EventArgs e)
         {
+            if (CurrentWeather.UnusualWeather == SpecialWeather.Frost)
+            {
+                Farm f = Game1.getFarm();
+                int count = 0, maxCrops = (int)Math.Floor(SDVUtilities.CropCountInFarm(f) * WeatherOpt.DeadCropPercentage);
+
+                foreach (KeyValuePair<Vector2, TerrainFeature> tf in f.terrainFeatures)
+                {
+
+                    if (count >= maxCrops)
+                        break;
+
+                    if (tf.Value is HoeDirt curr && curr.crop != null)
+                    {
+                        if (Dice.NextDouble() <= (WeatherOpt.CropResistance / 2))
+                        {
+                            CropList.Add(tf.Key);
+                            count++;
+                        }
+                    }
+                }             
+
+                if (count > 0)
+                {
+                    foreach (Vector2 v in CropList)
+                    {
+                        HoeDirt hd = (HoeDirt)f.terrainFeatures[v];
+                        hd.crop.dead = true;
+                    }
+
+                    queuedMsg = new HUDMessage(Helper.Translation.Get("hud - text.desc_frost_killed"));
+                }
+            }
+
+            //moon works after frost does
             OurMoon.HandleMoonAtSleep(Game1.getFarm(), Helper.Translation);
         }
+
 
 
         #region TVOverride
@@ -327,13 +373,67 @@ namespace ClimatesOfFerngillRebuild
                  && Game1.timeOfDay < 2400)
                 Utility.performLightningUpdate();
 
+            //queued messages clear
+            if (Game1.timeOfDay == 610 && queuedMsg != null)
+            {
+                Game1.hudMessages.Add(queuedMsg);
+                queuedMsg = null;
+            }
+
             //frost works at night, heatwave works during the day
             if (Game1.timeOfDay == 1700)
             {
                 if (CurrentWeather.IsHeatwave())
                 {
+                    ExpireTime = 2000;
+                    Farm f = Game1.getFarm();
+                    int count = 0, maxCrops = (int)Math.Floor(SDVUtilities.CropCountInFarm(f) * WeatherOpt.DeadCropPercentage);
 
+                    foreach (KeyValuePair<Vector2, TerrainFeature> tf in f.terrainFeatures)
+                    {
+
+                        if (count >= maxCrops)
+                            break;
+
+                        if (tf.Value is HoeDirt curr && curr.crop != null)
+                        {
+                            if (Dice.NextDouble() <= WeatherOpt.CropResistance)
+                            {
+                                CropList.Add(tf.Key);
+                                curr.state = HoeDirt.dry;
+                                count++;
+                            }
+                        }
+                    }
+
+                    if (CropList.Count > 0)
+                    {
+                        if (!WeatherOpt.AllowCropDeath)
+                            SDVUtilities.ShowMessage(Helper.Translation.Get("hud-text.desc_heatwave_dry"));
+                        else
+                            SDVUtilities.ShowMessage(Helper.Translation.Get("hud-text.desc_heatwave_kill"));
+                    }
                 }
+            }
+
+            if (Game1.timeOfDay == ExpireTime && WeatherOpt.AllowCropDeath)
+            {
+                //if it's still de watered - kill it.
+                Farm f = Game1.getFarm();
+                bool cDead = false;
+
+                foreach (Vector2 v in CropList)
+                {
+                    HoeDirt hd = (HoeDirt)f.terrainFeatures[v];
+                    if (hd.state == HoeDirt.dry)
+                    {
+                        hd.crop.dead = true;
+                        cDead = true;
+                    }
+                }
+
+                if (cDead)
+                    SDVUtilities.ShowMessage("Some of the crops have died due to lack of water!");
             }
 
             Game1.player.stamina += StaminaMngr.TenMinuteTick(CurrentWeather.UnusualWeather, TicksOutside, TicksTotal);
@@ -366,6 +466,8 @@ namespace ClimatesOfFerngillRebuild
         private void ResetMod(object sender, EventArgs e)
         {
             CurrentWeather.Reset();
+            ExpireTime = 0;
+            CropList.Clear(); 
             DebugOutput.Clear();
             OurFog.Reset();
             StaminaMngr.Reset();
@@ -376,12 +478,15 @@ namespace ClimatesOfFerngillRebuild
 
         private void HandleNewDay(object sender, EventArgs e)
         {
+            CropList.Clear(); //clear the crop list
             DebugOutput.Clear();
             OurMoon.UpdateForNewDay();
+            CurrentWeather.OnNewDay();
             UpdateWeatherOnNewDay();
             OurMoon.HandleMoonAfterWake(Helper.Translation);
             StaminaMngr.OnNewDay(CurrentWeather);
             TicksOutside = 0;
+            ExpireTime = 0;
             TicksTotal = 0;
         }
 
@@ -394,8 +499,6 @@ namespace ClimatesOfFerngillRebuild
             int TmrwWeather = Game1.weatherForTomorrow;
 
             //reset for new day
-            CurrentWeather.WillFog = false;
-            CurrentWeather.UnusualWeather = SpecialWeather.None;
             OurFog.Reset();
 
             //Set Temperature for today and tommorow. Get today's conditions.
@@ -498,7 +601,6 @@ namespace ClimatesOfFerngillRebuild
                 }
             }
 
-
             //Dry Lightning is also here for such like the dry and arid climates 
             //  which have so low rain chances they may never storm.
             if (CurrentWeather.TodayWeather == Game1.weather_snow)
@@ -514,7 +616,7 @@ namespace ClimatesOfFerngillRebuild
             }
 
             if (WeatherOpt.Verbose)
-                Monitor.Log("Testing for special weathers - dry lightning.");
+                Monitor.Log("Testing for special weathers - dry lightning and heatwave");
 
             if (CurrentWeather.TodayWeather == Game1.weather_sunny)
             {
@@ -527,7 +629,7 @@ namespace ClimatesOfFerngillRebuild
                         Monitor.Log($"With roll {oddsRoll.ToString("N3")} against {WeatherOpt.DryLightning}, there will be dry lightning today.");
                 }
 
-                if (CurrentWeather.GetTodayHigh() > WeatherOpt.TooHotOutside)
+                if (CurrentWeather.GetTodayHigh() > WeatherOpt.TooHotOutside && WeatherOpt.HazardousWeather)
                 {
                     if (CurrentWeather.UnusualWeather == SpecialWeather.DryLightning)
                         CurrentWeather.UnusualWeather = SpecialWeather.DryLightningAndHeatwave;
@@ -535,6 +637,18 @@ namespace ClimatesOfFerngillRebuild
                         CurrentWeather.UnusualWeather = SpecialWeather.Heatwave;
                 }
             }
+
+            if (WeatherOpt.Verbose)
+                Monitor.Log("Testing for special weathers - frost.");
+
+            if (CurrentWeather.GetTodayLow() < WeatherOpt.TooColdOutside && !Game1.IsWinter)
+            {
+                if (WeatherOpt.HazardousWeather)
+                {
+                    CurrentWeather.UnusualWeather = SpecialWeather.Frost;
+                }
+            }
+
 
             //if tomorrow is a festival or wedding, we need to set the weather and leave.
             if (Utility.isFestivalDay(Game1.dayOfMonth + 1, Game1.currentSeason))

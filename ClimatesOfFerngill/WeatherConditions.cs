@@ -61,6 +61,16 @@ namespace ClimatesOfFerngillRebuild
                 return false;
         }
 
+        public void OnNewDay()
+        {
+            TodayWeather = 0;
+            TomorrowWeather = 0;
+            UnusualWeather = SpecialWeather.None;
+            WillFog = false;
+            TodayTemps = null;
+            TomorrowTemps = null;
+        }
+
         public void Reset()
         {
             TodayTemps = null;

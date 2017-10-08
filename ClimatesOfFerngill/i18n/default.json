@@ -19,6 +19,9 @@
   "hud-text.desc_stormtotem": "You hear a roll of thunder...",
   "hud-text.desc_sick": "You have caught a cold...!",
   "hud-text.desc_flu": "You have caught the flu and better take some medicine soon!",
+  "hud-text.desc_frost_killed": "Some of your crops died in the night due to the cold..!",
+  "hud-text.desc_heatwave_dry" :"The extreme heat has caused some of your crops to become dry....!",
+  "hud-text.desc_heatwave_kill" : "The extreme heat has caused some of your crops to dry out. If you don't water them, they'll die!",
 
   //Lunar Messages
   "moon-text.phase-full": "Full Moon",
@@ -72,14 +75,14 @@
   "weather-desc.summer_debris2": "a wind blowing through today will bring some small relief from the heat",
   "weather-desc.summer_wedding1": "a warm summer Stardew Valley wedding",
   "weather-desc.summer_wedding2": "a clear ideal summer Stardew Valley wedding",
-
+  
   "weather-desc.fall_sunny1": "a cool autumn day",
   "weather-desc.fall_rainy1": "chilly showers",
   "weather-desc.fall_stormy1": "a blustery thundery day ",
   "weather-desc.fall_snowy1": "an early snow",
   "weather-desc.fall_debris1": "a day full of whirling leaves",
   "weather-desc.fall_wedding1": "a cool pleasent Stardew Valley wedding",
-
+  
   "weather-desc.winter_sunny1": "a cold sunny day",
   "weather-desc.winter_rainy1": "too warm for snow, a freezing rain",
   "weather-desc.winter_stormy1": "a rare winter thunderstorm ",
