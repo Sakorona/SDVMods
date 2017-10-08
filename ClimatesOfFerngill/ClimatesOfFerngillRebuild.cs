@@ -152,12 +152,14 @@ namespace ClimatesOfFerngillRebuild
 
             ControlEvents.KeyPressed += (sender, e) => this.ReceiveKeyPress(e.KeyPressed, this.WeatherOpt.Keyboard);
             MenuEvents.MenuClosed += (sender, e) => this.ReceiveMenuClosed(e.PriorMenu);
-         
+
             //console commands
             helper.ConsoleCommands
                   .Add("weather_settommorowweather", helper.Translation.Get("console-text.desc_tmrweather"), TmrwWeatherChangeFromConsole)
                   .Add("weather_setweather", helper.Translation.Get("console-text.desc_setweather"), WeatherChangeFromConsole)
-                  .Add("debug_changecondt", "Changes conditions. Debug function.", DebugChgCondition);
+                  .Add("debug_changecondt", "Changes conditions. Debug function.", DebugChgCondition)
+                  .Add("debug_forceheatwave", "Force heatwave. Debug function", ForceHeatwave)
+                  .Add("debug_forcefrost", "Force frost. Debug function", ForceFrost);
         }
 
         private void MenuEvents_MenuChanged(object sender, EventArgsClickableMenuChanged e)
@@ -794,6 +796,16 @@ namespace ClimatesOfFerngillRebuild
          * console commands
          * **************************************************************
          */
+
+        private void ForceFrost(string arg1, string[] arg2)
+        {
+            CurrentWeather.ForceFrost();
+        }
+
+        private void ForceHeatwave(string arg1, string[] arg2)
+        {
+            CurrentWeather.ForceHeatwave();
+        }
 
         /// <summary>
         /// This function changes the weather (Console Command)

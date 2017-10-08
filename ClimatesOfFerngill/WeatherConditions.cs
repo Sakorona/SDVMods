@@ -61,6 +61,16 @@ namespace ClimatesOfFerngillRebuild
                 return false;
         }
 
+        public void ForceFrost()
+        {
+            UnusualWeather = SpecialWeather.Frost;
+        }
+
+        public void ForceHeatwave()
+        {
+            UnusualWeather = SpecialWeather.Heatwave;
+        }
+
         public void OnNewDay()
         {
             TodayWeather = 0;
