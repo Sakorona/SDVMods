@@ -328,6 +328,13 @@ namespace ClimatesOfFerngillRebuild
                 Utility.performLightningUpdate();
 
             //frost works at night, heatwave works during the day
+            if (Game1.timeOfDay == 1700)
+            {
+                if (CurrentWeather.IsHeatwave())
+                {
+
+                }
+            }
 
             Game1.player.stamina += StaminaMngr.TenMinuteTick(CurrentWeather.UnusualWeather, TicksOutside, TicksTotal);
 

@@ -33,7 +33,7 @@ namespace ClimatesOfFerngillRebuild
             TodayDanger = StaminaStatus.NoDrain;
         }
 
-        public bool isSick()
+        public bool IsSick()
         {
             if (HealthLevel != StaminaStatus.NoDrain)
                 return true;
@@ -45,14 +45,15 @@ namespace ClimatesOfFerngillRebuild
         {
             SickToday = false; 
             HealthLevel = StaminaStatus.NoDrain;
-            if (Current.UnusualWeather == SpecialWeather.Frost || (Current.TodayWeather == Game1.weather_lightning && Current.isHeatwave())
-                || Current.isHeatwave())
+            if (Current.UnusualWeather == SpecialWeather.Frost || (Current.TodayWeather == Game1.weather_lightning && Current.IsHeatwave())
+                || Current.IsHeatwave())
             {
                 //level 1 drain
                 TodayDanger = StaminaStatus.Level1;
             }
 
-            if (Current.UnusualWeather == SpecialWeather.Blizzard || Current.UnusualWeather == SpecialWeather.Thundersnow || (Current.TodayWeather == Game1.weather_lightning && Current.isHeatwave()))
+            if (Current.UnusualWeather == SpecialWeather.Blizzard || Current.UnusualWeather == SpecialWeather.Thundersnow || 
+                (Current.TodayWeather == Game1.weather_lightning && Current.IsHeatwave()))
             {
                 //level 2 drain
                 TodayDanger = StaminaStatus.Level2;

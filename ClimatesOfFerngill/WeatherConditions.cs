@@ -191,7 +191,7 @@ namespace ClimatesOfFerngillRebuild
             return retString;
         }
 
-        public bool isHeatwave()
+        public bool IsHeatwave()
         {
             if (UnusualWeather == SpecialWeather.DryLightningAndHeatwave || UnusualWeather == SpecialWeather.Heatwave)
                 return true;
