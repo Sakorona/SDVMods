@@ -143,7 +143,7 @@ namespace ClimatesOfFerngillRebuild
 
                 //so, a bit here.
                 //lightning and heatwaves is a thing - this corrects for night.
-                if (Game1.isLightning && (Game1.isStartingToGetDarkOut() && WeatherConditions.IsHeatwave(conditions))
+                if (Game1.isLightning && (Game1.isStartingToGetDarkOut() && WeatherConditions.IsHeatwave(conditions)))
                 {
                     HealthLevel = StaminaStatus.Level1;
                     TodayDanger = StaminaStatus.Level1;
