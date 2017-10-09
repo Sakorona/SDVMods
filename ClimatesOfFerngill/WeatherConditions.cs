@@ -217,8 +217,6 @@ namespace ClimatesOfFerngillRebuild
                 return false;
         }
 
-
-
         public string GetHazardousText(ITranslationHelper Helper, SDate Date, MersenneTwister Dice)
         {
             string retString = "";
