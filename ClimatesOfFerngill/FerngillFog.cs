@@ -63,14 +63,14 @@ namespace ClimatesOfFerngillRebuild
                         if (debug) Monitor.Log("Now at T-30 minutes");
 
                         Game1.globalOutdoorLighting = .98f;
-                        Game1.outdoorLight = new Color(200, 198, 196);
+                        Game1.outdoorLight = new Color(190, 188, 186);
                     }
 
                     if (time == (FogExpirTime - 20).ReturnIntTime())
                     {
                         if (debug) Monitor.Log("Now at T-20 minutes");
                         Game1.globalOutdoorLighting = .99f;
-                        Game1.outdoorLight = new Color(179, 176, 171);
+                        Game1.outdoorLight = new Color(159, 156, 151);
                     }
 
                     if (time == (FogExpirTime - 10).ReturnIntTime())
@@ -85,7 +85,7 @@ namespace ClimatesOfFerngillRebuild
                     if (time == (FogExpirTime - 30).ReturnIntTime())
                     {
                         if (debug) Monitor.Log("Now at T-30 minutes");
-                        Game1.globalOutdoorLighting = .80f;
+                        Game1.globalOutdoorLighting = .89f;
                         Game1.outdoorLight = new Color(168, 142, 99);
                     }
 

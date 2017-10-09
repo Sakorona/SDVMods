@@ -531,6 +531,7 @@ namespace ClimatesOfFerngillRebuild
             double fogChance = GameClimate.GetClimateForDate(SDate.Now())
                                           .RetrieveOdds(Dice, "fog", SDate.Now().Day, DebugOutput);
 
+            fogChance = 1; //for testing purposes
             double fogRoll = Dice.NextDoublePositive();
            
             if (fogRoll < fogChance && CurrentWeather.TodayWeather != Game1.weather_debris)
@@ -541,16 +542,20 @@ namespace ClimatesOfFerngillRebuild
                 CurrentWeather.WillFog = true;
 
                 OurFog.CreateFog(FogAlpha: .55f, AmbientFog: true, FogColor: (Color.White * 1.35f));
-                Game1.globalOutdoorLighting = .5f;
+                Game1.globalOutdoorLighting = .78f;                
 
                 if (Dice.NextDoublePositive() < .15)
                 {
                     OurFog.IsDarkFog();
-                    Game1.outdoorLight = new Color(227, 222, 211);
+
+                    if (WeatherOpt.Verbose)
+                        Monitor.Log("Dark fog!");
+
+                    Game1.outdoorLight = new Color(214, 210, 208);
                 }
                 else
                 {
-                    Game1.outdoorLight = new Color(179, 176, 171);
+                    Game1.outdoorLight = new Color(180, 155, 110);
                 }
 
                 double FogTimer = Dice.NextDoublePositive();
