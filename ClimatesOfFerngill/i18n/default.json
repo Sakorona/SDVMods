@@ -20,8 +20,10 @@
   "hud-text.desc_sick": "You have caught a cold...!",
   "hud-text.desc_flu": "You have caught the flu and better take some medicine soon!",
   "hud-text.desc_frost_killed": "Some of your crops died in the night due to the cold..!",
-  "hud-text.desc_heatwave_dry" :"The extreme heat has caused some of your crops to become dry....!",
-  "hud-text.desc_heatwave_kill" : "The extreme heat has caused some of your crops to dry out. If you don't water them, they'll die!",
+  "hud-text.desc_heatwave_dry": "The extreme heat has caused some of your crops to become dry....!",
+  "hud-text.desc_heatwave_kill": "The extreme heat has caused some of your crops to dry out. If you don't water them, they'll die!",
+  "hud-text.desc_heatwave_cropdeath": "Some of the crops have died due to lack of water!",
+  "hud-text.desc_cold_removed": "You feel the medicine clearing your sickness",
 
   //Lunar Messages
   "moon-text.phase-full": "Full Moon",
@@ -75,14 +77,14 @@
   "weather-desc.summer_debris2": "a wind blowing through today will bring some small relief from the heat",
   "weather-desc.summer_wedding1": "a warm summer Stardew Valley wedding",
   "weather-desc.summer_wedding2": "a clear ideal summer Stardew Valley wedding",
-  
+
   "weather-desc.fall_sunny1": "a cool autumn day",
   "weather-desc.fall_rainy1": "chilly showers",
   "weather-desc.fall_stormy1": "a blustery thundery day ",
   "weather-desc.fall_snowy1": "an early snow",
   "weather-desc.fall_debris1": "a day full of whirling leaves",
   "weather-desc.fall_wedding1": "a cool pleasent Stardew Valley wedding",
-  
+
   "weather-desc.winter_sunny1": "a cold sunny day",
   "weather-desc.winter_rainy1": "too warm for snow, a freezing rain",
   "weather-desc.winter_stormy1": "a rare winter thunderstorm ",
@@ -94,9 +96,9 @@
   "weather-desc.winter_thundersnow1": "Rare Thundersnow across the valley and outlying Zuzu City today.",
   "weather-desc.summer_drylightning1": "Abnormally dry conditions mean that there will be lighting with no rain across the valley.",
   "weather-desc.nonsummer_drylightning1": "Unusual dry conditions are passing through the valley, which means we can expect lightning but no rain",
-  "weather-desc.fall_frost1": "Early touch of the upcoming winter is passing through, with frosts expected across Raven's Point and Stardew Valley",
-  "weather-desc.spring_frost1": "A late touch of the previous winter is passing through, with frosts expected across Raven's Point and Stardew Valley",
-  "weather-desc.summer_heatwave1": "Massive heatwave is boiling through the region. Stay hydrated.",
+  "weather-desc.fall_frost1": "An unseasonably early frost is expected across Raven's Rock through Stardew Valley.",
+  "weather-desc.spring_frost1": "An unseasonably late frost is expected across Stardew Valley through Point Drake.",
+  "weather-desc.summer_heatwave1": "A massive heatwave is boiling through the region. Stay hydrated.",
   "weather-desc.summer_litheatwave1": "Massive heatwave is boiling through the region with dry lightning throughout the day. Stay hydrated and watch for lightning",
   "weather-menu.dangerous_condition": "FRCS Alert: A dangerous condition has been observed for the Zuzu City and Pelican Town areas: {{condition}}",
 

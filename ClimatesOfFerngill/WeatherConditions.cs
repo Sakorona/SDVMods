@@ -61,16 +61,6 @@ namespace ClimatesOfFerngillRebuild
                 return false;
         }
 
-        public void ForceFrost()
-        {
-            UnusualWeather = SpecialWeather.Frost;
-        }
-
-        public void ForceHeatwave()
-        {
-            UnusualWeather = SpecialWeather.Heatwave;
-        }
-
         public void OnNewDay()
         {
             TodayWeather = 0;
@@ -211,15 +201,22 @@ namespace ClimatesOfFerngillRebuild
             return retString;
         }
 
-        public bool IsHeatwave()
+        public static bool IsHeatwave(SpecialWeather cond)
         {
-            if (UnusualWeather == SpecialWeather.DryLightningAndHeatwave || UnusualWeather == SpecialWeather.Heatwave)
+            if (cond == SpecialWeather.DryLightningAndHeatwave || cond == SpecialWeather.Heatwave)
                 return true;
             else
                 return false;
         }
-        
-        
+
+        public static bool IsFrost(SpecialWeather cond)
+        {
+            if (cond == SpecialWeather.Frost)
+                return true;
+            else
+                return false;
+        }
+
 
 
         public string GetHazardousText(ITranslationHelper Helper, SDate Date, MersenneTwister Dice)

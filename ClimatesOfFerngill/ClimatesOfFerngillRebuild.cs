@@ -77,9 +77,7 @@ namespace ClimatesOfFerngillRebuild
         private Sprites.Icons OurIcons { get; set; }
 
         private StringBuilder DebugOutput;
-
         private CustomWeather WeatherCntrl;
-
         private SDVMoon OurMoon;
 
         //for stamina management
@@ -109,13 +107,8 @@ namespace ClimatesOfFerngillRebuild
         private static GameLocation.afterQuestionBehavior Callback;
         private static TV Target;
 
-        private bool wasEating = false;
-        private int prevToEatStack = -1;
-
-
         /// <summary> Main mod function. </summary>
         /// <param name="helper">The helper. </param>
-
         public override void Entry(IModHelper helper)
         {
             WeatherOpt = helper.ReadConfig<WeatherConfig>();
@@ -126,7 +119,7 @@ namespace ClimatesOfFerngillRebuild
             OurMoon = new SDVMoon(Dice);
             OurIcons = new Sprites.Icons(Helper.Content);
             CropList = new List<Vector2>();
-            StaminaMngr = new StaminaDrain(WeatherOpt, Helper.Translation);
+            StaminaMngr = new StaminaDrain(WeatherOpt, Helper.Translation, Monitor);
             queuedMsg = null;
 
             TicksOutside = 0;
@@ -157,14 +150,12 @@ namespace ClimatesOfFerngillRebuild
             helper.ConsoleCommands
                   .Add("weather_settommorowweather", helper.Translation.Get("console-text.desc_tmrweather"), TmrwWeatherChangeFromConsole)
                   .Add("weather_setweather", helper.Translation.Get("console-text.desc_setweather"), WeatherChangeFromConsole)
-                  .Add("debug_changecondt", "Changes conditions. Debug function.", DebugChgCondition)
-                  .Add("debug_forceheatwave", "Force heatwave. Debug function", ForceHeatwave)
-                  .Add("debug_forcefrost", "Force frost. Debug function", ForceFrost);
+                  .Add("debug_changecondt", "Changes conditions. Debug function.", DebugChgCondition);
         }
 
         private void MenuEvents_MenuChanged(object sender, EventArgsClickableMenuChanged e)
         {
-                TryHookTelevision();
+            TryHookTelevision();
         }
 
         /// <summary>
@@ -181,7 +172,6 @@ namespace ClimatesOfFerngillRebuild
 
                 foreach (KeyValuePair<Vector2, TerrainFeature> tf in f.terrainFeatures)
                 {
-
                     if (count >= maxCrops)
                         break;
 
@@ -203,15 +193,16 @@ namespace ClimatesOfFerngillRebuild
                         hd.crop.dead = true;
                     }
 
-                    queuedMsg = new HUDMessage(Helper.Translation.Get("hud - text.desc_frost_killed"));
+                    queuedMsg = new HUDMessage(Helper.Translation.Get("hud-text.desc_frost_killed"), Color.SeaGreen, 5250f, true)
+                    {
+                        whatType = 2
+                    };
                 }
             }
 
             //moon works after frost does
             OurMoon.HandleMoonAtSleep(Game1.getFarm(), Helper.Translation);
         }
-
-
 
         #region TVOverride
         public void TryHookTelevision()
@@ -287,7 +278,7 @@ namespace ClimatesOfFerngillRebuild
             }
 
             //Tomorrow weather
-            tvText += tvText = Helper.Translation.Get("tv.desc-tomorrow", new
+            tvText += Helper.Translation.Get("tv.desc-tomorrow", new
             {
                 temperature = CurrentWeather.GetTomorrowTemperatureString(WeatherOpt.ShowBothScales, Helper.Translation),
                 weathercondition = CurrentWeather.GetDescText(CurrentWeather.TomorrowWeather, SDate.Now().AddDays(1), Dice, Helper.Translation)
@@ -308,46 +299,37 @@ namespace ClimatesOfFerngillRebuild
 
             OurFog.MoveFog();
 
-            if (Game1.isEating != wasEating)
-            {
-                if (!Game1.isEating)
+            if (Game1.isEating)
+            { 
+                StardewValley.Object obj = Game1.player.itemToEat as StardewValley.Object;
+
+                if (obj.ParentSheetIndex == 351)
                 {
-                    // Apparently this happens when the ask to eat dialog opens, but they pressed no.
-                    // So make sure something was actually consumed.
-                    if (prevToEatStack != -1 && (prevToEatStack - 1 == Game1.player.itemToEat.Stack))
-                    {
-                        StardewValley.Object obj = Game1.player.itemToEat as StardewValley.Object;
-                        string[] info = Game1.objectInformation[obj.ParentSheetIndex].Split('/');
+                    StaminaMngr.ClearDrain();
+                }
 
-                        if (obj.ParentSheetIndex == 351)
-                        {
-                            StaminaMngr.ClearDrain();
-                        }
-
-                        if (WeatherOpt.Verbose)
-                        {
-                            Monitor.Log("Eating:" + Game1.isEating);
-                            Monitor.Log("prev:" + prevToEatStack);
-                            Monitor.Log("I:" + Game1.player.itemToEat + " " + ((Game1.player.itemToEat != null) ? Game1.player.itemToEat.getStack() : -1));
-                            Monitor.Log("A:" + Game1.player.ActiveObject + " " + ((Game1.player.ActiveObject != null) ? Game1.player.ActiveObject.getStack() : -1));
-                        }
-
-                        prevToEatStack = (Game1.player.itemToEat != null ? Game1.player.itemToEat.Stack : -1);
-                    }
+                if (WeatherOpt.Verbose)
+                {
+                    Monitor.Log($"Eating: {Game1.isEating} with object index {obj.ParentSheetIndex}");
                 }
             }
-            wasEating = Game1.isEating;
 
             if (WeatherOpt.StormTotemChange)
             {
-                if (Game1.weatherForTomorrow != (int)EndWeather && !RainTotemUsedToday)
+                if (Game1.weatherForTomorrow != EndWeather && !RainTotemUsedToday)
                 {
+                    if (WeatherOpt.Verbose)
+                    {
+                        Monitor.Log($"The current weather for tommorow is {Game1.weatherForTomorrow} with the previously set {EndWeather}");
+                        Monitor.Log($"Rain totem set is {RainTotemUsedToday}");
+                    }
+
                     RainTotemUsedToday = true;
 
                     if (Dice.NextDoublePositive() <= GameClimate.GetStormOdds(SDate.Now().AddDays(1), Dice, DebugOutput))
                     {
                         Game1.weatherForTomorrow = Game1.weather_lightning;
-                        Game1.addHUDMessage(new HUDMessage(Helper.Translation.Get("hud-text.desc_stormtotem")));
+                        SDVUtilities.ShowMessage(Helper.Translation.Get("hud-text.desc_stormtotem"));
                     }
                 }
             }
@@ -357,10 +339,8 @@ namespace ClimatesOfFerngillRebuild
                 TicksOutside++;
             }
 
-            TicksTotal++;
-            
+            TicksTotal++;            
         }
-
 
         private void TenMinuteUpdate(object sender, EventArgsIntChanged e)
         {
@@ -385,7 +365,7 @@ namespace ClimatesOfFerngillRebuild
             //frost works at night, heatwave works during the day
             if (Game1.timeOfDay == 1700)
             {
-                if (CurrentWeather.IsHeatwave())
+                if (WeatherConditions.IsHeatwave(CurrentWeather.UnusualWeather))
                 {
                     ExpireTime = 2000;
                     Farm f = Game1.getFarm();
@@ -435,10 +415,17 @@ namespace ClimatesOfFerngillRebuild
                 }
 
                 if (cDead)
-                    SDVUtilities.ShowMessage("Some of the crops have died due to lack of water!");
+                    SDVUtilities.ShowMessage(Helper.Translation.Get("hud-text.desc_heatwave_cropdeath"));
             }
 
+            if (WeatherOpt.Verbose)
+                Monitor.Log("Checking stamina");
+
+            float oldStamina = Game1.player.stamina;
             Game1.player.stamina += StaminaMngr.TenMinuteTick(CurrentWeather.UnusualWeather, TicksOutside, TicksTotal);
+
+            if (WeatherOpt.Verbose)
+                Monitor.Log($"The stamina after the check is {Game1.player.stamina}, changed from {oldStamina}");
 
             if (Game1.player.stamina <= 0)
                 SDVUtilities.FaintPlayer();
@@ -541,8 +528,7 @@ namespace ClimatesOfFerngillRebuild
 
                 CurrentWeather.WillFog = true;
 
-                OurFog.CreateFog(FogAlpha: .55f, AmbientFog: true, FogColor: (Color.White * 1.35f));
-                Game1.globalOutdoorLighting = .78f;                
+                OurFog.CreateFog(FogAlpha: .55f, AmbientFog: true, FogColor: (Color.White * 1.35f));               
 
                 if (Dice.NextDoublePositive() < .15)
                 {
@@ -794,23 +780,12 @@ namespace ClimatesOfFerngillRebuild
             }
 
             return false;
-    }
-
+        }
 
         /* **************************************************************
          * console commands
          * **************************************************************
          */
-
-        private void ForceFrost(string arg1, string[] arg2)
-        {
-            CurrentWeather.ForceFrost();
-        }
-
-        private void ForceHeatwave(string arg1, string[] arg2)
-        {
-            CurrentWeather.ForceHeatwave();
-        }
 
         /// <summary>
         /// This function changes the weather (Console Command)

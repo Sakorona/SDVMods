@@ -61,22 +61,18 @@ namespace ClimatesOfFerngillRebuild
                     if (time == (FogExpirTime - 30).ReturnIntTime())
                     {
                         if (debug) Monitor.Log("Now at T-30 minutes");
-
-                        Game1.globalOutdoorLighting = .98f;
                         Game1.outdoorLight = new Color(190, 188, 186);
                     }
 
                     if (time == (FogExpirTime - 20).ReturnIntTime())
                     {
                         if (debug) Monitor.Log("Now at T-20 minutes");
-                        Game1.globalOutdoorLighting = .99f;
                         Game1.outdoorLight = new Color(159, 156, 151);
                     }
 
                     if (time == (FogExpirTime - 10).ReturnIntTime())
                     {
                         if (debug) Monitor.Log("Now at T-10 minutes");
-                        Game1.globalOutdoorLighting = 1f;
                         Game1.outdoorLight = new Color(110, 109, 107);
                     }
                 }
@@ -85,14 +81,12 @@ namespace ClimatesOfFerngillRebuild
                     if (time == (FogExpirTime - 30).ReturnIntTime())
                     {
                         if (debug) Monitor.Log("Now at T-30 minutes");
-                        Game1.globalOutdoorLighting = .89f;
                         Game1.outdoorLight = new Color(168, 142, 99);
                     }
 
                     if (time == (FogExpirTime - 20).ReturnIntTime())
                     {
                         if (debug) Monitor.Log("Now at T-20 minutes");
-                        Game1.globalOutdoorLighting = .92f;
                         Game1.outdoorLight = new Color(117, 142, 99);
 
                     }
@@ -100,18 +94,16 @@ namespace ClimatesOfFerngillRebuild
                     if (time == (FogExpirTime - 10).ReturnIntTime())
                     {
                         if (debug) Monitor.Log("Now at T-10 minutes");
-                        Game1.globalOutdoorLighting = .96f;
                         Game1.outdoorLight = new Color(110, 109, 107);
                     }
                 }
 
                 //it helps if you implement the fog cutoff!
-                if (time == FogExpirTime.ReturnIntTime())
+                if (time >= FogExpirTime.ReturnIntTime())
                 {
                     if (debug) Monitor.Log("Now at T-0 minutes");
                     this.AmbientFog = false;
                     this.FogTypeDark = false;
-                    Game1.globalOutdoorLighting = 1f;
                     Game1.outdoorLight = Color.White;
                     FogAlpha = 0f; //fixes it lingering.
                 }

@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
-VisualStudioVersion = 15.0.26403.0
+VisualStudioVersion = 15.0.26730.16
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SolarEclipseEvent", "SolarEclipseEvent\SolarEclipseEvent.csproj", "{B932C1FD-CAC3-4A8C-8119-8D156F8CEB96}"
 EndProject
@@ -24,8 +24,6 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TreeOverhaul", "TreeOverhaul\TreeOverhaul.csproj", "{2CDC5732-A8E9-44C4-A9E0-8B6EF3B859EE}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ClimatesOfFerngill", "ClimatesOfFerngill\ClimatesOfFerngill.csproj", "{251AC91D-397E-42AF-925D-3C7D1A9C72D5}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "old_ClimatesOfFerngill", "OldClimateOfFerngill\old_ClimatesOfFerngill.csproj", "{D0F25EF3-15F0-4CC6-849A-C2E9B1BBAAB1}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CustomizableCartRedux", "CustomizableCartRedux\CustomizableCartRedux.csproj", "{288636BE-8AE8-4C50-A07D-18223377BF98}"
 EndProject
@@ -59,10 +57,6 @@ Global
 		{251AC91D-397E-42AF-925D-3C7D1A9C72D5}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{251AC91D-397E-42AF-925D-3C7D1A9C72D5}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{251AC91D-397E-42AF-925D-3C7D1A9C72D5}.Release|Any CPU.Build.0 = Release|Any CPU
-		{D0F25EF3-15F0-4CC6-849A-C2E9B1BBAAB1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{D0F25EF3-15F0-4CC6-849A-C2E9B1BBAAB1}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{D0F25EF3-15F0-4CC6-849A-C2E9B1BBAAB1}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{D0F25EF3-15F0-4CC6-849A-C2E9B1BBAAB1}.Release|Any CPU.Build.0 = Release|Any CPU
 		{288636BE-8AE8-4C50-A07D-18223377BF98}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{288636BE-8AE8-4C50-A07D-18223377BF98}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{288636BE-8AE8-4C50-A07D-18223377BF98}.Release|Any CPU.ActiveCfg = Release|Any CPU
@@ -70,5 +64,8 @@ Global
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {1EB72F81-CEFC-4B96-86E3-BAFF4280E4A1}
 	EndGlobalSection
 EndGlobal
