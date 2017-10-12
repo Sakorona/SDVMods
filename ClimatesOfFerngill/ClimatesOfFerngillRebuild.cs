@@ -96,7 +96,6 @@ namespace ClimatesOfFerngillRebuild
         /// This is used to allow the menu to revert back to a previous menu
         /// </summary>
         private IClickableMenu PreviousMenu;
-        private bool CustomTV;
 
         //tv overloading
         private static FieldInfo Field = typeof(GameLocation).GetField("afterQuestion", BindingFlags.Instance | BindingFlags.NonPublic);
@@ -122,7 +121,6 @@ namespace ClimatesOfFerngillRebuild
             CropList = new List<Vector2>();
             StaminaMngr = new StaminaDrain(WeatherOpt, Helper.Translation, Monitor);
             queuedMsg = null;
-            CustomTV = false;
 
             TicksOutside = 0;
             TicksTotal = 0;
@@ -148,16 +146,6 @@ namespace ClimatesOfFerngillRebuild
             ControlEvents.KeyPressed += (sender, e) => this.ReceiveKeyPress(e.KeyPressed, this.WeatherOpt.Keyboard);
             MenuEvents.MenuClosed += (sender, e) => this.ReceiveMenuClosed(e.PriorMenu);
 
-            //compatbility.
-            if (Helper.ModRegistry.IsLoaded("Platonymous.CustomTV"))
-            {
-                string methodName = "removeChannel";
-                Type type = Type.GetType("CustomTV.CustomTVMod");
-                MethodInfo method = type.GetMethod(methodName, BindingFlags.Static | BindingFlags.Public);
-
-                
-            }
-
             //console commands
             helper.ConsoleCommands
                   .Add("weather_settommorowweather", helper.Translation.Get("console-text.desc_tmrweather"), TmrwWeatherChangeFromConsole)
@@ -167,8 +155,7 @@ namespace ClimatesOfFerngillRebuild
 
         private void MenuEvents_MenuChanged(object sender, EventArgsClickableMenuChanged e)
         {
-            if (!CustomTV)
-                TryHookTelevision();
+            TryHookTelevision();
         }
 
         /// <summary>
