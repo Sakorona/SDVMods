@@ -1,7 +1,11 @@
-﻿using System;
-using System.IO;
-using System.Text;
+﻿#region headers
+using System;
 using System.Collections.Generic;
+using System.IO;
+using System.Linq;
+using System.Reflection;
+using System.Text;
+
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Input;
 
@@ -10,17 +14,16 @@ using TwilightCore.StardewValley;
 using TwilightCore.PRNG;
 
 using StardewValley;
-using StardewModdingAPI;
-using StardewModdingAPI.Events;
-using StardewModdingAPI.Utilities;
 using StardewValley.Locations;
 using StardewValley.Menus;
 using StardewValley.Objects;
-using SFarmer = StardewValley.Farmer;
-
-using Microsoft.Xna.Framework.Graphics;
-using System.Reflection;
 using StardewValley.TerrainFeatures;
+
+using StardewModdingAPI;
+using StardewModdingAPI.Events;
+using StardewModdingAPI.Utilities;
+using SFarmer = StardewValley.Farmer;
+#endregion
 
 namespace ClimatesOfFerngillRebuild
 {
@@ -50,7 +53,6 @@ namespace ClimatesOfFerngillRebuild
 
         /// <summary> The options file </summary>
         private WeatherConfig WeatherOpt { get; set; }
-        public bool RainTotemUsedToday { get; private set; }
 
         /// <summary> The pRNG object </summary>
         private MersenneTwister Dice;
@@ -65,11 +67,6 @@ namespace ClimatesOfFerngillRebuild
         /// Our fog object.
         /// </summary>
         private FerngillFog OurFog;
-
-        /// <summary>
-        /// Tracker to track if changes happened to weahter
-        /// </summary>
-        private int EndWeather;
 
         /// <summary>
         /// This is used to display icons on the menu
@@ -114,24 +111,23 @@ namespace ClimatesOfFerngillRebuild
             WeatherOpt = helper.ReadConfig<WeatherConfig>();
             Dice = new MersenneTwister();
             OurFog = new FerngillFog();
+            CurrentWeather = new WeatherConditions();
             WeatherCntrl = new CustomWeather();
             DebugOutput = new StringBuilder();
             OurMoon = new SDVMoon(Dice);
             OurIcons = new Sprites.Icons(Helper.Content);
             CropList = new List<Vector2>();
             StaminaMngr = new StaminaDrain(WeatherOpt, Helper.Translation, Monitor);
-            queuedMsg = null;
 
+            queuedMsg = null;
+            Vector2 snowPos = Vector2.Zero;
             TicksOutside = 0;
             TicksTotal = 0;
             ExpireTime = 0;
 
             if (WeatherOpt.Verbose) Monitor.Log($"Loading climate type: {WeatherOpt.ClimateType} from file", LogLevel.Trace);
 
-            string path = Path.Combine("data", "Weather", WeatherOpt.ClimateType + ".json");
-            GameClimate = helper.ReadJsonFile<FerngillClimate>(path);
-
-            CurrentWeather = new WeatherConditions();
+            GameClimate = helper.ReadJsonFile<FerngillClimate>(Path.Combine("data", "Weather", WeatherOpt.ClimateType + ".json"));      
 
             //subscribe to events
             TimeEvents.AfterDayStarted += HandleNewDay;
@@ -141,7 +137,6 @@ namespace ClimatesOfFerngillRebuild
             GameEvents.UpdateTick += CheckForChanges;
             SaveEvents.AfterReturnToTitle += ResetMod;
             GraphicsEvents.OnPostRenderEvent += DrawObjects;
-            Vector2 snowPos = Vector2.Zero;
 
             ControlEvents.KeyPressed += (sender, e) => this.ReceiveKeyPress(e.KeyPressed, this.WeatherOpt.Keyboard);
             MenuEvents.MenuClosed += (sender, e) => this.ReceiveMenuClosed(e.PriorMenu);
@@ -155,6 +150,38 @@ namespace ClimatesOfFerngillRebuild
 
         private void MenuEvents_MenuChanged(object sender, EventArgsClickableMenuChanged e)
         {
+            if (e.NewMenu is DialogueBox box)
+            {
+                bool stormDialogue = false;
+                double odds = Dice.NextDoublePositive(), stormOdds = GameClimate.GetStormOdds(SDate.Now().AddDays(1), Dice, DebugOutput);
+                List<string> lines = Helper.Reflection.GetPrivateValue<List<string>>(box, "dialogues");
+                if (lines.FirstOrDefault() == Game1.content.LoadString("Strings\\StringsFromCSFiles:Object.cs.12822"))
+                {
+                    if (WeatherOpt.Verbose)
+                        Monitor.Log($"Rain totem interception firing with roll {odds.ToString("N3")} vs. odds {stormOdds.ToString("N3")}");
+
+                    // rain totem used, do your thing
+                    if (WeatherOpt.StormTotemChange)
+                    {
+                        if (odds <= stormOdds)
+                        {
+                            if (WeatherOpt.Verbose)
+                                Monitor.Log("Replacing rain with storm..");
+
+                            Game1.weatherForTomorrow = Game1.weather_lightning;
+                            stormDialogue = true;
+                        }
+                    }
+
+                    // change dialogue text
+                    lines.Clear();
+                    if (stormDialogue)
+                        lines.Add(Helper.Translation.Get("hud-text.desc_stormtotem"));
+                    else
+                        lines.Add(Game1.content.LoadString("Strings\\StringsFromCSFiles:Object.cs.12822"));
+                }
+            }
+
             TryHookTelevision();
         }
 
@@ -306,34 +333,7 @@ namespace ClimatesOfFerngillRebuild
                 StardewValley.Object obj = Game1.player.itemToEat as StardewValley.Object;
 
                 if (obj.ParentSheetIndex == 351)
-                {
                     StaminaMngr.ClearDrain();
-                }
-
-                if (WeatherOpt.Verbose)
-                {
-                    Monitor.Log($"Eating: {Game1.isEating} with object index {obj.ParentSheetIndex}");
-                }
-            }
-
-            if (WeatherOpt.StormTotemChange)
-            {
-                if (Game1.weatherForTomorrow != EndWeather && !RainTotemUsedToday)
-                {
-                    if (WeatherOpt.Verbose)
-                    {
-                        Monitor.Log($"The current weather for tommorow is {Game1.weatherForTomorrow} with the previously set {EndWeather}");
-                        Monitor.Log($"Rain totem set is {RainTotemUsedToday}");
-                    }
-
-                    RainTotemUsedToday = true;
-
-                    if (Dice.NextDoublePositive() <= GameClimate.GetStormOdds(SDate.Now().AddDays(1), Dice, DebugOutput))
-                    {
-                        Game1.weatherForTomorrow = Game1.weather_lightning;
-                        SDVUtilities.ShowMessage(Helper.Translation.Get("hud-text.desc_stormtotem"));
-                    }
-                }
             }
 
             if (Game1.currentLocation.isOutdoors)
@@ -420,14 +420,8 @@ namespace ClimatesOfFerngillRebuild
                     SDVUtilities.ShowMessage(Helper.Translation.Get("hud-text.desc_heatwave_cropdeath"));
             }
 
-            if (WeatherOpt.Verbose)
-                Monitor.Log("Checking stamina");
-
             float oldStamina = Game1.player.stamina;
             Game1.player.stamina += StaminaMngr.TenMinuteTick(CurrentWeather.UnusualWeather, TicksOutside, TicksTotal);
-
-            if (WeatherOpt.Verbose)
-                Monitor.Log($"The stamina after the check is {Game1.player.stamina}, changed from {oldStamina}");
 
             if (Game1.player.stamina <= 0)
                 SDVUtilities.FaintPlayer();
@@ -464,7 +458,6 @@ namespace ClimatesOfFerngillRebuild
             StaminaMngr.Reset();
             TicksOutside = 0;
             TicksTotal = 0;
-            RainTotemUsedToday = false;
         }
 
         private void HandleNewDay(object sender, EventArgs e)
@@ -520,7 +513,7 @@ namespace ClimatesOfFerngillRebuild
             double fogChance = GameClimate.GetClimateForDate(SDate.Now())
                                           .RetrieveOdds(Dice, "fog", SDate.Now().Day, DebugOutput);
 
-            fogChance = 1; //for testing purposes
+            //fogChance = 1; //for testing purposes
             double fogRoll = Dice.NextDoublePositive();
            
             if (fogRoll < fogChance && CurrentWeather.TodayWeather != Game1.weather_debris)
@@ -671,6 +664,7 @@ namespace ClimatesOfFerngillRebuild
                     Monitor.Log($"The game will force tomorrow. Aborting processing.", LogLevel.Trace);
 
                 //if (WeatherOpt.Verbose) Monitor.Log(DebugOutput.ToString());
+                CurrentWeather.TomorrowWeather = Game1.weatherForTomorrow; //this also needs to be set, self.
                 return;
             }
 
@@ -758,25 +752,26 @@ namespace ClimatesOfFerngillRebuild
                 Monitor.Log($"We've set the weather for Tomorrow. It is: {Game1.weatherForTomorrow}");
 
             CurrentWeather.TomorrowWeather = Game1.weatherForTomorrow; //would help if I updated this!
-
-            //set trackers
-            EndWeather = Game1.weatherForTomorrow;
         }
 
         private bool CheckForForceDay(SDate Target)
-        {           
-            if (Game1.year == 1 && Target.Season == "spring" && Target.Day == 3)
+        {
+
+            /* if (Game1.year == 1 && Target.Season == "spring" && Target.Day == 3)
             {
                 Game1.weatherForTomorrow = Game1.weather_rain;
+                if (WeatherOpt.Verbose)
+                    Monitor.Log($"Setting rain to WFT: {Game1.weatherForTomorrow}.");
                 return true;
-            }
+            } */
 
             foreach (KeyValuePair<SDate, int> entry in ForceDays)
             {
                 if (entry.Key.Day == Target.Day && entry.Key.Season == Target.Season)
                 {
+                    if (WeatherOpt.Verbose)
+                        Monitor.Log($"Setting {entry.Value}");
                     Game1.weatherForTomorrow = entry.Value;
-                    EndWeather = entry.Value; 
                     return true;
                 }
             }

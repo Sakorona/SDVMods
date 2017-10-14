@@ -46,7 +46,7 @@
   "weather-menu.opening": "This is Kylie from KWWX Radio. It is {{season}} {{day}}, and here is your weather report.",
   "weather-menu.temp_bothscales": "high {{highTempC}} C ({{highTempF}} F) with low {{lowTempC}} C ({{lowTempF}} F)",
   "weather-menu.temp_onlyscales": "high {{highTempC}} C with low {{lowTempC}} C",
-  "weather-menu.fore_today_notFest": "Today's weather is {{currentConditions}}. {{Temperature}}",
+  "weather-menu.fore_today_notFest": "Today's weather is {{currentConditions}} with {{Temperature}}",
   "weather-menu.fore_today_festival": "Today is the {{festival}}. It will be a sunny day with {{Temperature}}",
   "weather-menu.fore_tomorrow_notFest": "Tomorrow's weather will be {{currentConditions}} with {{Temperature}}",
   "weather-menu.fore_tomorrow_festival": "Tomorrow will be the {{festival}}. It's expected to be a sunny day with {{Temperature}}",
