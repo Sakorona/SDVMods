@@ -678,6 +678,11 @@ namespace ClimatesOfFerngillRebuild
             double windyDays = OddsForTheDay.RetrieveOdds(Dice, "debris", SDate.Now().AddDays(1).Day, DebugOutput);
             double stormDays = OddsForTheDay.RetrieveOdds(Dice, "storm", SDate.Now().AddDays(1).Day, DebugOutput);
 
+            /* if (WeatherOpt.Verbose)
+            {
+                Monitor.Log($"Odds are Rain: {rainDays.ToString("N3")}, Windy: {windyDays.ToString("N3")}, and Storm {stormDays.ToString("N3")}");
+            } */
+
             ProbabilityDistribution<string> WeatherDist = new ProbabilityDistribution<string>("sunny");
             WeatherDist.AddNewEndPoint(rainDays, "rain");
             WeatherDist.AddNewCappedEndPoint(windyDays, "debris");
