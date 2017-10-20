@@ -26,14 +26,21 @@ namespace TwilightCore
         }
 
         /// <summary>
-        /// Constructor
+        /// Constructor with option to enforce higher over lower
         /// </summary>
         /// <param name="l">Lower bound</param>
         /// <param name="h">Higher bound</param>
-        public RangePair(double l, double h)
+        public RangePair(double l, double h, bool EnforceHigherOverLower = false)
         {
             this.LowerBound = l;
             this.HigherBound = h;
+
+            if (this.LowerBound > this.HigherBound)
+            {
+                double temp = this.LowerBound;
+                this.LowerBound = this.HigherBound;
+                this.HigherBound = temp;                
+            }
         }
 
         /// <summary>
@@ -46,13 +53,21 @@ namespace TwilightCore
         }
 
         /// <summary>
-        /// Copy constructor
+        /// Copy constructor with option to enforce higher over lower.
         /// </summary>
         /// <param name="c">The object being copied</param>
-        public RangePair(RangePair c)
+        public RangePair(RangePair c, bool EnforceHigherOverLower = false)
         {
             this.LowerBound = c.LowerBound;
             this.HigherBound = c.HigherBound;
+
+            if (EnforceHigherOverLower == true && this.LowerBound > this.HigherBound)
+            {
+                double temp = 0;
+                temp = this.LowerBound;
+                this.LowerBound = this.HigherBound;
+                this.HigherBound = temp;
+            }
         }
 
         /// <summary>

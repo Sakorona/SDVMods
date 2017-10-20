@@ -1,4 +1,6 @@
-﻿using StardewModdingAPI;
+﻿using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
+using StardewModdingAPI;
 using StardewModdingAPI.Utilities;
 using StardewValley;
 using TwilightCore;
@@ -9,66 +11,67 @@ namespace ClimatesOfFerngillRebuild
 {
     public class WeatherConditions
     {
-        public RangePair TodayTemps { private set; get; }
+        //STATIC MEMBERS
+        public static bool IsHeatwave(SpecialWeather cond) => (cond == SpecialWeather.DryLightningAndHeatwave || cond == SpecialWeather.Heatwave);
+        public static bool IsFrost(SpecialWeather cond) => (cond == SpecialWeather.Frost);
+
+        //Instance Members
+        public RangePair TodayTemps { get; private set; }
         public int TodayWeather;
-
-        public RangePair TomorrowTemps { private set; get; }
+        public RangePair TomorrowTemps { get; private set; }
         public int TomorrowWeather;
-
-        public bool WillFog;
         public SpecialWeather UnusualWeather;
+
+        // Things needed for internal fog stuff.
+        private bool AmbientFog { get; set; }
+        private Rectangle FogSource = new Microsoft.Xna.Framework.Rectangle(640, 0, 64, 64);
+        private bool FogTypeDark { get; set; }
+        private Color FogColor { get; set; }
+        private float FogAlpha { get; set; }
+        private Vector2 FogPosition { get; set; }
+        private SDVTime FogExpirTime { get; set; }
+
+        //access control members
+        public bool IsFogVisible() => (AmbientFog);
+        public void SetTodayTemps(RangePair a) => TodayTemps = new RangePair(a, EnforceHigherOverLower: true);
+        public void SetTmrwTemps(RangePair a) => TomorrowTemps = new RangePair(a, EnforceHigherOverLower: true);
+        public bool IsDarkFog() => (IsFogVisible() && FogTypeDark);
+        public void SetFogExpirTime(SDVTime t) => FogExpirTime = t;
+        public SDVTime GetFogEndTime() => (FogExpirTime ?? new SDVTime(0600));
+        public bool IsDangerousWeather() => (UnusualWeather != SpecialWeather.None);
+
+        public double GetTodayHigh() => TodayTemps.HigherBound;
+        public double GetTodayLow() => TodayTemps.LowerBound;
+        public double GetTodayHighF() => ConvCtF(TodayTemps.HigherBound);
+        public double GetTodayLowF() => ConvCtF(TodayTemps.LowerBound);
+        public double GetTmrwHigh() => TomorrowTemps.HigherBound;
+        public double GetTmrwLow() => TomorrowTemps.LowerBound;
+        public double GetTmrwHighF() => ConvCtF(TomorrowTemps.HigherBound);
+        public double GetTmrwLowF() => ConvCtF(TomorrowTemps.LowerBound);
+        private double ConvCtF(double temp) => ((temp * 1.8) + 32);
+
+        public void ResetTodayTemps(double high, double low)
+        {
+            TodayTemps.HigherBound = high;
+            TodayTemps.LowerBound = low;
+        }
+
 
         public WeatherConditions()
         {
             UnusualWeather = SpecialWeather.None;
+            FogExpirTime = new SDVTime(600);
         }
 
-        public void SetTodayTemps(RangePair a)
-        {
-            TodayTemps = new RangePair();
-            if (a.LowerBound > a.HigherBound)
-            {
-                TodayTemps.HigherBound = a.LowerBound;
-                TodayTemps.LowerBound = a.HigherBound;
-            }
-            else
-            {
-                TodayTemps.HigherBound = a.HigherBound;
-                TodayTemps.LowerBound = a.LowerBound;
-            }
-        }
-
-        public void SetTmrwTemps(RangePair a)
-        {
-            TomorrowTemps = new RangePair();
-            if (a.LowerBound > a.HigherBound)
-            {
-                TomorrowTemps.HigherBound = a.LowerBound;
-                TomorrowTemps.LowerBound = a.HigherBound;
-            }
-            else
-            {
-                TomorrowTemps.HigherBound = a.HigherBound;
-                TomorrowTemps.LowerBound = a.LowerBound;
-            }
-        }
-
-        public bool IsDangerousWeather()
-        {
-            if (UnusualWeather != SpecialWeather.None)
-                return true;
-            else
-                return false;
-        }
-
+        
         public void OnNewDay()
         {
             TodayWeather = 0;
             TomorrowWeather = 0;
             UnusualWeather = SpecialWeather.None;
-            WillFog = false;
             TodayTemps = null;
             TomorrowTemps = null;
+            FogExpirTime = new SDVTime(600);
         }
 
         public void Reset()
@@ -77,27 +80,157 @@ namespace ClimatesOfFerngillRebuild
             TomorrowTemps = null;
             TodayWeather = 0;
             TomorrowWeather = 0;
-            WillFog = false;
             UnusualWeather = SpecialWeather.None;
+            FogTypeDark = false;
+            AmbientFog = false;
+            FogAlpha = 0f;
+            FogExpirTime = new SDVTime(0600);
         }
 
-        public void ResetTodayTemps(double high, double low)
+        // FOG SECTION.
+
+        /// <summary>
+        /// This resets the fog to null.
+        /// </summary>
+        public void ResetFog()
         {
-            TodayTemps.HigherBound = high;
-            TodayTemps.LowerBound = low;
+            FogTypeDark = false;
+            AmbientFog = false;
+            FogAlpha = 0f;
+            FogExpirTime = new SDVTime(0600);
         }
 
-        public double GetTodayHigh() => TodayTemps.HigherBound;
-        public double GetTodayLow() => TodayTemps.LowerBound;
-        public double GetTodayHighF() => ConvCtF(TodayTemps.HigherBound);
-        public double GetTodayLowF() => ConvCtF(TodayTemps.LowerBound);
+        public void InitFog(MersenneTwister Dice, WeatherConfig WeatherOpt, bool FogTypeDark = false)
+        {
+            this.FogColor = Color.White * 1.5f;
+            this.FogAlpha = 1f;
+            this.FogTypeDark = FogTypeDark;
+            this.AmbientFog = true;
 
-        public double GetTmrwHigh() => TomorrowTemps.HigherBound;
-        public double GetTmrwLow() => TomorrowTemps.LowerBound;
-        public double GetTmrwHighF() => ConvCtF(TomorrowTemps.HigherBound);
-        public double GetTmrwLowF() => ConvCtF(TomorrowTemps.LowerBound);
+            if (Dice.NextDoublePositive() < WeatherOpt.DarkFogChance &&
+                    (SDate.Now().Day != 1 && SDate.Now().Year != 1 && SDate.Now().Season != "spring"))
+            {
+                FogTypeDark = true;
+                Game1.outdoorLight = new Color(214, 210, 208);
+            }
+            else
+            {
+                Game1.outdoorLight = new Color(180, 155, 110);
+            }
 
-        private double ConvCtF(double temp) => ((temp * 1.8) + 32);
+            double FogTimer = Dice.NextDoublePositive();
+            this.FogExpirTime = new SDVTime(1200); //default
+
+            if (FogTimer > .75 && FogTimer <= .90)
+            {
+                FogExpirTime = new SDVTime(1120);
+            }
+            else if (FogTimer > .55 && FogTimer <= .75)
+            {
+                FogExpirTime = new SDVTime(1030);
+            }
+            else if (FogTimer > .30 && FogTimer <= .55)
+            {
+                FogExpirTime = new SDVTime(930);
+            }
+            else if (FogTimer <= .30)
+            {
+                FogExpirTime = new SDVTime(820);
+            }
+
+            this.FogExpirTime = FogExpirTime;
+        }
+
+        public void UpdateFog(int time, bool debug, IMonitor Monitor)
+        {
+            if (IsFogVisible())
+            {
+                if (FogTypeDark)
+                {
+                    if (time == (FogExpirTime - 30).ReturnIntTime())
+                    {
+                        if (debug) Monitor.Log("Now at T-30 minutes");
+                        Game1.outdoorLight = new Color(190, 188, 186);
+                    }
+
+                    if (time == (FogExpirTime - 20).ReturnIntTime())
+                    {
+                        if (debug) Monitor.Log("Now at T-20 minutes");
+                        Game1.outdoorLight = new Color(159, 156, 151);
+                    }
+
+                    if (time == (FogExpirTime - 10).ReturnIntTime())
+                    {
+                        if (debug) Monitor.Log("Now at T-10 minutes");
+                        Game1.outdoorLight = new Color(110, 109, 107);
+                    }
+                }
+                else
+                {
+                    if (time == (FogExpirTime - 30).ReturnIntTime())
+                    {
+                        if (debug) Monitor.Log("Now at T-30 minutes");
+                        Game1.outdoorLight = new Color(168, 142, 99);
+                    }
+
+                    if (time == (FogExpirTime - 20).ReturnIntTime())
+                    {
+                        if (debug) Monitor.Log("Now at T-20 minutes");
+                        Game1.outdoorLight = new Color(117, 142, 99);
+
+                    }
+
+                    if (time == (FogExpirTime - 10).ReturnIntTime())
+                    {
+                        if (debug) Monitor.Log("Now at T-10 minutes");
+                        Game1.outdoorLight = new Color(110, 109, 107);
+                    }
+                }
+
+                //it helps if you implement the fog cutoff!
+                if (time >= FogExpirTime.ReturnIntTime())
+                {
+                    if (debug) Monitor.Log("Now at T-0 minutes");
+                    this.AmbientFog = false;
+                    this.FogTypeDark = false;
+                    Game1.outdoorLight = Color.White;
+                    FogAlpha = 0f; //fixes it lingering.
+                }
+            }
+        }
+
+        public void DrawFog()
+        {
+            if (IsFogVisible())
+            {
+                Vector2 position = new Vector2();
+                float num1 = -64 * Game1.pixelZoom + (int)(FogPosition.X % (double)(64 * Game1.pixelZoom));
+                while (num1 < (double)Game1.graphics.GraphicsDevice.Viewport.Width)
+                {
+                    float num2 = -64 * Game1.pixelZoom + (int)(FogPosition.Y % (double)(64 * Game1.pixelZoom));
+                    while ((double)num2 < Game1.graphics.GraphicsDevice.Viewport.Height)
+                    {
+                        position.X = (int)num1;
+                        position.Y = (int)num2;
+                        Game1.spriteBatch.Draw(Game1.mouseCursors, position, new Microsoft.Xna.Framework.Rectangle?
+                            (FogSource), FogAlpha > 0.0 ? FogColor * FogAlpha : Color.Black * 0.95f, 0.0f, Vector2.Zero, Game1.pixelZoom + 1f / 1000f, SpriteEffects.None, 1f);
+                        num2 += 64 * Game1.pixelZoom;
+                    }
+                    num1 += 64 * Game1.pixelZoom;
+                }
+            }
+        }
+
+        public void MoveFog()
+        {
+            if (AmbientFog)
+            {
+                this.FogPosition = Game1.updateFloatingObjectPositionForMovement(FogPosition,
+                    new Vector2(Game1.viewport.X, Game1.viewport.Y), Game1.previousViewportPosition, -1f);
+                FogPosition = new Vector2((FogPosition.X + 0.5f) % (64 * Game1.pixelZoom),
+                    (FogPosition.Y + 0.5f) % (64 * Game1.pixelZoom));
+            }
+        }
 
         public void GetTodayWeather()
         {
@@ -123,6 +256,16 @@ namespace ClimatesOfFerngillRebuild
                 TodayWeather = Game1.weather_wedding;
         }
 
+        ///DESCRIPTION SECTION
+
+        /// <summary>
+        /// This returns a description for use in the weather menu
+        /// </summary>
+        /// <param name="weather">The weather being looked at</param>
+        /// <param name="Date">The date of the day</param>
+        /// <param name="Dice">Randomizer object</param>
+        /// <param name="Helper">Translation Helper</param>
+        /// <returns>The string describing the weather</returns>
         public string GetDescText(int weather, SDate Date, MersenneTwister Dice, ITranslationHelper Helper)
         {
             string retString = "";
@@ -199,22 +342,6 @@ namespace ClimatesOfFerngillRebuild
             }
 
             return retString;
-        }
-
-        public static bool IsHeatwave(SpecialWeather cond)
-        {
-            if (cond == SpecialWeather.DryLightningAndHeatwave || cond == SpecialWeather.Heatwave)
-                return true;
-            else
-                return false;
-        }
-
-        public static bool IsFrost(SpecialWeather cond)
-        {
-            if (cond == SpecialWeather.Frost)
-                return true;
-            else
-                return false;
         }
 
         public string GetHazardousText(ITranslationHelper Helper, SDate Date, MersenneTwister Dice)

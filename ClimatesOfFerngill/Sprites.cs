@@ -22,12 +22,14 @@ namespace ClimatesOfFerngillRebuild
         /// <summary> Sprites used for drawing various weather stuff </summary>
         public class Icons
         {
-           public Texture2D source;
+            public Texture2D source;
+            public static Texture2D source2;
 
-           public Icons(IContentHelper helper)
-           {
+            public Icons(IContentHelper helper)
+            {
                 source = helper.Load<Texture2D>("Assets\\climatesheet2.png");
-           }
+                source2 = Game1.mouseCursors;
+            }
 
             public Rectangle GetMoonSprite(MoonPhase moon)
             {
@@ -87,6 +89,13 @@ namespace ClimatesOfFerngillRebuild
             public static readonly Rectangle WeatherWindy = new Rectangle(180, 198, 35, 31);
             public static readonly Rectangle WeatherWedding = new Rectangle(221, 196, 37, 35);
             public static readonly Rectangle WeatherFestival = new Rectangle(260, 198, 42, 38);
+
+            /// <summary>A down arrow for scrolling content.</summary>
+            public static readonly Rectangle DownArrow = new Rectangle(12, 76, 40, 44);
+
+            /// <summary>An up arrow for scrolling content.</summary>
+            public static readonly Rectangle UpArrow = new Rectangle(76, 72, 40, 44);
+            
         }
     }
 }

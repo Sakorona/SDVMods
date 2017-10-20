@@ -40,6 +40,21 @@ namespace ClimatesOfFerngillRebuild
         /// <summary> To da Moon, Princess!  </summary>
         private SDVMoon OurMoon;
 
+        /// <summary>The amount to scroll long content on each up/down scroll.</summary>
+        private readonly int ScrollAmount;
+
+        /// <summary>The clickable 'scroll up' icon.</summary>
+        private readonly ClickableTextureComponent ScrollUpButton;
+
+        /// <summary>The clickable 'scroll down' icon.</summary>
+        private readonly ClickableTextureComponent ScrollDownButton;
+
+        /// <summary>The maximum pixels to scroll.</summary>
+        private int MaxScroll;
+
+        /// <summary>The number of pixels to scroll.</summary>
+        private int CurrentScroll;
+
         /// <summary> The dice object.  </summary>
         private MersenneTwister Dice;
 
@@ -64,17 +79,22 @@ namespace ClimatesOfFerngillRebuild
         /// <summary>Construct an instance.</summary>
         /// <param name="monitor">Encapsulates logging and monitoring.</param>
         public WeatherMenu(IMonitor monitor, IReflectionHelper reflectionHelper, Sprites.Icons Icon, ITranslationHelper Helper, WeatherConditions weat, SDVMoon Termina, 
-               WeatherConfig ModCon, MersenneTwister Dice)
+               WeatherConfig ModCon, int scroll, MersenneTwister Dice)
         {
             // save data
             this.Monitor = monitor;
             this.Reflection = reflectionHelper;
             this.Helper = Helper;
             this.CurrentWeather = weat;
+            this.ScrollAmount = scroll;
             this.IconSheet = Icon;
             this.OurMoon = Termina;
             this.OurConfig = ModCon;
             this.Dice = Dice;
+
+            // add scroll buttons
+            this.ScrollUpButton = new ClickableTextureComponent(Rectangle.Empty, Sprites.Icons.source2, Sprites.Icons.UpArrow, 1);
+            this.ScrollDownButton = new ClickableTextureComponent(Rectangle.Empty, Sprites.Icons.source2, Sprites.Icons.DownArrow, 1);
 
             // update layout
             this.UpdateLayout();
@@ -83,6 +103,17 @@ namespace ClimatesOfFerngillRebuild
         /****
         ** Events
         ****/
+
+        /// <summary>The method invoked when the player scrolls the mouse wheel on the lookup UI.</summary>
+        /// <param name="direction">The scroll direction.</param>
+        public override void receiveScrollWheelAction(int direction)
+        {
+            if (direction > 0)    // positive number scrolls content up
+                this.ScrollUp();
+            else
+                this.ScrollDown();
+        }
+
         /// <summary>The method invoked when the player left-clicks on the lookup UI.</summary>
         /// <param name="x">The X-position of the cursor.</param>
         /// <param name="y">The Y-position of the cursor.</param>
@@ -128,6 +159,18 @@ namespace ClimatesOfFerngillRebuild
         /****
         ** Methods
         ****/
+
+        /// <summary>Scroll up the menu content by the specified amount (if possible).</summary>
+        public void ScrollUp()
+        {
+            this.CurrentScroll -= this.ScrollAmount;
+        }
+
+        /// <summary>Scroll down the menu content by the specified amount (if possible).</summary>
+        public void ScrollDown()
+        {
+            this.CurrentScroll += this.ScrollAmount;
+        }
 
         /// <summary>Handle a left-click from the player's mouse or controller.</summary>
         /// <param name="x">The x-position of the cursor.</param>
@@ -286,9 +329,19 @@ namespace ClimatesOfFerngillRebuild
                 Vector2 moonText = contentBatch.DrawTextBlock(font, 
                     weatherString, new Vector2(x + leftOffset, y + topOffset), wrapWidth);
 
+                // update max scroll
+                this.MaxScroll = Math.Max(0, (int)(topOffset - contentHeight + this.CurrentScroll));
+
+                // draw scroll icons
+                if (this.MaxScroll > 0 && this.CurrentScroll > 0)
+                    this.ScrollUpButton.draw(contentBatch);
+                if (this.MaxScroll > 0 && this.CurrentScroll < this.MaxScroll)
+                    this.ScrollDownButton.draw(spriteBatch);
+
                 // end draw
                 contentBatch.End();
             }
+            this.drawMouse(Game1.spriteBatch);
         }
 
 

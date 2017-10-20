@@ -1,7 +1,6 @@
 ﻿# Climates of Ferngill (Rebuild) You Can (Not) Have Weather
 
-Current Version (1 October 2017): v1.1.12 beta
-
+Current Version (20 October 2017): v1.1.12p3 beta
 
 ## What's New
 
@@ -20,17 +19,31 @@ This mod does the following:
 - Adds a weather menu option, which will display information about the weather
 - Changes the text for the TV weather channel
 - Going out in storms, blizzards, frosts and heatwaves is now more perilous, as it drains your stamina. Thankfully, 
-    a 'Muscle Redemy' has been found to cure even the hardiest flu
+    a 'Muscle Remedy' has been found to cure even the hardiest flu
 
 ## Known Issues
 - None at present
 
 ## To Do
-- Frost and Heatwaves are not yet implemented
+- Maybe add icons for some of the new weathers?
 
 ## Wishlist
 
 ## Changelog
+v1.1.12p3 
+- Text tweaks to make it flow properly
+- The TV and popup will have some lines about fog now
+- The popup will scroll.
+- The probability of dark fog will be lowered to 8.75% and configurable in the settings option. It will also now default to having day 1 not having dark fog (probably hard coded to prevent option bloat)
+- Cleaned up some of the code, removed some debug spam
+- Rain Totems override chance isn't just the first one now, although that means if you get it to set a Storm totem, the next use might override it..
+
+v1.1.12p2
+- removed fog testing code.
+
+v1.1.12p1
+- replaced the totem detection code to make it a bit more tolerant of fault
+
 v1.1.12 beta
 - fixed an issue with festivals
 - added stamina drains back in
@@ -97,3 +110,5 @@ over a certain value.). Valid 0-1, but it's recommended that this is kept low. D
  - 'DeadCropPercentage' - The amount of crops that a heatwave and frost can kill. (Note: Frost will kill more than heatwaves). Default: '.1' Valid range is 0 to 1.
 
  - 'CropResistance' - This represents the resistance an averagecrop has to heatwaves. Frosts have half this resistance. Default: '.4' Valid Range is 0 to 1.
+
+ - 'DarkFogChance' - This controls the chance of the darker fog appearing. Default is set to '.0875' (or a 1/8th chance if it's foggy it'll be dark fog.) Valid Range is 0 to 1.

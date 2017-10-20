@@ -1,9 +1,4 @@
 ﻿using StardewValley;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using TwilightCore.StardewValley;
 using StardewModdingAPI;
 
@@ -98,9 +93,9 @@ namespace ClimatesOfFerngillRebuild
             double amtOutside = ticksOutside / (double)ticksTotal;
             bool processStamina = false;
 
-            if (Config.Verbose)
+            /*if (Config.Verbose)
                 Monitor.Log($"Ticks: {ticksOutside}/{ticksTotal} with percentage {amtOutside.ToString("N3")} against" +
-                    $" target {Config.AffectedOutside}");         
+                    $" target {Config.AffectedOutside}");         */
 
             //poll for amount.
             // 1. Check to make sure you've been outside enough in this span AND that you've not been sick or can get sick
@@ -124,8 +119,7 @@ namespace ClimatesOfFerngillRebuild
 
             if (processStamina)
             { 
-                if (Config.Verbose)
-                    Monitor.Log("Affected time is valid, altering stamina");
+                //if (Config.Verbose) Monitor.Log("Affected time is valid, altering stamina");
 
                 if (HealthLevel != TodayDanger) {
 
@@ -161,7 +155,6 @@ namespace ClimatesOfFerngillRebuild
                         return 0;
                 }
             }
-
             return 0;
         }
 

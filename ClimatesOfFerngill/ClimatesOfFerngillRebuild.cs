@@ -64,11 +64,6 @@ namespace ClimatesOfFerngillRebuild
         private FerngillClimate GameClimate;
 
         /// <summary>
-        /// Our fog object.
-        /// </summary>
-        private FerngillFog OurFog;
-
-        /// <summary>
         /// This is used to display icons on the menu
         /// </summary>
         private Sprites.Icons OurIcons { get; set; }
@@ -110,7 +105,6 @@ namespace ClimatesOfFerngillRebuild
         {
             WeatherOpt = helper.ReadConfig<WeatherConfig>();
             Dice = new MersenneTwister();
-            OurFog = new FerngillFog();
             CurrentWeather = new WeatherConditions();
             WeatherCntrl = new CustomWeather();
             DebugOutput = new StringBuilder();
@@ -326,7 +320,7 @@ namespace ClimatesOfFerngillRebuild
             if (!Game1.hasLoadedGame)
                 return;
 
-            OurFog.MoveFog();
+            CurrentWeather.MoveFog();
 
             if (Game1.isEating)
             { 
@@ -349,7 +343,7 @@ namespace ClimatesOfFerngillRebuild
             if (!Game1.hasLoadedGame)
                 return;
 
-            OurFog.UpdateFog(e.NewInt, WeatherOpt.Verbose, Monitor);
+            CurrentWeather.UpdateFog(e.NewInt, WeatherOpt.Verbose, Monitor);
 
             if (Game1.currentLocation.isOutdoors &&
                 (CurrentWeather.UnusualWeather == SpecialWeather.Thundersnow ||
@@ -441,7 +435,7 @@ namespace ClimatesOfFerngillRebuild
                 return;
           
             if (Game1.currentLocation.IsOutdoors)
-                OurFog.DrawFog();
+                CurrentWeather.DrawFog();
 
             if (Game1.currentLocation.isOutdoors && !(Game1.currentLocation is Desert) && 
                 CurrentWeather.UnusualWeather == SpecialWeather.Blizzard) 
@@ -454,7 +448,6 @@ namespace ClimatesOfFerngillRebuild
             ExpireTime = 0;
             CropList.Clear(); 
             DebugOutput.Clear();
-            OurFog.Reset();
             StaminaMngr.Reset();
             TicksOutside = 0;
             TicksTotal = 0;
@@ -481,9 +474,6 @@ namespace ClimatesOfFerngillRebuild
 
             //Get starting value.
             int TmrwWeather = Game1.weatherForTomorrow;
-
-            //reset for new day
-            OurFog.Reset();
 
             //Set Temperature for today and tommorow. Get today's conditions.
             //   If tomorrow is set, move it to today, and autoregen tomorrow.
@@ -521,48 +511,10 @@ namespace ClimatesOfFerngillRebuild
                 if (WeatherOpt.Verbose)
                     Monitor.Log("Executing fog analysis.. ");
 
-                CurrentWeather.WillFog = true;
-
-                OurFog.CreateFog(FogAlpha: .55f, AmbientFog: true, FogColor: (Color.White * 1.35f));               
-
-                if (Dice.NextDoublePositive() < .15)
-                {
-                    OurFog.IsDarkFog();
-
-                    if (WeatherOpt.Verbose)
-                        Monitor.Log("Dark fog!");
-
-                    Game1.outdoorLight = new Color(214, 210, 208);
-                }
-                else
-                {
-                    Game1.outdoorLight = new Color(180, 155, 110);
-                }
-
-                double FogTimer = Dice.NextDoublePositive();
-                SDVTime FogExpirTime = new SDVTime(1200);
-
-                if (FogTimer > .75 && FogTimer <= .90)
-                {
-                    FogExpirTime = new SDVTime(1120);
-                }
-                else if (FogTimer > .55 && FogTimer <= .75)
-                {
-                    FogExpirTime = new SDVTime(1030);
-                }
-                else if (FogTimer > .30 && FogTimer <= .55)
-                {
-                    FogExpirTime = new SDVTime(930);
-                }
-                else if (FogTimer <= .30)
-                {
-                    FogExpirTime = new SDVTime(820);
-                }
-
-                OurFog.FogExpirTime = FogExpirTime;
+                CurrentWeather.InitFog(Dice, WeatherOpt);
 
                 if (WeatherOpt.Verbose)
-                    Monitor.Log($"With roll {fogRoll.ToString("N3")} against {fogChance}, there will be fog today until {OurFog.FogExpirTime}");
+                    Monitor.Log($"With roll {fogRoll.ToString("N3")} against {fogChance}, there will be fog today until {CurrentWeather.GetFogEndTime()}. Whether or not this is dark: {CurrentWeather.IsDarkFog()}");
             }
 
             //now special weathers
@@ -636,7 +588,6 @@ namespace ClimatesOfFerngillRebuild
                     CurrentWeather.UnusualWeather = SpecialWeather.Frost;
                 }
             }
-
 
             //if tomorrow is a festival or wedding, we need to set the weather and leave.
             if (Utility.isFestivalDay(Game1.dayOfMonth + 1, Game1.currentSeason))
@@ -761,15 +712,6 @@ namespace ClimatesOfFerngillRebuild
 
         private bool CheckForForceDay(SDate Target)
         {
-
-            /* if (Game1.year == 1 && Target.Season == "spring" && Target.Day == 3)
-            {
-                Game1.weatherForTomorrow = Game1.weather_rain;
-                if (WeatherOpt.Verbose)
-                    Monitor.Log($"Setting rain to WFT: {Game1.weatherForTomorrow}.");
-                return true;
-            } */
-
             foreach (KeyValuePair<SDate, int> entry in ForceDays)
             {
                 if (entry.Key.Day == Target.Day && entry.Key.Season == Target.Season)
@@ -780,7 +722,6 @@ namespace ClimatesOfFerngillRebuild
                     return true;
                 }
             }
-
             return false;
         }
 
@@ -810,7 +751,7 @@ namespace ClimatesOfFerngillRebuild
                 case "reset":
                     WeatherChangeFromConsole("blah", new string[] { "sunny" });
                     CurrentWeather.UnusualWeather = SpecialWeather.None;
-                    OurFog.Reset();
+                    CurrentWeather.ResetFog();
                     break;
                 case "thundersnow":
                     WeatherChangeFromConsole("blah", new string[] { "snow" });
@@ -821,8 +762,8 @@ namespace ClimatesOfFerngillRebuild
                     CurrentWeather.UnusualWeather = SpecialWeather.DryLightning;
                     break;
                 case "fog":
-                    OurFog.CreateFog(FogAlpha: 1f, AmbientFog: true, FogColor: Color.White * 1.35f);
-                    OurFog.FogExpirTime = new SDVTime(1900);
+                    CurrentWeather.InitFog(Dice, WeatherOpt);
+                    CurrentWeather.SetFogExpirTime(new SDVTime(1900));
                     break;
             }
         }
@@ -832,7 +773,7 @@ namespace ClimatesOfFerngillRebuild
         /// </summary>
         /// <param name="arg1">The command used</param>
         /// <param name="arg2">The console command parameters</param>
-            private void WeatherChangeFromConsole(string arg1, string[] arg2)
+        private void WeatherChangeFromConsole(string arg1, string[] arg2)
         {
             if (arg2.Length < 1)
                 return;
@@ -971,8 +912,8 @@ namespace ClimatesOfFerngillRebuild
         {
             // show menu
             this.PreviousMenu = Game1.activeClickableMenu;
-            Game1.activeClickableMenu = new WeatherMenu(Monitor, this.Helper.Reflection, OurIcons, Helper.Translation, 
-                CurrentWeather, OurMoon, WeatherOpt, Dice);
+            Game1.activeClickableMenu = new WeatherMenu(Monitor, this.Helper.Reflection, OurIcons, Helper.Translation, CurrentWeather, 
+                OurMoon, WeatherOpt, 160, Dice);
         }
 
         /// <summary>

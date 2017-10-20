@@ -2,7 +2,7 @@
 
 namespace ClimatesOfFerngillRebuild
 {
-    class WeatherConfig
+    public class WeatherConfig
     {
         //required options
         public Keys Keyboard { get; set; }
@@ -26,6 +26,7 @@ namespace ClimatesOfFerngillRebuild
         public bool SickMoreThanOnce { get; set; }
         public double DeadCropPercentage { get; set; }
         public double CropResistance { get; set; }
+        public double DarkFogChance { get; set; }
 
         public bool Verbose { get; set; }
         
@@ -52,6 +53,7 @@ namespace ClimatesOfFerngillRebuild
             ShowBothScales = true; //default setting.
             DeadCropPercentage = .1; //default setting
             CropResistance = .4; //default settting
+            DarkFogChance = .0875; //default setting
 
             // be able to deal with lightning strikes
 
