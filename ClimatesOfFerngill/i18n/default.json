@@ -46,20 +46,20 @@
   "weather-menu.opening": "This is Kylie from KWWX Radio. It is {{season}} {{day}}, and here is your weather report.",
   "weather-menu.temp_bothscales": "a high of {{highTempC}} C ({{highTempF}} F) with a low of {{lowTempC}} C ({{lowTempF}} F)",
   "weather-menu.temp_onlyscales": "a high of {{highTempC}} C with a low of {{lowTempC}} C",
-  "weather-menu.fore_today_notFest": "today's weather is {{currentConditions}} with {{Temperature}}",
-  "weather-menu.fore_today_festival": "today is the {{festival}}. It will be a sunny day with {{Temperature}}",
-  "weather-menu.fore_tomorrow_notFest": "tomorrow's weather will be {{currentConditions}} with {{Temperature}}",
-  "weather-menu.fore_tomorrow_festival": "tomorrow will be the {{festival}}. It's expected to be a sunny day with {{Temperature}}",
+  "weather-menu.fore_today_notFest": "Today's weather is {{currentConditions}} with {{Temperature}}",
+  "weather-menu.fore_today_festival": "Today is the {{festival}}. It will be a sunny day with {{Temperature}}",
+  "weather-menu.fore_tomorrow_notFest": "Tomorrow's weather will be {{currentConditions}} with {{Temperature}}",
+  "weather-menu.fore_tomorrow_festival": "Tomorrow will be the {{festival}}. It's expected to be a sunny day with {{Temperature}}",
 
   //Weather description
-  "weather-desc.spring_fog": "a lukewarm fog until {{time}} will blanket areas near the sea.",
-  "weather-desc.summer_fog": "a warm fog until {{time}} will blanket areas near the sea.",
-  "weather-desc.fall_fog": "a chilly fog until {{time}} will blanket areas near the sea.",
-  "weather-desc.winter_fog": "a cold fog until {{time}} will blanket areas near the sea.",
-  "weather-desc.spring_dfog": "a lukewarm dark fog until {{time}} will blanket areas near the sea.",
-  "weather-desc.summer_dfog": "a warm dark fog until {{time}} will blanket areas near the sea.",
-  "weather-desc.fall_dfog": "a chilly dark fog until {{time}} will blanket areas near the sea.",
-  "weather-desc.winter_dfog": "a cold dark fog until {{time}} will blanket areas near the sea.",
+  "weather-desc.spring_fog": "A lukewarm fog will blanket the Valley until {{time}}.",
+  "weather-desc.summer_fog": "A warm fog will blanket the Valley until {{time}}.",
+  "weather-desc.fall_fog": "A chilly fog will blanket the Valley until {{time}}.",
+  "weather-desc.winter_fog": "A cold fog will blanket the Valley until {{time}}.",
+  "weather-desc.spring_dfog": "A lukewarm thick fog will blanket the Valley until {{time}}.",
+  "weather-desc.summer_dfog": "A warm thick fog will blanket the Valley until {{time}} ",
+  "weather-desc.fall_dfog": "A chilly thick fog will blanket the Valley until {{time}}",
+  "weather-desc.winter_dfog": "A cold thick fog will blanket the Valley until {{time}}.",
 
   "weather-desc.spring_sunny1": "a nice warm sunny day outside",
   "weather-desc.spring_sunny2": "a warm bright day outside",
@@ -113,9 +113,9 @@
 
   //TV strings
   "tv.opening-desc": "...concludes the weather for Zuzu City.#Now, for Stardew Valley, ",
-  "tv.desc-today": "today's temperature will be {{temperature}}, with {{weathercondition}}.#",
-  "tv.desc-todayFog": "currently, fog blankets the area until {{time}} with {{temperature}} and {{weatherconditon for the rest of the day.#",
-  "tv.desc-todayDFog": "currently, dark fog blankets the area until {{time}} with {{temperature}} and {{weatherconditon for the rest of the day.#",
-  "tv.desc-tomorrow": "tomorrow's weather will be {{weathercondition}} with {{temperature}}",
-  "tv.desc-festival": "It will be a sunny day for the {{festival}} in Pelican town, with {{Temperature}}"
+  "tv.desc-today": "Today's temperature will be {{temperature}}, with {{weathercondition}}.#",
+  "tv.desc-todayFog": "currently, fog blankets the area until {{time}}. The day will become {{weathercondition}} with {{temperature}} for the rest of the day.#",
+  "tv.desc-todayDFog": "currently, thick fog blankets the area until {{time}}. The day will become {{weathercondition}} with {{temperature}} for the rest of the day.#",
+  "tv.desc-tomorrow": "Tomorrow's weather will be {{weathercondition}} with {{temperature}}",
+  "tv.desc-festival": "It will be a sunny day for the {{festival}} in Pelican Town, with {{temperature}}"
 }

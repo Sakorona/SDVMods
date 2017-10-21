@@ -287,25 +287,60 @@ namespace ClimatesOfFerngillRebuild
                 if (Utility.isFestivalDay(Game1.dayOfMonth, Game1.currentSeason))
                 {
                     tvText += Helper.Translation.Get("tv.desc-festival",
-                                  new { festival = SDVUtilities.GetFestivalName(), Temperature = CurrentWeather.GetTemperatureString(WeatherOpt.ShowBothScales, Helper.Translation)});
+                                  new { festival = SDVUtilities.GetFestivalName(), Temperature = CurrentWeather.GetTemperatureString(WeatherOpt.ShowBothScales, Helper.Translation) });
                 }
                 else
                 {
-
-                    tvText += Helper.Translation.Get("tv.desc-today", new
+                    if (CurrentWeather.IsFogVisible())
                     {
-                        temperature = CurrentWeather.GetTemperatureString(WeatherOpt.ShowBothScales, Helper.Translation),
-                        weathercondition = CurrentWeather.GetDescText(CurrentWeather.TodayWeather, SDate.Now(), Dice, Helper.Translation)
-                    });
+                        if (!CurrentWeather.IsDarkFog())
+                        {
+                            tvText += Helper.Translation.Get("tv.desc-todayFog", new
+                            {
+                                temperature = CurrentWeather.GetTemperatureString(WeatherOpt.ShowBothScales, Helper.Translation),
+                                weathercondition = CurrentWeather.GetDescText(CurrentWeather.TodayWeather, SDate.Now(), Dice, Helper.Translation),
+                                time = CurrentWeather.GetFogEndTime().ToString()
+                            });
+                        }
+                        else
+                        {
+                            tvText += Helper.Translation.Get("tv.desc-todayDFog", new
+                            {
+                                temperature = CurrentWeather.GetTemperatureString(WeatherOpt.ShowBothScales, Helper.Translation),
+                                weathercondition = CurrentWeather.GetDescText(CurrentWeather.TodayWeather, SDate.Now(), Dice, Helper.Translation),
+                                time = CurrentWeather.GetFogEndTime().ToString()
+                            });
+                        }
+
+                    }
+                    else
+                    {
+                        tvText += Helper.Translation.Get("tv.desc-today", new
+                        {
+                            temperature = CurrentWeather.GetTemperatureString(WeatherOpt.ShowBothScales, Helper.Translation),
+                            weathercondition = CurrentWeather.GetDescText(CurrentWeather.TodayWeather, SDate.Now(), Dice, Helper.Translation)
+                        });
+                    }
                 }
             }
 
             //Tomorrow weather
-            tvText += Helper.Translation.Get("tv.desc-tomorrow", new
+            if (Utility.isFestivalDay(SDate.Now().Day + 1, SDate.Now().Season))
             {
-                temperature = CurrentWeather.GetTomorrowTemperatureString(WeatherOpt.ShowBothScales, Helper.Translation),
-                weathercondition = CurrentWeather.GetDescText(CurrentWeather.TomorrowWeather, SDate.Now().AddDays(1), Dice, Helper.Translation)
-            });
+                tvText += Helper.Translation.Get("tv.desc-festival", new
+                {
+                    festival = SDVUtilities.GetTomorrowFestivalName(),
+                    temperature = CurrentWeather.GetTomorrowTemperatureString(WeatherOpt.ShowBothScales, Helper.Translation)
+                });
+            }
+            else
+            { 
+                tvText += Helper.Translation.Get("tv.desc-tomorrow", new
+                {
+                    temperature = CurrentWeather.GetTomorrowTemperatureString(WeatherOpt.ShowBothScales, Helper.Translation),
+                    weathercondition = CurrentWeather.GetDescText(CurrentWeather.TomorrowWeather, SDate.Now().AddDays(1), Dice, Helper.Translation)
+                });
+            }
 
             return tvText;
         }
@@ -503,7 +538,7 @@ namespace ClimatesOfFerngillRebuild
             double fogChance = GameClimate.GetClimateForDate(SDate.Now())
                                           .RetrieveOdds(Dice, "fog", SDate.Now().Day, DebugOutput);
 
-            //fogChance = 1; //for testing purposes
+            fogChance = 1; //for testing purposes
             double fogRoll = Dice.NextDoublePositive();
            
             if (fogRoll < fogChance && CurrentWeather.TodayWeather != Game1.weather_debris)
@@ -763,6 +798,11 @@ namespace ClimatesOfFerngillRebuild
                     break;
                 case "fog":
                     CurrentWeather.InitFog(Dice, WeatherOpt);
+                    CurrentWeather.SetFogExpirTime(new SDVTime(1900));
+                    break;
+                case "darkfog":
+                    CurrentWeather.InitFog(Dice, WeatherOpt);
+                    CurrentWeather.ForceDarkFog();
                     CurrentWeather.SetFogExpirTime(new SDVTime(1900));
                     break;
             }

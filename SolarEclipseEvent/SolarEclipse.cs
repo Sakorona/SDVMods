@@ -37,7 +37,6 @@ namespace SolarEclipseEvent
             if (IsEclipse && resetTicker > 0)
             {
                 Game1.globalOutdoorLighting = .5f;
-                //Game1.outdoorLight = nightColor;
                 Game1.ambientLight = nightColor;
                 Game1.currentLocation.switchOutNightTiles();
                 resetTicker = 0;

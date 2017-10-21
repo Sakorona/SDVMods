@@ -246,8 +246,13 @@ namespace ClimatesOfFerngillRebuild
                 device.ScissorRectangle = new Rectangle(x + gutter, y + gutter, (int)contentWidth, (int)contentHeight);
                 contentBatch.Begin(SpriteSortMode.Deferred, BlendState.NonPremultiplied, SamplerState.PointClamp, null, new RasterizerState { ScissorTestEnable = true });
 
-                // draw portrait
-                spriteBatch.Draw(IconSheet.source, new Vector2(x + leftOffset, y + topOffset), 
+                // scroll view
+                this.CurrentScroll = Math.Max(0, this.CurrentScroll); // don't scroll past top
+                this.CurrentScroll = Math.Min(this.MaxScroll, this.CurrentScroll); // don't scroll past bottom
+                topOffset -= this.CurrentScroll; // scrolled down == move text up
+
+                // draw weather icon
+                contentBatch.Draw(IconSheet.source, new Vector2(x + leftOffset, y + topOffset), 
                     IconSheet.GetWeatherSprite(CurrentWeather.TodayWeather), Color.White);
                 leftOffset += 72;
                 string weatherString = "";
@@ -257,9 +262,48 @@ namespace ClimatesOfFerngillRebuild
                 {
                     // draw high and low
                     {
-                        Vector2 descSize = contentBatch.DrawTextBlock(font, Helper.Get("weather-menu.opening", new { season = Game1.currentSeason, day = Game1.dayOfMonth }), 
+                        Vector2 descSize = contentBatch.DrawTextBlock(font, Helper.Get("weather-menu.opening", new { season = Game1.currentSeason, day = Game1.dayOfMonth }),
                             new Vector2(x + leftOffset, y + topOffset), wrapWidth);
                         topOffset += descSize.Y;
+                        if (CurrentWeather.IsFogVisible())
+                        {
+                            //fog display
+                            string fogString = "";
+
+                            switch (Game1.currentSeason)
+                            {
+                                case "spring":
+                                    if (CurrentWeather.IsDarkFog())
+                                        fogString = Helper.Get("weather-desc.spring_dfog", new { time = CurrentWeather.GetFogEndTime().ToString() });
+                                    else
+                                        fogString = Helper.Get("weather-desc.spring_fog", new { time = CurrentWeather.GetFogEndTime().ToString() });
+                                    break;
+                                case "summer":
+                                    if (CurrentWeather.IsDarkFog())
+                                        fogString = Helper.Get("weather-desc.summer_dfog", new { time = CurrentWeather.GetFogEndTime().ToString() });
+                                    else
+                                        fogString = Helper.Get("weather-desc.summer_fog", new { time = CurrentWeather.GetFogEndTime().ToString() });
+                                    break;
+                                case "fall":
+                                    if (CurrentWeather.IsDarkFog())
+                                        fogString = Helper.Get("weather-desc.fall_dfog", new { time = CurrentWeather.GetFogEndTime().ToString() });
+                                    else
+                                        fogString = Helper.Get("weather-desc.fall_fog", new { time = CurrentWeather.GetFogEndTime().ToString() });
+                                    break;
+                                case "winter":
+                                    if (CurrentWeather.IsDarkFog())
+                                        fogString = Helper.Get("weather-desc.winter_dfog", new { time = CurrentWeather.GetFogEndTime().ToString() });
+                                    else
+                                        fogString = Helper.Get("weather-desc.winter_fog", new { time = CurrentWeather.GetFogEndTime().ToString() });
+                                    break;
+                                default:
+                                    fogString = "ERROR";
+                                    break;
+                            }
+
+                            Vector2 fogSize = contentBatch.DrawTextBlock(font, fogString, new Vector2(x + leftOffset, y + topOffset), wrapWidth);
+                            topOffset += fogSize.Y;
+                        }
 
                         topOffset += lineHeight;
                         //build the temperature display
@@ -296,7 +340,7 @@ namespace ClimatesOfFerngillRebuild
                         else
                         {
                             weatherString = Helper.Get("weather-menu.fore_tomorrow_festival",
-                                new { festival = SDVUtilities.GetFestivalName(), Temperature = Temperature });
+                                new { festival = SDVUtilities.GetTomorrowFestivalName(), Temperature = Temperature });
                         }
 
                         Vector2 tomSize = contentBatch.DrawTextBlock(font, weatherString, new Vector2(x + leftOffset, y + topOffset), wrapWidth);
@@ -320,7 +364,7 @@ namespace ClimatesOfFerngillRebuild
                 }
 
                 //draw moon info
-                spriteBatch.Draw(IconSheet.source, new Vector2(x + 15, y + topOffset), 
+                contentBatch.Draw(IconSheet.source, new Vector2(x + 15, y + topOffset), 
                     IconSheet.GetMoonSprite(OurMoon.CurrPhase), Color.White);
 
                 weatherString = Helper.Get("moon-desc.desc_moonphase", 
@@ -328,6 +372,8 @@ namespace ClimatesOfFerngillRebuild
 
                 Vector2 moonText = contentBatch.DrawTextBlock(font, 
                     weatherString, new Vector2(x + leftOffset, y + topOffset), wrapWidth);
+
+                topOffset += lineHeight; //stop moon from being cut off.
 
                 // update max scroll
                 this.MaxScroll = Math.Max(0, (int)(topOffset - contentHeight + this.CurrentScroll));

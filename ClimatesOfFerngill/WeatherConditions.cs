@@ -40,6 +40,7 @@ namespace ClimatesOfFerngillRebuild
         public SDVTime GetFogEndTime() => (FogExpirTime ?? new SDVTime(0600));
         public bool IsDangerousWeather() => (UnusualWeather != SpecialWeather.None);
 
+        public void ForceDarkFog() => FogTypeDark = true;
         public double GetTodayHigh() => TodayTemps.HigherBound;
         public double GetTodayLow() => TodayTemps.LowerBound;
         public double GetTodayHighF() => ConvCtF(TodayTemps.HigherBound);
@@ -357,7 +358,7 @@ namespace ClimatesOfFerngillRebuild
                     break;
                 case SpecialWeather.DryLightning:
                     if (Date.Season != "summer")
-                    retString = Helper.Get("weather-desc.summer_thundersnow1");
+                    retString = Helper.Get("weather-desc.summer_drylightning1");
                     else
                     retString = Helper.Get("weather-desc.nonsummer_drylightning1");
                     break;

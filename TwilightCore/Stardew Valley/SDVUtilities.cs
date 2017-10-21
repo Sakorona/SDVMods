@@ -71,10 +71,10 @@ namespace TwilightCore.StardewValley
                     if (dayOfMonth == 28) return "Dance of the Moonlight Jellies";
                     break;
                 default:
-                    return "Festival";
+                    return $"Festival on {currentSeason} {dayOfMonth}";
             }
 
-            return "Festival";
+            return $"Festival on {currentSeason} {dayOfMonth} (failed switch)";
 
         }
 

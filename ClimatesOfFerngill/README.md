@@ -37,6 +37,8 @@ v1.1.12p3
 - The probability of dark fog will be lowered to 8.75% and configurable in the settings option. It will also now default to having day 1 not having dark fog (probably hard coded to prevent option bloat)
 - Cleaned up some of the code, removed some debug spam
 - Rain Totems override chance isn't just the first one now, although that means if you get it to set a Storm totem, the next use might override it..
+- fixed issue where festival name would never appear in the popup, and the wrong text was called for the TV.
+- fixed issue where summer drylightning tried to call for thundersnow (!)
 
 v1.1.12p2
 - removed fog testing code.
