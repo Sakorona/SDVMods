@@ -431,7 +431,7 @@ namespace ClimatesOfFerngillRebuild
         /// <param name="e">event params</param>
         private void DrawObjects(object sender, EventArgs e)
         {
-            if (!Context.IsWorldReady)
+            if (!Context.IsPlayerFree)
                 return;
           
             if (Game1.currentLocation.IsOutdoors)
