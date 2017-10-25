@@ -9,9 +9,9 @@ using StardewValley;
 using StardewValley.Menus;
 using Pathoschild.Stardew.UIF;
 using System.Linq;
-using TwilightCore.StardewValley;
 using StardewModdingAPI.Utilities;
-using TwilightCore.PRNG;
+using TwilightShards.Stardew.Common;
+using TwilightShards.Common;
 
 namespace ClimatesOfFerngillRebuild
 {

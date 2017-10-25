@@ -9,10 +9,6 @@ using System.Text;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Input;
 
-using TwilightCore;
-using TwilightCore.StardewValley;
-using TwilightCore.PRNG;
-
 using StardewValley;
 using StardewValley.Locations;
 using StardewValley.Menus;
@@ -23,6 +19,8 @@ using StardewModdingAPI;
 using StardewModdingAPI.Events;
 using StardewModdingAPI.Utilities;
 using SFarmer = StardewValley.Farmer;
+using TwilightShards.Stardew.Common;
+using TwilightShards.Common;
 #endregion
 
 namespace ClimatesOfFerngillRebuild
@@ -99,6 +97,8 @@ namespace ClimatesOfFerngillRebuild
         private static GameLocation.afterQuestionBehavior Callback;
         private static TV Target;
 
+        private Color nightColor = new Color((int)byte.MaxValue, (int)byte.MaxValue, 0);
+
         /// <summary> Main mod function. </summary>
         /// <param name="helper">The helper. </param>
         public override void Entry(IModHelper helper)
@@ -131,7 +131,7 @@ namespace ClimatesOfFerngillRebuild
             GameEvents.UpdateTick += CheckForChanges;
             SaveEvents.AfterReturnToTitle += ResetMod;
             GraphicsEvents.OnPostRenderEvent += DrawObjects;
-
+            LocationEvents.CurrentLocationChanged += LocationEvents_CurrentLocationChanged;
             ControlEvents.KeyPressed += (sender, e) => this.ReceiveKeyPress(e.KeyPressed, this.WeatherOpt.Keyboard);
             MenuEvents.MenuClosed += (sender, e) => this.ReceiveMenuClosed(e.PriorMenu);
 
@@ -142,6 +142,38 @@ namespace ClimatesOfFerngillRebuild
                   .Add("debug_changecondt", "Changes conditions. Debug function.", DebugChgCondition);
         }
 
+        /// <summary>
+        /// This handles location changes
+        /// </summary>
+        /// <param name="sender">The sender</param>
+        /// <param name="e">Parameters</param>
+        private void LocationEvents_CurrentLocationChanged(object sender, EventArgsCurrentLocationChanged e)
+        {
+            if (CurrentWeather.IsFogVisible())
+            {
+                if (!Game1.currentLocation.isOutdoors && Game1.currentLocation is DecoratableLocation)
+                {
+                    var loc = Game1.currentLocation as DecoratableLocation;
+                    foreach (Furniture f in loc.furniture)
+                    {
+                        if (WeatherOpt.Verbose)
+                            Monitor.Log($"Iterating through {f.name}");
+
+                        if (f.furniture_type == Furniture.window)
+                        {
+                            if (WeatherOpt.Verbose) Monitor.Log($"Attempting to remove the light for {f.name}");
+                            Helper.Reflection.GetPrivateMethod(f, "addLights").Invoke(new object[] { Game1.currentLocation });
+                        }
+                    }
+                }
+            }
+        }
+
+        /// <summary>
+        /// This function grabs events when the menu changes to handle dialogue replace
+        /// </summary>
+        /// <param name="sender">Sender object</param>
+        /// <param name="e">paramaters</param>
         private void MenuEvents_MenuChanged(object sender, EventArgsClickableMenuChanged e)
         {
             if (e.NewMenu is DialogueBox box)
@@ -373,12 +405,37 @@ namespace ClimatesOfFerngillRebuild
             TicksTotal++;            
         }
 
+        /// <summary>
+        /// Handles the ten minute update tick
+        /// </summary>
+        /// <param name="sender">Sender</param>
+        /// <param name="e">Parameters</param>
         private void TenMinuteUpdate(object sender, EventArgsIntChanged e)
         {
             if (!Game1.hasLoadedGame)
                 return;
 
             CurrentWeather.UpdateFog(e.NewInt, WeatherOpt.Verbose, Monitor);
+
+            if (CurrentWeather.IsFogVisible()) 
+            {
+                if (!Game1.currentLocation.isOutdoors && Game1.currentLocation is DecoratableLocation)
+                {
+                    var loc = Game1.currentLocation as DecoratableLocation;
+                    foreach (Furniture f in loc.furniture)
+                    {
+                        if (WeatherOpt.Verbose)
+                            Monitor.Log($"Iterating through {f.name}");
+
+                        //Yes, *add* lights removes them. No, don't ask me why.
+                        if (f.furniture_type == Furniture.window)
+                        {
+                            if (WeatherOpt.Verbose) Monitor.Log($"Attempting to remove the light for {f.name}");
+                            Helper.Reflection.GetPrivateMethod(f, "addLights").Invoke(new object[] { Game1.currentLocation });
+                        }
+                    }
+                }
+            }
 
             if (Game1.currentLocation.isOutdoors &&
                 (CurrentWeather.UnusualWeather == SpecialWeather.Thundersnow ||
@@ -466,7 +523,7 @@ namespace ClimatesOfFerngillRebuild
         /// <param name="e">event params</param>
         private void DrawObjects(object sender, EventArgs e)
         {
-            if (!Context.IsPlayerFree)
+            if (!Context.IsWorldReady)
                 return;
           
             if (Game1.currentLocation.IsOutdoors)

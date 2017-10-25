@@ -2,7 +2,7 @@
 using System;
 using StardewModdingAPI;
 using StardewValley.TerrainFeatures;
-using TwilightCore.PRNG;
+using TwilightShards.Common;
 using System.Collections.Generic;
 using Microsoft.Xna.Framework;
 using StardewValley.Locations;

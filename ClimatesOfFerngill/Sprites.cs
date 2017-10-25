@@ -27,7 +27,7 @@ namespace ClimatesOfFerngillRebuild
 
             public Icons(IContentHelper helper)
             {
-                source = helper.Load<Texture2D>("Assets\\climatesheet2.png");
+                source = helper.Load<Texture2D>(Path.Combine("Assets","climatesheet2.png"));
                 source2 = Game1.mouseCursors;
             }
 
@@ -97,5 +97,14 @@ namespace ClimatesOfFerngillRebuild
             public static readonly Rectangle UpArrow = new Rectangle(76, 72, 40, 44);
             
         }
+
+        public static Texture2D Pixel => LazyPixel.Value;
+
+        private static readonly Lazy<Texture2D> LazyPixel = new Lazy<Texture2D>(() =>
+        {
+            Texture2D pixel = new Texture2D(Game1.graphics.GraphicsDevice, 1, 1);
+            pixel.SetData(new[] { Color.White });
+            return pixel;
+        });
     }
 }

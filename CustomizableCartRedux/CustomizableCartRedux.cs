@@ -5,7 +5,6 @@ using StardewValley;
 using StardewModdingAPI.Events;
 using StardewValley.Locations;
 using StardewModdingAPI.Utilities;
-using TwilightCore.PRNG;
 using Microsoft.Xna.Framework;
 
 namespace CustomizableCartRedux

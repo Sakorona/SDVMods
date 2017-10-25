@@ -3,9 +3,8 @@ using Microsoft.Xna.Framework.Graphics;
 using StardewModdingAPI;
 using StardewModdingAPI.Utilities;
 using StardewValley;
-using TwilightCore;
-using TwilightCore.PRNG;
-using TwilightCore.StardewValley;
+using TwilightShards.Common;
+using TwilightShards.Stardew.Common;
 
 namespace ClimatesOfFerngillRebuild
 {

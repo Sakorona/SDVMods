@@ -2,8 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using TwilightCore;
-using TwilightCore.PRNG;
+using TwilightShards.Common;
 
 namespace ClimatesOfFerngillRebuild
 {

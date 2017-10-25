@@ -1,8 +1,7 @@
 ﻿using StardewModdingAPI.Utilities;
 using System.Collections.Generic;
 using System.Text;
-using TwilightCore;
-using TwilightCore.PRNG;
+using TwilightShards.Common;
 
 namespace ClimatesOfFerngillRebuild
 {

@@ -1,6 +1,6 @@
 ﻿using StardewValley;
-using TwilightCore.StardewValley;
 using StardewModdingAPI;
+using TwilightShards.Stardew.Common;
 
 namespace ClimatesOfFerngillRebuild
 {
