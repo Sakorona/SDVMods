@@ -529,9 +529,18 @@ namespace ClimatesOfFerngillRebuild
             if (Game1.currentLocation.IsOutdoors)
                 CurrentWeather.DrawFog();
 
-            if (Game1.currentLocation.isOutdoors && !(Game1.currentLocation is Desert) && 
-                CurrentWeather.UnusualWeather == SpecialWeather.Blizzard) 
-                WeatherCntrl.DrawBlizzard(); 
+            if (Game1.currentLocation.isOutdoors && !(Game1.currentLocation is Desert) &&
+                CurrentWeather.UnusualWeather == SpecialWeather.Blizzard)
+                WeatherCntrl.DrawBlizzard();
+
+            var weatherMenu = Game1.onScreenMenus.OfType<DayTimeMoneyBox>().FirstOrDefault();
+
+            if (weatherMenu == null)
+                return;
+                // abort abort abort (maybe another mod replaced it?)
+
+            //determine icon offset
+            Game1.spriteBatch.Draw(OurIcons.source, weatherMenu.position + new Vector2(116f, 68f), new Rectangle?(new Rectangle(134 + 12 * CurrentWeather.GetWeatherIcon(), 60, 12, 8)), Color.White, 0.0f, Vector2.Zero, 4f, Microsoft.Xna.Framework.Graphics.SpriteEffects.None, .6f);
         }
 
         private void ResetMod(object sender, EventArgs e)
@@ -595,7 +604,7 @@ namespace ClimatesOfFerngillRebuild
             double fogChance = GameClimate.GetClimateForDate(SDate.Now())
                                           .RetrieveOdds(Dice, "fog", SDate.Now().Day, DebugOutput);
 
-            fogChance = 1; //for testing purposes
+            //fogChance = 1; //for testing purposes
             double fogRoll = Dice.NextDoublePositive();
            
             if (fogRoll < fogChance && CurrentWeather.TodayWeather != Game1.weather_debris)

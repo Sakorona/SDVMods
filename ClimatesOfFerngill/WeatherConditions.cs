@@ -56,13 +56,11 @@ namespace ClimatesOfFerngillRebuild
             TodayTemps.LowerBound = low;
         }
 
-
         public WeatherConditions()
         {
             UnusualWeather = SpecialWeather.None;
             FogExpirTime = new SDVTime(600);
         }
-
         
         public void OnNewDay()
         {
@@ -85,6 +83,50 @@ namespace ClimatesOfFerngillRebuild
             AmbientFog = false;
             FogAlpha = 0f;
             FogExpirTime = new SDVTime(0600);
+        }
+
+        public int GetWeatherIcon()
+        {
+            int icon = 1;
+
+            switch (TodayWeather)
+            {
+                case Game1.weather_wedding:
+                    icon = 1;
+                    break;
+                case Game1.weather_festival:
+                    icon = 2;
+                    break;
+                case Game1.weather_sunny:
+                    icon = 3;
+                    break;
+                case Game1.weather_rain:
+                    icon = 4;
+                    break;
+                case Game1.weather_lightning:
+                    icon = 5;
+                    break;
+                case Game1.weather_debris:
+                    icon = 6;
+                    break;
+                case Game1.weather_snow:
+                    icon = 7;
+                    break;
+            }
+
+            if (IsFogVisible() && TodayWeather == Game1.weather_sunny)
+                icon = 9;
+
+            if (IsFogVisible() && TodayWeather == Game1.weather_rain)
+                icon = 10;
+
+            if (IsFogVisible() && TodayWeather == Game1.weather_snow)
+                icon = 11;
+
+            if (UnusualWeather == SpecialWeather.Blizzard)
+                icon = 8;
+
+            return icon;
         }
 
         // FOG SECTION.
