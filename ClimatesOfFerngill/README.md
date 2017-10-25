@@ -39,6 +39,9 @@ v1.1.12p3
 - Rain Totems override chance isn't just the first one now, although that means if you get it to set a Storm totem, the next use might override it..
 - fixed issue where festival name would never appear in the popup, and the wrong text was called for the TV.
 - fixed issue where summer drylightning tried to call for thundersnow (!)
+- added fog icons to the weather hud, as well as a blizzard one
+- the window will be dark while it is foggy outside
+- fixed a path display error in Linux
 
 v1.1.12p2
 - removed fog testing code.
