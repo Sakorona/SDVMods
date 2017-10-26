@@ -123,7 +123,7 @@ namespace ClimatesOfFerngillRebuild
 
             if (WeatherOpt.Verbose) Monitor.Log($"Loading climate type: {WeatherOpt.ClimateType} from file", LogLevel.Trace);
 
-            string path = Path.Combine("data", "Weather", WeatherOpt.ClimateType + ".json");
+            string path = Path.Combine("data", "weather", WeatherOpt.ClimateType + ".json");
             GameClimate = helper.ReadJsonFile<FerngillClimate>(path); 
             
             if (GameClimate is null)
