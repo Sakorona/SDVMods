@@ -121,7 +121,13 @@ namespace ClimatesOfFerngillRebuild
 
             if (WeatherOpt.Verbose) Monitor.Log($"Loading climate type: {WeatherOpt.ClimateType} from file", LogLevel.Trace);
 
-            GameClimate = helper.ReadJsonFile<FerngillClimate>(Path.Combine("data", "Weather", WeatherOpt.ClimateType + ".json"));      
+            GameClimate = helper.ReadJsonFile<FerngillClimate>(Path.Combine(helper.DirectoryPath, "data", "Weather", WeatherOpt.ClimateType + ".json")); 
+            
+            if (GameClimate is null)
+            {
+                Monitor.Log("This mod cannot load - the climate object is null!!!", LogLevel.Error);
+            }
+
 
             //subscribe to events
             TimeEvents.AfterDayStarted += HandleNewDay;
