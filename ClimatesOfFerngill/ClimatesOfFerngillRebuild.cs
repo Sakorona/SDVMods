@@ -176,6 +176,11 @@ namespace ClimatesOfFerngillRebuild
         /// <param name="e">paramaters</param>
         private void MenuEvents_MenuChanged(object sender, EventArgsClickableMenuChanged e)
         {
+            if (GameClimate is null)
+                Monitor.Log("GameClimate is null");
+            if (e.NewMenu is null)
+                Monitor.Log("e.NewMenu is null");
+
             if (e.NewMenu is DialogueBox box)
             {
                 bool stormDialogue = false;
@@ -384,7 +389,7 @@ namespace ClimatesOfFerngillRebuild
         /// <param name="e">event params</param>
         private void CheckForChanges(object sender, EventArgs e)
         {
-            if (!Game1.hasLoadedGame)
+            if (!Context.IsWorldReady)
                 return;
 
             CurrentWeather.MoveFog();
@@ -556,6 +561,19 @@ namespace ClimatesOfFerngillRebuild
 
         private void HandleNewDay(object sender, EventArgs e)
         {
+            if (CropList == null)
+                Monitor.Log("CropList is null!");
+            if (DebugOutput == null)
+                Monitor.Log("CropList is null!");
+            if (OurMoon == null)
+                Monitor.Log("OurMoon is null");
+            if (CurrentWeather == null)
+                Monitor.Log("CurrentWeather is null");
+            if (StaminaMngr == null)
+                Monitor.Log("StaminaMngr is null");
+            if (GameClimate is null)
+                Monitor.Log("GameClimate is null");
+
             CropList.Clear(); //clear the crop list
             DebugOutput.Clear();
             OurMoon.UpdateForNewDay();
