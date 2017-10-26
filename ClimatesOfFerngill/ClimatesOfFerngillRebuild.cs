@@ -99,6 +99,8 @@ namespace ClimatesOfFerngillRebuild
 
         private Color nightColor = new Color((int)byte.MaxValue, (int)byte.MaxValue, 0);
 
+        private bool Disabled = false;
+
         /// <summary> Main mod function. </summary>
         /// <param name="helper">The helper. </param>
         public override void Entry(IModHelper helper)
@@ -121,31 +123,36 @@ namespace ClimatesOfFerngillRebuild
 
             if (WeatherOpt.Verbose) Monitor.Log($"Loading climate type: {WeatherOpt.ClimateType} from file", LogLevel.Trace);
 
-            GameClimate = helper.ReadJsonFile<FerngillClimate>(Path.Combine(helper.DirectoryPath, "data", "Weather", WeatherOpt.ClimateType + ".json")); 
+            string path = Path.Combine("data", "Weather", WeatherOpt.ClimateType + ".json");
+            GameClimate = helper.ReadJsonFile<FerngillClimate>(path); 
             
             if (GameClimate is null)
             {
-                Monitor.Log("This mod cannot load - the climate object is null!!!", LogLevel.Error);
+                this.Monitor.Log($"The required '{path}' file is missing. Try reinstalling the mod to fix that.", LogLevel.Error);
+                this.Monitor.Log("This mod will now disable itself.", LogLevel.Error);
+                this.Disabled = true;
             }
 
+            if (!Disabled)
+            {
+                //subscribe to events
+                TimeEvents.AfterDayStarted += HandleNewDay;
+                SaveEvents.BeforeSave += OnEndOfDay;
+                TimeEvents.TimeOfDayChanged += TenMinuteUpdate;
+                MenuEvents.MenuChanged += MenuEvents_MenuChanged;
+                GameEvents.UpdateTick += CheckForChanges;
+                SaveEvents.AfterReturnToTitle += ResetMod;
+                GraphicsEvents.OnPostRenderEvent += DrawObjects;
+                LocationEvents.CurrentLocationChanged += LocationEvents_CurrentLocationChanged;
+                ControlEvents.KeyPressed += (sender, e) => this.ReceiveKeyPress(e.KeyPressed, this.WeatherOpt.Keyboard);
+                MenuEvents.MenuClosed += (sender, e) => this.ReceiveMenuClosed(e.PriorMenu);
 
-            //subscribe to events
-            TimeEvents.AfterDayStarted += HandleNewDay;
-            SaveEvents.BeforeSave += OnEndOfDay;
-            TimeEvents.TimeOfDayChanged += TenMinuteUpdate;
-            MenuEvents.MenuChanged += MenuEvents_MenuChanged;
-            GameEvents.UpdateTick += CheckForChanges;
-            SaveEvents.AfterReturnToTitle += ResetMod;
-            GraphicsEvents.OnPostRenderEvent += DrawObjects;
-            LocationEvents.CurrentLocationChanged += LocationEvents_CurrentLocationChanged;
-            ControlEvents.KeyPressed += (sender, e) => this.ReceiveKeyPress(e.KeyPressed, this.WeatherOpt.Keyboard);
-            MenuEvents.MenuClosed += (sender, e) => this.ReceiveMenuClosed(e.PriorMenu);
-
-            //console commands
-            helper.ConsoleCommands
-                  .Add("weather_settommorowweather", helper.Translation.Get("console-text.desc_tmrweather"), TmrwWeatherChangeFromConsole)
-                  .Add("weather_setweather", helper.Translation.Get("console-text.desc_setweather"), WeatherChangeFromConsole)
-                  .Add("debug_changecondt", "Changes conditions. Debug function.", DebugChgCondition);
+                //console commands
+                helper.ConsoleCommands
+                      .Add("weather_settommorowweather", helper.Translation.Get("console-text.desc_tmrweather"), TmrwWeatherChangeFromConsole)
+                      .Add("weather_setweather", helper.Translation.Get("console-text.desc_setweather"), WeatherChangeFromConsole)
+                      .Add("debug_changecondt", "Changes conditions. Debug function.", DebugChgCondition);
+            }
         }
 
         /// <summary>
