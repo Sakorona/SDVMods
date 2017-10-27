@@ -22,7 +22,6 @@ This mod does the following:
     a 'Muscle Remedy' has been found to cure even the hardiest flu
 
 ## Known Issues
-- None at present
 
 ## To Do
 - Maybe add icons for some of the new weathers?
@@ -42,6 +41,11 @@ v1.1.12p3
 - added fog icons to the weather hud, as well as a blizzard one
 - the window will be dark while it is foggy outside
 - fixed a path display error in Linux
+- fixed the path being capitlization inspecific
+- the mouse will draw over the icon again, and the weather icon darkens properly
+  when menus draw.
+  - No longer darkens for dialogue when it shouldn't.
+- fixed fog and snow drawing over hud code.
 
 v1.1.12p2
 - removed fog testing code.

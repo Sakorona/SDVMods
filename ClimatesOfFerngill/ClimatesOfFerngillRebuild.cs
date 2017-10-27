@@ -21,6 +21,7 @@ using StardewModdingAPI.Utilities;
 using SFarmer = StardewValley.Farmer;
 using TwilightShards.Stardew.Common;
 using TwilightShards.Common;
+using Microsoft.Xna.Framework.Graphics;
 #endregion
 
 namespace ClimatesOfFerngillRebuild
@@ -96,6 +97,7 @@ namespace ClimatesOfFerngillRebuild
         private static MethodInfo TVMethodOverlay = typeof(TV).GetMethod("setWeatherOverlay", BindingFlags.Instance | BindingFlags.NonPublic);
         private static GameLocation.afterQuestionBehavior Callback;
         private static TV Target;
+        public static Texture2D fadeToBlackRect;
 
         private Color nightColor = new Color((int)byte.MaxValue, (int)byte.MaxValue, 0);
 
@@ -114,6 +116,7 @@ namespace ClimatesOfFerngillRebuild
             OurIcons = new Sprites.Icons(Helper.Content);
             CropList = new List<Vector2>();
             StaminaMngr = new StaminaDrain(WeatherOpt, Helper.Translation, Monitor);
+            fadeToBlackRect = new Texture2D(Game1.graphics.GraphicsDevice, 12, 8, false, SurfaceFormat.Color);
 
             queuedMsg = null;
             Vector2 snowPos = Vector2.Zero;
@@ -142,6 +145,7 @@ namespace ClimatesOfFerngillRebuild
                 MenuEvents.MenuChanged += MenuEvents_MenuChanged;
                 GameEvents.UpdateTick += CheckForChanges;
                 SaveEvents.AfterReturnToTitle += ResetMod;
+                GraphicsEvents.OnPreRenderHudEvent += DrawPreHudObjects;
                 GraphicsEvents.OnPostRenderEvent += DrawObjects;
                 LocationEvents.CurrentLocationChanged += LocationEvents_CurrentLocationChanged;
                 ControlEvents.KeyPressed += (sender, e) => this.ReceiveKeyPress(e.KeyPressed, this.WeatherOpt.Keyboard);
@@ -153,6 +157,20 @@ namespace ClimatesOfFerngillRebuild
                       .Add("weather_setweather", helper.Translation.Get("console-text.desc_setweather"), WeatherChangeFromConsole)
                       .Add("debug_changecondt", "Changes conditions. Debug function.", DebugChgCondition);
             }
+        }
+
+        private void DrawPreHudObjects(object sender, EventArgs e)
+        {
+            if (!Context.IsWorldReady)
+                return;
+
+            if (Game1.currentLocation.IsOutdoors)
+                CurrentWeather.DrawFog();
+
+            if (Game1.currentLocation.isOutdoors && !(Game1.currentLocation is Desert) &&
+                CurrentWeather.UnusualWeather == SpecialWeather.Blizzard)
+                WeatherCntrl.DrawBlizzard();
+
         }
 
         /// <summary>
@@ -541,24 +559,38 @@ namespace ClimatesOfFerngillRebuild
         /// <param name="e">event params</param>
         private void DrawObjects(object sender, EventArgs e)
         {
+            float shadowMult = 0f;
             if (!Context.IsWorldReady)
                 return;
           
-            if (Game1.currentLocation.IsOutdoors)
-                CurrentWeather.DrawFog();
-
-            if (Game1.currentLocation.isOutdoors && !(Game1.currentLocation is Desert) &&
-                CurrentWeather.UnusualWeather == SpecialWeather.Blizzard)
-                WeatherCntrl.DrawBlizzard();
-
             var weatherMenu = Game1.onScreenMenus.OfType<DayTimeMoneyBox>().FirstOrDefault();
 
             if (weatherMenu == null)
                 return;
-                // abort abort abort (maybe another mod replaced it?)
+            // abort abort abort (maybe another mod replaced it?)
 
-            //determine icon offset
-            Game1.spriteBatch.Draw(OurIcons.source, weatherMenu.position + new Vector2(116f, 68f), new Rectangle?(new Rectangle(134 + 12 * CurrentWeather.GetWeatherIcon(), 60, 12, 8)), Color.White, 0.0f, Vector2.Zero, 4f, Microsoft.Xna.Framework.Graphics.SpriteEffects.None, .6f);
+            //redraw the HUD
+            weatherMenu.draw(Game1.spriteBatch);
+
+
+            //determine icon offset            
+            Game1.spriteBatch.Draw(OurIcons.source, weatherMenu.position + new Vector2(116f, 68f), new Rectangle?(new Rectangle(134 + 12 * CurrentWeather.GetWeatherIcon(), 60, 12, 8)), Color.White, 0.0f, Vector2.Zero, 4f, Microsoft.Xna.Framework.Graphics.SpriteEffects.None, .1f);
+
+            if (Game1.activeClickableMenu != null)
+            {
+                if (Game1.activeClickableMenu is ShippingMenu)
+                    shadowMult = .75f;
+                else if (!(Game1.activeClickableMenu is DialogueBox))
+                    shadowMult = .5f;
+                else
+                    shadowMult = 0f;
+
+                Game1.spriteBatch.Draw(Game1.fadeToBlackRect, weatherMenu.position + new Vector2(116f, 68f), new Rectangle(134, 60, 12, 8), Color.Black * shadowMult, 0.0f, Vector2.Zero, 4f, SpriteEffects.None, .1f);
+            }
+
+            //re-draw the mouse cursor.
+            if (!Game1.options.hardwareCursor)
+                Game1.spriteBatch.Draw(Game1.mouseCursors, new Vector2((float)Game1.getMouseX(), (float)Game1.getMouseY()), new Microsoft.Xna.Framework.Rectangle?(Game1.getSourceRectForStandardTileSheet(Game1.mouseCursors, Game1.mouseCursor, 16, 16)), Color.White * Game1.mouseCursorTransparency, 0.0f, Vector2.Zero, (float)Game1.pixelZoom + Game1.dialogueButtonScale / 150f, SpriteEffects.None, 1f);
         }
 
         private void ResetMod(object sender, EventArgs e)
@@ -577,7 +609,7 @@ namespace ClimatesOfFerngillRebuild
             if (CropList == null)
                 Monitor.Log("CropList is null!");
             if (DebugOutput == null)
-                Monitor.Log("CropList is null!");
+                Monitor.Log("DebugOutput is null!");
             if (OurMoon == null)
                 Monitor.Log("OurMoon is null");
             if (CurrentWeather == null)
