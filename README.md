@@ -2,15 +2,13 @@ This repository contains my SMAPI mods for Stardew Valley. See the individual mo
 documentation, licenses, and release notes. May have other related projects that are here for tracking.
 
 ## Mods
-* **[Better Shipping Box](https://community.playstarbound.com/threads/better-shipping-box.126235/#post-3228667)**
-<small>([source](BetterShippingBox))</small>
+* **[Better Shipping Box](https://community.playstarbound.com/threads/better-shipping-box.126235/#post-3228667)**<small> ([source](BetterShippingBox))</small>
   _This is a SMAPI 2.0 port of Kthio's Better Shipping Box, which gives you a menu._
  
-* **[Customizable Cart Redux](https://rd.nexusmods.com/stardewvalley/mods/1402)**
-<small>([source](CustomizableCartRedux))</small>
+* **[Customizable Cart Redux](https://rd.nexusmods.com/stardewvalley/mods/1402)**<small> ([source](CustomizableCartRedux))</small>
   _Lets you customize when the cart appears, and how many items it has._
   
-* **[Tree Overhaul]**
+* **Tree Overhaul**<small> ([source](TreeOverhaul))</small>
   _This is the source code for the unofficial patch I am maintaining to make it compatibile with 2.0_
 
 * **[Climates of Ferngill (Rebuild)](http://www.nexusmods.com/stardewvalley/mods/604)** <small>([source](ClimatesOfFerngill))</small>  
