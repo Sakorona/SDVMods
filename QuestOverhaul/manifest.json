@@ -1,0 +1,14 @@
+﻿{
+  "Name": "Quest Overhaul",
+  "Author": "KoihimeNakamura",
+  "Version": {
+    "MajorVersion": 0,
+    "MinorVersion": 1,
+    "PatchVersion": 0,
+    "Build": "alpha-20171104"
+  },
+  "Description": "Create a unique climate system with custom weathers, as well as add weather related events and commands.",
+  "UniqueID": "KoihimeNakamura.QuestOverhaul",
+  "EntryDll": "QuestOverhaul.dll",
+  "MinimumApiVersion": "2.0"
+}
