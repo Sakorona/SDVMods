@@ -7,6 +7,9 @@ documentation, licenses, and release notes. May have other related projects that
  
 * **[Customizable Cart Redux](https://rd.nexusmods.com/stardewvalley/mods/1402)**<small> ([source](CustomizableCartRedux))</small>
   _Lets you customize when the cart appears, and how many items it has._
+
+* **Quest Overhaul** <small>([source](QuestOverhaul)</small>
+  _This will overhaul the quest system, with more to come._
   
 * **Tree Overhaul**<small> ([source](TreeOverhaul))</small>
   _This is the source code for the unofficial patch I am maintaining to make it compatibile with 2.0_
@@ -15,7 +18,7 @@ documentation, licenses, and release notes. May have other related projects that
   _Creates a different climate system. This is a relatively basic approach, and may have more features in the future. It works by creating a base chance and a value that can increase (or decrease) as the month passes for weather._
 
 * **[Solar Eclipse Event](http://www.nexusmods.com/stardewvalley/mods/897)** <small>([source](SolarEclipseEvent))</small>  
-  _This adds the possibility of a solar eclipse to your game! Configurable  chance. Also will spawn monsters if you have a wilderness farm in line with the same percentages as the base game._
+  _This adds the possibility of a solar eclipse to your game! Configurable chance. Also will spawn monsters if you have a wilderness farm in line with the same percentages as the base game._
 
 * **[Time Reminder](http://www.nexusmods.com/stardewvalley/mods/1000)** <small>([source](TimeReminder))</small>  
   _Alerts you of system time after a configurable number of minutes._
