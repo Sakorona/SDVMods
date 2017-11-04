@@ -62,7 +62,7 @@
         {
           "WeatherType": "rain",
           "BaseValue": 0.49,
-          "ChangeRate": -0.14,
+          "ChangeRate": -0.014,
           "VariableLowerBound": -0.02,
           "VariableHigherBound": 0.02
         },

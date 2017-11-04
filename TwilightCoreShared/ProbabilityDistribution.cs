@@ -103,8 +103,10 @@ namespace TwilightShards.Common
 
             CurrentPoint += NewProb;
 
-            if (!(EndPoints.Select(c => c.Key == CurrentPoint).Count() >= 1))
+            if (!(EndPoints.Where(c => c.Key == CurrentPoint).Count() >= 1))
+            {
                 EndPoints.Add(CurrentPoint, Entry);
+            }
         }
 
         /// <summary>
@@ -113,6 +115,20 @@ namespace TwilightShards.Common
         private void Realign()
         {
             EndPoints.OrderBy(endpoint => endpoint.Key);
+        }
+
+        public override string ToString()
+        {
+            string desc = "";
+
+            foreach (KeyValuePair<double,T> kvp in EndPoints)
+            {
+                desc += $"Key: {kvp.Key} with value: {kvp.Value}";
+                desc += Environment.NewLine;
+            }
+            desc += $"Current Point: {CurrentPoint} with overflow result {OverflowResult}";
+
+            return desc;
         }
 
         /// <summary>

@@ -1,4 +1,5 @@
-﻿using Microsoft.Xna.Framework;
+﻿using System;
+using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using StardewModdingAPI;
 using StardewModdingAPI.Utilities;
@@ -85,6 +86,63 @@ namespace ClimatesOfFerngillRebuild
             FogExpirTime = new SDVTime(0600);
         }
 
+        private static string DescCond(SpecialWeather UW)
+        {
+            if (UW == SpecialWeather.None)
+                return "None";
+            if (UW == SpecialWeather.Thundersnow)
+                return "Thundersnow";
+            if (UW == SpecialWeather.Blizzard)
+                return "Blizzard";
+            if (UW == SpecialWeather.DryLightning)
+                return "DryLightning";
+            if (UW == SpecialWeather.Frost)
+                return "Frost";
+            if (UW == SpecialWeather.Heatwave)
+                return "Heatwave";
+            if (UW == SpecialWeather.DryLightningAndHeatwave)
+                return "DryLightningAndHeatwave";
+
+            return "ERR";
+        }
+
+        private static string DescWeather(int weather)
+        {
+            if (weather == Game1.weather_wedding)
+                return "Wedding";
+            if (weather == Game1.weather_festival)
+                return "Festival";
+            if (weather == Game1.weather_sunny)
+                return "Sunny";
+            if (weather == Game1.weather_debris)
+                return "Debris";
+            if (weather == Game1.weather_rain)
+                return "Rain";
+            if (weather == Game1.weather_lightning)
+                return "Lightning";
+            if (weather == Game1.weather_snow)
+                return "Snowy";
+
+            else
+                return "ERR";
+        }
+
+        public override string ToString()
+        {
+            string ret = "";
+            ret += $"Low for today is {TodayTemps.LowerBound} with the high being {TodayTemps.HigherBound}. The current special condition is {WeatherConditions.DescCond(UnusualWeather)} with standard weather being {WeatherConditions.DescWeather(TodayWeather)}.";
+
+            if (IsFogVisible())
+            {
+                ret += $"Fog is visible until {FogExpirTime} and it is dark fog: {IsDarkFog()}";
+            }
+
+            ret += $"Weather set for tommorow is {WeatherConditions.DescWeather(TomorrowWeather)} with high {TomorrowTemps.HigherBound} and low {TomorrowTemps.LowerBound}";
+
+            return ret;
+        }
+
+
         public int GetWeatherIcon()
         {
             int icon = 1;
@@ -92,13 +150,13 @@ namespace ClimatesOfFerngillRebuild
             switch (TodayWeather)
             {
                 case Game1.weather_wedding:
-                    icon = 1;
+                    icon = 0;
                     break;
                 case Game1.weather_festival:
-                    icon = 2;
+                    icon = 1;
                     break;
                 case Game1.weather_sunny:
-                    icon = 3;
+                    icon = 2;
                     break;
                 case Game1.weather_rain:
                     icon = 4;
@@ -107,7 +165,10 @@ namespace ClimatesOfFerngillRebuild
                     icon = 5;
                     break;
                 case Game1.weather_debris:
-                    icon = 6;
+                    if (Game1.currentSeason == "spring")
+                        icon = 3;
+                    else
+                        icon = 6;
                     break;
                 case Game1.weather_snow:
                     icon = 7;
@@ -181,6 +242,10 @@ namespace ClimatesOfFerngillRebuild
             }
 
             this.FogExpirTime = FogExpirTime;
+
+
+            if (Dice.NextDoublePositive() <= .001)
+                FogExpirTime = new SDVTime(2400); //all day fog!
         }
 
         public void UpdateFog(int time, bool debug, IMonitor Monitor)

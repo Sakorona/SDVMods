@@ -146,7 +146,7 @@ namespace ClimatesOfFerngillRebuild
                 GameEvents.UpdateTick += CheckForChanges;
                 SaveEvents.AfterReturnToTitle += ResetMod;
                 GraphicsEvents.OnPreRenderHudEvent += DrawPreHudObjects;
-                GraphicsEvents.OnPostRenderEvent += DrawObjects;
+                GraphicsEvents.OnPostRenderHudEvent += DrawObjects;
                 LocationEvents.CurrentLocationChanged += LocationEvents_CurrentLocationChanged;
                 ControlEvents.KeyPressed += (sender, e) => this.ReceiveKeyPress(e.KeyPressed, this.WeatherOpt.Keyboard);
                 MenuEvents.MenuClosed += (sender, e) => this.ReceiveMenuClosed(e.PriorMenu);
@@ -155,8 +155,18 @@ namespace ClimatesOfFerngillRebuild
                 helper.ConsoleCommands
                       .Add("weather_settommorowweather", helper.Translation.Get("console-text.desc_tmrweather"), TmrwWeatherChangeFromConsole)
                       .Add("weather_setweather", helper.Translation.Get("console-text.desc_setweather"), WeatherChangeFromConsole)
-                      .Add("debug_changecondt", "Changes conditions. Debug function.", DebugChgCondition);
+                      .Add("debug_changecondt", "Changes conditions. Debug function.", DebugChgCondition)
+                      .Add("debug_staminaforce", "Forces stamina drain level. Debug function", DebugStaForce)
+                      .Add("debug_weatherstatus", "Prints an overly detailed weahter status screen out.", DebugWeather);
             }
+        }
+
+        private void DebugWeather(string arg1, string[] arg2)
+        {
+            //print a complete weather status. 
+            string retString = "";
+            retString += $"Weather for {SDate.Now()} is {CurrentWeather.ToString()}. {Environment.NewLine} Moon Phase {OurMoon.ToString()}";
+            Monitor.Log(retString);
         }
 
         private void DrawPreHudObjects(object sender, EventArgs e)
@@ -543,7 +553,7 @@ namespace ClimatesOfFerngillRebuild
             }
 
             float oldStamina = Game1.player.stamina;
-            Game1.player.stamina += StaminaMngr.TenMinuteTick(CurrentWeather.UnusualWeather, TicksOutside, TicksTotal);
+            Game1.player.stamina += StaminaMngr.TenMinuteTick(CurrentWeather.UnusualWeather, TicksOutside, TicksTotal, Dice, CurrentWeather.TodayWeather, CurrentWeather.IsFogVisible());
 
             if (Game1.player.stamina <= 0)
                 SDVUtilities.FaintPlayer();
@@ -559,7 +569,7 @@ namespace ClimatesOfFerngillRebuild
         /// <param name="e">event params</param>
         private void DrawObjects(object sender, EventArgs e)
         {
-            float shadowMult = 0f;
+            //float shadowMult = 0f;
             if (!Context.IsWorldReady)
                 return;
           
@@ -569,28 +579,11 @@ namespace ClimatesOfFerngillRebuild
                 return;
             // abort abort abort (maybe another mod replaced it?)
 
-            //redraw the HUD
-            weatherMenu.draw(Game1.spriteBatch);
-
-
-            //determine icon offset            
-            Game1.spriteBatch.Draw(OurIcons.source, weatherMenu.position + new Vector2(116f, 68f), new Rectangle?(new Rectangle(134 + 12 * CurrentWeather.GetWeatherIcon(), 60, 12, 8)), Color.White, 0.0f, Vector2.Zero, 4f, Microsoft.Xna.Framework.Graphics.SpriteEffects.None, .1f);
-
-            if (Game1.activeClickableMenu != null)
+            //determine icon offset  
+            if (!Game1.eventUp)
             {
-                if (Game1.activeClickableMenu is ShippingMenu)
-                    shadowMult = .75f;
-                else if (!(Game1.activeClickableMenu is DialogueBox))
-                    shadowMult = .5f;
-                else
-                    shadowMult = 0f;
-
-                Game1.spriteBatch.Draw(Game1.fadeToBlackRect, weatherMenu.position + new Vector2(116f, 68f), new Rectangle(134, 60, 12, 8), Color.Black * shadowMult, 0.0f, Vector2.Zero, 4f, SpriteEffects.None, .1f);
+                Game1.spriteBatch.Draw(OurIcons.source, weatherMenu.position + new Vector2(116f, 68f), new Rectangle?(new Rectangle(134 + 12 * CurrentWeather.GetWeatherIcon(), 60, 12, 8)), Color.White, 0.0f, Vector2.Zero, 4f, Microsoft.Xna.Framework.Graphics.SpriteEffects.None, .1f);
             }
-
-            //re-draw the mouse cursor.
-            if (!Game1.options.hardwareCursor)
-                Game1.spriteBatch.Draw(Game1.mouseCursors, new Vector2((float)Game1.getMouseX(), (float)Game1.getMouseY()), new Microsoft.Xna.Framework.Rectangle?(Game1.getSourceRectForStandardTileSheet(Game1.mouseCursors, Game1.mouseCursor, 16, 16)), Color.White * Game1.mouseCursorTransparency, 0.0f, Vector2.Zero, (float)Game1.pixelZoom + Game1.dialogueButtonScale / 150f, SpriteEffects.None, 1f);
         }
 
         private void ResetMod(object sender, EventArgs e)
@@ -624,20 +617,149 @@ namespace ClimatesOfFerngillRebuild
             OurMoon.UpdateForNewDay();
             CurrentWeather.OnNewDay();
             UpdateWeatherOnNewDay();
+            SetTommorowWeather();
             OurMoon.HandleMoonAfterWake(Helper.Translation);
-            StaminaMngr.OnNewDay(CurrentWeather);
+            StaminaMngr.OnNewDay();
             TicksOutside = 0;
             ExpireTime = 0;
             TicksTotal = 0;
+        }
+
+        private void SetTommorowWeather()
+        {
+            //if tomorrow is a festival or wedding, we need to set the weather and leave.
+            if (Utility.isFestivalDay(Game1.dayOfMonth + 1, Game1.currentSeason))
+            {
+                Game1.weatherForTomorrow = Game1.weather_festival;
+                if (WeatherOpt.Verbose)
+                    Monitor.Log($"Festival tomorrow. Aborting processing.", LogLevel.Trace);
+
+                //if (WeatherOpt.Verbose) Monitor.Log(DebugOutput.ToString());
+                return;
+            }
+
+            if (Game1.countdownToWedding == 1)
+            {
+                Game1.weatherForTomorrow = Game1.weather_wedding;
+                if (WeatherOpt.Verbose)
+                    Monitor.Log($"Wedding tomorrow. Aborting processing.", LogLevel.Trace);
+
+                return;
+            }
+
+            if (CheckForForceDay(SDate.Now().AddDays(1)))
+            {
+                if (WeatherOpt.Verbose)
+                    Monitor.Log($"The game will force tomorrow. Aborting processing.", LogLevel.Trace);
+
+                //if (WeatherOpt.Verbose) Monitor.Log(DebugOutput.ToString());
+                CurrentWeather.TomorrowWeather = Game1.weatherForTomorrow; //this also needs to be set, self.
+                return;
+            }
+
+            if (WeatherOpt.Verbose)
+                Monitor.Log("Setting weather for tomorrow");
+
+            //now set tomorrow's weather
+            var OddsForTheDay = GameClimate.GetClimateForDate(SDate.Now().AddDays(1));
+
+            double rainDays = OddsForTheDay.RetrieveOdds(Dice, "rain", SDate.Now().AddDays(1).Day, DebugOutput);
+            double windyDays = OddsForTheDay.RetrieveOdds(Dice, "debris", SDate.Now().AddDays(1).Day, DebugOutput);
+            double stormDays = OddsForTheDay.RetrieveOdds(Dice, "storm", SDate.Now().AddDays(1).Day, DebugOutput);
+
+            if (WeatherOpt.Verbose)
+            {
+                Monitor.Log($"Odds are Rain: {rainDays.ToString("N3")}, Windy: {windyDays.ToString("N3")}, and Storm {stormDays.ToString("N3")}");
+            }
+
+            ProbabilityDistribution<string> WeatherDist = new ProbabilityDistribution<string>("sunny");
+            WeatherDist.AddNewEndPoint(rainDays, "rain");
+            WeatherDist.AddNewCappedEndPoint(windyDays, "debris");
+
+            double distOdd = Dice.NextDoublePositive();
+
+            if (WeatherOpt.Verbose)
+            {
+                Monitor.Log(WeatherDist.ToString());
+                Monitor.Log($"Distribution odds is {distOdd}");
+            }
+
+            if (!(WeatherDist.GetEntryFromProb(distOdd, out string Result)))
+            {
+                Result = "sunny";
+                Monitor.Log("The weather has failed to process in some manner. Falling back to [sunny]", LogLevel.Info);
+            }
+
+            if (WeatherOpt.Verbose)
+                Monitor.Log($"Weather result is {Result}");
+
+            //now parse the result.
+            if (Result == "rain")
+            {
+                //snow applies first
+                double MidPointTemp = CurrentWeather.GetTodayHigh() -
+                    ((CurrentWeather.GetTodayHigh() - CurrentWeather.GetTodayLow()) / 2);
+
+                if ((CurrentWeather.GetTodayHigh() <= 2 || MidPointTemp <= 0) && Game1.currentSeason != "spring")
+                {
+                    if (WeatherOpt.Verbose)
+                        Monitor.Log($"Snow is enabled, with the High for the day being: {CurrentWeather.TodayTemps.HigherBound}" +
+                                    $" and the calculated midpoint temperature being {MidPointTemp}");
+
+                    Game1.weatherForTomorrow = Game1.weather_snow;
+                }
+                else
+                {
+                    Game1.weatherForTomorrow = Game1.weather_rain;
+                }
+
+                if (!GameClimate.AllowRainInWinter && Game1.currentSeason == "winter" && Game1.weatherForTomorrow == Game1.weather_rain)
+                {
+                    Game1.weatherForTomorrow = Game1.weather_snow;
+                }
+
+                //apply lightning logic.
+                if (Dice.NextDoublePositive() >= stormDays && Game1.weatherForTomorrow == Game1.weather_rain)
+                {
+                    Game1.weatherForTomorrow = Game1.weather_lightning;
+                    if (SDate.Now().Year == 1 && SDate.Now().Season == "spring" && !WeatherOpt.AllowStormsSpringYear1)
+                        Game1.weatherForTomorrow = Game1.weather_rain;
+                }
+
+                //apply dry lightning check
+                if (CurrentWeather.UnusualWeather == SpecialWeather.DryLightningAndHeatwave || CurrentWeather.UnusualWeather == SpecialWeather.DryLightning)
+                    Game1.isLightning = true;
+
+                //tracking time!
+                //Snow fall on Fall 28, if the flag is set.
+                if (Game1.dayOfMonth == 28 && Game1.currentSeason == "fall" && WeatherOpt.SnowOnFall28)
+                {
+                    CurrentWeather.ResetTodayTemps(2, -1);
+                    Game1.weatherForTomorrow = Game1.weather_snow;
+                }
+
+            }
+
+            if (Result == "debris")
+            {
+                Game1.weatherForTomorrow = Game1.weather_debris;
+            }
+
+            if (Result == "sunny")
+            {
+                Game1.weatherForTomorrow = Game1.weather_sunny;
+            }
+
+            if (WeatherOpt.Verbose)
+                Monitor.Log($"We've set the weather for Tomorrow. It is: {Game1.weatherForTomorrow}");
+
+            CurrentWeather.TomorrowWeather = Game1.weatherForTomorrow; //would help if I updated this!
         }
 
         private void UpdateWeatherOnNewDay()
         {
             if (Game1.dayOfMonth == 0) //do not run on day 0.
                 return;
-
-            //Get starting value.
-            int TmrwWeather = Game1.weatherForTomorrow;
 
             //Set Temperature for today and tommorow. Get today's conditions.
             //   If tomorrow is set, move it to today, and autoregen tomorrow.
@@ -753,125 +875,6 @@ namespace ClimatesOfFerngillRebuild
                 }
             }
 
-            //if tomorrow is a festival or wedding, we need to set the weather and leave.
-            if (Utility.isFestivalDay(Game1.dayOfMonth + 1, Game1.currentSeason))
-            {
-                Game1.weatherForTomorrow = Game1.weather_festival;
-                if (WeatherOpt.Verbose)
-                    Monitor.Log($"Festival tomorrow. Aborting processing.", LogLevel.Trace);
-
-                //if (WeatherOpt.Verbose) Monitor.Log(DebugOutput.ToString());
-                return;
-            }
-
-            if (Game1.countdownToWedding == 1)
-            {
-                Game1.weatherForTomorrow = Game1.weather_wedding;
-                if (WeatherOpt.Verbose)
-                    Monitor.Log($"Wedding tomorrow. Aborting processing.", LogLevel.Trace);
-
-                return;
-            }
-
-            if (CheckForForceDay(SDate.Now().AddDays(1)))
-            {
-                if (WeatherOpt.Verbose)
-                    Monitor.Log($"The game will force tomorrow. Aborting processing.", LogLevel.Trace);
-
-                //if (WeatherOpt.Verbose) Monitor.Log(DebugOutput.ToString());
-                CurrentWeather.TomorrowWeather = Game1.weatherForTomorrow; //this also needs to be set, self.
-                return;
-            }
-
-            if (WeatherOpt.Verbose)
-                Monitor.Log("Setting weather for tomorrow");
-
-            //now set tomorrow's weather
-            var OddsForTheDay = GameClimate.GetClimateForDate(SDate.Now().AddDays(1));
-
-            double rainDays = OddsForTheDay.RetrieveOdds(Dice, "rain", SDate.Now().AddDays(1).Day, DebugOutput);
-            double windyDays = OddsForTheDay.RetrieveOdds(Dice, "debris", SDate.Now().AddDays(1).Day, DebugOutput);
-            double stormDays = OddsForTheDay.RetrieveOdds(Dice, "storm", SDate.Now().AddDays(1).Day, DebugOutput);
-
-            /* if (WeatherOpt.Verbose)
-            {
-                Monitor.Log($"Odds are Rain: {rainDays.ToString("N3")}, Windy: {windyDays.ToString("N3")}, and Storm {stormDays.ToString("N3")}");
-            } */
-
-            ProbabilityDistribution<string> WeatherDist = new ProbabilityDistribution<string>("sunny");
-            WeatherDist.AddNewEndPoint(rainDays, "rain");
-            WeatherDist.AddNewCappedEndPoint(windyDays, "debris");
-
-            if (!(WeatherDist.GetEntryFromProb(Dice.NextDoublePositive(), out string Result)))
-            {
-                Result = "sunny";
-                Monitor.Log("The weather has failed to process in some manner. Falling back to [sunny]", LogLevel.Info);
-            }
-
-            if (WeatherOpt.Verbose)
-                Monitor.Log($"Weather result is {Result}");
-
-            //now parse the result.
-            if (Result == "rain")
-            {
-                //snow applies first
-                double MidPointTemp = CurrentWeather.GetTodayHigh() - 
-                    ((CurrentWeather.GetTodayHigh() - CurrentWeather.GetTodayLow()) / 2);
-
-                if ((CurrentWeather.GetTodayHigh() <= 2 || MidPointTemp <= 0 ) && Game1.currentSeason != "spring")
-                {
-                    if (WeatherOpt.Verbose)
-                        Monitor.Log($"Snow is enabled, with the High for the day being: {CurrentWeather.TodayTemps.HigherBound}" +
-                                    $" and the calculated midpoint temperature being {MidPointTemp}");
-
-                    Game1.weatherForTomorrow = Game1.weather_snow;
-                }
-                else
-                {
-                    Game1.weatherForTomorrow = Game1.weather_rain;
-                }
-
-                if (!GameClimate.AllowRainInWinter && Game1.currentSeason == "winter" && Game1.weatherForTomorrow == Game1.weather_rain)
-                {
-                    Game1.weatherForTomorrow = Game1.weather_snow;
-                }
-
-                //apply lightning logic.
-                if (Dice.NextDoublePositive() >= stormDays && Game1.weatherForTomorrow == Game1.weather_rain)
-                {
-                    Game1.weatherForTomorrow = Game1.weather_lightning;
-                    if (SDate.Now().Year == 1 && SDate.Now().Season == "spring" && !WeatherOpt.AllowStormsSpringYear1)
-                        Game1.weatherForTomorrow = Game1.weather_rain;
-                }
-
-                //apply dry lightning check
-                if (CurrentWeather.UnusualWeather == SpecialWeather.DryLightningAndHeatwave || CurrentWeather.UnusualWeather == SpecialWeather.DryLightning)
-                    Game1.isLightning = true;
-
-                //tracking time!
-                //Snow fall on Fall 28, if the flag is set.
-                if (Game1.dayOfMonth == 28 && Game1.currentSeason == "fall" && WeatherOpt.SnowOnFall28)
-                {
-                    CurrentWeather.ResetTodayTemps(2, -1);
-                    Game1.weatherForTomorrow = Game1.weather_snow;
-                }
-
-            }
-
-            if (Result == "debris")
-            {
-                Game1.weatherForTomorrow = Game1.weather_debris;
-            }
-
-            if (Result == "sunny")
-            {
-                Game1.weatherForTomorrow = Game1.weather_sunny;
-            }
-
-            if (WeatherOpt.Verbose)
-                Monitor.Log($"We've set the weather for Tomorrow. It is: {Game1.weatherForTomorrow}");
-
-            CurrentWeather.TomorrowWeather = Game1.weatherForTomorrow; //would help if I updated this!
         }
 
         private bool CheckForForceDay(SDate Target)
@@ -925,16 +928,46 @@ namespace ClimatesOfFerngillRebuild
                     WeatherChangeFromConsole("blah", new string[] { "sunny" });
                     CurrentWeather.UnusualWeather = SpecialWeather.DryLightning;
                     break;
-                case "fog":
+                case "fogblizzard":
                     CurrentWeather.InitFog(Dice, WeatherOpt);
                     CurrentWeather.SetFogExpirTime(new SDVTime(1900));
+                    WeatherChangeFromConsole("blah", new string[] { "snow" });
+                    CurrentWeather.UnusualWeather = SpecialWeather.Blizzard;
+                    break;
+                case "fulldayfog":
+                    CurrentWeather.InitFog(Dice, WeatherOpt);
+                    CurrentWeather.SetFogExpirTime(new SDVTime(2400));
+                    break;
+                case "fog":
+                    CurrentWeather.ResetFog();
+                    CurrentWeather.InitFog(Dice, WeatherOpt, false);
+                    CurrentWeather.SetFogExpirTime(new SDVTime(1900));
+                    break;
+                case "clearfog":
+                    CurrentWeather.ResetFog();
                     break;
                 case "darkfog":
                     CurrentWeather.InitFog(Dice, WeatherOpt);
                     CurrentWeather.ForceDarkFog();
                     CurrentWeather.SetFogExpirTime(new SDVTime(1900));
                     break;
+                case "heatwave":
+                    CurrentWeather.UnusualWeather = SpecialWeather.Heatwave;
+                    break;
+                case "frost":
+                    CurrentWeather.UnusualWeather = SpecialWeather.Frost;
+                    break;
             }
+        }
+
+        /// <summary>
+        /// This function changes the weather (Console Command)
+        /// </summary>
+        /// <param name="arg1">The command used</param>
+        /// <param name="arg2">The console command parameters</param>
+        private void DebugStaForce(string arg1, string[] arg2)
+        {
+            StaminaMngr.MakeSick();
         }
 
         /// <summary>
@@ -982,6 +1015,7 @@ namespace ClimatesOfFerngillRebuild
             }
 
             Game1.updateWeatherIcon();
+            CurrentWeather.GetTodayWeather();
         }
 
         /// <summary>

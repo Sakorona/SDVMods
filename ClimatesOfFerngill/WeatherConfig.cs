@@ -21,12 +21,12 @@ namespace ClimatesOfFerngillRebuild
         public double TooColdOutside { get; set; }
         public double TooHotOutside { get; set; }
         public double AffectedOutside { get; set; }
-        public int Tier1Drain { get; set; }
-        public int Tier2Drain { get; set; }
+        public int StaminaDrain { get; set; }
         public bool SickMoreThanOnce { get; set; }
         public double DeadCropPercentage { get; set; }
         public double CropResistance { get; set; }
         public double DarkFogChance { get; set; }
+        public double ChanceOfGettingSick { get; set; }
 
         public bool Verbose { get; set; }
         
@@ -59,9 +59,9 @@ namespace ClimatesOfFerngillRebuild
 
             //stamina options
             AffectedOutside = .65;
-            Tier1Drain = 2;
-            Tier2Drain = 4;
+            StaminaDrain = 2;
             SickMoreThanOnce = false;
+            ChanceOfGettingSick = .7;
 
             //general mod options
             Verbose = true;

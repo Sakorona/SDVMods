@@ -31,11 +31,14 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BetterShippingBox", "Better
 EndProject
 Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "TwilightCoreShared", "TwilightCoreShared\TwilightCoreShared.shproj", "{01DA90D0-EEC8-427B-9409-3168A8089F20}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "QuestOverhaul", "QuestOverhaul\QuestOverhaul.csproj", "{92E332E1-533E-42CA-B3EF-1E5BCFDD857B}"
+EndProject
 Global
 	GlobalSection(SharedMSBuildProjectFiles) = preSolution
 		TwilightCoreShared\TwilightCoreShared.projitems*{01da90d0-eec8-427b-9409-3168a8089f20}*SharedItemsImports = 13
 		TwilightCoreShared\TwilightCoreShared.projitems*{251ac91d-397e-42af-925d-3c7d1a9c72d5}*SharedItemsImports = 4
 		TwilightCoreShared\TwilightCoreShared.projitems*{288636be-8ae8-4c50-a07d-18223377bf98}*SharedItemsImports = 4
+		TwilightCoreShared\TwilightCoreShared.projitems*{92e332e1-533e-42ca-b3ef-1e5bcfdd857b}*SharedItemsImports = 4
 	EndGlobalSection
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -74,6 +77,10 @@ Global
 		{4BE4E38A-4011-4CC9-8CD0-380BD8B417F0}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{4BE4E38A-4011-4CC9-8CD0-380BD8B417F0}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{4BE4E38A-4011-4CC9-8CD0-380BD8B417F0}.Release|Any CPU.Build.0 = Release|Any CPU
+		{92E332E1-533E-42CA-B3EF-1E5BCFDD857B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{92E332E1-533E-42CA-B3EF-1E5BCFDD857B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{92E332E1-533E-42CA-B3EF-1E5BCFDD857B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{92E332E1-533E-42CA-B3EF-1E5BCFDD857B}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

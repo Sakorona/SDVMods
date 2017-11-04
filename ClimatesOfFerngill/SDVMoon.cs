@@ -66,6 +66,11 @@ namespace ClimatesOfFerngillRebuild
             CurrPhase = MoonPhase.ErrorPhase;
         }
 
+        public override string ToString()
+        {
+            return DescribeMoonPhase();
+        }
+
         public static MoonPhase GetLunarPhase()
         {
             return SDVMoon.GetLunarPhase((int)Game1.stats.daysPlayed);
@@ -261,6 +266,33 @@ namespace ClimatesOfFerngillRebuild
                     return Helper.Get("moon-text.phase-waxinggibb");
                 default:
                     return Helper.Get("moon-text.error");
+            }
+        }
+
+        private string DescribeMoonPhase()
+        {
+            switch (this.CurrPhase)
+            {
+                case MoonPhase.ErrorPhase:
+                    return "Phase Error";
+                case MoonPhase.FirstQuarter:
+                    return "First Quarter";
+                case MoonPhase.FullMoon:
+                    return "Full Moon";
+                case MoonPhase.NewMoon:
+                    return "New Moon";
+                case MoonPhase.ThirdQuarter:
+                    return "Third Quarter";
+                case MoonPhase.WaningCrescent:
+                    return "Waning Crescent";
+                case MoonPhase.WaningGibbeous:
+                    return "Waning Gibbeous";
+                case MoonPhase.WaxingCrescent:
+                    return "Waxing Crescent";
+                case MoonPhase.WaxingGibbeous:
+                    return "Waxing Gibbeous";
+                default:
+                    return "Text Error";
             }
         }
 

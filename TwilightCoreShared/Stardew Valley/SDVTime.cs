@@ -1,4 +1,5 @@
-﻿using System;
+﻿using StardewValley;
+using System;
 
 namespace TwilightShards.Stardew.Common
 {
@@ -10,6 +11,16 @@ namespace TwilightShards.Stardew.Common
 
     public class SDVTime
     {
+        public static bool IsNight {
+            get
+            {
+                if (Game1.timeOfDay >= Game1.getStartingToGetDarkTime())
+                    return true;
+                else
+                    return false;
+            }
+        }
+
         int hour;
         int minute;
 
@@ -171,5 +182,6 @@ namespace TwilightShards.Stardew.Common
             else
                 return $"{(hour - 24).ToString().PadLeft(2,'0')}{minute.ToString().PadLeft(2, '0')}";
         }
+
     }
 }

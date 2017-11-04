@@ -1,22 +1,17 @@
 ﻿using StardewValley;
 using StardewModdingAPI;
 using TwilightShards.Stardew.Common;
+using TwilightShards.Common;
+using System;
+using System.Collections.Generic;
 
 namespace ClimatesOfFerngillRebuild
 {
-    internal enum StaminaStatus
-    {
-        NoDrain = 0,
-        Level1 = 1,
-        Level2 = 2
-    }
-
     internal class StaminaDrain
     {
-        private StaminaStatus HealthLevel;
         private WeatherConfig Config;
-        private StaminaStatus TodayDanger;
         private ITranslationHelper Helper;
+        private bool FarmerSick;
         private bool SickToday;
         private IMonitor Monitor;
 
@@ -26,137 +21,161 @@ namespace ClimatesOfFerngillRebuild
             Config = Options;
             Helper = SHelper;
             Monitor = mon;
-            HealthLevel = StaminaStatus.NoDrain;
-            TodayDanger = StaminaStatus.NoDrain;
         }
 
         public bool IsSick()
         {
-            if (HealthLevel != StaminaStatus.NoDrain)
-                return true;
-
-            return false;
+            return this.FarmerSick;
         }
 
-        public void OnNewDay(WeatherConditions Current)
+       public void MakeSick()
         {
-            SickToday = false; 
-            HealthLevel = StaminaStatus.NoDrain;
-            if (Current.UnusualWeather == SpecialWeather.Frost || 
-                (Current.TodayWeather == Game1.weather_lightning)
-                || WeatherConditions.IsHeatwave(Current.UnusualWeather))
-            {
-                //level 1 drain
-                if (Config.Verbose)
-                    Monitor.Log("Level 1 drain selected");
+            FarmerSick = true;
+            SDVUtilities.ShowMessage(Helper.Get("hud-text.desc_sick"));
+        }
 
-                TodayDanger = StaminaStatus.Level1;
-            }
-
-            else if (Current.UnusualWeather == SpecialWeather.Blizzard || 
-                    Current.UnusualWeather == SpecialWeather.Thundersnow ||
-                    (Current.TodayWeather == Game1.weather_lightning && 
-                        WeatherConditions.IsHeatwave(Current.UnusualWeather)))
-            {
-                    //level 2 drain
-                    if (Config.Verbose)
-                        Monitor.Log("Level 2 drain selected");
-
-                    TodayDanger = StaminaStatus.Level2;
-            }
-
-            else
-            {
-                //why was this NOT IN AN ELSE.
-                if (Config.Verbose)
-                    Monitor.Log("No drain selected");
-
-                TodayDanger = StaminaStatus.NoDrain;
-            }
+        public void OnNewDay()
+        {
+            SickToday = false;
+            FarmerSick = false;
         }
 
         public void ClearDrain()
         {
-            HealthLevel = StaminaStatus.NoDrain;
+            FarmerSick = false;
             SDVUtilities.ShowMessage(Helper.Get("hud-text.desc_cold_removed"));
         }
 
         public void Reset()
         {
             SickToday = false;
-            HealthLevel = StaminaStatus.NoDrain;
-            TodayDanger = StaminaStatus.NoDrain;
+            FarmerSick = false;
         }
 
-        public int TenMinuteTick(SpecialWeather conditions, int ticksOutside, int ticksTotal)
+        public bool FarmerCanGetSick()
         {
-            double amtOutside = ticksOutside / (double)ticksTotal;
-            bool processStamina = false;
-
-            /*if (Config.Verbose)
-                Monitor.Log($"Ticks: {ticksOutside}/{ticksTotal} with percentage {amtOutside.ToString("N3")} against" +
-                    $" target {Config.AffectedOutside}");         */
-
-            //poll for amount.
-            // 1. Check to make sure you've been outside enough in this span AND that you've not been sick or can get sick
-            //    an unlimited amount of times per day
-            // 2. Check specifically for frost and night
-            // 3. Check for heatwaves during the day. 
-            // 4. Check for lightning and blizzards at all times. 
-            if ((amtOutside >= Config.AffectedOutside) && (!SickToday || Config.SickMoreThanOnce) &&
-                ((Game1.isStartingToGetDarkOut() && conditions == SpecialWeather.Frost) ||
-                 (!Game1.isStartingToGetDarkOut() && WeatherConditions.IsHeatwave(conditions)))
-                )
+            if (FarmerSick)
             {
-                processStamina = true;
+                if (Config.Verbose)
+                    Monitor.Log("Farmer is already sick, returning false");
+                return false;
             }
 
-            if ((amtOutside >= Config.AffectedOutside) && (!SickToday || Config.SickMoreThanOnce) &&
-                ((Game1.isLightning) || (conditions == SpecialWeather.Blizzard)))
-            {
-                processStamina = true;
-            }
+            if (SickToday && !Config.SickMoreThanOnce)
+                return false;
 
-            if (processStamina)
-            { 
-                //if (Config.Verbose) Monitor.Log("Affected time is valid, altering stamina");
-
-                if (HealthLevel != TodayDanger) {
-
-                    if (TodayDanger == StaminaStatus.Level1)
-                        SDVUtilities.ShowMessage(Helper.Get("hud-text.desc_sick"));
-                    if (TodayDanger == StaminaStatus.Level2)
-                        SDVUtilities.ShowMessage(Helper.Get("hud-text.desc_flu"));
-                }
-
-                if (!SickToday || Config.SickMoreThanOnce)
-                {
-                    HealthLevel = TodayDanger;
-                    SickToday = true;
-                }
-
-                //so, a bit here.
-                //lightning and heatwaves is a thing - this corrects for night.
-                if (Game1.isLightning && (Game1.isStartingToGetDarkOut() && WeatherConditions.IsHeatwave(conditions)))
-                {
-                    HealthLevel = StaminaStatus.Level1;
-                    TodayDanger = StaminaStatus.Level1;
-                }
-
-                switch (HealthLevel)
-                {
-                    case StaminaStatus.NoDrain:
-                        return 0;
-                    case StaminaStatus.Level1:
-                        return -1 * Config.Tier1Drain;
-                    case StaminaStatus.Level2:
-                        return -1 * Config.Tier2Drain;
-                    default:
-                        return 0;
-                }
-            }
-            return 0;
+            return true;
         }
 
+        public int TenMinuteTick(SpecialWeather conditions, int ticksOutside, int ticksTotal, MersenneTwister Dice, int weather, bool IsFoggy)
+        {
+            double amtOutside = ticksOutside / (double)ticksTotal, totalMulti = 0;
+            int staminaAffect = 0;
+            var condList = new List<string>();
+
+            if (Config.Verbose)
+                Monitor.Log($"Ticks: {ticksOutside}/{ticksTotal} with percentage {amtOutside.ToString("N3")} against" +
+                    $" target {Config.AffectedOutside}");
+
+            //Logic: At all times, if the today danger is not null, we should consider processing.
+            //However: If it's frost, only at night. If it's a heatwave, only during the day.
+            //So this means: if it's storming, you can get sick. If it's a blizzard or thundersnow.. you can get sick
+            //If it's frost or heatwave during the appropriate time.. you can get sick
+
+            //First, update the sick status
+            if (amtOutside >= Config.AffectedOutside && ((Dice.NextDoublePositive() >= Config.ChanceOfGettingSick) || this.FarmerSick))
+            {
+                //check if it's a valid condition
+                if (ValidConditions(weather, conditions) && FarmerCanGetSick())
+                {
+                    this.MakeSick();
+
+                    if (Config.Verbose)
+                        Monitor.Log("Making the farmer sick");
+                }
+
+                //test status
+                if (Config.Verbose)              
+                    Monitor.Log($"Status update. Farmer Sick: {FarmerSick} and Valid Conditions: {ValidConditions(weather, conditions)}");
+
+                //now that we've done that, go through the various conditions
+                if (this.FarmerSick && (weather == Game1.weather_lightning || conditions == SpecialWeather.Thundersnow))
+                {
+                    totalMulti += 1;
+                    condList.Add("Lightning or Thundersnow");
+                }
+
+                if (this.FarmerSick && IsFoggy)
+                {
+                    totalMulti += .5;
+                    condList.Add("Fog");
+                }
+
+                if (this.FarmerSick && IsFoggy && SDVTime.IsNight)
+                {
+                    totalMulti += .25;
+                    condList.Add("Night Fog");
+                }
+
+                if (this.FarmerSick && conditions == SpecialWeather.Blizzard)
+                {
+                    totalMulti += 1.25;
+                    condList.Add("Blizzard");
+                }
+
+                if (this.FarmerSick && WeatherConditions.IsFrost(conditions) && SDVTime.IsNight)
+                {
+                    totalMulti += 1.25;
+                    condList.Add("Night Frost");
+                }
+
+                if (this.FarmerSick && conditions == SpecialWeather.Thundersnow && SDVTime.IsNight)
+                {
+                    totalMulti += .5;
+                    condList.Add("Night Thundersnow");
+                }
+
+                if (this.FarmerSick && conditions == SpecialWeather.Blizzard && SDVTime.IsNight)
+                {
+                    totalMulti += .5;
+                    condList.Add("Night Blizzard");
+                }
+
+                if (this.FarmerSick && WeatherConditions.IsHeatwave(conditions) && !SDVTime.IsNight)
+                {
+                    totalMulti += 1.25;
+                    condList.Add("Day Heatwave");
+                }
+            }
+
+
+            staminaAffect -= (int)Math.Floor(Config.StaminaDrain * totalMulti);
+            
+            if (Config.Verbose && this.FarmerSick)
+            {
+                string condString = "[ ";
+                for (int i = 0; i < condList.Count; i++)
+                {
+                    if (i != condList.Count - 1)
+                    {
+                        condString += condList[i] + ", ";
+                    }
+                    else
+                    {
+                        condString += condList[i];
+                    }
+                }
+                condString += " ]";
+
+                Monitor.Log($"[{Game1.timeOfDay}] Conditions for the drain are {condString} for a total multipler of {totalMulti} for a total drain of {staminaAffect}");
+            }
+            
+            return staminaAffect;
+        }
+
+        private bool ValidConditions(int weather, SpecialWeather conditions)
+        {
+            return weather == Game1.weather_lightning || conditions == SpecialWeather.Blizzard || WeatherConditions.IsFrost(conditions) || WeatherConditions.IsHeatwave(conditions) || conditions == SpecialWeather.Thundersnow;
+        }
     }
 }

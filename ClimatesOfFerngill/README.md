@@ -24,11 +24,22 @@ This mod does the following:
 ## Known Issues
 
 ## To Do
-- Maybe add icons for some of the new weathers?
 
 ## Wishlist
 
 ## Changelog
+v1.1.12p5
+ - overhauled stamina system to correct an odd error. See writeup for more details.
+ - updated the console command to actually update the internal tracker. :v
+ - possiblity of all day fog (.1%) added to fog time
+
+v1.1.12p4
+ - the hud overdraw code is now disabled on festival days
+ - the hud overdraw code that was unneccesary was removed
+ - it should properly not darken on inventory menu (and others, by using the right event)
+ - error fixed on normal and enhanced climates during the second week of spring
+ - corrected an incorrect filter causing wind to never be added
+
 v1.1.12p3 
 - Text tweaks to make it flow properly
 - The TV and popup will have some lines about fog now
@@ -44,7 +55,7 @@ v1.1.12p3
 - fixed the path being capitlization inspecific
 - the mouse will draw over the icon again, and the weather icon darkens properly
   when menus draw.
-  - No longer darkens for dialogue when it shouldn't.
+ - No longer darkens for dialogue when it shouldn't.
 - fixed fog and snow drawing over hud code.
 
 v1.1.12p2
@@ -112,12 +123,12 @@ over a certain value.). Valid 0-1, but it's recommended that this is kept low. D
 
  - 'SickMoreThanOnce' - By default, the false means you can only get sick once a day. Set it to true to be affected by multiple colds.
 
- - 'Tier1Drain' - A tier 1 cold drains this much stamina per ten minutes. Default: '2'
-
- - 'Tier2Drain' - A tier 2 cold drains this much stamina per ten minutes. Default: '4'
+ - 'StaminaDrain' - This is an int containing the default stamina drain for hazardous events. See the writeup (soon) for more information. Default is '2'. Valid range is any number between foo and bar.'
 
  - 'DeadCropPercentage' - The amount of crops that a heatwave and frost can kill. (Note: Frost will kill more than heatwaves). Default: '.1' Valid range is 0 to 1.
 
  - 'CropResistance' - This represents the resistance an averagecrop has to heatwaves. Frosts have half this resistance. Default: '.4' Valid Range is 0 to 1.
 
  - 'DarkFogChance' - This controls the chance of the darker fog appearing. Default is set to '.0875' (or a 1/8th chance if it's foggy it'll be dark fog.) Valid Range is 0 to 1.
+
+ - 'ChanceOfGettingSick' - Controls the chance you'll get sick when conditions are matched. Default is set to '.7' for (70% chance). Valid Range is 0 to 1.
