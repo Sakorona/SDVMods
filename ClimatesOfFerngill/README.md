@@ -1,6 +1,6 @@
 ﻿# Climates of Ferngill (Rebuild) You Can (Not) Have Weather
 
-Current Version (20 October 2017): v1.1.12p3 beta
+Current Version (4 November 2017): v1.2 rc1
 
 ## What's New
 
@@ -20,6 +20,36 @@ This mod does the following:
 - Changes the text for the TV weather channel
 - Going out in storms, blizzards, frosts and heatwaves is now more perilous, as it drains your stamina. Thankfully, 
     a 'Muscle Remedy' has been found to cure even the hardiest flu
+
+## Stamina System
+
+__Very Important: Read this before you alter StaminaDrain in the config!__
+
+Rather than a fixed penalty for certain conditions, this now calculates a multiplier based on the conditions prevailing.
+
+Every ten minutes, the mod checks to see if you've been outside for a certain percentage of the last 10 minutes. By default, it's set to 65%. (This percentage is calculated by counting the ticks you've been outside and the total number in the span to account for time change mods). Then, it generates a random number and tests it against a chance to get sick. By default, this is 70%. In addition, this must be during certain weather conditions:
+*Temperature: Frost or Heatwave (as defined in the config file, see the readme for more information)
+*Weathers: Lightning
+*Special Weathers: Thundersnow, Blizzard
+(NB: While you incur a stamina penalty for being sick in fog, it deliberately does not trigger this.)
+
+The penalties are cumulative - that is, they add up to the final multiplier.
+*Lightning : +100% ( 1)
+*Thundersnow: +100% (1)
+*Thundersnow (nighttime): +50% (.5)
+*Foggy: +50% (.5)
+*Foggy (nightime) +25% (.25)
+*Blizzard: +125% (1.25)
+*Blizzard (nighttime) +50% (.5)
+*Frost (nightime): +125% (1.25) - this is not during the winter. During winter, the frost penalty is untriggered.
+*Heatwave (daytime): +125% (1.25)
+
+The calculated number is then rounded __down__
+
+For example, therefore, if you're outduring a storm, with the base of 2, you only take a stamina penalty of 2. But if it's also a heatwave, your penatly is now (+1+1.25)=*2.25 or 4.5. So a penalty of 4.
+If you're out in a blizzard during the day, it's *1.25 or 2.5 rounded down to 2. If you're out in that blizzard at night, another .5 (1.25+.5) is added making it 1.75 or 3.5 rounded down to 3.
+
+(This does mean a foggy blizzard at night is (+.5+.25+1.25+.5 or *2.25), and if you somehow get this in fall, would be *3.5)
 
 ## Known Issues
 
