@@ -8,7 +8,7 @@ documentation, licenses, and release notes. May have other related projects that
 * **[Customizable Cart Redux](https://rd.nexusmods.com/stardewvalley/mods/1402)**<small> ([source](CustomizableCartRedux))</small>
   _Lets you customize when the cart appears, and how many items it has._
 
-* **Quest Overhaul** <small>([source](QuestOverhaul)</small>
+* **Quest Overhaul** <small>([source](QuestOverhaul))</small>
   _This will overhaul the quest system, with more to come._
   
 * **Tree Overhaul**<small> ([source](TreeOverhaul))</small>
