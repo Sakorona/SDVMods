@@ -68,7 +68,7 @@ namespace ClimatesOfFerngillRebuild
 
         public override string ToString()
         {
-            return DescribeMoonPhase();
+            return DescribeMoonPhase() + " on day " + GetDayOfCycle();
         }
 
         public static MoonPhase GetLunarPhase()
@@ -76,12 +76,20 @@ namespace ClimatesOfFerngillRebuild
             return SDVMoon.GetLunarPhase((int)Game1.stats.daysPlayed);
         }        
 
+        public int GetDayOfCycle()
+        {
+            int day = (int)Game1.stats.daysPlayed;
+            int currentCycle = (int)Math.Floor(day / (double)cycleLength);
+            int currentDay = day - (cycleLength * currentCycle);
+            return currentDay;
+        }
+
         public static MoonPhase GetLunarPhase(int day)
         {
             //divide it by the cycle.
             int currentCycle = (int)Math.Floor(day / (double)cycleLength);
             int currentDay = day - (cycleLength * currentCycle);
-            //int currentDay = day - ((int)(Math.Floor(day / (double)cycleLength)) * cycleLength);
+            Console.Write($"Day is {day} with current cycle is {currentCycle} and currentDay is {currentDay}");
 
             //Day 0 and 16 are the New Moon, so Day 8 must be the Full Moon. Day 4 is 1Q, Day 12 is 3Q. Coorespondingly..
             switch (currentDay)

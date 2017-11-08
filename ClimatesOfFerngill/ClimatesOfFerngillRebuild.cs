@@ -99,8 +99,8 @@ namespace ClimatesOfFerngillRebuild
         private static TV Target;
         public static Texture2D fadeToBlackRect;
 
-        private Color nightColor = new Color((int)byte.MaxValue, (int)byte.MaxValue, 0);
 
+        private Color nightColor = new Color((int)byte.MaxValue, (int)byte.MaxValue, 0);
         private bool Disabled = false;
 
         /// <summary> Main mod function. </summary>
@@ -145,6 +145,7 @@ namespace ClimatesOfFerngillRebuild
                 MenuEvents.MenuChanged += MenuEvents_MenuChanged;
                 GameEvents.UpdateTick += CheckForChanges;
                 SaveEvents.AfterReturnToTitle += ResetMod;
+                GraphicsEvents.OnPostRenderGuiEvent += DrawOverMenus;
                 GraphicsEvents.OnPreRenderHudEvent += DrawPreHudObjects;
                 GraphicsEvents.OnPostRenderHudEvent += DrawObjects;
                 LocationEvents.CurrentLocationChanged += LocationEvents_CurrentLocationChanged;
@@ -153,11 +154,19 @@ namespace ClimatesOfFerngillRebuild
 
                 //console commands
                 helper.ConsoleCommands
-                      .Add("weather_settommorowweather", helper.Translation.Get("console-text.desc_tmrweather"), TmrwWeatherChangeFromConsole)
-                      .Add("weather_setweather", helper.Translation.Get("console-text.desc_setweather"), WeatherChangeFromConsole)
+                      .Add("weather_settommorow", helper.Translation.Get("console-text.desc_tmrweather"), TmrwWeatherChangeFromConsole)
+                      .Add("weather_changeweather", helper.Translation.Get("console-text.desc_setweather"), WeatherChangeFromConsole)
                       .Add("debug_changecondt", "Changes conditions. Debug function.", DebugChgCondition)
                       .Add("debug_staminaforce", "Forces stamina drain level. Debug function", DebugStaForce)
                       .Add("debug_weatherstatus", "Prints an overly detailed weahter status screen out.", DebugWeather);
+            }
+        }
+
+        private void DrawOverMenus(object sender, EventArgs e)
+        {
+            if (Game1.showingEndOfNightStuff && Game1.activeClickableMenu is ShippingMenu menu && !Game1.wasRainingYesterday)
+            {
+                Game1.spriteBatch.Draw(OurIcons.source, new Vector2(15, 15), OurIcons.GetNightMoonSprite(OurMoon.GetDayOfCycle()), Color.LightBlue);
             }
         }
 
@@ -165,7 +174,7 @@ namespace ClimatesOfFerngillRebuild
         {
             //print a complete weather status. 
             string retString = "";
-            retString += $"Weather for {SDate.Now()} is {CurrentWeather.ToString()}. {Environment.NewLine} Moon Phase {OurMoon.ToString()}";
+            retString += $"Weather for {SDate.Now()} is {CurrentWeather.ToString()}. Moon Phase is {OurMoon.ToString()}";
             Monitor.Log(retString);
         }
 
@@ -220,7 +229,7 @@ namespace ClimatesOfFerngillRebuild
             if (GameClimate is null)
                 Monitor.Log("GameClimate is null");
             if (e.NewMenu is null)
-                Monitor.Log("e.NewMenu is null");
+                Monitor.Log("e.NewMenu is null");              
 
             if (e.NewMenu is DialogueBox box)
             {

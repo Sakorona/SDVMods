@@ -253,7 +253,7 @@ namespace ClimatesOfFerngillRebuild
 
                 // draw weather icon
                 contentBatch.Draw(IconSheet.source, new Vector2(x + leftOffset, y + topOffset), 
-                    IconSheet.GetWeatherSprite(CurrentWeather.TodayWeather), Color.White);
+                    IconSheet.GetWeatherSprite(CurrentWeather.TodayWeather, CurrentWeather.UnusualWeather), Color.White);
                 leftOffset += 72;
                 string weatherString = "";
 

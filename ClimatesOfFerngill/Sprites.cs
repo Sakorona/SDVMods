@@ -31,6 +31,48 @@ namespace ClimatesOfFerngillRebuild
                 source2 = Game1.mouseCursors;
             }
 
+            public Rectangle GetNightMoonSprite(int moonDay)
+            {
+                switch (moonDay)
+                {
+                    case 16:
+                    case 0:
+                        return Icons.BigMoonNewDay0;
+                    case 1:
+                        return Icons.BigWaxingCrescentDay1;
+                    case 2:
+                        return Icons.BigWaxingCrescentDay2;
+                    case 3:
+                        return Icons.BigWaxingCrescentDay3;
+                    case 4:
+                        return Icons.BigFirstQuarterDay4;
+                    case 5:
+                        return Icons.BigWaxingGibbeousDay5;
+                    case 6:
+                        return Icons.BigWaxingGibbeousDay6;
+                    case 7:
+                        return Icons.BigWaxingGibbeousDay7;
+                    case 8:
+                        return Icons.BigFullMoonDay8;
+                    case 9:
+                        return Icons.BigWaningGibbeousDay9;
+                    case 10:
+                        return Icons.BigWaningGibbeousDay10;
+                    case 11:
+                        return Icons.BigWaningGibbeousDay11;
+                    case 12:
+                        return Icons.BigThirdQuarterDay12;
+                    case 13:
+                        return Icons.BigWaningCrescentDay13;
+                    case 14:
+                        return Icons.BigWaningCrescentDay14;
+                    case 15:
+                        return Icons.BigWaningCrescentDay15;
+                }
+
+                return Icons.BigMoonNewDay0;
+            }
+
             public Rectangle GetMoonSprite(MoonPhase moon)
             {
                 if (moon == MoonPhase.FirstQuarter)
@@ -53,8 +95,11 @@ namespace ClimatesOfFerngillRebuild
                 return Icons.NewMoon;
             }
 
-            public Rectangle GetWeatherSprite(int weather)
+            public Rectangle GetWeatherSprite(int weather, SpecialWeather cond)
             {
+                if (cond == SpecialWeather.Blizzard)
+                    return Icons.WeatherBlizzard;
+
                 if (weather == Game1.weather_debris)
                     return Icons.WeatherWindy;
                 if (weather == Game1.weather_festival)
@@ -82,6 +127,26 @@ namespace ClimatesOfFerngillRebuild
             public static readonly Rectangle ThirdQuarter = new Rectangle(174, 157, 37, 30);
             public static readonly Rectangle WaningGibbeous = new Rectangle(99, 153, 37, 35);
 
+            //big moon
+            public static readonly Rectangle BigMoonNewDay0 = new Rectangle(13, 290, 78, 78);
+            public static readonly Rectangle BigWaxingCrescentDay1 = new Rectangle(86, 288, 71, 67);
+            public static readonly Rectangle BigWaxingCrescentDay2 = new Rectangle(158, 295, 75, 66);
+            public static readonly Rectangle BigWaxingCrescentDay3 = new Rectangle(233, 289, 78, 73); 
+            public static readonly Rectangle BigFirstQuarterDay4 = new Rectangle(310,287,81,76);
+            public static readonly Rectangle BigWaxingGibbeousDay5 = new Rectangle(393, 286, 73, 76);
+            public static readonly Rectangle BigWaxingGibbeousDay6 = new Rectangle(466, 286, 79, 75);
+            public static readonly Rectangle BigWaxingGibbeousDay7 = new Rectangle(544, 286, 77, 74);
+            public static readonly Rectangle BigFullMoonDay8 = new Rectangle(11, 370, 76, 69);
+            public static readonly Rectangle BigWaningGibbeousDay9 = new Rectangle(86, 370, 75, 70);
+            public static readonly Rectangle BigWaningGibbeousDay10 = new Rectangle(161, 369, 73, 70);
+            public static readonly Rectangle BigWaningGibbeousDay11 = new Rectangle(234, 366, 75, 75);
+            public static readonly Rectangle BigThirdQuarterDay12 = new Rectangle(311, 367, 72, 73);
+            public static readonly Rectangle BigWaningCrescentDay13 = new Rectangle(388, 369, 73, 70);
+            public static readonly Rectangle BigWaningCrescentDay14 = new Rectangle(471, 369, 77, 74);
+            public static readonly Rectangle BigWaningCrescentDay15 = new Rectangle(550, 369, 75, 74);
+
+
+            //Weather
             public static readonly Rectangle WeatherSunny = new Rectangle(24, 196, 40, 37);
             public static readonly Rectangle WeatherRainy = new Rectangle(63, 197, 35, 36);
             public static readonly Rectangle WeatherStormy = new Rectangle(96, 196, 41, 42);
@@ -89,6 +154,7 @@ namespace ClimatesOfFerngillRebuild
             public static readonly Rectangle WeatherWindy = new Rectangle(180, 198, 35, 31);
             public static readonly Rectangle WeatherWedding = new Rectangle(221, 196, 37, 35);
             public static readonly Rectangle WeatherFestival = new Rectangle(260, 198, 42, 38);
+            public static readonly Rectangle WeatherBlizzard = new Rectangle(301, 195, 43, 38);
 
             /// <summary>A down arrow for scrolling content.</summary>
             public static readonly Rectangle DownArrow = new Rectangle(12, 76, 40, 44);

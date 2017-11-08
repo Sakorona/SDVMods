@@ -130,14 +130,14 @@ namespace ClimatesOfFerngillRebuild
         public override string ToString()
         {
             string ret = "";
-            ret += $"Low for today is {TodayTemps.LowerBound} with the high being {TodayTemps.HigherBound}. The current special condition is {WeatherConditions.DescCond(UnusualWeather)} with standard weather being {WeatherConditions.DescWeather(TodayWeather)}.";
+            ret += $"Low for today is {TodayTemps.LowerBound.ToString("N3")} with the high being {TodayTemps.HigherBound.ToString("N3")}. The current special condition is {WeatherConditions.DescCond(UnusualWeather)} with standard weather being {WeatherConditions.DescWeather(TodayWeather)}.";
 
             if (IsFogVisible())
             {
-                ret += $"Fog is visible until {FogExpirTime} and it is dark fog: {IsDarkFog()}";
+                ret += $" Fog is visible until {FogExpirTime} and it is dark fog: {IsDarkFog()}. ";
             }
 
-            ret += $"Weather set for tommorow is {WeatherConditions.DescWeather(TomorrowWeather)} with high {TomorrowTemps.HigherBound} and low {TomorrowTemps.LowerBound}";
+            ret += $"Weather set for tommorow is {WeatherConditions.DescWeather(TomorrowWeather)} with high {TomorrowTemps.HigherBound.ToString("N3")} and low {TomorrowTemps.LowerBound.ToString("N3")} ";
 
             return ret;
         }
@@ -206,6 +206,9 @@ namespace ClimatesOfFerngillRebuild
         public void InitFog(MersenneTwister Dice, WeatherConfig WeatherOpt, bool FogTypeDark = false)
         {
             this.FogColor = Color.White * 1.5f;
+            
+            //this.FogColor = Color.Red * 1f; //HEATWAVE FOG!!!!!!!! :D
+            //this.FogColor = Color.LightGreen * 1.5f; //new normal - test C
             this.FogAlpha = 1f;
             this.FogTypeDark = FogTypeDark;
             this.AmbientFog = true;
