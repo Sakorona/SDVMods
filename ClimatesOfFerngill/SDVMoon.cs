@@ -7,6 +7,8 @@ using System.Collections.Generic;
 using Microsoft.Xna.Framework;
 using StardewValley.Locations;
 using System.Linq;
+using StardewModdingAPI.Utilities;
+using TwilightShards.Stardew.Common;
 
 namespace ClimatesOfFerngillRebuild
 {
@@ -73,26 +75,33 @@ namespace ClimatesOfFerngillRebuild
 
         public static MoonPhase GetLunarPhase()
         {
-            return SDVMoon.GetLunarPhase((int)Game1.stats.daysPlayed);
+            return SDVMoon.GetLunarPhase(SDVUtilities.GetDayFromDate(SDate.Now()));
         }        
 
         public int GetDayOfCycle()
         {
-            int day = (int)Game1.stats.daysPlayed;
-            int currentCycle = (int)Math.Floor(day / (double)cycleLength);
-            int currentDay = day - (cycleLength * currentCycle);
-            return currentDay;
+            return SDVMoon.GetDayOfCycle(SDate.Now());
         }
 
-        public static MoonPhase GetLunarPhase(int day)
+        public static int GetDayOfCycle(SDate Today)
+        {
+            return SDVUtilities.GetDayFromDate(Today) % cycleLength;
+        }
+
+        public static MoonPhase GetLunarPhase(SDate Today)
         {
             //divide it by the cycle.
-            int currentCycle = (int)Math.Floor(day / (double)cycleLength);
-            int currentDay = day - (cycleLength * currentCycle);
-            Console.Write($"Day is {day} with current cycle is {currentCycle} and currentDay is {currentDay}");
+            int currentCycle = (int)Math.Floor(SDVUtilities.GetDayFromDate(Today) / (double)cycleLength);
+            int currentDay = GetDayOfCycle(Today);
+            Console.Write($"Day is {SDVUtilities.GetDayFromDate(Today)} with current cycle is {currentCycle} and currentDay is {currentDay}");
 
+            return SDVMoon.GetLunarPhase(currentDay);
+        }
+
+        private static MoonPhase GetLunarPhase(int day)
+        {
             //Day 0 and 16 are the New Moon, so Day 8 must be the Full Moon. Day 4 is 1Q, Day 12 is 3Q. Coorespondingly..
-            switch (currentDay)
+            switch (day)
             {
                 case 0:
                     return MoonPhase.NewMoon;

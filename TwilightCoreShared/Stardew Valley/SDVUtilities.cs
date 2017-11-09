@@ -1,4 +1,5 @@
 ﻿using Microsoft.Xna.Framework;
+using StardewModdingAPI.Utilities;
 using StardewValley;
 using StardewValley.Monsters;
 using StardewValley.TerrainFeatures;
@@ -38,6 +39,24 @@ namespace TwilightShards.Stardew.Common
             }
 
             return s;
+        }
+
+        /// <summary>Get a number representing the number of days since Year 1 Spring 0. Mainly intended to have an absolute refrence</summary>
+        public static int GetDayFromDate(SDate Date)
+        {
+            int days = (Date.Year - 1) * 112; 
+            if (Date.Season == "spring")
+                days += 0;
+            else if (Date.Season == "summer")
+                days += 28;
+            else if (Date.Season == "fall")
+                days += 56;
+            else if (Date.Season == "winter")
+                days += 84;
+
+            days += Date.Day;
+
+            return days;
         }
 
         public static string PrintCurrentWeatherStatus()
