@@ -182,7 +182,7 @@ namespace ClimatesOfFerngillRebuild
                 }
 
                 if (cropsAffected > 0)
-                    Game1.addHUDMessage(new HUDMessage(Helper.Get("moon-text.fullmoon_eff")));
+                    Game1.addHUDMessage(new HUDMessage(Helper.Get("moon-text.fullmoon_eff", new { cropsAffected = cropsAffected })));
             }
 
             if (SDVMoon.GetLunarPhase() == MoonPhase.NewMoon)
@@ -203,7 +203,7 @@ namespace ClimatesOfFerngillRebuild
                 }
 
                 if (cropsAffected > 0)
-                    Game1.addHUDMessage(new HUDMessage(Helper.Get("moon-text.newmoon_eff")));
+                    Game1.addHUDMessage(new HUDMessage(Helper.Get("moon-text.newmoon_eff", new { cropsAffected = cropsAffected })));
             }
         }
 
