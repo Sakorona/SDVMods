@@ -27,6 +27,7 @@ namespace ClimatesOfFerngillRebuild
         public double CropResistance { get; set; }
         public double DarkFogChance { get; set; }
         public double ChanceOfGettingSick { get; set; }
+        public bool Use12HourTime { get; set; }
 
         public bool Verbose { get; set; }
         
@@ -52,8 +53,9 @@ namespace ClimatesOfFerngillRebuild
             AllowStormsSpringYear1 = false; //default setting - maintains the fact that starting players may not 
             ShowBothScales = true; //default setting.
             DeadCropPercentage = .1; //default setting
-            CropResistance = .4; //default settting
+            CropResistance = .75; //default settting
             DarkFogChance = .0875; //default setting
+            Use12HourTime = false; //default setting
 
             // be able to deal with lightning strikes
 

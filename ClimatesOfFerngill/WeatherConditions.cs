@@ -9,7 +9,7 @@ using TwilightShards.Stardew.Common;
 
 namespace ClimatesOfFerngillRebuild
 {
-    public class WeatherConditions
+    public class WeatherConditionsOLD
     {
         //STATIC MEMBERS
         public static bool IsHeatwave(SpecialWeather cond) => (cond == SpecialWeather.DryLightningAndHeatwave || cond == SpecialWeather.Heatwave);
@@ -25,7 +25,7 @@ namespace ClimatesOfFerngillRebuild
         // Things needed for internal fog stuff.
         private bool AmbientFog { get; set; }
         private Rectangle FogSource = new Microsoft.Xna.Framework.Rectangle(640, 0, 64, 64);
-        private bool FogTypeDark { get; set; }
+        private FogType CurrentFogType { get; set; }
         private Color FogColor { get; set; }
         private float FogAlpha { get; set; }
         private Vector2 FogPosition { get; set; }
@@ -35,21 +35,24 @@ namespace ClimatesOfFerngillRebuild
         public bool IsFogVisible() => (AmbientFog);
         public void SetTodayTemps(RangePair a) => TodayTemps = new RangePair(a, EnforceHigherOverLower: true);
         public void SetTmrwTemps(RangePair a) => TomorrowTemps = new RangePair(a, EnforceHigherOverLower: true);
-        public bool IsDarkFog() => (IsFogVisible() && FogTypeDark);
+        public bool IsDarkFog() => (IsFogVisible() && CurrentFogType == FogType.Dark);
         public void SetFogExpirTime(SDVTime t) => FogExpirTime = t;
         public SDVTime GetFogEndTime() => (FogExpirTime ?? new SDVTime(0600));
         public bool IsDangerousWeather() => (UnusualWeather != SpecialWeather.None);
 
-        public void ForceDarkFog() => FogTypeDark = true;
+        public void ForceDarkFog() => CurrentFogType = FogType.Dark;
+        public void ForceNormalFog() => CurrentFogType = FogType.Normal;
+        public void ForceBlindingFog() => CurrentFogType = FogType.Blinding;
+
         public double GetTodayHigh() => TodayTemps.HigherBound;
         public double GetTodayLow() => TodayTemps.LowerBound;
-        public double GetTodayHighF() => ConvCtF(TodayTemps.HigherBound);
-        public double GetTodayLowF() => ConvCtF(TodayTemps.LowerBound);
+        public double GetTodayHighF() => GeneralFunctions.ConvCtF(TodayTemps.HigherBound);
+        public double GetTodayLowF() => GeneralFunctions.ConvCtF(TodayTemps.LowerBound);
         public double GetTmrwHigh() => TomorrowTemps.HigherBound;
         public double GetTmrwLow() => TomorrowTemps.LowerBound;
-        public double GetTmrwHighF() => ConvCtF(TomorrowTemps.HigherBound);
-        public double GetTmrwLowF() => ConvCtF(TomorrowTemps.LowerBound);
-        private double ConvCtF(double temp) => ((temp * 1.8) + 32);
+        public double GetTmrwHighF() => GeneralFunctions.ConvCtF(TomorrowTemps.HigherBound);
+        public double GetTmrwLowF() => GeneralFunctions.ConvCtF(TomorrowTemps.LowerBound);
+
 
         public void ResetTodayTemps(double high, double low)
         {
@@ -80,7 +83,7 @@ namespace ClimatesOfFerngillRebuild
             TodayWeather = 0;
             TomorrowWeather = 0;
             UnusualWeather = SpecialWeather.None;
-            FogTypeDark = false;
+            CurrentFogType = FogType.None;
             AmbientFog = false;
             FogAlpha = 0f;
             FogExpirTime = new SDVTime(0600);
@@ -197,7 +200,7 @@ namespace ClimatesOfFerngillRebuild
         /// </summary>
         public void ResetFog()
         {
-            FogTypeDark = false;
+            CurrentFogType = FogType.None;
             AmbientFog = false;
             FogAlpha = 0f;
             FogExpirTime = new SDVTime(0600);
@@ -257,6 +260,8 @@ namespace ClimatesOfFerngillRebuild
             {
                 if (FogTypeDark)
                 {
+                    Game1.outdoorLight = new Color(214, 210, 208);
+
                     if (time == (FogExpirTime - 30).ReturnIntTime())
                     {
                         if (debug) Monitor.Log("Now at T-30 minutes");
@@ -277,6 +282,8 @@ namespace ClimatesOfFerngillRebuild
                 }
                 else
                 {
+                    Game1.outdoorLight = new Color(180, 155, 110);
+
                     if (time == (FogExpirTime - 30).ReturnIntTime())
                     {
                         if (debug) Monitor.Log("Now at T-30 minutes");

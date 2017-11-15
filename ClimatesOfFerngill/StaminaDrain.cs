@@ -3,6 +3,7 @@ using StardewModdingAPI;
 using TwilightShards.Stardew.Common;
 using TwilightShards.Common;
 using System;
+using EnumsNET;
 using System.Collections.Generic;
 
 namespace ClimatesOfFerngillRebuild
@@ -67,7 +68,7 @@ namespace ClimatesOfFerngillRebuild
             return true;
         }
 
-        public int TenMinuteTick(SpecialWeather conditions, int ticksOutside, int ticksTotal, MersenneTwister Dice, int weather, bool IsFoggy)
+        public int TenMinuteTick(WeatherConditions conditions, int ticksOutside, int ticksTotal, MersenneTwister Dice)
         {
             double amtOutside = ticksOutside / (double)ticksTotal, totalMulti = 0;
             int staminaAffect = 0;
@@ -86,7 +87,7 @@ namespace ClimatesOfFerngillRebuild
             if (amtOutside >= Config.AffectedOutside && ((Dice.NextDoublePositive() >= Config.ChanceOfGettingSick) || this.FarmerSick))
             {
                 //check if it's a valid condition
-                if (ValidConditions(weather, conditions) && FarmerCanGetSick())
+                if (conditions.GetCurrentConditions().HasAnyFlags(CurrentWeather.Blizzard | CurrentWeather.Lightning) || (conditions.GetCurrentConditions().HasFlag(CurrentWeather.Frost) && SDVTime.IsNight) | (conditions.GetCurrentConditions().HasFlag(CurrentWeather.Heatwave) && !SDVTime.IsNight) && FarmerCanGetSick())
                 {
                     this.MakeSick();
 
@@ -96,52 +97,52 @@ namespace ClimatesOfFerngillRebuild
 
                 //test status
                 if (Config.Verbose)              
-                    Monitor.Log($"Status update. Farmer Sick: {FarmerSick} and Valid Conditions: {ValidConditions(weather, conditions)}");
+                    Monitor.Log($"Status update. Farmer Sick: {FarmerSick} and Valid Conditions: {conditions.GetCurrentConditions().HasAnyFlags(CurrentWeather.Blizzard | CurrentWeather.Lightning) || (conditions.GetCurrentConditions().HasFlag(CurrentWeather.Frost) && SDVTime.IsNight) | (conditions.GetCurrentConditions().HasFlag(CurrentWeather.Heatwave) && !SDVTime.IsNight)}");
 
                 //now that we've done that, go through the various conditions
-                if (this.FarmerSick && (weather == Game1.weather_lightning || conditions == SpecialWeather.Thundersnow))
+                if (this.FarmerSick && conditions.GetCurrentConditions().HasFlag(CurrentWeather.Lightning))
                 {
                     totalMulti += 1;
                     condList.Add("Lightning or Thundersnow");
                 }
 
-                if (this.FarmerSick && IsFoggy)
+                if (this.FarmerSick && conditions.GetCurrentConditions().HasFlag(CurrentWeather.Fog))
                 {
                     totalMulti += .5;
                     condList.Add("Fog");
                 }
 
-                if (this.FarmerSick && IsFoggy && SDVTime.IsNight)
+                if (this.FarmerSick && conditions.GetCurrentConditions().HasFlag(CurrentWeather.Fog) && SDVTime.IsNight)
                 {
                     totalMulti += .25;
                     condList.Add("Night Fog");
                 }
 
-                if (this.FarmerSick && conditions == SpecialWeather.Blizzard)
+                if (this.FarmerSick && conditions.GetCurrentConditions().HasFlag(CurrentWeather.Blizzard))
                 {
                     totalMulti += 1.25;
                     condList.Add("Blizzard");
                 }
 
-                if (this.FarmerSick && WeatherConditions.IsFrost(conditions) && SDVTime.IsNight)
+                if (this.FarmerSick && conditions.GetCurrentConditions().HasFlag(CurrentWeather.Frost) && SDVTime.IsNight)
                 {
                     totalMulti += 1.25;
                     condList.Add("Night Frost");
                 }
 
-                if (this.FarmerSick && conditions == SpecialWeather.Thundersnow && SDVTime.IsNight)
+                if (this.FarmerSick && conditions.GetCurrentConditions().HasAllFlags(CurrentWeather.Lightning | CurrentWeather.Snow) && SDVTime.IsNight)
                 {
                     totalMulti += .5;
                     condList.Add("Night Thundersnow");
                 }
 
-                if (this.FarmerSick && conditions == SpecialWeather.Blizzard && SDVTime.IsNight)
+                if (this.FarmerSick && conditions.GetCurrentConditions().HasFlag(CurrentWeather.Blizzard) && SDVTime.IsNight)
                 {
                     totalMulti += .5;
                     condList.Add("Night Blizzard");
                 }
 
-                if (this.FarmerSick && WeatherConditions.IsHeatwave(conditions) && !SDVTime.IsNight)
+                if (this.FarmerSick && conditions.GetCurrentConditions().HasFlag(CurrentWeather.Heatwave) && !SDVTime.IsNight)
                 {
                     totalMulti += 1.25;
                     condList.Add("Day Heatwave");
@@ -171,11 +172,6 @@ namespace ClimatesOfFerngillRebuild
             }
             
             return staminaAffect;
-        }
-
-        private bool ValidConditions(int weather, SpecialWeather conditions)
-        {
-            return weather == Game1.weather_lightning || conditions == SpecialWeather.Blizzard || WeatherConditions.IsFrost(conditions) || WeatherConditions.IsHeatwave(conditions) || conditions == SpecialWeather.Thundersnow;
         }
     }
 }

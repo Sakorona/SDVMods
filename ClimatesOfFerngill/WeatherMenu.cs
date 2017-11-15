@@ -55,9 +55,6 @@ namespace ClimatesOfFerngillRebuild
         /// <summary>The number of pixels to scroll.</summary>
         private int CurrentScroll;
 
-        /// <summary> The dice object.  </summary>
-        private MersenneTwister Dice;
-
         /// <summary> The current weather status </summary>
         private WeatherConditions CurrentWeather;
 
@@ -70,6 +67,9 @@ namespace ClimatesOfFerngillRebuild
         /// <summary>Whether the game's draw mode has been validated for compatibility.</summary>
         private bool ValidatedDrawMode;
 
+        /// <summary> The text for the weather menu </summary>
+        private string MenuText;
+
         /*********
         ** Public methods
         *********/
@@ -78,10 +78,10 @@ namespace ClimatesOfFerngillRebuild
         ****/
         /// <summary>Construct an instance.</summary>
         /// <param name="monitor">Encapsulates logging and monitoring.</param>
-        public WeatherMenu(IMonitor monitor, IReflectionHelper reflectionHelper, Sprites.Icons Icon, ITranslationHelper Helper, WeatherConditions weat, SDVMoon Termina, 
-               WeatherConfig ModCon, int scroll, MersenneTwister Dice)
+        public WeatherMenu(IMonitor monitor, IReflectionHelper reflectionHelper, Sprites.Icons Icon, ITranslationHelper Helper, WeatherConditions weat, SDVMoon Termina, WeatherConfig ModCon, int scroll, string text)
         {
             // save data
+            this.MenuText = text;
             this.Monitor = monitor;
             this.Reflection = reflectionHelper;
             this.Helper = Helper;
@@ -90,7 +90,6 @@ namespace ClimatesOfFerngillRebuild
             this.IconSheet = Icon;
             this.OurMoon = Termina;
             this.OurConfig = ModCon;
-            this.Dice = Dice;
 
             // add scroll buttons
             this.ScrollUpButton = new ClickableTextureComponent(Rectangle.Empty, Sprites.Icons.source2, Sprites.Icons.UpArrow, 1);
@@ -182,13 +181,6 @@ namespace ClimatesOfFerngillRebuild
                 this.exitThisMenu();
         }
 
-        public string FirstCharToUpper(string input)
-        {
-            if (String.IsNullOrEmpty(input))
-                throw new ArgumentException("ARGH!");
-            return input.First().ToString().ToUpper() + input.Substring(1);
-        }
-
         /// <summary>Render the UI.</summary>
         /// <param name="spriteBatch">The sprite batch being drawn.</param>
         public override void draw(SpriteBatch spriteBatch)
@@ -253,115 +245,19 @@ namespace ClimatesOfFerngillRebuild
 
                 // draw weather icon
                 contentBatch.Draw(IconSheet.source, new Vector2(x + leftOffset, y + topOffset), 
-                    IconSheet.GetWeatherSprite(CurrentWeather.TodayWeather, CurrentWeather.UnusualWeather), Color.White);
+                    IconSheet.GetWeatherSprite(CurrentWeather.GetCurrentConditions()), Color.White);
                 leftOffset += 72;
                 string weatherString = "";
 
-                // draw fields
+                // draw text as sent from outside the menu
                 float wrapWidth = this.width - leftOffset - gutter;
                 {
-                    // draw high and low
-                    {
-                        Vector2 descSize = contentBatch.DrawTextBlock(font, Helper.Get("weather-menu.opening", new { season = Game1.currentSeason, day = Game1.dayOfMonth }),
-                            new Vector2(x + leftOffset, y + topOffset), wrapWidth);
-                        topOffset += descSize.Y;
-                        if (CurrentWeather.IsFogVisible())
-                        {
-                            //fog display
-                            string fogString = "";
-
-                            switch (Game1.currentSeason)
-                            {
-                                case "spring":
-                                    if (CurrentWeather.IsDarkFog())
-                                        fogString = Helper.Get("weather-desc.spring_dfog", new { time = CurrentWeather.GetFogEndTime().ToString() });
-                                    else
-                                        fogString = Helper.Get("weather-desc.spring_fog", new { time = CurrentWeather.GetFogEndTime().ToString() });
-                                    break;
-                                case "summer":
-                                    if (CurrentWeather.IsDarkFog())
-                                        fogString = Helper.Get("weather-desc.summer_dfog", new { time = CurrentWeather.GetFogEndTime().ToString() });
-                                    else
-                                        fogString = Helper.Get("weather-desc.summer_fog", new { time = CurrentWeather.GetFogEndTime().ToString() });
-                                    break;
-                                case "fall":
-                                    if (CurrentWeather.IsDarkFog())
-                                        fogString = Helper.Get("weather-desc.fall_dfog", new { time = CurrentWeather.GetFogEndTime().ToString() });
-                                    else
-                                        fogString = Helper.Get("weather-desc.fall_fog", new { time = CurrentWeather.GetFogEndTime().ToString() });
-                                    break;
-                                case "winter":
-                                    if (CurrentWeather.IsDarkFog())
-                                        fogString = Helper.Get("weather-desc.winter_dfog", new { time = CurrentWeather.GetFogEndTime().ToString() });
-                                    else
-                                        fogString = Helper.Get("weather-desc.winter_fog", new { time = CurrentWeather.GetFogEndTime().ToString() });
-                                    break;
-                                default:
-                                    fogString = "ERROR";
-                                    break;
-                            }
-
-                            Vector2 fogSize = contentBatch.DrawTextBlock(font, fogString, new Vector2(x + leftOffset, y + topOffset), wrapWidth);
-                            topOffset += fogSize.Y;
-                        }
-
-                        topOffset += lineHeight;
-                        //build the temperature display
-                        string Temperature = CurrentWeather.GetTemperatureString(OurConfig.ShowBothScales, Helper);
-
-                        //Output today's weather
-
-                        if (CurrentWeather.TodayWeather != Game1.weather_festival)
-                        {
-                            weatherString = Helper.Get("weather-menu.fore_today_notFest", 
-                                new { currentConditions = CurrentWeather.GetDescText(CurrentWeather.TodayWeather, SDate.Now(), Dice, Helper), 
-                                Temperature = Temperature });
-                        }
-                        else
-                        {
-                            weatherString = Helper.Get("weather-menu.fore_today_festival", 
-                            new { festival = SDVUtilities.GetFestivalName(), Temperature = Temperature });
-                        }
-
-                        Vector2 nameSize = contentBatch.DrawTextBlock(font, weatherString, new Vector2(x + leftOffset, y + topOffset), wrapWidth);
-                        topOffset += nameSize.Y;
-                        topOffset += lineHeight;
-
-
-                        //Output Tomorrow's weather
-                        if (!(Utility.isFestivalDay(Game1.dayOfMonth +1, Game1.currentSeason)))
-                        {
-                            weatherString = Helper.Get("weather-menu.fore_tomorrow_notFest", new
-                            {
-                                currentConditions = CurrentWeather.GetDescText(CurrentWeather.TomorrowWeather, SDate.Now().AddDays(1), Dice, Helper),
-                                Temperature = Temperature
-                            });
-                        }
-                        else
-                        {
-                            weatherString = Helper.Get("weather-menu.fore_tomorrow_festival",
-                                new { festival = SDVUtilities.GetTomorrowFestivalName(), Temperature = Temperature });
-                        }
-
-                        Vector2 tomSize = contentBatch.DrawTextBlock(font, weatherString, new Vector2(x + leftOffset, y + topOffset), wrapWidth);
-
-                        topOffset += tomSize.Y;
-                    }
-
-                    // draw spacer
+                    Vector2 textSize = contentBatch.DrawTextBlock(font, MenuText, new Vector2(x + leftOffset, y + topOffset), wrapWidth);
+                    topOffset += textSize.Y;
                     topOffset += lineHeight;
-                    
-                    if (CurrentWeather.IsDangerousWeather())
-                    {
-                        weatherString = Helper.Get("weather-menu.dangerous_condition", 
-                            new { condition = CurrentWeather.GetHazardousText(Helper,SDate.Now(), Dice) });
-                        Vector2 statusSize = contentBatch.DrawTextBlock(font, weatherString, new Vector2(x + leftOffset, y + topOffset), wrapWidth, 
-                            bold: true);
-                        topOffset += statusSize.Y;
-                        topOffset += lineHeight;
-                    }
 
                 }
+
 
                 //draw moon info
                 contentBatch.Draw(IconSheet.source, new Vector2(x + 15, y + topOffset), 

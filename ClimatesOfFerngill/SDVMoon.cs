@@ -32,7 +32,7 @@ namespace ClimatesOfFerngillRebuild
 
         //internal trackers
         internal MoonPhase CurrPhase;
-        private static int cycleLength = 16;
+        private static int cycleLength = 14;
 
         //chances for various things
         private double CropGrowthChance;
@@ -113,21 +113,19 @@ namespace ClimatesOfFerngillRebuild
                     return MoonPhase.FirstQuarter;
                 case 5:
                 case 6:
-                case 7:
                     return MoonPhase.WaxingGibbeous;
-                case 8:
+                case 7:
                     return MoonPhase.FullMoon;
+                case 8:
                 case 9:
-                case 10:
-                case 11:
                     return MoonPhase.WaningGibbeous;
-                case 12:
+                case 10:
                     return MoonPhase.ThirdQuarter;
+                case 11:
+                case 12:
                 case 13:
-                case 14:
-                case 15:
                     return MoonPhase.WaningCrescent;
-                case 16:
+                case 14:
                     return MoonPhase.NewMoon;
                 default:
                     return MoonPhase.ErrorPhase;
@@ -242,8 +240,15 @@ namespace ClimatesOfFerngillRebuild
 
                     //get the item ID to spawn
                     parentSheetIndex = moonBeachItems.GetRandomItem(Dice);
-                    if (Dice.NextDouble() < .0001)
-                        parentSheetIndex = 392; //rare chance
+                    if (Dice.NextDouble() <= .0001)
+                        parentSheetIndex = 392; //rare chance for a Nautlius Shell.
+
+                    else if (Dice.NextDouble() > .0001 && Dice.NextDouble() <= .45)
+                        parentSheetIndex = 589;
+
+                    else if (Dice.NextDouble() > .45 && Dice.NextDouble() <= .62)
+                        parentSheetIndex = 60;
+
 
                     if (Dice.NextDouble() < BeachSpawnChance)
                     {

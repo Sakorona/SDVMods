@@ -21,7 +21,10 @@ namespace TwilightShards.Stardew.Common
             }
         }
 
-        int hour;
+        public static SDVTime CurrentTime => new SDVTime(Game1.timeOfDay);
+        public static int CurrentIntTime => new SDVTime(Game1.timeOfDay).ReturnIntTime();
+
+         int hour;
         int minute;
 
         public SDVTime(int t)
@@ -158,6 +161,82 @@ namespace TwilightShards.Stardew.Common
             return ret;
         }
 
+        public static bool operator ==(SDVTime s1, SDVTime s2)
+        {
+            if ((s1.hour == s2.hour) && (s1.minute == s2.minute))
+                return true;
+            else
+                return false;
+        }
+
+        public static bool operator !=(SDVTime s1, SDVTime s2)
+        {
+            if ((s1.hour == s2.hour) && (s1.minute == s2.minute))
+                return false;
+            else
+                return true;
+        }
+
+        public static bool operator ==(SDVTime s1, int s2)
+        {
+            int intHour = s2 / 100;
+            int intMinute = s2 % 100;
+
+            if ((s1.hour == (s2 / 100)) && (s1.minute == (s2 % 100)))
+                return true;
+            else
+                return false;
+        }
+        
+        public static bool operator !=(SDVTime s1, int s2)
+        {
+            return !(s1 == s2);
+        }
+
+        public static bool operator >(SDVTime s1, SDVTime s2)
+        {
+            if (s1.hour > s2.hour)
+                return true;
+            else if (s1.hour == s2.hour && s1.minute > s2.minute)
+                return true;
+
+            return false;
+        }
+
+        public static bool operator <(SDVTime s1, SDVTime s2)
+        {
+            if (s1.hour < s2.hour)
+                return true;
+            else if (s1.hour == s2.hour && s1.minute < s2.minute)
+                return true;
+
+            return false;
+        }
+
+        public static bool operator >=(SDVTime s1, SDVTime s2)
+        {
+            if (s1 == s2)
+                return true;
+            if (s1.hour > s2.hour)
+                return true;
+            else if (s1.hour == s2.hour && s1.minute > s2.minute)
+                return true;
+
+            return false;
+        }
+
+        public static bool operator <=(SDVTime s1, SDVTime s2)
+        {
+            if (s1 == s2)
+                return true;
+            if (s1.hour < s2.hour)
+                return true;
+            else if (s1.hour == s2.hour && s1.minute < s2.minute)
+                return true;
+
+            return false;
+        }
+
         //description and return functions
         public int ReturnIntTime()
         {
@@ -175,13 +254,48 @@ namespace TwilightShards.Stardew.Common
             return true;
         }
 
+        public string Get12HourTime()
+        {
+            if (hour < 12)
+                return $"{hour.ToString().PadLeft(2, '0')}:{minute.ToString().PadLeft(2, '0')} am";
+            else if (hour >= 12 && hour < 24)
+                return $"{(hour - 12).ToString().PadLeft(2, '0')}:{minute.ToString().PadLeft(2, '0')} pm";
+            else if (hour > 24)
+                return $"{(hour - 24).ToString().PadLeft(2, '0')}:{minute.ToString().PadLeft(2, '0')} am";
+
+            return "99:99 99";
+        }
+
         public override string ToString()
         {
             if (hour < 24)
-                return $"{hour.ToString().PadLeft(2,'0')}{minute.ToString().PadLeft(2, '0')}";
+                return $"{hour.ToString().PadLeft(2,'0')}:{minute.ToString().PadLeft(2, '0')}";
             else
-                return $"{(hour - 24).ToString().PadLeft(2,'0')}{minute.ToString().PadLeft(2, '0')}";
+                return $"{(hour - 24).ToString().PadLeft(2,'0')}:{minute.ToString().PadLeft(2, '0')}";
         }
 
+        public override bool Equals(object obj)
+        {
+            var time = obj as SDVTime;
+            return time != null &&
+                   hour == time.hour &&
+                   minute == time.minute;
+        }
+
+        public bool Equals(SDVTime other)
+        {
+            return other != null &&
+                   hour == other.hour &&
+                   minute == other.minute;
+        }
+
+        public override int GetHashCode()
+        {
+            var hashCode = -1190848304;
+            hashCode = hashCode * -1521134295 + hour.GetHashCode();
+            hashCode = hashCode * -1521134295 + minute.GetHashCode();
+            return hashCode;
+        }
     }
 }
+

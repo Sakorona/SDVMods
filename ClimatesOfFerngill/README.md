@@ -1,6 +1,6 @@
 ﻿# Climates of Ferngill (Rebuild) You Can (Not) Have Weather
 
-Current Version (4 November 2017): v1.2 rc1
+Current Version (11 November 2017): v1.2 rc2
 
 ## What's New
 
@@ -58,6 +58,9 @@ If you're out in a blizzard during the day, it's *1.25 or 2.5 rounded down to 2.
 ## Wishlist
 
 ## Changelog
+v1.2rc2
+
+
 v1.1.12p5
  - overhauled stamina system to correct an odd error. See writeup for more details.
  - updated the console command to actually update the internal tracker. :v
@@ -157,8 +160,10 @@ over a certain value.). Valid 0-1, but it's recommended that this is kept low. D
 
  - 'DeadCropPercentage' - The amount of crops that a heatwave and frost can kill. (Note: Frost will kill more than heatwaves). Default: '.1' Valid range is 0 to 1.
 
- - 'CropResistance' - This represents the resistance an averagecrop has to heatwaves. Frosts have half this resistance. Default: '.4' Valid Range is 0 to 1.
+ - 'CropResistance' - This represents the resistance an average crop has to heatwaves and frosts. Default: '.4' Valid Range is 0 to 1.
 
  - 'DarkFogChance' - This controls the chance of the darker fog appearing. Default is set to '.0875' (or a 1/8th chance if it's foggy it'll be dark fog.) Valid Range is 0 to 1.
 
  - 'ChanceOfGettingSick' - Controls the chance you'll get sick when conditions are matched. Default is set to '.7' for (70% chance). Valid Range is 0 to 1.
+
+ - 'Use12HourTime' - Tells it whether or not to use 12hour time or not. Defaults to false.

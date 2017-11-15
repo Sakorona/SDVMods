@@ -1,6 +1,6 @@
 ﻿namespace ClimatesOfFerngillRebuild
 {
-    public enum SpecialWeather
+    public enum SpecialWeatherOLD
     {
         None = 0,
         Thundersnow = 1,
