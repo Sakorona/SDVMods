@@ -25,6 +25,9 @@ namespace CustomizableCartRedux
             double randChance = r.NextDouble(), dayChance = 0;
             Forest f = Game1.getLocationFromName("Forest") as Forest;
 
+            if (f is null)
+                throw new Exception("The Forest is not loaded. Please verify your game is properly installed.");
+
             //get the day
             DayOfWeek day = GetDayOfWeek(SDate.Now());
             switch (day)

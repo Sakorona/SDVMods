@@ -147,10 +147,14 @@ namespace ClimatesOfFerngillRebuild
                 TimeEvents.TimeOfDayChanged += TenMinuteUpdate;
                 MenuEvents.MenuChanged += MenuEvents_MenuChanged;
                 GameEvents.UpdateTick += CheckForChanges;
+                GameEvents.FourthUpdateTick += GameEvents_FourthUpdateTick;
                 SaveEvents.AfterReturnToTitle += ResetMod;
+
+                GraphicsEvents.OnPreRenderEvent += DrawBeforeScreenRenders;
                 GraphicsEvents.OnPostRenderGuiEvent += DrawOverMenus;
                 GraphicsEvents.OnPreRenderHudEvent += DrawPreHudObjects;
                 GraphicsEvents.OnPostRenderHudEvent += DrawObjects;
+
                 LocationEvents.CurrentLocationChanged += LocationEvents_CurrentLocationChanged;
                 ControlEvents.KeyPressed += (sender, e) => this.ReceiveKeyPress(e.KeyPressed, this.WeatherOpt.Keyboard);
                 MenuEvents.MenuClosed += (sender, e) => this.ReceiveMenuClosed(e.PriorMenu);
@@ -160,15 +164,57 @@ namespace ClimatesOfFerngillRebuild
                       .Add("weather_settommorow", helper.Translation.Get("console-text.desc_tmrweather"), TomorrowWeatherChangeFromConsole)
                       .Add("weather_changeweather", helper.Translation.Get("console-text.desc_setweather"), WeatherChangeFromConsole)
                       .Add("debug_staminaforce", "Forces stamina drain level. Debug function", DebugStaForce)
-                      .Add("debug_weatherstatus", "Prints an overly detailed weahter status screen out to the console.", DebugWeather);
+                      .Add("debug_weatherstatus", "Prints an overly detailed weahter status screen out to the console.", DebugWeather)
+                      .Add("debug_setfogcolor", "Sets fog color", FogColor)
+                      .Add("debug_getfogcolor", "Gets fog colors", GetFogColor)
+                      .Add("debug_alldayfog", "Sets all day fog.", AllDayFog);
             }
+        }
+
+        private void AllDayFog(string arg1, string[] arg2)
+        {
+            Conditions.OurFog.SetFogExpirationTime(new SDVTime(2400));
+        }
+
+        private void DrawBeforeScreenRenders(object sender, EventArgs e)
+        {
+            if (Conditions.OurFog.IsFogVisible)
+                Game1.outdoorLight = Conditions.OurFog.fogLight;
+        }
+
+        private void FogColor(string arg1, string[] arg2)
+        {
+            if (arg2.Length < 3)
+                return;
+
+            int red = Convert.ToInt32(arg2[0]);
+            int green = Convert.ToInt32(arg2[1]);
+            int blue = Convert.ToInt32(arg2[2]);
+
+            Conditions.OurFog.SetColor(red, green, blue);
+            Conditions.OurFog.fogLight = new Color(red, green, blue);
+        }
+
+        private void GetFogColor(string arg1, string[] arg2)
+        {
+            Monitor.Log($"{Environment.NewLine}The game's current color is {Game1.outdoorLight.ToString()}" +
+                 $"{Environment.NewLine}The set end light color is {Conditions.OurFog.endLight.ToString()}." +
+                 $"{Environment.NewLine}The fog light color is {Conditions.OurFog.fogLight.ToString()}." +
+                 $"{Environment.NewLine}The set begin light color is {Conditions.OurFog.beginLight.ToString()}");
+        }
+
+        private void GameEvents_FourthUpdateTick(object sender, EventArgs e)
+        {
+            Conditions.UpdateForCurrentMoment();
         }
 
         private void DrawOverMenus(object sender, EventArgs e)
         {
+            //revised this so it properly draws over the canon moon. :v
+            //And .. yeah.
             if (Game1.showingEndOfNightStuff && Game1.activeClickableMenu is ShippingMenu menu && !Game1.wasRainingYesterday)
             {
-                Game1.spriteBatch.Draw(OurIcons.source, new Vector2(15, 15), OurIcons.GetNightMoonSprite(OurMoon.GetDayOfCycle()), Color.LightBlue);
+                Game1.spriteBatch.Draw(OurIcons.source, new Vector2((float)(Game1.viewport.Width - 44 * Game1.pixelZoom), (float)Game1.pixelZoom), OurIcons.GetNightMoonSprite(OurMoon.GetDayOfCycle()), Color.LightBlue, 0.0f, Vector2.Zero, (float)Game1.pixelZoom, SpriteEffects.None, 1f);
             }
         }
 
@@ -369,7 +415,8 @@ namespace ClimatesOfFerngillRebuild
             if (!Context.IsWorldReady)
                 return;
 
-            Conditions.OurFog.MoveFog();
+            if (Conditions.OurFog.IsFogVisible)
+                Conditions.OurFog.MoveFog();
 
             if (Game1.isEating)
             { 
@@ -721,15 +768,16 @@ namespace ClimatesOfFerngillRebuild
             double fogChance = GameClimate.GetClimateForDate(SDate.Now())
                                           .RetrieveOdds(Dice, "fog", SDate.Now().Day, DebugOutput);
 
-            //fogChance = 1; //for testing purposes
+            fogChance = 1; //for testing purposes
             double fogRoll = Dice.NextDoublePositive();
            
-            if (fogRoll < fogChance && Conditions.GetCurrentConditions().HasFlag(CurrentWeather.Wind))
+            if (fogRoll < fogChance && !Conditions.GetCurrentConditions().HasFlag(CurrentWeather.Wind))
             {
                 if (WeatherOpt.Verbose)
-                    Monitor.Log("Executing fog analysis.. ");
+                    Monitor.Log($"Executing fog analysis.. fog should be created. Current conditions: {Conditions.GetCurrentConditions().ToString()}");
 
                 Conditions.OurFog.CreateFog(Dice, WeatherOpt);
+                Conditions.AddWeather(CurrentWeather.Fog);
 
                 if (WeatherOpt.Verbose)
                     Monitor.Log($"With roll {fogRoll.ToString("N3")} against {fogChance}, there will be fog today until {Conditions.OurFog.ExpirationTime} with type {Conditions.OurFog.CurrentFogType}");

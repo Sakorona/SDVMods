@@ -16,7 +16,7 @@ namespace BetterShippingBox
 
 		private void MenuEvents_OnMenuChanged(object sender, EventArgsClickableMenuChanged e)
 		{
-            if (e.NewMenu is ItemGrabMenu && (e.NewMenu as ItemGrabMenu).shippingBin)
+            if ((e.NewMenu is ItemGrabMenu menu) && (menu.shippingBin))
             {
                 Game1.activeClickableMenu = new BetterShippingMenu();
             }

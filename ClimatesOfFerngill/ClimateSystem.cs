@@ -85,27 +85,18 @@ namespace ClimatesOfFerngillRebuild
         }
     }
 
-    public class FogEventArgs : EventArgs
-    {
-        public bool FogStatus { get; private set; }
-
-        public FogEventArgs(bool status)
-        {
-            FogStatus = status;
-        }
-    }
-
     // This was a class, but honestly, we should probably just move all of the fog things into one struct. 
     /// <summary> This tracks fog details </summary>
     internal class FerngillFog
     {
-        public delegate void OnFogChangeHandler(object sender, FogEventArgs e);
-        public event OnFogChangeHandler OnFogChange;
-
         //private bool AmbientFog { get; set; }
         private readonly static Rectangle FogSource = new Rectangle(640, 0, 64, 64);
-        private readonly static Color DarkOutdoor = new Color(214, 210, 208);
-        private readonly static Color NormalOutdoor = new Color(180, 155, 110);
+        private readonly static Color DarkOutdoor = new Color(180, 175, 105);
+        private readonly static Color NormalOutdoor = new Color(135, 120, 145);
+
+        internal Color fogLight = Color.White;
+        internal Color endLight = Color.White;
+        internal Color beginLight = Color.White;
 
         /// <summary> The Current Fog Type </summary>
         internal FogType CurrentFogType { get; set; }
@@ -180,15 +171,11 @@ namespace ClimatesOfFerngillRebuild
             }
         }
 
-        private void FogChange(bool status)
+        public void SetColor(int red, int green, int blue)
         {
-            // Make sure someone is listening to event
-            if (OnFogChange == null) return;
-
-            FogEventArgs args = new FogEventArgs(status);
-            OnFogChange(this, args);
+            Game1.outdoorLight = new Color(red, green, blue);
         }
-
+        
         /// <summary>This function creates the fog
         /// </summary>
         /// <param name="Dice">pRNG </param>
@@ -197,9 +184,9 @@ namespace ClimatesOfFerngillRebuild
         public void CreateFog(MersenneTwister Dice, WeatherConfig WeatherOpt, FogType SetFog = FogType.None)
         {
             this.FogAlpha = 1f;
-            FogChange(true);
             //First, let's determine the type.
-            if (SetFog != FogType.None)
+            //... I am a dumb foxgirl. A really dumb one. 
+            /*if (SetFog == FogType.None)
             {
                 if (Dice.NextDoublePositive() < WeatherOpt.DarkFogChance && SDate.Now().Day != 1 && SDate.Now().Year != 1 && SDate.Now().Season != "spring")
                     CurrentFogType = FogType.Dark;
@@ -211,7 +198,8 @@ namespace ClimatesOfFerngillRebuild
             else
             {
                 CurrentFogType = SetFog;
-            }
+            } */
+            CurrentFogType = FogType.Dark;
 
             //Set the outdoorlight depending on the type.
             switch (CurrentFogType)
@@ -219,9 +207,13 @@ namespace ClimatesOfFerngillRebuild
                 case FogType.Normal:
                 case FogType.Blinding:
                     Game1.outdoorLight = FerngillFog.NormalOutdoor;
+                    //Game1.ambientLight = FerngillFog.NormalOutdoor * 3f;
+                    fogLight = FerngillFog.NormalOutdoor;
                     break;
                 case FogType.Dark:
                     Game1.outdoorLight = FerngillFog.DarkOutdoor;
+                    //Game1.ambientLight = FerngillFog.DarkOutdoor * 3f;
+                    fogLight = FerngillFog.DarkOutdoor;
                     break;
                 case FogType.None:
                     return;
@@ -235,7 +227,6 @@ namespace ClimatesOfFerngillRebuild
              * So, the strongest odds should be 820 to 930, with sharply falling off odds until 1200. And then
              * so, extremely rare odds for until 7pm and even rarer than midnight.
              */
-
             if (FogChance > 0 && FogChance < .25)
                 this.ExpirTime = new SDVTime(830);
             else if (FogChance >= .25 && FogChance < .32)
@@ -258,32 +249,95 @@ namespace ClimatesOfFerngillRebuild
                 this.ExpirTime = new SDVTime(1910);
             else if (FogChance >= .99)
                 this.ExpirTime = new SDVTime(2400);
-        }
+
+            int endTime = this.ExpirTime.ReturnIntTime();
+
+            beginLight = fogLight;
+
+            //calculate the ending light color
+            if (endTime >= Game1.getTrulyDarkTime())
+            {
+                float num = Math.Min(0.93f, (float)(0.75 + ((int)(endTime - endTime % 100 + endTime % 100 / 10 * 16.6599998474121) - Game1.getTrulyDarkTime() + Game1.gameTimeInterval / 7000.0 * 16.6000003814697) * 0.000624999986030161));
+                endLight = (Game1.isRaining ? DarkOutdoor : Game1.eveningColor) * num;
+            }
+            else if (endTime >= Game1.getStartingToGetDarkTime())
+            {
+                float num = Math.Min(0.93f, (float)(0.300000011920929 + ((int)(endTime - endTime % 100 + endTime % 100 / 10 * 16.6599998474121) - Game1.getStartingToGetDarkTime() + (double)Game1.gameTimeInterval / 7000.0 * 16.6000003814697) * 0.00224999990314245));
+                endLight = (Game1.isRaining ? DarkOutdoor : Game1.eveningColor) * num;
+            }
+            else if (Game1.isRaining)
+                endLight = Game1.ambientLight * 0.3f;
+            else
+                endLight = Color.White;
+
+
+    }
 
         public void UpdateFog()
         {
             if (!IsFogVisible)
                 return;
-            /*
-            if (CurrentFogType == FogType.Blinding || CurrentFogType == FogType.Normal)
-            {
 
+            if (CurrentFogType == FogType.Dark || CurrentFogType == FogType.Normal && ExpirationTime >= SDVTime.CurrentTime)
+            {
+                int timeRemain = ExpirationTime.ReturnIntTime() - Game1.timeOfDay;
+                int timeTotal = ExpirationTime.ReturnIntTime() - 0600;
+                double percentage = 1 - (timeRemain / (double)timeTotal);
+
+
+                byte redDiff = (byte)Math.Abs(beginLight.R - endLight.R);
+                byte greenDiff = (byte)Math.Abs(beginLight.G - endLight.G);
+                byte blueDiff = (byte)Math.Abs(beginLight.B - endLight.B);
+                byte alphaDiff = (byte)Math.Abs(beginLight.A - endLight.A);
+
+                Console.WriteLine($"Fog end time is {ExpirationTime} with current time being {Game1.timeOfDay}");
+                Console.WriteLine($"Begin light is {beginLight.ToString()}");
+                Console.WriteLine($"Diff count. Red: {redDiff}, Green: {greenDiff}, Blue: {blueDiff}, Alpha: {alphaDiff}");
+                Console.WriteLine($"End Color is {endLight.ToString()} with the calced time remaining as {timeRemain} with {timeTotal} between start and end");
+                Console.WriteLine($"This returns: {percentage}");
+                Console.WriteLine();
+
+
+                if (beginLight.R > endLight.R)
+                    fogLight.R = (byte)Math.Floor(beginLight.R - (redDiff * percentage));
+                else if (beginLight.R == endLight.R)
+                    fogLight.R = beginLight.R;
+                else
+                    fogLight.R = (byte)Math.Floor(endLight.R + (redDiff * percentage));
+
+                if (beginLight.G > endLight.G)
+                    fogLight.G = (byte)Math.Floor(beginLight.G - (greenDiff * percentage));
+                else if (beginLight.G == endLight.G)
+                    fogLight.G = beginLight.G;
+                else
+                    fogLight.G = (byte)Math.Floor(endLight.G + (greenDiff * percentage));
+
+                if (beginLight.B > endLight.B)
+                    fogLight.B = (byte)Math.Floor(beginLight.B - (blueDiff * percentage));
+                else if (beginLight.B == endLight.B)
+                    fogLight.B = beginLight.B;
+                else
+                    fogLight.B = (byte)Math.Floor(endLight.B + (blueDiff * percentage));
+
+                if (beginLight.A > endLight.A)
+                    fogLight.A = (byte)Math.Floor(beginLight.A - (alphaDiff * percentage));
+                else if (beginLight.A == endLight.A)
+                    fogLight.A = beginLight.A;
+                else
+                    fogLight.A = (byte)Math.Floor(endLight.A + (alphaDiff * percentage));
+
+                Console.WriteLine(value: $"FogLight is {fogLight.ToString()}");            
             }
 
-            if (CurrentFogType == FogType.Dark)
-            {
-
-            }
-            */
-            if (ExpirationTime >= SDVTime.CurrentTime)
+            if (ExpirationTime <= SDVTime.CurrentTime)
             {
                 if (VerboseDebug)
                     Monitor.Log("Now at 0 minutes or fog has expired");
 
-                CurrentFogType = FogType.Normal;
+                CurrentFogType = FogType.None;
                 Game1.outdoorLight = Color.White;
+                fogLight = Color.White;              
                 FogAlpha = 0f;
-                FogChange(false);
             }
         }
 
@@ -291,20 +345,23 @@ namespace ClimatesOfFerngillRebuild
         {
             if (IsFogVisible)
             {
+                if (CurrentFogType != FogType.Blinding) { 
+                Game1.outdoorLight = fogLight;
                 Vector2 position = new Vector2();
                 float num1 = -64 * Game1.pixelZoom + (int)(FogPosition.X % (double)(64 * Game1.pixelZoom));
-                while (num1 < (double)Game1.graphics.GraphicsDevice.Viewport.Width)
-                {
-                    float num2 = -64 * Game1.pixelZoom + (int)(FogPosition.Y % (double)(64 * Game1.pixelZoom));
-                    while ((double)num2 < Game1.graphics.GraphicsDevice.Viewport.Height)
+                    while (num1 < (double)Game1.graphics.GraphicsDevice.Viewport.Width)
                     {
-                        position.X = (int)num1;
-                        position.Y = (int)num2;
-                        Game1.spriteBatch.Draw(Game1.mouseCursors, position, new Microsoft.Xna.Framework.Rectangle?
-                            (FogSource), FogAlpha > 0.0 ? FogColor * FogAlpha : Color.Black * 0.95f, 0.0f, Vector2.Zero, Game1.pixelZoom + 1f / 1000f, SpriteEffects.None, 1f);
-                        num2 += 64 * Game1.pixelZoom;
+                        float num2 = -64 * Game1.pixelZoom + (int)(FogPosition.Y % (double)(64 * Game1.pixelZoom));
+                        while ((double)num2 < Game1.graphics.GraphicsDevice.Viewport.Height)
+                        {
+                            position.X = (int)num1;
+                            position.Y = (int)num2;
+                            Game1.spriteBatch.Draw(Game1.mouseCursors, position, new Microsoft.Xna.Framework.Rectangle?
+                                (FogSource), FogAlpha > 0.0 ? FogColor * FogAlpha : Color.Black * 0.95f, 0.0f, Vector2.Zero, Game1.pixelZoom + 1f / 1000f, SpriteEffects.None, 1f);
+                            num2 += 64 * Game1.pixelZoom;
+                        }
+                        num1 += 64 * Game1.pixelZoom;
                     }
-                    num1 += 64 * Game1.pixelZoom;
                 }
             }
         }
@@ -313,6 +370,7 @@ namespace ClimatesOfFerngillRebuild
         {
             if (IsFogVisible)
             {
+                Game1.outdoorLight = fogLight;
                 this.FogPosition = Game1.updateFloatingObjectPositionForMovement(FogPosition,
                     new Vector2(Game1.viewport.X, Game1.viewport.Y), Game1.previousViewportPosition, -1f);
                 FogPosition = new Vector2((FogPosition.X + 0.5f) % (64 * Game1.pixelZoom),
@@ -336,7 +394,7 @@ namespace ClimatesOfFerngillRebuild
         private IMonitor Monitor;
 
         /// <summary> The translation interface </summary>
-        private ITranslationHelper Translation; 
+        private ITranslationHelper Translation;
 
         /// <summary>Track today's temperature</summary>
         private RangePair TodayTemps;
@@ -365,12 +423,15 @@ namespace ClimatesOfFerngillRebuild
         private int iconSnowFog = 11;
         private int iconError = 12;
         private int iconStormFog = 13;
-        
+
         /// *************************************************************************
         /// ACCESS METHODS
         /// *************************************************************************
         public CurrentWeather GetCurrentConditions()
         {
+            if (CurrentConditionsN.HasFlag(CurrentWeather.Fog) && CurrentConditionsN.HasFlag(CurrentWeather.Wind))
+                CurrentConditionsN.RemoveFlags(CurrentWeather.Fog);
+
             return CurrentConditionsN;
         }
 
@@ -464,11 +525,28 @@ namespace ClimatesOfFerngillRebuild
                 CurrentConditionsN |= newWeather;
         }
 
+        internal void UpdateForCurrentMoment()
+        {
+            // Okay. So. I want to hate myself now.
+            if (this.OurFog.IsFogVisible)
+                CurrentConditionsN.CombineFlags(CurrentWeather.Fog);
+            else
+                CurrentConditionsN.RemoveFlags(CurrentWeather.Fog);
+        }
+
         /// <summary> Syntatic Sugar for Enum.HasFlag(). Done so if I choose to rewrite how it's accessed, less rewriting of invoking functions is needed. </summary>
         /// <param name="checkWeather">The weather being checked.</param>
         /// <returns>If the weather is present</returns>
-        public bool HasWeather(CurrentWeather checkWeather) => CurrentConditionsN.HasFlag(checkWeather);
-        
+        public bool HasWeather(CurrentWeather checkWeather)
+        {
+            if (!this.OurFog.IsFogVisible && CurrentConditionsN.HasFlag(CurrentWeather.Fog))
+                CurrentConditionsN.RemoveFlags(CurrentWeather.Fog);
+            
+            return CurrentConditionsN.HasFlag(checkWeather);
+        }
+
+        public void ClearFog() => CurrentConditionsN.RemoveFlags(CurrentWeather.Fog);
+
         public bool HasPrecip()
         {
             if (CurrentConditionsN.HasAnyFlags(CurrentWeather.Snow | CurrentWeather.Rain | CurrentWeather.Blizzard))
@@ -600,7 +678,6 @@ namespace ClimatesOfFerngillRebuild
             this.Translation = Translation;
             CurrentConditionsN = CurrentWeather.Unset;
             OurFog = new FerngillFog(Config.Verbose, monitor);
-            OurFog.OnFogChange += OurFog_OnFogChange;
         }
 
         /// ******************************************************************************
@@ -608,16 +685,11 @@ namespace ClimatesOfFerngillRebuild
         /// ******************************************************************************
         internal void ForceTodayTemps(double high, double low)
         {
-            this.TodayTemps.HigherBound = high;
-            this.TodayTemps.LowerBound = low;
-        }
+            if (TodayTemps is null)
+                TodayTemps = new RangePair();
 
-        private void OurFog_OnFogChange(object sender, FogEventArgs e)
-        {
-            if (e.FogStatus)
-                CurrentConditionsN |= CurrentWeather.Fog;
-            if (!e.FogStatus && CurrentConditionsN.HasFlag(CurrentWeather.Fog))
-                CurrentConditionsN &= ~CurrentWeather.Fog;
+            TodayTemps.HigherBound = high;
+            TodayTemps.LowerBound = low;
         }
 
         /// <summary>This function resets the weather for a new day.</summary>
@@ -672,6 +744,8 @@ namespace ClimatesOfFerngillRebuild
 
         internal void SetTodayWeather()
         {
+            CurrentConditionsN = CurrentWeather.Unset; //reset the flag.
+
             if (!Game1.isDebrisWeather && !Game1.isRaining && !Game1.isSnowing)
                 AddWeather(CurrentWeather.Sunny);
 
@@ -887,14 +961,14 @@ namespace ClimatesOfFerngillRebuild
         public override string ToString()
         {
             string ret = "";
-            ret += $"Low for today is {TodayTemps.LowerBound.ToString("N3")} with the high being {TodayTemps.HigherBound.ToString("N3")}. The current conditions are {GetWeatherType()}.";
+            ret += $"Low for today is {TodayTemps?.LowerBound.ToString("N3")} with the high being {TodayTemps?.HigherBound.ToString("N3")}. The current conditions are {GetWeatherType()}.";
 
             if (OurFog.IsFogVisible)
             {
                 ret += $" Fog is visible until {OurFog.ExpirationTime} and type {FerngillFog.DescFogType(OurFog.CurrentFogType)}. ";
             }
 
-            ret += $"Weather set for tommorow is {WeatherConditions.GetWeatherType(WeatherConditions.ConvertToCurrentWeather(Game1.weatherForTomorrow))} with high {TomorrowTemps.HigherBound.ToString("N3")} and low {TomorrowTemps.LowerBound.ToString("N3")} ";
+            ret += $"Weather set for tommorow is {WeatherConditions.GetWeatherType(WeatherConditions.ConvertToCurrentWeather(Game1.weatherForTomorrow))} with high {TomorrowTemps?.HigherBound.ToString("N3")} and low {TomorrowTemps?.LowerBound.ToString("N3")} ";
 
             return ret;
         }

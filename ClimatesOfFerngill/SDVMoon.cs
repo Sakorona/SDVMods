@@ -207,6 +207,9 @@ namespace ClimatesOfFerngillRebuild
 
         public void HandleMoonAfterWake(ITranslationHelper Helper)
         {
+            if (Game1.getLocationFromName("Beach") is null)
+                throw new Exception("... Please reinstall your game");
+
             Beach b = Game1.getLocationFromName("Beach") as Beach;
             int itemsChanged = 0;
             

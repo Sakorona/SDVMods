@@ -37,6 +37,11 @@ namespace ClimatesOfFerngillRebuild
 
         public FerngillClimateTimeSpan(FerngillClimateTimeSpan CTS)
         {
+            this.BeginSeason = CTS.BeginSeason;
+            this.EndSeason = CTS.EndSeason;
+            this.BeginDay = CTS.BeginDay;
+            this.EndDay = CTS.EndDay;
+
             this.WeatherChances = new List<WeatherParameters>();
             foreach (WeatherParameters w in CTS.WeatherChances)
                 this.WeatherChances.Add(new WeatherParameters(w));

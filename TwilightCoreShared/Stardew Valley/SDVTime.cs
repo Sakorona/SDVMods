@@ -276,7 +276,8 @@ namespace TwilightShards.Stardew.Common
 
         public override bool Equals(object obj)
         {
-            var time = obj as SDVTime;
+            SDVTime time = (SDVTime)obj;
+
             return time != null &&
                    hour == time.hour &&
                    minute == time.minute;
