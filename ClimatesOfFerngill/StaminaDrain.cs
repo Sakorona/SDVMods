@@ -84,16 +84,27 @@ namespace ClimatesOfFerngillRebuild
             //If it's frost or heatwave during the appropriate time.. you can get sick
 
             //First, update the sick status
-            if (amtOutside >= Config.AffectedOutside && ((Dice.NextDoublePositive() >= Config.ChanceOfGettingSick) || this.FarmerSick))
+            bool farmerCaughtCold = false;
+            double sickOdds = Config.ChanceOfGettingSick - Game1.dailyLuck;
+
+            //weee.
+            if (Game1.player.hat?.which == 28 && conditions.GetCurrentConditions().HasFlag(CurrentWeather.Lightning))
+                sickOdds -= (Dice.NextDoublePositive() / 5.0) - .1;
+
+            if (Game1.player.hat?.which == 25 && conditions.GetCurrentConditions().HasFlag(CurrentWeather.Blizzard))
+                sickOdds -= .22;
+
+            if (Game1.player.hat?.which == 4 && conditions.GetCurrentConditions().HasFlag(CurrentWeather.Heatwave) && !SDVTime.IsNight)
+                sickOdds -= .11;
+
+            farmerCaughtCold = (Dice.NextDoublePositive() <= sickOdds);
+
+
+            if (amtOutside >= Config.AffectedOutside && farmerCaughtCold || this.FarmerSick)
             {
                 //check if it's a valid condition
                 if (conditions.GetCurrentConditions().HasAnyFlags(CurrentWeather.Blizzard | CurrentWeather.Lightning) || (conditions.GetCurrentConditions().HasFlag(CurrentWeather.Frost) && SDVTime.IsNight) | (conditions.GetCurrentConditions().HasFlag(CurrentWeather.Heatwave) && !SDVTime.IsNight) && FarmerCanGetSick())
-                {
                     this.MakeSick();
-
-                    if (Config.Verbose)
-                        Monitor.Log("Making the farmer sick");
-                }
 
                 //test status
                 if (Config.Verbose)              

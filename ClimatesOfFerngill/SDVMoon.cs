@@ -148,6 +148,9 @@ namespace ClimatesOfFerngillRebuild
             if (f == null)
                 return;
 
+            if (Dice.NextDoublePositive() < .20)
+                return;
+
             int cropsAffected = 0;
 
             //moon processing
@@ -219,7 +222,10 @@ namespace ClimatesOfFerngillRebuild
 
             Beach b = Game1.getLocationFromName("Beach") as Beach;
             int itemsChanged = 0;
-            
+
+            if (Dice.NextDoublePositive() < .20)
+                return;
+
             //new moon processing
             if (CurrentPhase == MoonPhase.NewMoon)
             {

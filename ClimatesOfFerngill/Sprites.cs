@@ -45,11 +45,11 @@ namespace ClimatesOfFerngillRebuild
                     case MoonPhase.FirstQuarter:
                         return Icons.FirstQuarter;
                     case MoonPhase.WaxingGibbeous:
-                        return new Rectangle(0, 0, 0, 0);
+                        return Icons.WaxingGibbeous;
                     case MoonPhase.FullMoon:
                         return Icons.FullMoon;
                     case MoonPhase.WaningGibbeous:
-                        return new Rectangle(0, 0, 0, 0);
+                        return Icons.WaningGibbeous;
                     case MoonPhase.ThirdQuarter:
                         return Icons.ThirdQuarter;
                     case MoonPhase.WaningCrescent:
@@ -127,6 +127,8 @@ namespace ClimatesOfFerngillRebuild
             public static readonly Rectangle WaningCrescent1 = new Rectangle(287, 12, 34, 36);
             public static readonly Rectangle WaningCrescent2 = new Rectangle(322, 12, 32, 37);
             public static readonly Rectangle WaningCrescent3 = new Rectangle(356, 14, 29, 32);
+            public static readonly Rectangle WaxingGibbeous = new Rectangle(5, 60, 36, 40);
+            public static readonly Rectangle WaningGibbeous = new Rectangle(40, 58, 40, 36);
             public static readonly Rectangle BloodMoon = new Rectangle(385, 9, 38, 38);
 
             //Weather

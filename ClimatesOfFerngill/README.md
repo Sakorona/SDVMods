@@ -66,6 +66,8 @@ v1.2rc2 (v1.3-beta1)
 - stamina system overhauled that you won't get sick from something you can't suffer from events at the time.
 - bad moon rising: blood moons will appear.
 - new sprites, thanks to eemie, that more closely match the vanilla ones!
+- lunar events now have a 20% chance to not trigger
+- stamina system now factors in luck and a few other things.
 
 v1.1.12p5
  - overhauled stamina system to correct an odd error. See writeup for more details.
@@ -173,3 +175,5 @@ over a certain value.). Valid 0-1, but it's recommended that this is kept low. D
  - 'ChanceOfGettingSick' - Controls the chance you'll get sick when conditions are matched. Default is set to '.7' for (70% chance). Valid Range is 0 to 1.
 
  - 'Use12HourTime' - Tells it whether or not to use 12hour time or not in displays. Defaults to false.
+
+ - 'BadMoonRising' - Chance of a blood moon on a full moon. Default: .004 (.4%). Valid Range is 0 to 1.
