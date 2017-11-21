@@ -290,13 +290,14 @@ namespace ClimatesOfFerngillRebuild
                 byte blueDiff = (byte)Math.Abs(beginLight.B - endLight.B);
                 byte alphaDiff = (byte)Math.Abs(beginLight.A - endLight.A);
 
+                /*
                 Console.WriteLine($"Fog end time is {ExpirationTime} with current time being {Game1.timeOfDay}");
                 Console.WriteLine($"Begin light is {beginLight.ToString()}");
                 Console.WriteLine($"Diff count. Red: {redDiff}, Green: {greenDiff}, Blue: {blueDiff}, Alpha: {alphaDiff}");
                 Console.WriteLine($"End Color is {endLight.ToString()} with the calced time remaining as {timeRemain} with {timeTotal} between start and end");
                 Console.WriteLine($"This returns: {percentage}");
                 Console.WriteLine();
-
+                */
 
                 if (beginLight.R > endLight.R)
                     fogLight.R = (byte)Math.Floor(beginLight.R - (redDiff * percentage));
@@ -326,7 +327,7 @@ namespace ClimatesOfFerngillRebuild
                 else
                     fogLight.A = (byte)Math.Floor(endLight.A + (alphaDiff * percentage));
 
-                Console.WriteLine(value: $"FogLight is {fogLight.ToString()}");            
+                //Console.WriteLine(value: $"FogLight is {fogLight.ToString()}");            
             }
 
             if (ExpirationTime <= SDVTime.CurrentTime)
@@ -423,6 +424,8 @@ namespace ClimatesOfFerngillRebuild
         private int iconSnowFog = 11;
         private int iconError = 12;
         private int iconStormFog = 13;
+        private int iconThunderSnow = 14;
+        private int iconDryLightning = 15;
 
         /// *************************************************************************
         /// ACCESS METHODS
@@ -603,6 +606,12 @@ namespace ClimatesOfFerngillRebuild
                     if (SDate.Now().Season == "spring") return iconSpringDebris;
                     else return iconDebris;
                 }
+
+                if (GeneralFunctions.ContainsOnlyMatchingFlags(CurrentConditionsN, (int)(CurrentWeather.Snow | CurrentWeather.Lightning)))
+                    return iconThunderSnow;
+
+                if (GeneralFunctions.ContainsOnlyMatchingFlags(CurrentConditionsN, (int)(CurrentWeather.Sunny | CurrentWeather.Lightning)))
+                    return iconDryLightning;
 
                 if (GeneralFunctions.ContainsOnlyMatchingFlags(CurrentConditionsN, (int)(CurrentWeather.Lightning | CurrentWeather.Heatwave | CurrentWeather.Sunny)))
                     return iconSunny;

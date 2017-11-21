@@ -115,7 +115,7 @@ namespace ClimatesOfFerngillRebuild
             Conditions = new WeatherConditions(Dice, Helper.Translation, Monitor, WeatherOpt);
             HeavySnow = new FerngillBlizzard();
             DebugOutput = new StringBuilder();
-            OurMoon = new SDVMoon(Dice);
+            OurMoon = new SDVMoon(WeatherOpt, Dice);
             OurIcons = new Sprites.Icons(Helper.Content);
             CropList = new List<Vector2>();
             StaminaMngr = new StaminaDrain(WeatherOpt, Helper.Translation, Monitor);
@@ -214,7 +214,7 @@ namespace ClimatesOfFerngillRebuild
             //And .. yeah.
             if (Game1.showingEndOfNightStuff && Game1.activeClickableMenu is ShippingMenu menu && !Game1.wasRainingYesterday)
             {
-                Game1.spriteBatch.Draw(OurIcons.source, new Vector2((float)(Game1.viewport.Width - 44 * Game1.pixelZoom), (float)Game1.pixelZoom), OurIcons.GetNightMoonSprite(OurMoon.GetDayOfCycle()), Color.LightBlue, 0.0f, Vector2.Zero, (float)Game1.pixelZoom, SpriteEffects.None, 1f);
+                Game1.spriteBatch.Draw(OurIcons.source, new Vector2((float)(Game1.viewport.Width - 44 * Game1.pixelZoom), (float)Game1.pixelZoom), OurIcons.GetNightMoonSprite(OurMoon.CurrentPhase), Color.LightBlue, 0.0f, Vector2.Zero, (float)Game1.pixelZoom * 2.0f, SpriteEffects.None, 1f);
             }
         }
 
@@ -562,7 +562,7 @@ namespace ClimatesOfFerngillRebuild
             //determine icon offset  
             if (!Game1.eventUp)
             {
-                Game1.spriteBatch.Draw(OurIcons.source, weatherMenu.position + new Vector2(116f, 68f), new Rectangle?(new Rectangle(134 + 12 * Conditions.CurrentWeatherIcon, 60, 12, 8)), Color.White, 0.0f, Vector2.Zero, 4f, SpriteEffects.None, .1f);
+                Game1.spriteBatch.Draw(OurIcons.source, weatherMenu.position + new Vector2(116f, 68f), new Rectangle?(new Rectangle(0+ 12 * Conditions.CurrentWeatherIcon, 0, 12, 8)), Color.White, 0.0f, Vector2.Zero, 4f, SpriteEffects.None, .1f);
             }
         }
 
@@ -596,7 +596,6 @@ namespace ClimatesOfFerngillRebuild
             SeedsForDialogue[1] = Dice.Next();
             CropList.Clear(); //clear the crop list
             DebugOutput.Clear();
-            OurMoon.UpdateForNewDay();
             Conditions.OnNewDay();
             UpdateWeatherOnNewDay();
             SetTommorowWeather();

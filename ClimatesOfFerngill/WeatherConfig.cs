@@ -28,6 +28,7 @@ namespace ClimatesOfFerngillRebuild
         public double DarkFogChance { get; set; }
         public double ChanceOfGettingSick { get; set; }
         public bool Use12HourTime { get; set; }
+        public double BadMoonRising { get; set; }
 
         public bool Verbose { get; set; }
         
@@ -56,6 +57,7 @@ namespace ClimatesOfFerngillRebuild
             CropResistance = .75; //default settting
             DarkFogChance = .0875; //default setting
             Use12HourTime = false; //default setting
+            BadMoonRising = .004; //default setting
 
             // be able to deal with lightning strikes
 

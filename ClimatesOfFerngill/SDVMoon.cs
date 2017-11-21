@@ -22,6 +22,7 @@ namespace ClimatesOfFerngillRebuild
         WaningGibbeous,
         ThirdQuarter,
         WaningCrescent,
+        BloodMoon,
         ErrorPhase
     }
 
@@ -29,10 +30,10 @@ namespace ClimatesOfFerngillRebuild
     {
         //encapsulated members
         private MersenneTwister Dice;
+        private WeatherConfig ModConfig;
 
         //internal trackers
-        internal MoonPhase CurrPhase;
-        private static int cycleLength = 14;
+         private static int cycleLength = 14;
 
         //chances for various things
         private double CropGrowthChance;
@@ -45,9 +46,10 @@ namespace ClimatesOfFerngillRebuild
         internal readonly int[] beachItems = new int[] { 393, 397, 392, 394 };
         internal readonly int[] moonBeachItems = new int[] { 393, 394, 560, 586, 587, 589, 397 };
 
-        public SDVMoon(MersenneTwister rng)
+        public SDVMoon(WeatherConfig config, MersenneTwister rng)
         {
             Dice = rng;
+            ModConfig = config;
 
             //set chances.
             CropGrowthChance = .09;
@@ -55,40 +57,45 @@ namespace ClimatesOfFerngillRebuild
             BeachRemovalChance = .09;
             BeachSpawnChance = .35;
             GhostChance = .02;
-            CurrPhase = SDVMoon.GetLunarPhase();
         }
 
-        public void UpdateForNewDay()
-        {
-            CurrPhase = SDVMoon.GetLunarPhase();
-        }
-
-        public void Reset()
-        {
-            CurrPhase = MoonPhase.ErrorPhase;
-        }
 
         public override string ToString()
         {
             return DescribeMoonPhase() + " on day " + GetDayOfCycle();
         }
 
-        public static MoonPhase GetLunarPhase()
+        public MoonPhase CurrentPhase => GetLunarPhase();
+        
+        public MoonPhase GetLunarPhase()
         {
-            return SDVMoon.GetLunarPhase(SDVUtilities.GetDayFromDate(SDate.Now()));
-        }        
+            //divide it by the cycle.
+            int currentCycle = (int)Math.Floor(SDVUtilities.GetDayFromDate(SDate.Now()) / (double)cycleLength);
+            int currentDay = GetDayOfCycle(SDate.Now());
+            Console.Write($"Day is {SDVUtilities.GetDayFromDate(SDate.Now())} with current cycle is {currentCycle} and currentDay is {currentDay}");
 
-        public int GetDayOfCycle()
+            MoonPhase ret = SDVMoon.GetLunarPhase(currentDay);
+
+            if (ret == MoonPhase.FullMoon)
+            {
+                if (Dice.NextDoublePositive() <= ModConfig.BadMoonRising)
+                    return MoonPhase.BloodMoon;
+            }
+
+            return ret;
+        }
+
+        private int GetDayOfCycle()
         {
             return SDVMoon.GetDayOfCycle(SDate.Now());
         }
 
-        public static int GetDayOfCycle(SDate Today)
+        private static int GetDayOfCycle(SDate Today)
         {
             return SDVUtilities.GetDayFromDate(Today) % cycleLength;
         }
 
-        public static MoonPhase GetLunarPhase(SDate Today)
+        public static MoonPhase GetLunarPhaseForDay(SDate Today)
         {
             //divide it by the cycle.
             int currentCycle = (int)Math.Floor(SDVUtilities.GetDayFromDate(Today) / (double)cycleLength);
@@ -144,7 +151,7 @@ namespace ClimatesOfFerngillRebuild
             int cropsAffected = 0;
 
             //moon processing
-            if (SDVMoon.GetLunarPhase() == MoonPhase.FullMoon)
+            if (CurrentPhase == MoonPhase.FullMoon)
             {
                 foreach (var TF in f.terrainFeatures)
                 {
@@ -183,7 +190,7 @@ namespace ClimatesOfFerngillRebuild
                     Game1.addHUDMessage(new HUDMessage(Helper.Get("moon-text.fullmoon_eff", new { cropsAffected = cropsAffected })));
             }
 
-            if (SDVMoon.GetLunarPhase() == MoonPhase.NewMoon)
+            if (CurrentPhase == MoonPhase.NewMoon)
             {
                 if (f != null)
                 {
@@ -214,7 +221,7 @@ namespace ClimatesOfFerngillRebuild
             int itemsChanged = 0;
             
             //new moon processing
-            if (SDVMoon.GetLunarPhase() == MoonPhase.NewMoon)
+            if (CurrentPhase == MoonPhase.NewMoon)
             {
                 List<KeyValuePair<Vector2, StardewValley.Object>> entries = (from o in b.objects
                                                                              where beachItems.Contains(o.Value.parentSheetIndex)
@@ -234,7 +241,7 @@ namespace ClimatesOfFerngillRebuild
             }
 
             //full moon processing
-            if (SDVMoon.GetLunarPhase() == MoonPhase.FullMoon)
+            if (CurrentPhase == MoonPhase.FullMoon)
             {
                 int parentSheetIndex = 0;
                 Rectangle rectangle = new Rectangle(65, 11, 25, 12);
@@ -296,7 +303,7 @@ namespace ClimatesOfFerngillRebuild
 
         private string DescribeMoonPhase()
         {
-            switch (this.CurrPhase)
+            switch (this.CurrentPhase)
             {
                 case MoonPhase.ErrorPhase:
                     return "Phase Error";
@@ -325,7 +332,7 @@ namespace ClimatesOfFerngillRebuild
         {
             if (Game1.timeOfDay > Game1.getTrulyDarkTime() && Game1.currentLocation.isOutdoors && Game1.currentLocation is Farm)
             {
-                if (CurrPhase is MoonPhase.FullMoon && Dice.NextDouble() < GhostChance)
+                if (CurrentPhase is MoonPhase.FullMoon && Dice.NextDouble() < GhostChance)
                 {
                     return true;
                 }

@@ -244,8 +244,7 @@ namespace ClimatesOfFerngillRebuild
                 topOffset -= this.CurrentScroll; // scrolled down == move text up
 
                 // draw weather icon
-                contentBatch.Draw(IconSheet.source, new Vector2(x + leftOffset, y + topOffset), 
-                    IconSheet.GetWeatherSprite(CurrentWeather.GetCurrentConditions()), Color.White);
+                contentBatch.Draw(IconSheet.source, new Vector2(x + leftOffset, y + topOffset), IconSheet.GetWeatherSprite(CurrentWeather.GetCurrentConditions()), Color.White);
                 leftOffset += 72;
                 string weatherString = "";
 
@@ -261,10 +260,10 @@ namespace ClimatesOfFerngillRebuild
 
                 //draw moon info
                 contentBatch.Draw(IconSheet.source, new Vector2(x + 15, y + topOffset), 
-                    IconSheet.GetMoonSprite(OurMoon.CurrPhase), Color.White);
+                    IconSheet.GetMoonSprite(OurMoon.CurrentPhase), Color.White);
 
                 weatherString = Helper.Get("moon-desc.desc_moonphase", 
-                    new { moonPhase = SDVMoon.DescribeMoonPhase(OurMoon.CurrPhase, Helper)});
+                    new { moonPhase = SDVMoon.DescribeMoonPhase(OurMoon.CurrentPhase, Helper)});
 
                 Vector2 moonText = contentBatch.DrawTextBlock(font, 
                     weatherString, new Vector2(x + leftOffset, y + topOffset), wrapWidth);

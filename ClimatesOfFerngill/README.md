@@ -1,6 +1,6 @@
 ﻿# Climates of Ferngill (Rebuild) You Can (Not) Have Weather
 
-Current Version (11 November 2017): v1.2 rc2
+Current Version (20 November 2017): v1.3-beta1
 
 ## What's New
 
@@ -58,8 +58,14 @@ If you're out in a blizzard during the day, it's *1.25 or 2.5 rounded down to 2.
 ## Wishlist
 
 ## Changelog
-v1.2rc2
-
+v1.2rc2 (v1.3-beta1)
+- fog is now properly dark and either way, the fog fades over time.
+- fall climates in normal and enhanced from Fall 19 to Fall 28 produced way too much fog
+- frosts now get full resistance on crops
+- the frost death message will now tell you how many died
+- stamina system overhauled that you won't get sick from something you can't suffer from events at the time.
+- bad moon rising: blood moons will appear.
+- new sprites, thanks to eemie, that more closely match the vanilla ones!
 
 v1.1.12p5
  - overhauled stamina system to correct an odd error. See writeup for more details.
@@ -166,4 +172,4 @@ over a certain value.). Valid 0-1, but it's recommended that this is kept low. D
 
  - 'ChanceOfGettingSick' - Controls the chance you'll get sick when conditions are matched. Default is set to '.7' for (70% chance). Valid Range is 0 to 1.
 
- - 'Use12HourTime' - Tells it whether or not to use 12hour time or not. Defaults to false.
+ - 'Use12HourTime' - Tells it whether or not to use 12hour time or not in displays. Defaults to false.
