@@ -23,12 +23,14 @@ namespace ClimatesOfFerngillRebuild
         /// <summary> Sprites used for drawing various weather stuff </summary>
         public class Icons
         {
-            public Texture2D source;
+            public Texture2D WeatherSource;
+            public Texture2D MoonSource;
             public static Texture2D source2;
 
             public Icons(IContentHelper helper)
             {
-                source = helper.Load<Texture2D>(Path.Combine("Assets","climatesheet4.png"));
+                WeatherSource = helper.Load<Texture2D>(Path.Combine("Assets","WeatherIcons.png"));
+                MoonSource = helper.Load<Texture2D>(Path.Combine("Assets", "MoonPhases.png"));
                 source2 = Game1.mouseCursors;
             }
 
@@ -73,13 +75,10 @@ namespace ClimatesOfFerngillRebuild
                     return Icons.WaningCrescent1;
                 if (moon == MoonPhase.WaxingCrescent)
                     return Icons.WaxingCrescent1;
-
-                /*
-                 *  if (moon == MoonPhase.WaningGibbeous)
-                    return Icons.WaningGibbeous;
-                    
+                if (moon == MoonPhase.WaningGibbeous)
+                    return Icons.WaningGibbeous;                    
                 if (moon == MoonPhase.WaxingGibbeous)
-                    return Icons.WaxingGibbeous; */
+                    return Icons.WaxingGibbeous;
 
                 return Icons.NewMoon;
             }
@@ -116,32 +115,32 @@ namespace ClimatesOfFerngillRebuild
                 return Icons.WeatherSunny;
             }
 
-            // These are the positions of each sprite on the sheet.
-            public static readonly Rectangle NewMoon = new Rectangle(0, 16, 41, 41);
-            public static readonly Rectangle WaxingCrescent1 = new Rectangle(42, 20, 32, 29);
-            public static readonly Rectangle WaxingCrescent2 = new Rectangle(77, 19, 32, 21);
-            public static readonly Rectangle WaxingCrescent3 = new Rectangle(109, 18, 32, 31);
-            public static readonly Rectangle FirstQuarter = new Rectangle(143, 17, 34, 34);
-            public static readonly Rectangle FullMoon = new Rectangle(217, 13, 36, 38);
-            public static readonly Rectangle ThirdQuarter = new Rectangle(174, 157, 37, 30);
-            public static readonly Rectangle WaningCrescent1 = new Rectangle(287, 12, 34, 36);
-            public static readonly Rectangle WaningCrescent2 = new Rectangle(322, 12, 32, 37);
-            public static readonly Rectangle WaningCrescent3 = new Rectangle(356, 14, 29, 32);
-            public static readonly Rectangle WaxingGibbeous = new Rectangle(5, 60, 36, 40);
-            public static readonly Rectangle WaningGibbeous = new Rectangle(40, 58, 40, 36);
-            public static readonly Rectangle BloodMoon = new Rectangle(385, 9, 38, 38);
+            // These are the positions of each sprite on their sheet.
+            public static readonly Rectangle NewMoon = new Rectangle(4, 22, 40, 38);
+            public static readonly Rectangle WaxingCrescent1 = new Rectangle(51, 22, 41, 37);
+            public static readonly Rectangle WaxingCrescent2 = new Rectangle(98, 21, 44, 40);
+            public static readonly Rectangle WaxingCrescent3 = new Rectangle(146, 20, 44, 40);
+            public static readonly Rectangle FirstQuarter = new Rectangle(196, 20, 41, 41);
+            public static readonly Rectangle FullMoon = new Rectangle(6, 68, 39, 37);
+            public static readonly Rectangle ThirdQuarter = new Rectangle(53, 86, 38, 38);
+            public static readonly Rectangle WaningCrescent1 = new Rectangle(101, 85, 38, 39);
+            public static readonly Rectangle WaningCrescent2 = new Rectangle(148, 87, 41, 37);
+            public static readonly Rectangle WaningCrescent3 = new Rectangle(204, 87, 42, 37);
+            public static readonly Rectangle WaxingGibbeous = new Rectangle(333, 112, 41, 34);
+            public static readonly Rectangle WaningGibbeous = new Rectangle(334, 65, 43, 39);
+            public static readonly Rectangle BloodMoon = new Rectangle(251, 13, 46, 43);
 
             //Weather
-            public static readonly Rectangle WeatherSunny = new Rectangle(1, 104, 39, 38);
-            public static readonly Rectangle WeatherRainy = new Rectangle(40, 104, 35, 40);
-            public static readonly Rectangle WeatherStormy = new Rectangle(77, 104, 38, 43);
-            public static readonly Rectangle WeatherSnowy = new Rectangle(115, 104, 37, 40);
-            public static readonly Rectangle WeatherWindy = new Rectangle(115, 104, 41, 41);
-            public static readonly Rectangle WeatherWedding = new Rectangle(198, 104, 37, 38);
-            public static readonly Rectangle WeatherFestival = new Rectangle(235, 104, 47, 45);
-            public static readonly Rectangle WeatherBlizzard = new Rectangle(281, 104, 40, 42);
-            public static readonly Rectangle WeatherDryLightning = new Rectangle(321,105,33,39);
-            public static readonly Rectangle WeatherThundersnow = new Rectangle(356,103,42,39);
+            public static readonly Rectangle WeatherSunny = new Rectangle(1, 27, 39, 38);
+            public static readonly Rectangle WeatherRainy = new Rectangle(40, 27, 35, 40);
+            public static readonly Rectangle WeatherStormy = new Rectangle(77, 27, 39, 40);
+            public static readonly Rectangle WeatherSnowy = new Rectangle(116, 27, 38, 41);
+            public static readonly Rectangle WeatherWindy = new Rectangle(155, 25, 42, 44);
+            public static readonly Rectangle WeatherWedding = new Rectangle(198, 27, 37, 38);
+            public static readonly Rectangle WeatherFestival = new Rectangle(235, 27, 47, 45);
+            public static readonly Rectangle WeatherBlizzard = new Rectangle(281, 27, 40, 42);
+            public static readonly Rectangle WeatherDryLightning = new Rectangle(321,27,33,39);
+            public static readonly Rectangle WeatherThundersnow = new Rectangle(355,26,39,40);
 
             /// <summary>A down arrow for scrolling content.</summary>
             public static readonly Rectangle DownArrow = new Rectangle(12, 76, 40, 44);

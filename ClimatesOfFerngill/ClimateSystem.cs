@@ -268,7 +268,7 @@ namespace ClimatesOfFerngillRebuild
             else if (Game1.isRaining)
                 endLight = Game1.ambientLight * 0.3f;
             else
-                endLight = Color.White;
+                endLight = new Color(0, 0, 0); // I have a sneaking suspcion
 
 
     }
@@ -277,6 +277,10 @@ namespace ClimatesOfFerngillRebuild
         {
             if (!IsFogVisible)
                 return;
+
+            Console.WriteLine($"Fog end time is {ExpirationTime} with current time being {Game1.timeOfDay}");
+            Console.WriteLine($"Begin light is {beginLight.ToString()}");
+            Console.WriteLine();
 
             if (CurrentFogType == FogType.Dark || CurrentFogType == FogType.Normal && ExpirationTime >= SDVTime.CurrentTime)
             {
@@ -290,44 +294,44 @@ namespace ClimatesOfFerngillRebuild
                 byte blueDiff = (byte)Math.Abs(beginLight.B - endLight.B);
                 byte alphaDiff = (byte)Math.Abs(beginLight.A - endLight.A);
 
-                /*
                 Console.WriteLine($"Fog end time is {ExpirationTime} with current time being {Game1.timeOfDay}");
                 Console.WriteLine($"Begin light is {beginLight.ToString()}");
-                Console.WriteLine($"Diff count. Red: {redDiff}, Green: {greenDiff}, Blue: {blueDiff}, Alpha: {alphaDiff}");
                 Console.WriteLine($"End Color is {endLight.ToString()} with the calced time remaining as {timeRemain} with {timeTotal} between start and end");
+                Console.WriteLine($"Diff count. Red: {redDiff}, Green: {greenDiff}, Blue: {blueDiff}, Alpha: {alphaDiff}");
                 Console.WriteLine($"This returns: {percentage}");
                 Console.WriteLine();
-                */
+                Console.WriteLine($"Diff calculated is R:{Math.Floor(redDiff * percentage)}, G: {Math.Floor(greenDiff * percentage)}, B: {Math.Floor(blueDiff * percentage)}, A: {Math.Floor(alphaDiff * percentage)}");
+                Console.WriteLine();
 
                 if (beginLight.R > endLight.R)
                     fogLight.R = (byte)Math.Floor(beginLight.R - (redDiff * percentage));
                 else if (beginLight.R == endLight.R)
                     fogLight.R = beginLight.R;
                 else
-                    fogLight.R = (byte)Math.Floor(endLight.R + (redDiff * percentage));
+                    fogLight.R = (byte)Math.Floor(beginLight.R + (redDiff * percentage));
 
                 if (beginLight.G > endLight.G)
                     fogLight.G = (byte)Math.Floor(beginLight.G - (greenDiff * percentage));
                 else if (beginLight.G == endLight.G)
                     fogLight.G = beginLight.G;
                 else
-                    fogLight.G = (byte)Math.Floor(endLight.G + (greenDiff * percentage));
+                    fogLight.G = (byte)Math.Floor(beginLight.G + (greenDiff * percentage));
 
                 if (beginLight.B > endLight.B)
                     fogLight.B = (byte)Math.Floor(beginLight.B - (blueDiff * percentage));
                 else if (beginLight.B == endLight.B)
                     fogLight.B = beginLight.B;
                 else
-                    fogLight.B = (byte)Math.Floor(endLight.B + (blueDiff * percentage));
+                    fogLight.B = (byte)Math.Floor(beginLight.B + (blueDiff * percentage));
 
                 if (beginLight.A > endLight.A)
                     fogLight.A = (byte)Math.Floor(beginLight.A - (alphaDiff * percentage));
                 else if (beginLight.A == endLight.A)
                     fogLight.A = beginLight.A;
                 else
-                    fogLight.A = (byte)Math.Floor(endLight.A + (alphaDiff * percentage));
+                    fogLight.A = (byte)Math.Floor(beginLight.A + (alphaDiff * percentage));
 
-                //Console.WriteLine(value: $"FogLight is {fogLight.ToString()}");            
+                Console.WriteLine(value: $"FogLight is {fogLight.ToString()}");            
             }
 
             if (ExpirationTime <= SDVTime.CurrentTime)
