@@ -116,19 +116,20 @@ namespace ClimatesOfFerngillRebuild
             }
 
             // These are the positions of each sprite on their sheet.
-            public static readonly Rectangle NewMoon = new Rectangle(4, 22, 40, 38);
-            public static readonly Rectangle WaxingCrescent1 = new Rectangle(51, 22, 41, 37);
-            public static readonly Rectangle WaxingCrescent2 = new Rectangle(98, 21, 44, 40);
-            public static readonly Rectangle WaxingCrescent3 = new Rectangle(146, 20, 44, 40);
-            public static readonly Rectangle FirstQuarter = new Rectangle(196, 20, 41, 41);
-            public static readonly Rectangle FullMoon = new Rectangle(6, 68, 39, 37);
-            public static readonly Rectangle ThirdQuarter = new Rectangle(53, 86, 38, 38);
-            public static readonly Rectangle WaningCrescent1 = new Rectangle(101, 85, 38, 39);
-            public static readonly Rectangle WaningCrescent2 = new Rectangle(148, 87, 41, 37);
-            public static readonly Rectangle WaningCrescent3 = new Rectangle(204, 87, 42, 37);
-            public static readonly Rectangle WaxingGibbeous = new Rectangle(333, 112, 41, 34);
-            public static readonly Rectangle WaningGibbeous = new Rectangle(334, 65, 43, 39);
-            public static readonly Rectangle BloodMoon = new Rectangle(251, 13, 46, 43);
+            public static readonly Rectangle NewMoon = new Rectangle(7, 23, 34, 36);
+            public static readonly Rectangle WaxingCrescent1 = new Rectangle(53, 22, 38, 38);
+            public static readonly Rectangle WaxingCrescent2 = new Rectangle(101, 20, 38, 40);
+            public static readonly Rectangle WaxingCrescent3 = new Rectangle(151, 23, 35, 38);
+            public static readonly Rectangle FirstQuarter = new Rectangle(198, 21, 38, 41);
+            public static readonly Rectangle FullMoon = new Rectangle(5, 86, 37, 38);
+            public static readonly Rectangle ThirdQuarter = new Rectangle(54, 86, 36, 38);
+            public static readonly Rectangle WaningCrescent1 = new Rectangle(104, 89, 32, 34);
+            public static readonly Rectangle WaningCrescent2 = new Rectangle(149, 87, 38, 37);
+            public static readonly Rectangle WaningCrescent3 = new Rectangle(208, 89, 33, 35);
+            public static readonly Rectangle WaxingGibbeous = new Rectangle(262, 91, 34, 33);
+            public static readonly Rectangle WaningGibbeous = new Rectangle(257, 22, 36, 39);
+            public static readonly Rectangle BloodMoonIntensifies = new Rectangle(312, 30, 41, 39);
+            public static readonly Rectangle BloodMoon = new Rectangle(317, 90, 37, 37);
 
             //Weather
             public static readonly Rectangle WeatherSunny = new Rectangle(1, 27, 39, 38);

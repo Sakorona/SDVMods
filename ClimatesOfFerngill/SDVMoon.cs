@@ -95,6 +95,11 @@ namespace ClimatesOfFerngillRebuild
             return SDVUtilities.GetDayFromDate(Today) % cycleLength;
         }
 
+        /// <summary>
+        /// This function returns the lunar phase for an arbitary day.
+        /// </summary>
+        /// <param name="Today">The day you are examining for.</param>
+        /// <returns></returns>
         public static MoonPhase GetLunarPhaseForDay(SDate Today)
         {
             //divide it by the cycle.

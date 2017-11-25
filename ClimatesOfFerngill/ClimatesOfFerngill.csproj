@@ -96,10 +96,10 @@
     <None Include="README.md" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="Assets\climatesheet2.png">
+    <Content Include="Assets\MoonPhases.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <Content Include="Assets\climatesheet4.png">
+    <Content Include="Assets\WeatherIcons.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
   </ItemGroup>

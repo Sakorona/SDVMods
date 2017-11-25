@@ -6,11 +6,27 @@ using StardewValley.TerrainFeatures;
 using System;
 using System.Collections.Generic;
 using TwilightShards.Common;
+using xTile.Dimensions;
 
 namespace TwilightShards.Stardew.Common
 {
     public static class SDVUtilities
     {
+        public static bool TileIsClearForSpawning(GameLocation checkLoc, Vector2 tileVector,  StardewValley.Object tile)
+        {
+            if (tile == null && checkLoc.doesTileHaveProperty((int)tileVector.X, (int)tileVector.Y, "Diggable", "Back") != null && (checkLoc.isTileLocationOpen(new Location((int)tileVector.X * Game1.tileSize, (int)tileVector.Y * Game1.tileSize)) && !checkLoc.isTileOccupied(tileVector, "")) && checkLoc.doesTileHaveProperty((int)tileVector.X, (int)tileVector.Y, "Water", "Back") == null)
+            {
+                string PropCheck = checkLoc.doesTileHaveProperty((int)tileVector.X, (int)tileVector.Y, "NoSpawn", "Back");
+
+                if (PropCheck == null || !PropCheck.Equals("Grass") && !PropCheck.Equals("All") && !PropCheck.Equals("True"))
+                {
+                    return true;
+                }
+            }
+
+            return false;
+        }
+
         public static void ShakeScreenOnLowStamina()
         {
             Game1.staminaShakeTimer = 1000;

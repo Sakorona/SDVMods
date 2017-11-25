@@ -186,7 +186,7 @@ namespace ClimatesOfFerngillRebuild
             this.FogAlpha = 1f;
             //First, let's determine the type.
             //... I am a dumb foxgirl. A really dumb one. 
-            /*if (SetFog == FogType.None)
+            if (SetFog == FogType.None)
             {
                 if (Dice.NextDoublePositive() < WeatherOpt.DarkFogChance && SDate.Now().Day != 1 && SDate.Now().Year != 1 && SDate.Now().Season != "spring")
                     CurrentFogType = FogType.Dark;
@@ -198,9 +198,8 @@ namespace ClimatesOfFerngillRebuild
             else
             {
                 CurrentFogType = SetFog;
-            } */
-            CurrentFogType = FogType.Dark;
-
+            } 
+           
             //Set the outdoorlight depending on the type.
             switch (CurrentFogType)
             {
@@ -227,28 +226,29 @@ namespace ClimatesOfFerngillRebuild
              * So, the strongest odds should be 820 to 930, with sharply falling off odds until 1200. And then
              * so, extremely rare odds for until 7pm and even rarer than midnight.
              */
-            if (FogChance > 0 && FogChance < .25)
-                this.ExpirTime = new SDVTime(830);
-            else if (FogChance >= .25 && FogChance < .32)
-                this.ExpirTime = new SDVTime(900);
-            else if (FogChance >= .32 && FogChance < .41)
-                this.ExpirTime = new SDVTime(930);
-            else if (FogChance >= .41 && FogChance < .55)
-                this.ExpirTime = new SDVTime(950);
-            else if (FogChance >= .55 && FogChance < .7)
-                this.ExpirTime = new SDVTime(1040);
-            else if (FogChance >= .7 && FogChance < .8)
-                this.ExpirTime = new SDVTime(1120);
-            else if (FogChance >= .8 && FogChance < .9)
-                this.ExpirTime = new SDVTime(1200);
-            else if (FogChance >= .9 && FogChance < .95)
-                this.ExpirTime = new SDVTime(1220);
-            else if (FogChance >= .95 && FogChance < .98)
-                this.ExpirTime = new SDVTime(1300);
-            else if (FogChance >= .98 && FogChance < .99)
-                this.ExpirTime = new SDVTime(1910);
-            else if (FogChance >= .99)
-                this.ExpirTime = new SDVTime(2400);
+           
+           if (FogChance > 0 && FogChance < .25)
+               this.ExpirTime = new SDVTime(830);
+           else if (FogChance >= .25 && FogChance < .32)
+               this.ExpirTime = new SDVTime(900);
+           else if (FogChance >= .32 && FogChance < .41)
+               this.ExpirTime = new SDVTime(930);
+           else if (FogChance >= .41 && FogChance < .55)
+               this.ExpirTime = new SDVTime(950);
+           else if (FogChance >= .55 && FogChance < .7)
+               this.ExpirTime = new SDVTime(1040);
+           else if (FogChance >= .7 && FogChance < .8)
+               this.ExpirTime = new SDVTime(1120);
+           else if (FogChance >= .8 && FogChance < .9)
+               this.ExpirTime = new SDVTime(1200);
+           else if (FogChance >= .9 && FogChance < .95)
+               this.ExpirTime = new SDVTime(1220);
+           else if (FogChance >= .95 && FogChance < .98)
+               this.ExpirTime = new SDVTime(1300);
+           else if (FogChance >= .98 && FogChance < .99)
+               this.ExpirTime = new SDVTime(1910);
+           else if (FogChance >= .99)
+               this.ExpirTime = new SDVTime(2400);
 
             int endTime = this.ExpirTime.ReturnIntTime();
 
@@ -278,9 +278,9 @@ namespace ClimatesOfFerngillRebuild
             if (!IsFogVisible)
                 return;
 
-            Console.WriteLine($"Fog end time is {ExpirationTime} with current time being {Game1.timeOfDay}");
-            Console.WriteLine($"Begin light is {beginLight.ToString()}");
-            Console.WriteLine();
+            //Console.WriteLine($"Fog end time is {ExpirationTime} with current time being {Game1.timeOfDay}");
+            //Console.WriteLine($"Begin light is {beginLight.ToString()}");
+            //Console.WriteLine();
 
             if (CurrentFogType == FogType.Dark || CurrentFogType == FogType.Normal && ExpirationTime >= SDVTime.CurrentTime)
             {
@@ -293,7 +293,8 @@ namespace ClimatesOfFerngillRebuild
                 byte greenDiff = (byte)Math.Abs(beginLight.G - endLight.G);
                 byte blueDiff = (byte)Math.Abs(beginLight.B - endLight.B);
                 byte alphaDiff = (byte)Math.Abs(beginLight.A - endLight.A);
-
+                
+                /*
                 Console.WriteLine($"Fog end time is {ExpirationTime} with current time being {Game1.timeOfDay}");
                 Console.WriteLine($"Begin light is {beginLight.ToString()}");
                 Console.WriteLine($"End Color is {endLight.ToString()} with the calced time remaining as {timeRemain} with {timeTotal} between start and end");
@@ -301,7 +302,7 @@ namespace ClimatesOfFerngillRebuild
                 Console.WriteLine($"This returns: {percentage}");
                 Console.WriteLine();
                 Console.WriteLine($"Diff calculated is R:{Math.Floor(redDiff * percentage)}, G: {Math.Floor(greenDiff * percentage)}, B: {Math.Floor(blueDiff * percentage)}, A: {Math.Floor(alphaDiff * percentage)}");
-                Console.WriteLine();
+                Console.WriteLine();*/
 
                 if (beginLight.R > endLight.R)
                     fogLight.R = (byte)Math.Floor(beginLight.R - (redDiff * percentage));
@@ -331,7 +332,7 @@ namespace ClimatesOfFerngillRebuild
                 else
                     fogLight.A = (byte)Math.Floor(beginLight.A + (alphaDiff * percentage));
 
-                Console.WriteLine(value: $"FogLight is {fogLight.ToString()}");            
+                //Console.WriteLine(value: $"FogLight is {fogLight.ToString()}");            
             }
 
             if (ExpirationTime <= SDVTime.CurrentTime)
