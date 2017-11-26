@@ -9,7 +9,8 @@ using TwilightShards.Common;
 using TwilightShards.Stardew.Common;
 using xTile.Dimensions;
 using SObject = StardewValley.Object;
-
+using System.Collections.Specialized;
+using StardewValley.Menus;
 
 namespace QuestOverhaul
 {
@@ -17,16 +18,33 @@ namespace QuestOverhaul
     {
         private MersenneTwister Dice = new MersenneTwister();
 
-        private int GameWeedType = -1;
-
         public override void Entry(IModHelper Helper)
         {
             TimeEvents.AfterDayStarted += TimeEvents_AfterDayStarted;
             SaveEvents.BeforeSave += SaveEvents_BeforeSave;
+            GameEvents.OneSecondTick += GameEvents_SecondUpdateTick;
 
             Helper.ConsoleCommands
                       .Add("debug_dumpquest", "Debug command to dump quest of day stuff.", QuestVariableDump)
                       .Add("debug_playerpos", "Get Player position", GetCurrentLocation);
+        }
+
+        private void GameEvents_SecondUpdateTick(object sender, EventArgs e)
+        {
+            foreach (Quest q in Game1.player.questLog)
+            {
+                if (q is WeedingQuest && q.completed)
+                {
+                    GameLocation loc = Game1.getLocationFromName("Town");
+                    loc.objects.CollectionChanged -= CheckForDestroyedObjects;
+                }
+            }
+        }
+
+        private void CheckForDestroyedObjects(object sender, NotifyCollectionChangedEventArgs e)
+        {
+            for (int i = 0; i < Game1.player.questLog.Count; i++)
+                Game1.player.questLog[i].checkIfComplete((NPC)null, -1, -1, (Item)null, (string)null);
         }
 
         private void SaveEvents_BeforeSave(object sender, EventArgs e)
@@ -88,10 +106,6 @@ namespace QuestOverhaul
             int numWeeds = Helper.Reflection.GetPrivateMethod(quest, "weedsLeft").Invoke<int>();
             varDump += $"{Environment.NewLine} Weeds Left (internal): {numWeeds}";
 
-            bool completeCheck = Helper.Reflection.GetPrivateMethod(quest, "checkIfComplete").Invoke<bool>(new object[] { (NPC)null, -1, -1, (Item)null, (string)null
-        });
-            varDump += $"{Environment.NewLine} Complete Check (manual invoke): {completeCheck}";
-
             Monitor.Log(Environment.NewLine + varDump + Environment.NewLine);
         }
 
@@ -138,13 +152,19 @@ namespace QuestOverhaul
             _quest.currentObjective = "";
             //create the weeds
 
-            _quest.totalWeeds = Dice.Next(3, 16);
+            _quest.totalWeeds = Dice.Next(5, 25);
             GameLocation spawnLoc = Game1.getLocationFromName("Town");
             int weedsCreated = CreateWeeds(spawnLoc, _quest.totalWeeds);
+            _quest.moneyReward = weedsCreated * 25;
             _quest.totalWeeds = WeedsLeft();
 
             //set duration
             _quest.daysLeft = 1; 
+            _quest.completionString = "Strings\\StringsFromCSFiles:WeedingQuest.cs.13819";
+
+            //hookup events to allow the quest to be completed
+            GameLocation loc = Game1.getLocationFromName("Town");
+            loc.objects.CollectionChanged += CheckForDestroyedObjects;
 
             return _quest;
         }
@@ -165,7 +185,6 @@ namespace QuestOverhaul
                     int xTile = Game1.random.Next(spawnLoc.map.DisplayWidth / Game1.tileSize);
                     int yTile = Game1.random.Next(spawnLoc.map.DisplayHeight / Game1.tileSize);
                     Vector2 randomVector = new Vector2((float)xTile, (float)yTile);
-                    Monitor.Log($"Selected tile is {randomVector.ToString()}");
                     spawnLoc.objects.TryGetValue(randomVector, out SObject @object);
 
                     if (SDVUtilities.TileIsClearForSpawning(spawnLoc, randomVector, @object))
@@ -175,7 +194,7 @@ namespace QuestOverhaul
                         {
                             //spawn the weed
                             Monitor.Log($"Spawning weed at {randomVector.ToString()}");
-                            spawnLoc.terrainFeatures.Add(randomVector, (TerrainFeature)new Grass(GameWeedType, 1));
+                            spawnLoc.objects.Add(randomVector, new SObject(randomVector, GameLocation.getWeedForSeason(Game1.random, Game1.currentSeason), 1));
                             CreatedWeeds++;
                         }
                     }
