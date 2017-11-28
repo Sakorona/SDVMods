@@ -7,6 +7,7 @@ using System;
 using System.Collections.Generic;
 using TwilightShards.Common;
 using xTile.Dimensions;
+using SObject = StardewValley.Object;
 
 namespace TwilightShards.Stardew.Common
 {
@@ -201,6 +202,41 @@ namespace TwilightShards.Stardew.Common
                 };
                 characters.Add((NPC)bat);
             }
+        }
+
+        public static int CreateWeeds(GameLocation spawnLoc, int numOfWeeds)
+        {
+            if (spawnLoc == null)
+                throw new Exception("The passed spawn location cannot be null!");
+
+            int CreatedWeeds = 0;
+
+            for (int i = 0; i <= numOfWeeds; i++)
+            {
+                //limit number of attempts per attempt to 10.
+                int numberOfAttempts = 0;
+                while (numberOfAttempts < 3)
+                {
+                    //get a random tile.
+                    int xTile = Game1.random.Next(spawnLoc.map.DisplayWidth / Game1.tileSize);
+                    int yTile = Game1.random.Next(spawnLoc.map.DisplayHeight / Game1.tileSize);
+                    Vector2 randomVector = new Vector2((float)xTile, (float)yTile);
+                    spawnLoc.objects.TryGetValue(randomVector, out SObject @object);
+
+                    if (SDVUtilities.TileIsClearForSpawning(spawnLoc, randomVector, @object))
+                    {
+                        //for now, don't spawn in winter.
+                        if (Game1.currentSeason != "winter")
+                        {
+                            //spawn the weed
+                            spawnLoc.objects.Add(randomVector, new SObject(randomVector, GameLocation.getWeedForSeason(Game1.random, Game1.currentSeason), 1));
+                            CreatedWeeds++;
+                        }
+                    }
+                    numberOfAttempts++; // this might have been more useful INSIDE the while loop.
+                }
+            }
+            return CreatedWeeds;
         }
     }
 }

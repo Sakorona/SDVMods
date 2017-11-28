@@ -401,7 +401,7 @@ namespace ClimatesOfFerngillRebuild
         public string GetWeatherForecast()
         {
             string tvText = " ";
-            //ObviouslyBadCode();
+            TV_ObviouslyBadCode();
             return tvText;
         }
 
@@ -1058,7 +1058,7 @@ namespace ClimatesOfFerngillRebuild
             MenuText += Helper.Translation.Get(dialogChoice, new{
                     time = WeatherOpt.Use12HourTime ? SDVTime.CurrentTime.Get12HourTime() : SDVTime.CurrentTime.ToString(),
                     conditions = "PLACEHOLDER" });
-            //OBVIOUSLY_BAD_CODE();
+            MENU_OBVIOUSLY_BAD_CODE();
 
             // show menu
             this.PreviousMenu = Game1.activeClickableMenu;

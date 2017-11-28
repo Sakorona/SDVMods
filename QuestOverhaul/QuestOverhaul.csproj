@@ -45,6 +45,7 @@
   <ItemGroup>
     <Compile Include="QuestOverhaul.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="QuestTypes\KN_WeedingQuest.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="i18n\default.json" />
