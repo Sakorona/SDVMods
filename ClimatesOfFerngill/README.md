@@ -1,6 +1,6 @@
 ﻿# Climates of Ferngill (Rebuild) You Can (Not) Have Weather
 
-Current Version (20 November 2017): v1.3-beta1
+Current Version (2 December 2017): v1.3-beta1
 
 ## What's New
 
@@ -58,6 +58,12 @@ If you're out in a blizzard during the day, it's *1.25 or 2.5 rounded down to 2.
 ## Wishlist
 
 ## Changelog
+v1.2rc2-2 (v1.3-beta1)
+- refactoring
+- began push to improve TV text
+- #%@%@%@@@@%@%@@%@%@
+- 
+
 v1.2rc2 (v1.3-beta1)
 - fog is now properly dark and either way, the fog fades over time.
 - fall climates in normal and enhanced from Fall 19 to Fall 28 produced way too much fog

@@ -175,9 +175,14 @@ namespace ClimatesOfFerngillRebuild
         {
             get
             {
-                //if (ModConfig.Verbose)
-                //    Monitor.Log($"Conditions: {CurrentConditions}");
+                if (ModConfig.Verbose)
+                    Monitor.Log($"Conditions: {CurrentConditionsN}");
 
+                if (OurFog.IsFogVisible)
+                    CurrentConditionsN |= CurrentWeather.Fog;
+                else
+                    CurrentConditionsN.RemoveFlags(CurrentWeather.Fog);
+                
                 if (GeneralFunctions.ContainsOnlyMatchingFlags(CurrentConditionsN, (int)CurrentWeather.Rain))
                     return WeatherIcon.IconRain;
 
