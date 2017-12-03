@@ -27,33 +27,11 @@ using EnumsNET;
 
 namespace ClimatesOfFerngillRebuild
 {
-    public class ClimatesOfFerngill : Mod
+    public class ClimatesOfFerngill : Mod, IAssetEditor
     {
-        public static Dictionary<SDate, int> ForceDays = new Dictionary<SDate, int>
-            {
-                { new SDate(1,"spring"), Game1.weather_sunny },
-                { new SDate(2, "spring"), Game1.weather_sunny },
-                { new SDate(3, "spring"), Game1.weather_rain },
-                { new SDate(4, "spring"), Game1.weather_sunny },
-                { new SDate(13, "spring"), Game1.weather_festival },
-                { new SDate(24, "spring"), Game1.weather_festival },
-                { new SDate(1, "summer"), Game1.weather_sunny },
-                { new SDate(11, "summer"), Game1.weather_festival },
-                { new SDate(13, "summer"), Game1.weather_lightning },
-                { new SDate(25, "summer", 25), Game1.weather_lightning },
-                { new SDate(26, "summer", 26), Game1.weather_lightning },
-                { new SDate(28, "summer", 28), Game1.weather_festival },
-                { new SDate(1,"fall"), Game1.weather_sunny },
-                { new SDate(16,"fall"), Game1.weather_festival },
-                { new SDate(27,"fall"), Game1.weather_festival },
-                { new SDate(1,"winter"), Game1.weather_sunny },
-                { new SDate(8, "winter"), Game1.weather_festival },
-                { new SDate(25, "winter"), Game1.weather_festival }
-            };
-
         /// <summary> The options file </summary>
         private WeatherConfig WeatherOpt { get; set; }
-        //public static Texture2D fadeToBlackRect = new Texture2D(Game1.graphics.GraphicsDevice, 12, 8, false, SurfaceFormat.Color);
+
         /// <summary> The pRNG object </summary>
         private MersenneTwister Dice;
 
@@ -63,12 +41,12 @@ namespace ClimatesOfFerngillRebuild
         /// <summary> The climate for the game </summary>
         private FerngillClimate GameClimate;
 
-        /// <summary>
-        /// This is used to display icons on the menu
-        /// </summary>
+        /// <summary> This is used to display icons on the menu </summary>
         private Sprites.Icons OurIcons { get; set; }
 
         private StringBuilder DebugOutput;
+
+        /// <summary> The moon object </summary>
         private SDVMoon OurMoon;
 
         //for stamina management
@@ -83,9 +61,7 @@ namespace ClimatesOfFerngillRebuild
         //queued string
         private HUDMessage queuedMsg;
 
-        /// <summary>
-        /// This is used to allow the menu to revert back to a previous menu
-        /// </summary>
+        /// <summary> This is used to allow the menu to revert back to a previous menu </summary>
         private IClickableMenu PreviousMenu;
 
         //tv overloading
@@ -105,6 +81,18 @@ namespace ClimatesOfFerngillRebuild
         private FerngillBlizzard HeavySnow;
 
         private bool IsFestivalDay => Utility.isFestivalDay(SDate.Now().Day, SDate.Now().Season);
+
+        public bool CanEdit<T>(IAssetInfo asset)
+        {
+            return asset.AssetNameEquals(@"Strings\StringsFromCSFiles");
+        }
+
+        //edit the asset.
+        public void Edit<T>(IAssetData asset)
+        {
+            IDictionary<string, string> data = asset.AsDictionary<string, string>().Data;
+            data["TV.cs.13136"] = "Welcome to KOZU 5... your number one source for weather, news, and entertainment.^";
+        }
 
         /// <summary> Main mod function. </summary>
         /// <param name="helper">The helper. </param>
@@ -149,12 +137,10 @@ namespace ClimatesOfFerngillRebuild
                 GameEvents.UpdateTick += CheckForChanges;
                 GameEvents.FourthUpdateTick += GameEvents_FourthUpdateTick;
                 SaveEvents.AfterReturnToTitle += ResetMod;
-
                 GraphicsEvents.OnPreRenderEvent += DrawBeforeScreenRenders;
                 GraphicsEvents.OnPostRenderGuiEvent += DrawOverMenus;
                 GraphicsEvents.OnPreRenderHudEvent += DrawPreHudObjects;
                 GraphicsEvents.OnPostRenderHudEvent += DrawObjects;
-
                 LocationEvents.CurrentLocationChanged += LocationEvents_CurrentLocationChanged;
                 ControlEvents.KeyPressed += (sender, e) => this.ReceiveKeyPress(e.KeyPressed, this.WeatherOpt.Keyboard);
                 MenuEvents.MenuClosed += (sender, e) => this.ReceiveMenuClosed(e.PriorMenu);
@@ -164,16 +150,8 @@ namespace ClimatesOfFerngillRebuild
                       .Add("weather_settommorow", helper.Translation.Get("console-text.desc_tmrweather"), TomorrowWeatherChangeFromConsole)
                       .Add("weather_changeweather", helper.Translation.Get("console-text.desc_setweather"), WeatherChangeFromConsole)
                       .Add("debug_staminaforce", "Forces stamina drain level. Debug function", DebugStaForce)
-                      .Add("debug_weatherstatus", "Prints an overly detailed weahter status screen out to the console.", DebugWeather)
-                      .Add("debug_setfogcolor", "Sets fog color", FogColor)
-                      .Add("debug_getfogcolor", "Gets fog colors", GetFogColor)
-                      .Add("debug_alldayfog", "Sets all day fog.", AllDayFog);
+                      .Add("debug_weatherstatus", "Prints an overly detailed weahter status screen out to the console.", DebugWeather);
             }
-        }
-
-        private void AllDayFog(string arg1, string[] arg2)
-        {
-            Conditions.OurFog.SetFogExpirationTime(new SDVTime(2400));
         }
 
         private void DrawBeforeScreenRenders(object sender, EventArgs e)
@@ -182,31 +160,11 @@ namespace ClimatesOfFerngillRebuild
                 Game1.outdoorLight = Conditions.OurFog.fogLight;
         }
 
-        private void FogColor(string arg1, string[] arg2)
-        {
-            if (arg2.Length < 3)
-                return;
-
-            int red = Convert.ToInt32(arg2[0]);
-            int green = Convert.ToInt32(arg2[1]);
-            int blue = Convert.ToInt32(arg2[2]);
-
-            Conditions.OurFog.SetColor(red, green, blue);
-            Conditions.OurFog.fogLight = new Color(red, green, blue);
-        }
-
-        private void GetFogColor(string arg1, string[] arg2)
-        {
-            Monitor.Log($"{Environment.NewLine}The game's current color is {Game1.outdoorLight.ToString()}" +
-                 $"{Environment.NewLine}The set end light color is {Conditions.OurFog.endLight.ToString()}." +
-                 $"{Environment.NewLine}The fog light color is {Conditions.OurFog.fogLight.ToString()}." +
-                 $"{Environment.NewLine}The set begin light color is {Conditions.OurFog.beginLight.ToString()}");
-        }
-
         private void GameEvents_FourthUpdateTick(object sender, EventArgs e)
         {
-            Conditions.UpdateForCurrentMoment();
-        }
+            if (Context.IsWorldReady) //it might help if it only runs when the game is only ready..
+                Conditions.UpdateForCurrentMoment();
+        } 
 
         private void DrawOverMenus(object sender, EventArgs e)
         {
@@ -236,9 +194,7 @@ namespace ClimatesOfFerngillRebuild
 
             if (Game1.currentLocation.isOutdoors && !(Game1.currentLocation is Desert) &&
                 Conditions.HasWeather(CurrentWeather.Blizzard))
-                HeavySnow.DrawBlizzard();
-
-            
+                HeavySnow.DrawBlizzard();            
         }
 
         /// <summary>
@@ -401,7 +357,10 @@ namespace ClimatesOfFerngillRebuild
         public string GetWeatherForecast()
         {
             string tvText = " ";
-            TV_ObviouslyBadCode();
+
+            //HEREBEDRAGONS();
+
+
             return tvText;
         }
 
@@ -562,7 +521,7 @@ namespace ClimatesOfFerngillRebuild
             //determine icon offset  
             if (!Game1.eventUp)
             {
-                Game1.spriteBatch.Draw(OurIcons.WeatherSource, weatherMenu.position + new Vector2(116f, 68f), new Rectangle?(new Rectangle(0+ 12 * Conditions.CurrentWeatherIcon, 0, 12, 8)), Color.White, 0.0f, Vector2.Zero, 4f, SpriteEffects.None, .1f);
+                Game1.spriteBatch.Draw(OurIcons.WeatherSource, weatherMenu.position + new Vector2(116f, 68f), new Rectangle?(new Rectangle(0+ 12 * (int)Conditions.CurrentWeatherIcon, 0, 12, 8)), Color.White, 0.0f, Vector2.Zero, 4f, SpriteEffects.None, .1f);
             }
         }
 
@@ -628,12 +587,10 @@ namespace ClimatesOfFerngillRebuild
                 return;
             }
 
-            if (CheckForForceDay(SDate.Now().AddDays(1)))
+            if (ForceDays.CheckForForceDay(SDate.Now().AddDays(1),Monitor, WeatherOpt.Verbose))
             {
                 if (WeatherOpt.Verbose)
                     Monitor.Log($"The game will force tomorrow. Aborting processing.", LogLevel.Trace);
-
-                //if (WeatherOpt.Verbose) Monitor.Log(DebugOutput.ToString());
                 return;
             }
 
@@ -767,7 +724,7 @@ namespace ClimatesOfFerngillRebuild
             double fogChance = GameClimate.GetClimateForDate(SDate.Now())
                                           .RetrieveOdds(Dice, "fog", SDate.Now().Day, DebugOutput);
 
-            //fogChance = 1; //for testing purposes
+            fogChance = 1; //for testing purposes
             double fogRoll = Dice.NextDoublePositive();
            
             if (fogRoll < fogChance && !Conditions.GetCurrentConditions().HasFlag(CurrentWeather.Wind))
@@ -850,21 +807,6 @@ namespace ClimatesOfFerngillRebuild
                     Conditions.AddWeather(CurrentWeather.Frost);
                 }
             }
-        }
-
-        private bool CheckForForceDay(SDate Target)
-        {
-            foreach (KeyValuePair<SDate, int> entry in ForceDays)
-            {
-                if (entry.Key.Day == Target.Day && entry.Key.Season == Target.Season)
-                {
-                    if (WeatherOpt.Verbose)
-                        Monitor.Log($"Setting {entry.Value}");
-                    Game1.weatherForTomorrow = entry.Value;
-                    return true;
-                }
-            }
-            return false;
         }
 
         /* **************************************************************
@@ -1020,11 +962,6 @@ namespace ClimatesOfFerngillRebuild
                 this.ShowMenu();
         }
 
-        private string GetDescOfDay(SDate date)
-        {
-            return Helper.Translation.Get("date" + GeneralFunctions.FirstLetterToUpper(date.Season) + date.Day);
-        }
-
         /// <summary>
         /// Show the menu
         /// </summary>
@@ -1032,34 +969,7 @@ namespace ClimatesOfFerngillRebuild
         {
             string MenuText = "";
 
-            MenuText += Helper.Translation.Get("weather-menu.opening", new { descDay = GetDescOfDay(SDate.Now()) });
-            MenuText += Environment.NewLine;
-
-            
-            int amtCount = Helper.Translation.GetTranslations().Where(n => n.Key.Contains("weather-menu.open_current")).Count();
-            string dialogChoice = "weather-menu.open_current" + new Random(SeedsForDialogue[0]).Next(1, amtCount) + Environment.NewLine + Environment.NewLine; 
-
-            //The weather menu should be context aware of what time it is.
-
-            Monitor.Log($"Conditions, currently, are {Conditions.GetCurrentConditions().ToString()}");
-
-
-            if (this.IsFestivalDay)
-            {
-                if (SDVTime.IsNight)
-                    dialogChoice = "weather-menu.open_current_festivalNight";
-                else
-                    dialogChoice = "weather-menu.open_current_festivalDay";
-            }
-            
-            if (WeatherOpt.Verbose)
-                Monitor.Log($"Count for current options is {amtCount} with the selected dialogChoice being {dialogChoice}. Current time is {SDVTime.CurrentIntTime}. IsNight: {SDVTime.IsNight}. Time being output is {(WeatherOpt.Use12HourTime ? SDVTime.CurrentTime.Get12HourTime() : SDVTime.CurrentTime.ToString())}");
-
-            MenuText += Helper.Translation.Get(dialogChoice, new{
-                    time = WeatherOpt.Use12HourTime ? SDVTime.CurrentTime.Get12HourTime() : SDVTime.CurrentTime.ToString(),
-                    conditions = "PLACEHOLDER" });
-            MENU_OBVIOUSLY_BAD_CODE();
-
+            //MENU_OBVIOUSLY_BAD_CODE();
             // show menu
             this.PreviousMenu = Game1.activeClickableMenu;
             Game1.activeClickableMenu = new WeatherMenu(Monitor, this.Helper.Reflection, OurIcons, Helper.Translation, Conditions, 

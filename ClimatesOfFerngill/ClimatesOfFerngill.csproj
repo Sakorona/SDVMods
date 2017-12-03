@@ -51,21 +51,28 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="ClimateSystem.cs" />
-    <Compile Include="FerngillClimate.cs" />
-    <Compile Include="FerngillClimateTimeSpan.cs" />
+    <Compile Include="DaMoon\MoonPhase.cs" />
+    <Compile Include="Weathers\ForceDays.cs" />
+    <Compile Include="Weathers\WeatherConditions.cs" />
+    <Compile Include="Descriptions.cs" />
+    <Compile Include="Weathers\CurrentWeather.cs" />
+    <Compile Include="Weathers\FerngillBlizzard.cs" />
+    <Compile Include="WeatherData\FerngillClimate.cs" />
+    <Compile Include="WeatherData\FerngillClimateTimeSpan.cs" />
     <Compile Include="Pathoschild.Stardew.UIF\DrawHelper.cs" />
     <Compile Include="Pathoschild.Stardew.UIF\FormattedText.cs" />
     <Compile Include="Pathoschild.Stardew.UIF\IFormattedText.cs" />
-    <Compile Include="SDVMoon.cs" />
+    <Compile Include="DaMoon\SDVMoon.cs" />
     <Compile Include="Sprites.cs" />
     <Compile Include="StaminaDrain.cs" />
     <Compile Include="WeatherMenu.cs" />
-    <Compile Include="WeatherParameters.cs" />
+    <Compile Include="WeatherData\WeatherParameters.cs" />
     <Compile Include="ClimatesOfFerngillRebuild.cs" />
-    <Compile Include="FerngillFog.cs" />
+    <Compile Include="Weathers\FerngillFog.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="WeatherConfig.cs" />
+    <Compile Include="Weathers\FogType.cs" />
+    <Compile Include="Weathers\WeatherIcon.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="data\weather\arid.json">

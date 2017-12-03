@@ -9,6 +9,15 @@ namespace TwilightShards.Stardew.Common
         TimePlayable
     }
 
+    public enum SDVTimePeriods
+    {
+        Morning,
+        Afternoon,
+        Evening,
+        Night,
+        LateNight
+    }
+
     public class SDVTime
     {
         public static bool IsNight {
@@ -21,10 +30,18 @@ namespace TwilightShards.Stardew.Common
             }
         }
 
+        /* public SDVTimePeriods CurrentPeriod
+        {
+            get
+            {
+
+            }
+        } */
+
         public static SDVTime CurrentTime => new SDVTime(Game1.timeOfDay);
         public static int CurrentIntTime => new SDVTime(Game1.timeOfDay).ReturnIntTime();
 
-         int hour;
+        int hour;
         int minute;
 
         public SDVTime(int t)

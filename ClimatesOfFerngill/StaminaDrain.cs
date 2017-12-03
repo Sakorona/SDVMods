@@ -74,9 +74,9 @@ namespace ClimatesOfFerngillRebuild
             int staminaAffect = 0;
             var condList = new List<string>();
 
-            if (Config.Verbose)
+           /* if (Config.Verbose)
                 Monitor.Log($"Ticks: {ticksOutside}/{ticksTotal} with percentage {amtOutside.ToString("N3")} against" +
-                    $" target {Config.AffectedOutside}");
+                    $" target {Config.AffectedOutside}"); */
 
             //Logic: At all times, if the today danger is not null, we should consider processing.
             //However: If it's frost, only at night. If it's a heatwave, only during the day.
@@ -106,9 +106,9 @@ namespace ClimatesOfFerngillRebuild
                 if (conditions.GetCurrentConditions().HasAnyFlags(CurrentWeather.Blizzard | CurrentWeather.Lightning) || (conditions.GetCurrentConditions().HasFlag(CurrentWeather.Frost) && SDVTime.IsNight) | (conditions.GetCurrentConditions().HasFlag(CurrentWeather.Heatwave) && !SDVTime.IsNight) && FarmerCanGetSick())
                     this.MakeSick();
 
-                //test status
+                /* //test status
                 if (Config.Verbose)              
-                    Monitor.Log($"Status update. Farmer Sick: {FarmerSick} and Valid Conditions: {conditions.GetCurrentConditions().HasAnyFlags(CurrentWeather.Blizzard | CurrentWeather.Lightning) || (conditions.GetCurrentConditions().HasFlag(CurrentWeather.Frost) && SDVTime.IsNight) | (conditions.GetCurrentConditions().HasFlag(CurrentWeather.Heatwave) && !SDVTime.IsNight)}");
+                    Monitor.Log($"Status update. Farmer Sick: {FarmerSick} and Valid Conditions: {conditions.GetCurrentConditions().HasAnyFlags(CurrentWeather.Blizzard | CurrentWeather.Lightning) || (conditions.GetCurrentConditions().HasFlag(CurrentWeather.Frost) && SDVTime.IsNight) | (conditions.GetCurrentConditions().HasFlag(CurrentWeather.Heatwave) && !SDVTime.IsNight)}"); */
 
                 //now that we've done that, go through the various conditions
                 if (this.FarmerSick && conditions.GetCurrentConditions().HasFlag(CurrentWeather.Lightning))
@@ -178,8 +178,8 @@ namespace ClimatesOfFerngillRebuild
                     }
                 }
                 condString += " ]";
-
-                Monitor.Log($"[{Game1.timeOfDay}] Conditions for the drain are {condString} for a total multipler of {totalMulti} for a total drain of {staminaAffect}");
+                /*
+                Monitor.Log($"[{Game1.timeOfDay}] Conditions for the drain are {condString} for a total multipler of {totalMulti} for a total drain of {staminaAffect}"); */
             }
             
             return staminaAffect;

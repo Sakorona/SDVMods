@@ -12,20 +12,6 @@ using TwilightShards.Stardew.Common;
 
 namespace ClimatesOfFerngillRebuild
 {
-    public enum MoonPhase
-    {
-        NewMoon,
-        WaxingCrescent,
-        FirstQuarter,
-        WaxingGibbeous,
-        FullMoon,
-        WaningGibbeous,
-        ThirdQuarter,
-        WaningCrescent,
-        BloodMoon,
-        ErrorPhase
-    }
-
     public class SDVMoon
     {
         //encapsulated members
@@ -105,7 +91,6 @@ namespace ClimatesOfFerngillRebuild
             //divide it by the cycle.
             int currentCycle = (int)Math.Floor(SDVUtilities.GetDayFromDate(Today) / (double)cycleLength);
             int currentDay = GetDayOfCycle(Today);
-            Console.Write($"Day is {SDVUtilities.GetDayFromDate(Today)} with current cycle is {currentCycle} and currentDay is {currentDay}");
 
             return SDVMoon.GetLunarPhase(currentDay);
         }
