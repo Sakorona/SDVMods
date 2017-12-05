@@ -3,6 +3,7 @@ using StardewModdingAPI;
 using StardewModdingAPI.Utilities;
 using StardewValley;
 using TwilightShards.Common;
+using static ClimatesOfFerngillRebuild.Sprites;
 
 namespace ClimatesOfFerngillRebuild
 {
@@ -144,7 +145,7 @@ namespace ClimatesOfFerngillRebuild
                 CurrentConditionsN.CombineFlags(CurrentWeather.Fog);
             else
             {
-                if (ModConfig.Verbose) Monitor.Log("Removing fog from current conditions");
+               // if (ModConfig.Verbose) Monitor.Log("Removing fog from current conditions");
                 CurrentConditionsN.RemoveFlags(CurrentWeather.Fog);
             }
         }
@@ -175,9 +176,6 @@ namespace ClimatesOfFerngillRebuild
         {
             get
             {
-                if (ModConfig.Verbose)
-                    Monitor.Log($"Conditions: {CurrentConditionsN}");
-
                 if (OurFog.IsFogVisible)
                     CurrentConditionsN |= CurrentWeather.Fog;
                 else
@@ -296,14 +294,14 @@ namespace ClimatesOfFerngillRebuild
         /// <param name="Dice">pRNG</param>
         /// <param name="monitor">SMAPI log object</param>
         /// <param name="Config">Game configuration</param>
-        public WeatherConditions(MersenneTwister Dice, ITranslationHelper Translation, IMonitor monitor, WeatherConfig Config)
+        public WeatherConditions(Icons Sheets, MersenneTwister Dice, ITranslationHelper Translation, IMonitor monitor, WeatherConfig Config)
         {
             this.Monitor = monitor;
             this.ModConfig = Config;
             this.Dice = Dice;
             this.Translation = Translation;
             CurrentConditionsN = CurrentWeather.Unset;
-            OurFog = new FerngillFog(Config.Verbose, monitor);
+            OurFog = new FerngillFog(Sheets, Config.Verbose, monitor);
         }
 
         /// ******************************************************************************

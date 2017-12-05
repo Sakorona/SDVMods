@@ -8,7 +8,7 @@ using System.IO;
 
 namespace ClimatesOfFerngillRebuild
 {
-    internal class Sprites
+    public class Sprites
     {
         /// <summary>Sprites used to draw a letter.</summary>
         public static class Letter
@@ -25,12 +25,14 @@ namespace ClimatesOfFerngillRebuild
         {
             public Texture2D WeatherSource;
             public Texture2D MoonSource;
+            public Texture2D FogTexture;
             public static Texture2D source2;
 
             public Icons(IContentHelper helper)
             {
                 WeatherSource = helper.Load<Texture2D>(Path.Combine("Assets","WeatherIcons.png"));
                 MoonSource = helper.Load<Texture2D>(Path.Combine("Assets", "MoonPhases.png"));
+                FogTexture = helper.Load<Texture2D>(Path.Combine("Assets", "CleanSteam.png"));
                 source2 = Game1.mouseCursors;
             }
 

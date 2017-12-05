@@ -3,12 +3,18 @@
   "Author": "KoihimeNakamura",
   "Version": {
     "MajorVersion": 1,
-    "MinorVersion": 2,
+    "MinorVersion": 3,
     "PatchVersion": 0,
-    "Build": "rc2-20171109"
+    "Build": "rc2-20171204"
   },
   "Description": "Create a unique climate system with custom weathers, as well as add weather related events and commands.",
   "UniqueID": "KoihimeNakamura.ClimatesOfFerngill",
   "EntryDll": "ClimatesOfFerngill.dll",
-  "MinimumApiVersion": "2.0"
+  "MinimumApiVersion": "2.0",
+  "Dependencies": [
+    {
+      "UniqueID": "Platonymous.CustomTV"
+    }
+  ],
+  "UpdateKeys": [ "Nexus:604" ]
 }

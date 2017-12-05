@@ -6,6 +6,7 @@ using StardewValley;
 using System;
 using TwilightShards.Common;
 using TwilightShards.Stardew.Common;
+using static ClimatesOfFerngillRebuild.Sprites;
 
 namespace ClimatesOfFerngillRebuild
 {
@@ -14,13 +15,16 @@ namespace ClimatesOfFerngillRebuild
     internal class FerngillFog
     {
         //private bool AmbientFog { get; set; }
-        private readonly static Rectangle FogSource = new Rectangle(640, 0, 64, 64);
+        //private readonly static Rectangle FogSource = new Rectangle(640, 0, 64, 64);
+        public static Rectangle FogSource = new Rectangle(0, 0, 64, 64);
         private readonly static Color DarkOutdoor = new Color(180, 175, 105);
         private readonly static Color NormalOutdoor = new Color(135, 120, 145);
 
         internal Color fogLight = Color.White;
         internal Color endLight = Color.White;
         internal Color beginLight = Color.White;
+
+        internal Icons Sheet;
 
         /// <summary> The Current Fog Type </summary>
         internal FogType CurrentFogType { get; set; }
@@ -40,10 +44,13 @@ namespace ClimatesOfFerngillRebuild
         /// <summary> Sets the expiration time of the fog </summary>
         private SDVTime ExpirTime { get; set; }
 
-        /// Status members
+        internal bool IsFogVisible {
+            get
+            {
+                   return false;
+            }
+          }
 
-        /// <summary> This checks if the fog is visible. </summary>
-        internal bool IsFogVisible => (CurrentFogType != FogType.None);
 
         /// <summary> Returns the expiration time of fog. Note that this doesn't sanity check if the fog is even visible. </summary>
         internal SDVTime ExpirationTime => (ExpirTime ?? new SDVTime(0600));
@@ -53,8 +60,9 @@ namespace ClimatesOfFerngillRebuild
         internal void SetFogExpirationTime(SDVTime t) => ExpirTime = t;
 
         /// <summary> Default constructor. </summary>
-        internal FerngillFog(bool Verbose, IMonitor Monitor)
+        internal FerngillFog(Icons Sheet, bool Verbose, IMonitor Monitor)
         {
+            this.Sheet = Sheet;
             CurrentFogType = FogType.None;
             ExpirTime = null;
             VerboseDebug = Verbose;
@@ -123,6 +131,9 @@ namespace ClimatesOfFerngillRebuild
             {
                 CurrentFogType = SetFog;
             }
+
+            //IsFogVisible = true;
+            //CurrentFogType = FogType.Dark; //testing
 
             //Set the outdoorlight depending on the type.
             switch (CurrentFogType)
@@ -199,7 +210,6 @@ namespace ClimatesOfFerngillRebuild
         {
             if (!IsFogVisible)
             {
-                Monitor.Log("Fog isn't visible.");
                 return;
             }
 
@@ -269,6 +279,7 @@ namespace ClimatesOfFerngillRebuild
                 Game1.outdoorLight = Color.White;
                 fogLight = Color.White;
                 FogAlpha = 0f;
+                //IsFogVisible = false;
             }
         }
 
@@ -280,7 +291,7 @@ namespace ClimatesOfFerngillRebuild
                 {
                     Game1.outdoorLight = fogLight;
                     Vector2 position = new Vector2();
-                    float num1 = -64 * Game1.pixelZoom + (int)(FogPosition.X % (double)(64 * Game1.pixelZoom));
+                    float num1 = -64* Game1.pixelZoom + (int)(FogPosition.X % (double)(64 * Game1.pixelZoom));
                     while (num1 < (double)Game1.graphics.GraphicsDevice.Viewport.Width)
                     {
                         float num2 = -64 * Game1.pixelZoom + (int)(FogPosition.Y % (double)(64 * Game1.pixelZoom));
@@ -288,7 +299,7 @@ namespace ClimatesOfFerngillRebuild
                         {
                             position.X = (int)num1;
                             position.Y = (int)num2;
-                            Game1.spriteBatch.Draw(Game1.mouseCursors, position, new Microsoft.Xna.Framework.Rectangle?
+                            Game1.spriteBatch.Draw(Sheet.FogTexture, position, new Microsoft.Xna.Framework.Rectangle?
                                 (FogSource), FogAlpha > 0.0 ? FogColor * FogAlpha : Color.Black * 0.95f, 0.0f, Vector2.Zero, Game1.pixelZoom + 1f / 1000f, SpriteEffects.None, 1f);
                             num2 += 64 * Game1.pixelZoom;
                         }

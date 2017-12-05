@@ -38,6 +38,14 @@
     <PlatformTarget>x86</PlatformTarget>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="CustomElementHandler">
+      <HintPath>D:\GalaxyClient\Games\Stardew Valley\Mods\CustomElementHandler\CustomElementHandler.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="CustomTV">
+      <HintPath>D:\GalaxyClient\Games\Stardew Valley\Mods\CustomTV\CustomTV.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
     <Reference Include="Enums.NET, Version=2.0.0.0, Culture=neutral, PublicKeyToken=7ea1c1650d506225, processorArchitecture=MSIL">
       <HintPath>..\packages\Enums.NET.2.2.0\lib\net45\Enums.NET.dll</HintPath>
     </Reference>
@@ -103,6 +111,9 @@
     <None Include="README.md" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="Assets\CleanSteam.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
     <Content Include="Assets\MoonPhases.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>

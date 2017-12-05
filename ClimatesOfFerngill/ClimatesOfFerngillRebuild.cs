@@ -23,6 +23,8 @@ using TwilightShards.Stardew.Common;
 using TwilightShards.Common;
 using Microsoft.Xna.Framework.Graphics;
 using EnumsNET;
+using CustomElementHandler;
+using CustomTV;
 #endregion
 
 namespace ClimatesOfFerngillRebuild
@@ -64,6 +66,9 @@ namespace ClimatesOfFerngillRebuild
         /// <summary> This is used to allow the menu to revert back to a previous menu </summary>
         private IClickableMenu PreviousMenu;
 
+        private Descriptions DescriptionEngine;
+
+        /*
         //tv overloading
         private static FieldInfo Field = typeof(GameLocation).GetField("afterQuestion", BindingFlags.Instance | BindingFlags.NonPublic);
         private static FieldInfo TVChannel = typeof(TV).GetField("currentChannel", BindingFlags.Instance | BindingFlags.NonPublic);
@@ -72,7 +77,7 @@ namespace ClimatesOfFerngillRebuild
         private static MethodInfo TVMethod = typeof(TV).GetMethod("getWeatherChannelOpening", BindingFlags.Instance | BindingFlags.NonPublic);
         private static MethodInfo TVMethodOverlay = typeof(TV).GetMethod("setWeatherOverlay", BindingFlags.Instance | BindingFlags.NonPublic);
         private static GameLocation.afterQuestionBehavior Callback;
-        private static TV Target;
+        private static TV Target; */
 
 
         private Color nightColor = new Color((int)byte.MaxValue, (int)byte.MaxValue, 0);
@@ -100,14 +105,15 @@ namespace ClimatesOfFerngillRebuild
         {
             WeatherOpt = helper.ReadConfig<WeatherConfig>();
             Dice = new MersenneTwister();
-            Conditions = new WeatherConditions(Dice, Helper.Translation, Monitor, WeatherOpt);
             HeavySnow = new FerngillBlizzard();
             DebugOutput = new StringBuilder();
             OurMoon = new SDVMoon(WeatherOpt, Dice);
             OurIcons = new Sprites.Icons(Helper.Content);
             CropList = new List<Vector2>();
+            Conditions = new WeatherConditions(OurIcons, Dice, Helper.Translation, Monitor, WeatherOpt);
             StaminaMngr = new StaminaDrain(WeatherOpt, Helper.Translation, Monitor);
             SeedsForDialogue = new int[] { Dice.Next(), Dice.Next() };
+            DescriptionEngine = new Descriptions(Helper.Translation);
 
             queuedMsg = null;
             Vector2 snowPos = Vector2.Zero;
@@ -151,7 +157,24 @@ namespace ClimatesOfFerngillRebuild
                       .Add("weather_changeweather", helper.Translation.Get("console-text.desc_setweather"), WeatherChangeFromConsole)
                       .Add("debug_staminaforce", "Forces stamina drain level. Debug function", DebugStaForce)
                       .Add("debug_weatherstatus", "Prints an overly detailed weahter status screen out to the console.", DebugWeather);
+                CustomTVMod.removeChannel("weather");
+                CustomTVMod.removeChannel("Weather");
+                CustomTVMod.addChannel("Weather", "Weather Report", DisplayWeather);
             }
+        }
+
+        public void DisplayWeather(TV tv, TemporaryAnimatedSprite sprite, StardewValley.Farmer who, string answer)
+        {
+            TemporaryAnimatedSprite BackgroundSprite = new TemporaryAnimatedSprite(Game1.mouseCursors, new Rectangle(497, 305, 42, 28), 9999f, 1, 999999, tv.getScreenPosition(), false, false, (float)((double)(tv.boundingBox.Bottom - 1) / 10000.0 + 9.99999974737875E-06), 0.0f, Color.White, tv.getScreenSizeModifier(), 0.0f, 0.0f, 0.0f, false);
+            TemporaryAnimatedSprite WeatherSprite = DescriptionEngine.GetWeatherOverlay(tv);
+            string OnScreenText = "Test Text.";
+
+            if (BackgroundSprite is null)
+                Monitor.Log("Background Sprite is null");
+            if (WeatherSprite is null)
+                Monitor.Log("Weather Sprite is null");
+
+            CustomTVMod.showProgram(BackgroundSprite, OnScreenText, CustomTVMod.endProgram, WeatherSprite);
         }
 
         private void DrawBeforeScreenRenders(object sender, EventArgs e)
@@ -265,7 +288,7 @@ namespace ClimatesOfFerngillRebuild
                 }
             }
 
-            TryHookTelevision();
+            //TryHookTelevision();
         }
 
         /// <summary>
@@ -313,7 +336,7 @@ namespace ClimatesOfFerngillRebuild
             //moon works after frost does
             OurMoon.HandleMoonAtSleep(Game1.getFarm(), Helper.Translation);
         }
-
+/*
         #region TVOverride
         public void TryHookTelevision()
         {
@@ -349,6 +372,7 @@ namespace ClimatesOfFerngillRebuild
             Game1.afterDialogues = Target.proceedToNextScene;
         }
         #endregion
+        */
 
         /// <summary>
         /// This function gets the forecast of the weather for the TV. 
