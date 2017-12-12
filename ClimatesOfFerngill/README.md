@@ -11,7 +11,7 @@ Current Version (2 December 2017): v1.3-beta1
 ## Requirements
 
 - SMAPI 2.2+
-- CustomTV 1.10 and it's dependencies
+- CustomTV 1.11+ and it's dependencies
  
 ## Overview
 
@@ -67,6 +67,11 @@ If you're out in a blizzard during the day, it's *1.25 or 2.5 rounded down to 2.
 - Prismuth for the fog sprite
 
 ## Changelog
+v1.3alpha2
+- Architecture change - now uses an interface to streamline adding new weathers to draw mechanics
+- Fog can now also be at night also. 
+- 
+
 v1.2rc2-2 (v1.3-beta1)
 - refactoring
 - began push to improve TV text

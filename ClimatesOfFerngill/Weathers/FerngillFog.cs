@@ -12,8 +12,10 @@ namespace ClimatesOfFerngillRebuild
 {
     // This was a class, but honestly, we should probably just move all of the fog things into one struct. 
     /// <summary> This tracks fog details </summary>
-    internal class FerngillFog
+    internal class FerngillFog : ISDVWeather
     {
+        public event EventHandler<WeatherNotificationArgs> OnUpdateStatus;
+
         //private bool AmbientFog { get; set; }
         //private readonly static Rectangle FogSource = new Rectangle(640, 0, 64, 64);
         public static Rectangle FogSource = new Rectangle(0, 0, 64, 64);
@@ -43,44 +45,55 @@ namespace ClimatesOfFerngillRebuild
 
         /// <summary> Sets the expiration time of the fog </summary>
         private SDVTime ExpirTime { get; set; }
+        private SDVTime BeginTime { get; set; }
 
-        internal bool IsFogVisible {
-            get
-            {
-                   return false;
-            }
-          }
+        public bool IsWeatherVisible => ((CurrentFogType != FogType.None) && WeatherInProgress);
 
+        public string WeatherType => "Fog";
+
+        private bool AfternoonFightDet { get; set; }
 
         /// <summary> Returns the expiration time of fog. Note that this doesn't sanity check if the fog is even visible. </summary>
-        internal SDVTime ExpirationTime => (ExpirTime ?? new SDVTime(0600));
+        public SDVTime WeatherExpirationTime => (ExpirTime ?? new SDVTime(0600));
+        public SDVTime WeatherBeginTime => (BeginTime ?? new SDVTime(0600));
+        public bool WeatherInProgress => (SDVTime.CurrentTime >= BeginTime && SDVTime.CurrentTime <= ExpirTime);
 
         /// <summary> Sets the fog expiration time. </summary>
         /// <param name="t">The time for the fog to expire</param>
-        internal void SetFogExpirationTime(SDVTime t) => ExpirTime = t;
+        public void SetWeatherExpirationTime(SDVTime t) => ExpirTime = t;
+        public void SetWeatherBeginTime(SDVTime t) => BeginTime = t;
+        public SDVTimePeriods FogTimeSpan { get; set; }
+
+        private MersenneTwister Dice { get; set; }
+        private WeatherConfig ModConfig { get; set; }
 
         /// <summary> Default constructor. </summary>
-        internal FerngillFog(Icons Sheet, bool Verbose, IMonitor Monitor)
+        internal FerngillFog(Icons Sheet, bool Verbose, IMonitor Monitor, MersenneTwister Dice, WeatherConfig config, SDVTimePeriods FogPeriod)
         {
             this.Sheet = Sheet;
             CurrentFogType = FogType.None;
             ExpirTime = null;
             VerboseDebug = Verbose;
             this.Monitor = Monitor;
+            this.Dice = Dice;
+            this.ModConfig = config;
+            AfternoonFightDet = false;
+            this.FogTimeSpan = FogPeriod;
         }
 
         /// <summary> This function resets the fog for a new day. </summary>
-        internal void OnNewDay()
+        public void OnNewDay()
         {
             Reset();
         }
 
         /// <summary> This function resets the fog. </summary>
-        internal void Reset()
+        public void Reset()
         {
             CurrentFogType = FogType.None;
             ExpirTime = null;
             FogAlpha = 0f;
+            AfternoonFightDet = false;
         }
 
         /// <summary>Returns a string describing the fog type. </summary>
@@ -108,32 +121,20 @@ namespace ClimatesOfFerngillRebuild
             Game1.outdoorLight = new Color(red, green, blue);
         }
 
-        /// <summary>This function creates the fog
-        /// </summary>
-        /// <param name="Dice">pRNG </param>
-        /// <param name="WeatherOpt">Mod options</param>
-        /// <param name="SetFog">Preset fog type. Defaults to None</param>
-        public void CreateFog(MersenneTwister Dice, WeatherConfig WeatherOpt, FogType SetFog = FogType.None)
+        /// <summary>This function creates the fog </summary>
+        public void CreateWeather()
         {
             this.FogAlpha = 1f;
+            Console.WriteLine("Setting fog");
+
             //First, let's determine the type.
             //... I am a dumb foxgirl. A really dumb one. 
-            if (SetFog == FogType.None)
-            {
-                if (Dice.NextDoublePositive() < WeatherOpt.DarkFogChance && SDate.Now().Day != 1 && SDate.Now().Year != 1 && SDate.Now().Season != "spring")
-                    CurrentFogType = FogType.Dark;
-                else if (Dice.NextDoublePositive() <= .001)
-                    CurrentFogType = FogType.Blinding;
-                else
-                    CurrentFogType = FogType.Normal;
-            }
+            if (Dice.NextDoublePositive() < ModConfig.DarkFogChance && SDate.Now().Day != 1 && SDate.Now().Year != 1 && SDate.Now().Season != "spring")
+                CurrentFogType = FogType.Dark;
+            else if (Dice.NextDoublePositive() <= .001)
+                CurrentFogType = FogType.Blinding;
             else
-            {
-                CurrentFogType = SetFog;
-            }
-
-            //IsFogVisible = true;
-            //CurrentFogType = FogType.Dark; //testing
+                CurrentFogType = FogType.Normal;
 
             //Set the outdoorlight depending on the type.
             switch (CurrentFogType)
@@ -141,12 +142,10 @@ namespace ClimatesOfFerngillRebuild
                 case FogType.Normal:
                 case FogType.Blinding:
                     Game1.outdoorLight = FerngillFog.NormalOutdoor;
-                    //Game1.ambientLight = FerngillFog.NormalOutdoor * 3f;
                     fogLight = FerngillFog.NormalOutdoor;
                     break;
                 case FogType.Dark:
                     Game1.outdoorLight = FerngillFog.DarkOutdoor;
-                    //Game1.ambientLight = FerngillFog.DarkOutdoor * 3f;
                     fogLight = FerngillFog.DarkOutdoor;
                     break;
                 case FogType.None:
@@ -161,83 +160,123 @@ namespace ClimatesOfFerngillRebuild
              * So, the strongest odds should be 820 to 930, with sharply falling off odds until 1200. And then
              * so, extremely rare odds for until 7pm and even rarer than midnight.
              */
+            if (FogTimeSpan == SDVTimePeriods.Morning)
+            {
+                BeginTime = new SDVTime(0600);
+                if (FogChance > 0 && FogChance < .25)
+                    this.ExpirTime = new SDVTime(830);
+                else if (FogChance >= .25 && FogChance < .32)
+                    this.ExpirTime = new SDVTime(900);
+                else if (FogChance >= .32 && FogChance < .41)
+                    this.ExpirTime = new SDVTime(930);
+                else if (FogChance >= .41 && FogChance < .55)
+                    this.ExpirTime = new SDVTime(950);
+                else if (FogChance >= .55 && FogChance < .7)
+                    this.ExpirTime = new SDVTime(1040);
+                else if (FogChance >= .7 && FogChance < .8)
+                    this.ExpirTime = new SDVTime(1120);
+                else if (FogChance >= .8 && FogChance < .9)
+                    this.ExpirTime = new SDVTime(1200);
+                else if (FogChance >= .9 && FogChance < .95)
+                    this.ExpirTime = new SDVTime(1220);
+                else if (FogChance >= .95 && FogChance < .98)
+                    this.ExpirTime = new SDVTime(1300);
+                else if (FogChance >= .98 && FogChance < .99)
+                    this.ExpirTime = new SDVTime(1910);
+                else if (FogChance >= .99)
+                    this.ExpirTime = new SDVTime(2400);
+            }
+            else
+            {
+                BeginTime = new SDVTime(Game1.getStartingToGetDarkTime());
+                BeginTime.AddTime(Dice.Next(-15, 90));
 
-            if (FogChance > 0 && FogChance < .25)
-                this.ExpirTime = new SDVTime(830);
-            else if (FogChance >= .25 && FogChance < .32)
-                this.ExpirTime = new SDVTime(900);
-            else if (FogChance >= .32 && FogChance < .41)
-                this.ExpirTime = new SDVTime(930);
-            else if (FogChance >= .41 && FogChance < .55)
-                this.ExpirTime = new SDVTime(950);
-            else if (FogChance >= .55 && FogChance < .7)
-                this.ExpirTime = new SDVTime(1040);
-            else if (FogChance >= .7 && FogChance < .8)
-                this.ExpirTime = new SDVTime(1120);
-            else if (FogChance >= .8 && FogChance < .9)
-                this.ExpirTime = new SDVTime(1200);
-            else if (FogChance >= .9 && FogChance < .95)
-                this.ExpirTime = new SDVTime(1220);
-            else if (FogChance >= .95 && FogChance < .98)
-                this.ExpirTime = new SDVTime(1300);
-            else if (FogChance >= .98 && FogChance < .99)
-                this.ExpirTime = new SDVTime(1910);
-            else if (FogChance >= .99)
-                this.ExpirTime = new SDVTime(2400);
+                ExpirTime = new SDVTime(BeginTime);
+                ExpirTime.AddTime(Dice.Next(120, 310));
 
-            int endTime = this.ExpirTime.ReturnIntTime();
+                BeginTime.ClampToTenMinutes();
+                ExpirTime.ClampToTenMinutes();
+            }
 
             beginLight = fogLight;
 
+            if (SDVTime.CurrentTime >= BeginTime)
+                UpdateStatus(WeatherType, true);
+
+            Console.WriteLine($"Fog is for {BeginTime} to {ExpirTime}");
+            endLight = CalculateEndLight(ExpirTime);
+        }
+
+        public void SetWeatherTime(SDVTime begin, SDVTime end)
+        {
+            BeginTime = new SDVTime(begin);
+            ExpirTime = new SDVTime(end);
+        }
+
+        public Color CalculateEndLight(SDVTime end)
+        {
+            int endTime = end.ReturnIntTime();
             //calculate the ending light color
             if (endTime >= Game1.getTrulyDarkTime())
             {
                 float num = Math.Min(0.93f, (float)(0.75 + ((int)(endTime - endTime % 100 + endTime % 100 / 10 * 16.6599998474121) - Game1.getTrulyDarkTime() + Game1.gameTimeInterval / 7000.0 * 16.6000003814697) * 0.000624999986030161));
-                endLight = (Game1.isRaining ? DarkOutdoor : Game1.eveningColor) * num;
+                return (Game1.isRaining ? DarkOutdoor : Game1.eveningColor) * num;
             }
             else if (endTime >= Game1.getStartingToGetDarkTime())
             {
                 float num = Math.Min(0.93f, (float)(0.300000011920929 + ((int)(endTime - endTime % 100 + endTime % 100 / 10 * 16.6599998474121) - Game1.getStartingToGetDarkTime() + (double)Game1.gameTimeInterval / 7000.0 * 16.6000003814697) * 0.00224999990314245));
-                endLight = (Game1.isRaining ? DarkOutdoor : Game1.eveningColor) * num;
+                return (Game1.isRaining ? DarkOutdoor : Game1.eveningColor) * num;
             }
             else if (Game1.isRaining)
-                endLight = Game1.ambientLight * 0.3f;
+                return Game1.ambientLight * 0.3f;
             else
-                endLight = new Color(0, 0, 0); // I have a sneaking suspcion
+                return new Color(0, 0, 0); // I have a sneaking suspcion
         }
 
-        public void UpdateFog()
+        public void UpdateWeather()
         {
-            if (!IsFogVisible)
-            {
+            if (WeatherBeginTime is null)
+                Console.WriteLine("WBT is null");
+            if (WeatherExpirationTime is null)
+                Console.WriteLine("WET is null");
+
+            if (WeatherBeginTime is null || WeatherExpirationTime is null)
                 return;
+
+            if (WeatherInProgress && !IsWeatherVisible)
+            { 
+                CurrentFogType = FogType.Normal;
+                FogAlpha = 1f;
+                fogLight = FerngillFog.NormalOutdoor;
+                endLight = CalculateEndLight(ExpirTime);
+                UpdateStatus(WeatherType, true);    
             }
 
-            //Console.WriteLine($"Fog end time is {ExpirationTime} with current time being {Game1.timeOfDay}");
-            //Console.WriteLine($"Begin light is {beginLight.ToString()}");
-            //Console.WriteLine();
-
-            if (CurrentFogType == FogType.Dark || CurrentFogType == FogType.Normal && ExpirationTime >= SDVTime.CurrentTime)
+            if (FogAlpha < .45 && IsWeatherVisible)
             {
-                int timeRemain = ExpirationTime.ReturnIntTime() - Game1.timeOfDay;
-                int timeTotal = ExpirationTime.ReturnIntTime() - 0600;
-                double percentage = 1 - (timeRemain / (double)timeTotal);
+                UpdateStatus(WeatherType, false);
+            }
 
+            if (WeatherExpirationTime <= SDVTime.CurrentTime && IsWeatherVisible)
+            {
+                CurrentFogType = FogType.None;
+                Game1.outdoorLight = Color.White;
+                fogLight = Color.White;
+                FogAlpha = 0f;
+                
+                UpdateStatus(WeatherType, false);
+            }
+
+            if (CurrentFogType == FogType.Dark || CurrentFogType == FogType.Normal && WeatherInProgress && IsWeatherVisible)
+            {
+                int timeRemain = WeatherExpirationTime.ReturnIntTime() - Game1.timeOfDay;
+                int timeTotal = WeatherExpirationTime.ReturnIntTime() - 0600;
+                double percentage = 1 - (timeRemain / (double)timeTotal);
 
                 byte redDiff = (byte)Math.Abs(beginLight.R - endLight.R);
                 byte greenDiff = (byte)Math.Abs(beginLight.G - endLight.G);
                 byte blueDiff = (byte)Math.Abs(beginLight.B - endLight.B);
                 byte alphaDiff = (byte)Math.Abs(beginLight.A - endLight.A);
-
-                /*
-                Console.WriteLine($"Fog end time is {ExpirationTime} with current time being {Game1.timeOfDay}");
-                Console.WriteLine($"Begin light is {beginLight.ToString()}");
-                Console.WriteLine($"End Color is {endLight.ToString()} with the calced time remaining as {timeRemain} with {timeTotal} between start and end");
-                Console.WriteLine($"Diff count. Red: {redDiff}, Green: {greenDiff}, Blue: {blueDiff}, Alpha: {alphaDiff}");
-                Console.WriteLine($"This returns: {percentage}");
-                Console.WriteLine();
-                Console.WriteLine($"Diff calculated is R:{Math.Floor(redDiff * percentage)}, G: {Math.Floor(greenDiff * percentage)}, B: {Math.Floor(blueDiff * percentage)}, A: {Math.Floor(alphaDiff * percentage)}");
-                Console.WriteLine();*/
 
                 if (beginLight.R > endLight.R)
                     fogLight.R = (byte)Math.Floor(beginLight.R - (redDiff * percentage));
@@ -267,29 +306,22 @@ namespace ClimatesOfFerngillRebuild
                 else
                     fogLight.A = (byte)Math.Floor(beginLight.A + (alphaDiff * percentage));
 
-                //Console.WriteLine(value: $"FogLight is {fogLight.ToString()}");            
-            }
+                //fade alpha. :(
 
-            if (ExpirationTime <= SDVTime.CurrentTime)
-            {
-                if (VerboseDebug)
-                    Monitor.Log("Now at 0 minutes or fog has expired");
+                this.FogAlpha = (float)1f - ((float)percentage);
 
-                CurrentFogType = FogType.None;
-                Game1.outdoorLight = Color.White;
-                fogLight = Color.White;
-                FogAlpha = 0f;
-                //IsFogVisible = false;
+                Console.WriteLine($"[{SDVTime.CurrentTime}] Alpha: {FogAlpha}");
             }
         }
 
-        public void DrawFog()
+        public void DrawWeather()
         {
-            if (IsFogVisible)
+            if (IsWeatherVisible)
             {
                 if (CurrentFogType != FogType.Blinding)
                 {
                     Game1.outdoorLight = fogLight;
+                    Texture2D fogTexture = null;
                     Vector2 position = new Vector2();
                     float num1 = -64* Game1.pixelZoom + (int)(FogPosition.X % (double)(64 * Game1.pixelZoom));
                     while (num1 < (double)Game1.graphics.GraphicsDevice.Viewport.Width)
@@ -299,8 +331,17 @@ namespace ClimatesOfFerngillRebuild
                         {
                             position.X = (int)num1;
                             position.Y = (int)num2;
-                            Game1.spriteBatch.Draw(Sheet.FogTexture, position, new Microsoft.Xna.Framework.Rectangle?
-                                (FogSource), FogAlpha > 0.0 ? FogColor * FogAlpha : Color.Black * 0.95f, 0.0f, Vector2.Zero, Game1.pixelZoom + 1f / 1000f, SpriteEffects.None, 1f);
+                            
+                            if (Game1.isDarkOut())
+                            {
+                                fogTexture = Sheet.NightFogTexture;
+                            }
+                            else
+                            {
+                                fogTexture = Sheet.FogTexture;
+                            }
+                            Game1.spriteBatch.Draw(fogTexture, position, new Microsoft.Xna.Framework.Rectangle?
+                                    (FogSource), FogAlpha > 0.0 ? FogColor * FogAlpha : Color.Black * 0.95f, 0.0f, Vector2.Zero, Game1.pixelZoom + 1f / 1000f, SpriteEffects.None, 1f);
                             num2 += 64 * Game1.pixelZoom;
                         }
                         num1 += 64 * Game1.pixelZoom;
@@ -309,9 +350,22 @@ namespace ClimatesOfFerngillRebuild
             }
         }
 
-        public void MoveFog()
+        public void UpdateStatus(string weather, bool status)
         {
-            if (IsFogVisible)
+            if (OnUpdateStatus == null) return;
+
+            WeatherNotificationArgs args = new WeatherNotificationArgs(weather, status);
+            OnUpdateStatus(this, args);
+        }
+
+        public string FogDescription(double fogRoll, double fogChance)
+        {
+             return $"With roll {fogRoll.ToString("N3")} against {fogChance}, there will be fog today from {WeatherBeginTime} to {WeatherExpirationTime} with type {CurrentFogType}";
+        }
+
+        public void MoveWeather()
+        {
+            if (IsWeatherVisible)
             {
                 Game1.outdoorLight = fogLight;
                 this.FogPosition = Game1.updateFloatingObjectPositionForMovement(FogPosition,

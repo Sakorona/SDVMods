@@ -23,8 +23,8 @@ using TwilightShards.Stardew.Common;
 using TwilightShards.Common;
 using Microsoft.Xna.Framework.Graphics;
 using EnumsNET;
-using CustomElementHandler;
-using CustomTV;
+//using CustomElementHandler;
+//using CustomTV;
 #endregion
 
 namespace ClimatesOfFerngillRebuild
@@ -68,9 +68,8 @@ namespace ClimatesOfFerngillRebuild
 
         private Descriptions DescriptionEngine;
 
-        /*
         //tv overloading
-        private static FieldInfo Field = typeof(GameLocation).GetField("afterQuestion", BindingFlags.Instance | BindingFlags.NonPublic);
+        /* private static FieldInfo Field = typeof(GameLocation).GetField("afterQuestion", BindingFlags.Instance | BindingFlags.NonPublic);
         private static FieldInfo TVChannel = typeof(TV).GetField("currentChannel", BindingFlags.Instance | BindingFlags.NonPublic);
         private static FieldInfo TVScreen = typeof(TV).GetField("screen", BindingFlags.Instance | BindingFlags.NonPublic);
         private static FieldInfo TVScreenOverlay = typeof(TV).GetField("screenOverlay", BindingFlags.Instance | BindingFlags.NonPublic);
@@ -83,7 +82,6 @@ namespace ClimatesOfFerngillRebuild
         private Color nightColor = new Color((int)byte.MaxValue, (int)byte.MaxValue, 0);
         private bool Disabled = false;
         private int[] SeedsForDialogue;
-        private FerngillBlizzard HeavySnow;
 
         private bool IsFestivalDay => Utility.isFestivalDay(SDate.Now().Day, SDate.Now().Season);
 
@@ -96,7 +94,7 @@ namespace ClimatesOfFerngillRebuild
         public void Edit<T>(IAssetData asset)
         {
             IDictionary<string, string> data = asset.AsDictionary<string, string>().Data;
-            data["TV.cs.13136"] = "Welcome to KOZU 5... your number one source for weather, news, and entertainment.^";
+            data["TV.cs.13136"] = "Welcome to KOZU 5... your number one source for weather, news, and entertainment.";
         }
 
         /// <summary> Main mod function. </summary>
@@ -105,7 +103,6 @@ namespace ClimatesOfFerngillRebuild
         {
             WeatherOpt = helper.ReadConfig<WeatherConfig>();
             Dice = new MersenneTwister();
-            HeavySnow = new FerngillBlizzard();
             DebugOutput = new StringBuilder();
             OurMoon = new SDVMoon(WeatherOpt, Dice);
             OurIcons = new Sprites.Icons(Helper.Content);
@@ -141,7 +138,6 @@ namespace ClimatesOfFerngillRebuild
                 TimeEvents.TimeOfDayChanged += TenMinuteUpdate;
                 MenuEvents.MenuChanged += MenuEvents_MenuChanged;
                 GameEvents.UpdateTick += CheckForChanges;
-                GameEvents.FourthUpdateTick += GameEvents_FourthUpdateTick;
                 SaveEvents.AfterReturnToTitle += ResetMod;
                 GraphicsEvents.OnPreRenderEvent += DrawBeforeScreenRenders;
                 GraphicsEvents.OnPostRenderGuiEvent += DrawOverMenus;
@@ -151,15 +147,20 @@ namespace ClimatesOfFerngillRebuild
                 ControlEvents.KeyPressed += (sender, e) => this.ReceiveKeyPress(e.KeyPressed, this.WeatherOpt.Keyboard);
                 MenuEvents.MenuClosed += (sender, e) => this.ReceiveMenuClosed(e.PriorMenu);
 
+
                 //console commands
                 helper.ConsoleCommands
                       .Add("weather_settommorow", helper.Translation.Get("console-text.desc_tmrweather"), TomorrowWeatherChangeFromConsole)
                       .Add("weather_changeweather", helper.Translation.Get("console-text.desc_setweather"), WeatherChangeFromConsole)
                       .Add("debug_staminaforce", "Forces stamina drain level. Debug function", DebugStaForce)
                       .Add("debug_weatherstatus", "Prints an overly detailed weahter status screen out to the console.", DebugWeather);
+
+                
+                /*
                 CustomTVMod.removeChannel("weather");
                 CustomTVMod.removeChannel("Weather");
-                CustomTVMod.addChannel("Weather", "Weather Report", DisplayWeather);
+                CustomTVMod.addChannel("Weather", "Weather Report", DisplayWeather); 
+                */
             }
         }
 
@@ -167,27 +168,30 @@ namespace ClimatesOfFerngillRebuild
         {
             TemporaryAnimatedSprite BackgroundSprite = new TemporaryAnimatedSprite(Game1.mouseCursors, new Rectangle(497, 305, 42, 28), 9999f, 1, 999999, tv.getScreenPosition(), false, false, (float)((double)(tv.boundingBox.Bottom - 1) / 10000.0 + 9.99999974737875E-06), 0.0f, Color.White, tv.getScreenSizeModifier(), 0.0f, 0.0f, 0.0f, false);
             TemporaryAnimatedSprite WeatherSprite = DescriptionEngine.GetWeatherOverlay(tv);
-            string OnScreenText = "Test Text.";
+
+            string OnScreenText = Game1.content.LoadString("Strings\\StringsFromCSFiles:TV.cs.13136");
+            OnScreenText += "#";
 
             if (BackgroundSprite is null)
                 Monitor.Log("Background Sprite is null");
             if (WeatherSprite is null)
                 Monitor.Log("Weather Sprite is null");
 
-            CustomTVMod.showProgram(BackgroundSprite, OnScreenText, CustomTVMod.endProgram, WeatherSprite);
+            //CustomTVMod.showProgram(BackgroundSprite, OnScreenText, CustomTVMod.endProgram, WeatherSprite);
         }
 
         private void DrawBeforeScreenRenders(object sender, EventArgs e)
         {
-            if (Conditions.OurFog.IsFogVisible)
-                Game1.outdoorLight = Conditions.OurFog.fogLight;
+            List<ISDVWeather> weather = Conditions.GetWeatherMatchingType("Fog");
+            foreach (ISDVWeather w in weather)
+            {
+                if (w != null && w.IsWeatherVisible)
+                {
+                    FerngillFog fog = (FerngillFog)w;
+                    Game1.outdoorLight = fog.fogLight;
+                }
+            }            
         }
-
-        private void GameEvents_FourthUpdateTick(object sender, EventArgs e)
-        {
-            if (Context.IsWorldReady) //it might help if it only runs when the game is only ready..
-                Conditions.UpdateForCurrentMoment();
-        } 
 
         private void DrawOverMenus(object sender, EventArgs e)
         {
@@ -213,11 +217,7 @@ namespace ClimatesOfFerngillRebuild
                 return;
 
             if (Game1.currentLocation.IsOutdoors)
-                Conditions.OurFog.DrawFog();
-
-            if (Game1.currentLocation.isOutdoors && !(Game1.currentLocation is Desert) &&
-                Conditions.HasWeather(CurrentWeather.Blizzard))
-                HeavySnow.DrawBlizzard();            
+                Conditions.DrawWeathers();       
         }
 
         /// <summary>
@@ -336,7 +336,8 @@ namespace ClimatesOfFerngillRebuild
             //moon works after frost does
             OurMoon.HandleMoonAtSleep(Game1.getFarm(), Helper.Translation);
         }
-/*
+
+        /*
         #region TVOverride
         public void TryHookTelevision()
         {
@@ -398,8 +399,7 @@ namespace ClimatesOfFerngillRebuild
             if (!Context.IsWorldReady)
                 return;
 
-            if (Conditions.OurFog.IsFogVisible)
-                Conditions.OurFog.MoveFog();
+            Conditions.MoveWeathers();
 
             if (Game1.isEating)
             { 
@@ -427,7 +427,7 @@ namespace ClimatesOfFerngillRebuild
             if (!Game1.hasLoadedGame)
                 return;
 
-            Conditions.OurFog.UpdateFog();
+            Conditions.TenMinuteUpdate();
 
             if (Conditions.HasWeather(CurrentWeather.Fog)) 
             {
@@ -436,9 +436,6 @@ namespace ClimatesOfFerngillRebuild
                     var loc = Game1.currentLocation as DecoratableLocation;
                     foreach (Furniture f in loc.furniture)
                     {
-                        if (WeatherOpt.Verbose)
-                            Monitor.Log($"Iterating through {f.name}");
-
                         //Yes, *add* lights removes them. No, don't ask me why.
                         if (f.furniture_type == Furniture.window)
                         {
@@ -697,7 +694,6 @@ namespace ClimatesOfFerngillRebuild
                     Conditions.ForceTodayTemps(2, -1);
                     Game1.weatherForTomorrow = Game1.weather_snow;
                 }
-
             }
 
             if (Result == "debris")
@@ -743,93 +739,10 @@ namespace ClimatesOfFerngillRebuild
                 //if (WeatherOpt.Verbose) Monitor.Log(DebugOutput.ToString());
                 return;
             }
-
-            //now, update today's weather for fog and other special weathers.
-            double fogChance = GameClimate.GetClimateForDate(SDate.Now())
-                                          .RetrieveOdds(Dice, "fog", SDate.Now().Day, DebugOutput);
-
-            fogChance = 1; //for testing purposes
-            double fogRoll = Dice.NextDoublePositive();
-           
-            if (fogRoll < fogChance && !Conditions.GetCurrentConditions().HasFlag(CurrentWeather.Wind))
+                    
+            if (Conditions.TestForSpecialWeather(GameClimate.GetClimateForDate(SDate.Now()).RetrieveOdds(Dice, "fog", SDate.Now().Day, DebugOutput)))
             {
-                if (WeatherOpt.Verbose)
-                    Monitor.Log($"Executing fog analysis.. fog should be created. Current conditions: {Conditions.GetCurrentConditions().ToString()}");
-
-                Conditions.OurFog.CreateFog(Dice, WeatherOpt);
-                Conditions.AddWeather(CurrentWeather.Fog);
-
-                if (WeatherOpt.Verbose)
-                    Monitor.Log($"With roll {fogRoll.ToString("N3")} against {fogChance}, there will be fog today until {Conditions.OurFog.ExpirationTime} with type {Conditions.OurFog.CurrentFogType}");
-            }
-
-            //now special weathers
-            //there are three main special weathers. Blizard, only during snow; Dry Lightning, which is lightning minus rain; 
-            //  Thundersnow
-
-            // Conditions: Blizzard - occurs in weather_snow in "winter"
-            //             Dry Lightning - occurs if it's sunny in any season if temps exceed 25C.
-            //             Frost and Heatwave check against the configuration.
-            //             Thundersnow  - as Blizzard, but really rare.
-            
-            if (WeatherOpt.Verbose)
-                Monitor.Log("Testing for special weathers");
-
-            
-            if (Conditions.HasWeather(CurrentWeather.Snow))
-            {
-                double blizRoll = Dice.NextDoublePositive();
-                if (blizRoll <= WeatherOpt.BlizzardOdds)
-                {
-                    Conditions.AddWeather(CurrentWeather.Blizzard);
-                    if (WeatherOpt.Verbose)
-                        Monitor.Log($"With roll {blizRoll.ToString("N3")} against {WeatherOpt.BlizzardOdds}, there will be blizzards today");
-                }
-            }
-
-            //Dry Lightning is also here for such like the dry and arid climates 
-            //  which have so low rain chances they may never storm.
-            if (Conditions.HasWeather(CurrentWeather.Snow))
-            {
-                double oddsRoll = Dice.NextDoublePositive();
-
-                if (oddsRoll <= WeatherOpt.ThundersnowOdds)
-                {
-                    Conditions.AddWeather(CurrentWeather.Lightning);
-                    if (WeatherOpt.Verbose)
-                        Monitor.Log($"With roll {oddsRoll.ToString("N3")} against {WeatherOpt.ThundersnowOdds}, there will be thundersnow today");
-                }
-            }
-
-            if (WeatherOpt.Verbose)
-                Monitor.Log("Testing for special weathers - dry lightning and heatwave");
-
-            if (!(Conditions.HasPrecip()))
-            {
-                double oddsRoll = Dice.NextDoublePositive();
-
-                if (oddsRoll <= WeatherOpt.DryLightning && Conditions.TodayHigh >= WeatherOpt.DryLightningMinTemp)
-                {
-                    Conditions.AddWeather(CurrentWeather.Lightning);
-                    if (WeatherOpt.Verbose)
-                        Monitor.Log($"With roll {oddsRoll.ToString("N3")} against {WeatherOpt.DryLightning}, there will be dry lightning today.");
-                }
-
-                if (Conditions.TodayHigh > WeatherOpt.TooHotOutside && WeatherOpt.HazardousWeather)
-                {
-                    Conditions.AddWeather(CurrentWeather.Heatwave);
-                }
-            }
-
-            if (WeatherOpt.Verbose)
-                Monitor.Log("Testing for special weathers - frost.");
-
-            if (Conditions.TodayLow < WeatherOpt.TooColdOutside && !Game1.IsWinter)
-            {
-                if (WeatherOpt.HazardousWeather)
-                {
-                    Conditions.AddWeather(CurrentWeather.Frost);
-                }
+                Monitor.Log("Special weather created!");
             }
         }
 
@@ -838,7 +751,7 @@ namespace ClimatesOfFerngillRebuild
          * **************************************************************
          */
 
-            /// <summary>
+        /// <summary>
         /// This function changes the weather (Console Command)
         /// </summary>
         /// <param name="arg1">The command used</param>
@@ -993,7 +906,6 @@ namespace ClimatesOfFerngillRebuild
         {
             string MenuText = "";
 
-            //MENU_OBVIOUSLY_BAD_CODE();
             // show menu
             this.PreviousMenu = Game1.activeClickableMenu;
             Game1.activeClickableMenu = new WeatherMenu(Monitor, this.Helper.Reflection, OurIcons, Helper.Translation, Conditions, 

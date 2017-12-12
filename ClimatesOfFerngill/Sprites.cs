@@ -26,6 +26,7 @@ namespace ClimatesOfFerngillRebuild
             public Texture2D WeatherSource;
             public Texture2D MoonSource;
             public Texture2D FogTexture;
+            public Texture2D NightFogTexture;
             public static Texture2D source2;
 
             public Icons(IContentHelper helper)
@@ -33,6 +34,7 @@ namespace ClimatesOfFerngillRebuild
                 WeatherSource = helper.Load<Texture2D>(Path.Combine("Assets","WeatherIcons.png"));
                 MoonSource = helper.Load<Texture2D>(Path.Combine("Assets", "MoonPhases.png"));
                 FogTexture = helper.Load<Texture2D>(Path.Combine("Assets", "CleanSteam.png"));
+                NightFogTexture = helper.Load<Texture2D>(Path.Combine("Assets", "NightCleanSteam.png"));
                 source2 = Game1.mouseCursors;
             }
 

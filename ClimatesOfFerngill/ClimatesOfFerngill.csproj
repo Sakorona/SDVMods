@@ -38,14 +38,6 @@
     <PlatformTarget>x86</PlatformTarget>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="CustomElementHandler">
-      <HintPath>D:\GalaxyClient\Games\Stardew Valley\Mods\CustomElementHandler\CustomElementHandler.dll</HintPath>
-      <Private>False</Private>
-    </Reference>
-    <Reference Include="CustomTV">
-      <HintPath>D:\GalaxyClient\Games\Stardew Valley\Mods\CustomTV\CustomTV.dll</HintPath>
-      <Private>False</Private>
-    </Reference>
     <Reference Include="Enums.NET, Version=2.0.0.0, Culture=neutral, PublicKeyToken=7ea1c1650d506225, processorArchitecture=MSIL">
       <HintPath>..\packages\Enums.NET.2.2.0\lib\net45\Enums.NET.dll</HintPath>
     </Reference>
@@ -61,6 +53,8 @@
   <ItemGroup>
     <Compile Include="DaMoon\MoonPhase.cs" />
     <Compile Include="Weathers\ForceDays.cs" />
+    <Compile Include="Weathers\ISDVWeather.cs" />
+    <Compile Include="Weathers\IWeatherEvent.cs" />
     <Compile Include="Weathers\WeatherConditions.cs" />
     <Compile Include="Descriptions.cs" />
     <Compile Include="Weathers\CurrentWeather.cs" />
@@ -81,6 +75,7 @@
     <Compile Include="WeatherConfig.cs" />
     <Compile Include="Weathers\FogType.cs" />
     <Compile Include="Weathers\WeatherIcon.cs" />
+    <Compile Include="Weathers\WeatherNotificationArgs.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="data\weather\arid.json">
@@ -115,6 +110,9 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="Assets\MoonPhases.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Assets\NightCleanSteam.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <Content Include="Assets\WeatherIcons.png">

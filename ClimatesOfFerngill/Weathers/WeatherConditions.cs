@@ -2,8 +2,11 @@
 using StardewModdingAPI;
 using StardewModdingAPI.Utilities;
 using StardewValley;
+using System.Collections.Generic;
 using TwilightShards.Common;
 using static ClimatesOfFerngillRebuild.Sprites;
+using System;
+using TwilightShards.Stardew.Common;
 
 namespace ClimatesOfFerngillRebuild
 {
@@ -34,18 +37,93 @@ namespace ClimatesOfFerngillRebuild
         /// <summary>Track current conditions</summary>
         private CurrentWeather CurrentConditionsN { get; set; }
 
+        internal List<ISDVWeather> CurrentWeathers { get; set; }
         /// <summary>Fog object - handles fog</summary>
-        internal FerngillFog OurFog { get; set; }
+        //internal FerngillFog OurFog { get; set; }
 
         /// *************************************************************************
         /// ACCESS METHODS
         /// *************************************************************************
         public CurrentWeather GetCurrentConditions()
         {
-            if (CurrentConditionsN.HasFlag(CurrentWeather.Fog) && CurrentConditionsN.HasFlag(CurrentWeather.Wind))
-                CurrentConditionsN.RemoveFlags(CurrentWeather.Fog);
-
             return CurrentConditionsN;
+        }
+
+        public void DrawWeathers()
+        {
+            foreach (ISDVWeather weather in CurrentWeathers)
+                weather.DrawWeather();
+        }
+
+        public void MoveWeathers()
+        {
+            foreach (ISDVWeather weather in CurrentWeathers)
+                weather.MoveWeather();
+        }
+        
+        public string FogDescription(double fogRoll, double fogChance)
+        {
+            string desc = "";
+            foreach (ISDVWeather weather in CurrentWeathers)
+            {
+               if (weather.WeatherType == "Fog")
+                {
+                    FerngillFog fog = (FerngillFog)weather;
+                    desc += fog.FogDescription(fogRoll, fogChance);
+                }
+            }
+
+            return desc;
+        }
+
+        public void CreateWeather(string Type)
+        {
+            foreach (ISDVWeather weather in CurrentWeathers)
+            {
+                if (weather.WeatherType == Type)
+                    weather.CreateWeather();
+            }
+        }
+
+        public void TenMinuteUpdate()
+        {
+            foreach (ISDVWeather weather in CurrentWeathers)
+            {
+                weather.UpdateWeather();
+            }
+
+            if (SDVTime.CurrentTimePeriod == SDVTimePeriods.Afternoon)
+            {
+                //Get fog instance
+                List<ISDVWeather> fogWeather = this.GetWeatherMatchingType("fog");
+                foreach(ISDVWeather weat in fogWeather)
+                {
+                    SDVTime BeginTime, ExpirTime;
+                    BeginTime = new SDVTime(Game1.getStartingToGetDarkTime());
+                    BeginTime.AddTime(Dice.Next(-15, 90));
+
+                    ExpirTime = new SDVTime(BeginTime);
+                    ExpirTime.AddTime(Dice.Next(120, 310));
+
+                    BeginTime.ClampToTenMinutes();
+                    ExpirTime.ClampToTenMinutes();
+
+                    weat.SetWeatherTime(BeginTime, ExpirTime);
+
+                }
+            }
+        }
+
+        internal List<ISDVWeather> GetWeatherMatchingType(string type)
+        {
+            List<ISDVWeather> Weathers = new List<ISDVWeather>();
+            foreach (ISDVWeather weather in CurrentWeathers)
+            {
+                if (weather.WeatherType == type)
+                    Weathers.Add(weather);
+            }
+
+            return Weathers;
         }
 
         /// <summary>Rather than track the weather seprately, always get it from the game.</summary>
@@ -69,16 +147,16 @@ namespace ClimatesOfFerngillRebuild
         public void AddWeather(CurrentWeather newWeather)
         {
             //sanity remove these once weather is set.
-            CurrentConditionsN.RemoveFlags(CurrentWeather.Unset);
+            CurrentConditionsN = CurrentConditionsN.RemoveFlags(CurrentWeather.Unset);
 
             //Some flags are contradictoary. Fix that here.
             if (newWeather == CurrentWeather.Rain)
             {
                 //unset debris, sunny, snow and blizzard, if it's raining.
-                CurrentConditionsN.RemoveFlags(CurrentWeather.Sunny);
-                CurrentConditionsN.RemoveFlags(CurrentWeather.Snow);
-                CurrentConditionsN.RemoveFlags(CurrentWeather.Blizzard);
-                CurrentConditionsN.RemoveFlags(CurrentWeather.Wind);
+                CurrentConditionsN = CurrentConditionsN.RemoveFlags(CurrentWeather.Sunny);
+                CurrentConditionsN = CurrentConditionsN.RemoveFlags(CurrentWeather.Snow);
+                CurrentConditionsN = CurrentConditionsN.RemoveFlags(CurrentWeather.Blizzard);
+                CurrentConditionsN = CurrentConditionsN.RemoveFlags(CurrentWeather.Wind);
 
                 CurrentConditionsN |= newWeather;
             }
@@ -86,10 +164,10 @@ namespace ClimatesOfFerngillRebuild
             else if (newWeather == CurrentWeather.Sunny)
             {
                 //unset debris, rain, snow and blizzard, if it's sunny.
-                CurrentConditionsN.RemoveFlags(CurrentWeather.Rain);
-                CurrentConditionsN.RemoveFlags(CurrentWeather.Snow);
-                CurrentConditionsN.RemoveFlags(CurrentWeather.Blizzard);
-                CurrentConditionsN.RemoveFlags(CurrentWeather.Wind);
+                CurrentConditionsN = CurrentConditionsN.RemoveFlags(CurrentWeather.Rain);
+                CurrentConditionsN = CurrentConditionsN.RemoveFlags(CurrentWeather.Snow);
+                CurrentConditionsN = CurrentConditionsN.RemoveFlags(CurrentWeather.Blizzard);
+                CurrentConditionsN = CurrentConditionsN.RemoveFlags(CurrentWeather.Wind);
 
                 CurrentConditionsN |= newWeather;
             }
@@ -97,10 +175,10 @@ namespace ClimatesOfFerngillRebuild
             else if (newWeather == CurrentWeather.Wind)
             {
                 //unset sunny, rain, snow and blizzard, if it's debris.
-                CurrentConditionsN.RemoveFlags(CurrentWeather.Rain);
-                CurrentConditionsN.RemoveFlags(CurrentWeather.Snow);
-                CurrentConditionsN.RemoveFlags(CurrentWeather.Blizzard);
-                CurrentConditionsN.RemoveFlags(CurrentWeather.Sunny);
+                CurrentConditionsN = CurrentConditionsN.RemoveFlags(CurrentWeather.Rain);
+                CurrentConditionsN = CurrentConditionsN.RemoveFlags(CurrentWeather.Snow);
+                CurrentConditionsN = CurrentConditionsN.RemoveFlags(CurrentWeather.Blizzard);
+                CurrentConditionsN = CurrentConditionsN.RemoveFlags(CurrentWeather.Sunny);
 
                 CurrentConditionsN |= newWeather;
             }
@@ -108,9 +186,9 @@ namespace ClimatesOfFerngillRebuild
             else if (newWeather == CurrentWeather.Snow)
             {
                 //unset debris, sunny, snow and blizzard, if it's raining.
-                CurrentConditionsN.RemoveFlags(CurrentWeather.Sunny);
-                CurrentConditionsN.RemoveFlags(CurrentWeather.Rain);
-                CurrentConditionsN.RemoveFlags(CurrentWeather.Wind);
+                CurrentConditionsN = CurrentConditionsN.RemoveFlags(CurrentWeather.Sunny);
+                CurrentConditionsN = CurrentConditionsN.RemoveFlags(CurrentWeather.Rain);
+                CurrentConditionsN = CurrentConditionsN.RemoveFlags(CurrentWeather.Wind);
 
                 CurrentConditionsN |= newWeather;
             }
@@ -124,7 +202,7 @@ namespace ClimatesOfFerngillRebuild
 
             else if (newWeather == CurrentWeather.Heatwave)
             {
-                CurrentConditionsN.RemoveFlags(CurrentWeather.Frost);
+                CurrentConditionsN = CurrentConditionsN.RemoveFlags(CurrentWeather.Frost);
 
                 CurrentConditionsN |= newWeather;
             }
@@ -138,30 +216,15 @@ namespace ClimatesOfFerngillRebuild
                 CurrentConditionsN |= newWeather;
         }
 
-        internal void UpdateForCurrentMoment()
-        {
-            // Okay. So. I want to hate myself now.
-            if (this.OurFog.IsFogVisible)
-                CurrentConditionsN.CombineFlags(CurrentWeather.Fog);
-            else
-            {
-               // if (ModConfig.Verbose) Monitor.Log("Removing fog from current conditions");
-                CurrentConditionsN.RemoveFlags(CurrentWeather.Fog);
-            }
-        }
-
         /// <summary> Syntatic Sugar for Enum.HasFlag(). Done so if I choose to rewrite how it's accessed, less rewriting of invoking functions is needed. </summary>
         /// <param name="checkWeather">The weather being checked.</param>
         /// <returns>If the weather is present</returns>
         public bool HasWeather(CurrentWeather checkWeather)
         {
-            if (!this.OurFog.IsFogVisible && CurrentConditionsN.HasFlag(CurrentWeather.Fog))
-                CurrentConditionsN.RemoveFlags(CurrentWeather.Fog);
-            
             return CurrentConditionsN.HasFlag(checkWeather);
         }
 
-        public void ClearFog() => CurrentConditionsN.RemoveFlags(CurrentWeather.Fog);
+        public void ClearFog() => CurrentConditionsN = CurrentConditionsN.RemoveFlags(CurrentWeather.Fog);
 
         public bool HasPrecip()
         {
@@ -169,18 +232,12 @@ namespace ClimatesOfFerngillRebuild
                 return true;
 
             return false;
-
         }
 
         public WeatherIcon CurrentWeatherIcon
         {
             get
-            {
-                if (OurFog.IsFogVisible)
-                    CurrentConditionsN |= CurrentWeather.Fog;
-                else
-                    CurrentConditionsN.RemoveFlags(CurrentWeather.Fog);
-                
+            {               
                 if (GeneralFunctions.ContainsOnlyMatchingFlags(CurrentConditionsN, (int)CurrentWeather.Rain))
                     return WeatherIcon.IconRain;
 
@@ -274,13 +331,6 @@ namespace ClimatesOfFerngillRebuild
             }
         }
 
-        /*
-        /// <summary> Get whether or not it is a heatwave </summary>
-        public bool IsHeatwave => (TodayTemps?.HigherBound >= ModConfig.TooHotOutside);
-
-        /// <summary> Get whether or not it is a frost </summary>
-        public bool IsFrost => (TodayTemps?.LowerBound <= ModConfig.TooColdOutside && SDate.Now().Season != "winter");
-        */
         //pass through methods
         
 
@@ -301,7 +351,34 @@ namespace ClimatesOfFerngillRebuild
             this.Dice = Dice;
             this.Translation = Translation;
             CurrentConditionsN = CurrentWeather.Unset;
-            OurFog = new FerngillFog(Sheets, Config.Verbose, monitor);
+            CurrentWeathers = new List<ISDVWeather>
+            {
+                new FerngillFog(Sheets, Config.Verbose, monitor, Dice, Config, SDVTimePeriods.Morning),
+                //new FerngillFog(Sheets, Config.Verbose, monitor, Dice, Config, SDVTimePeriods.Evening),
+                new FerngillBlizzard(Dice, Config)
+            };
+
+            foreach (ISDVWeather weather in CurrentWeathers)
+                weather.OnUpdateStatus += ProcessWeatherChanges;
+        }
+  
+        private void ProcessWeatherChanges(object sender, WeatherNotificationArgs e)
+        {
+           if (e.Weather == "Fog")
+            {
+                if (e.Present)
+                    CurrentConditionsN |= CurrentWeather.Fog;
+                else
+                    CurrentConditionsN = CurrentConditionsN.RemoveFlags(CurrentWeather.Fog);
+            }
+
+            if (e.Weather == "Blizzard")
+            {
+                if (e.Present)
+                    CurrentConditionsN |= CurrentWeather.Blizzard;
+                else
+                    CurrentConditionsN = CurrentConditionsN.RemoveFlags(CurrentWeather.Blizzard);
+            }
         }
 
         /// ******************************************************************************
@@ -319,7 +396,9 @@ namespace ClimatesOfFerngillRebuild
         /// <summary>This function resets the weather for a new day.</summary>
         public void OnNewDay()
         {
-            OurFog.OnNewDay();
+            foreach (ISDVWeather weather in CurrentWeathers)
+                weather.OnNewDay();
+
             CurrentConditionsN = CurrentWeather.Unset;
             TodayTemps = TomorrowTemps; //If Tomorrow is null, should just allow it to be null.
             TomorrowTemps = null;
@@ -328,7 +407,9 @@ namespace ClimatesOfFerngillRebuild
         /// <summary> This function resets the weather object to basic. </summary>
         public void Reset()
         {
-            OurFog.Reset();
+            foreach (ISDVWeather weather in CurrentWeathers)
+                weather.Reset();
+
             TodayTemps = null;
             TomorrowTemps = null;
             CurrentConditionsN = CurrentWeather.Unset;
@@ -587,18 +668,96 @@ namespace ClimatesOfFerngillRebuild
             string ret = "";
             ret += $"Low for today is {TodayTemps?.LowerBound.ToString("N3")} with the high being {TodayTemps?.HigherBound.ToString("N3")}. The current conditions are {GetWeatherType()}.";
 
-            if (OurFog.IsFogVisible)
-            {
-                ret += $" Fog is visible until {OurFog.ExpirationTime} and type {FerngillFog.DescFogType(OurFog.CurrentFogType)}.  ";
-            }
-            else
-            {
-                ret += "Fog is current unvisible.";
-            }
-
+            foreach (ISDVWeather weather in CurrentWeathers)
+                ret += weather.ToString() + Environment.NewLine;
+            
             ret += $"Weather set for tommorow is {WeatherConditions.GetWeatherType(WeatherConditions.ConvertToCurrentWeather(Game1.weatherForTomorrow))} with high {TomorrowTemps?.HigherBound.ToString("N3")} and low {TomorrowTemps?.LowerBound.ToString("N3")} ";
 
             return ret;
+        }
+
+        internal bool TestForSpecialWeather(double fogChance)
+        {
+            Console.WriteLine("testing for current conditions");
+            bool specialWeatherTriggered = false;
+            // Conditions: Blizzard - occurs in weather_snow in "winter"
+            //             Dry Lightning - occurs if it's sunny in any season if temps exceed 25C.
+            //             Frost and Heatwave check against the configuration.
+            //             Thundersnow  - as Blizzard, but really rare.
+            //             Fog - per climate, although night fog in winter is a 50-80% flat possiblity.
+
+            fogChance = 1; //for testing purposes
+            double fogRoll = Dice.NextDoublePositive();
+
+            if (fogRoll < fogChance && !this.GetCurrentConditions().HasFlag(CurrentWeather.Wind))
+            {
+                this.CreateWeather("Fog");
+
+                if (ModConfig.Verbose)
+                    Monitor.Log($"{FogDescription(fogRoll, fogChance)}");
+
+                specialWeatherTriggered = true;
+            }
+
+            if (this.HasWeather(CurrentWeather.Snow))
+            {
+                double blizRoll = Dice.NextDoublePositive();
+                if (blizRoll <= ModConfig.BlizzardOdds)
+                {
+                    this.CreateWeather("Blizzard");
+                    if (ModConfig.Verbose)
+                        Monitor.Log($"With roll {blizRoll.ToString("N3")} against {ModConfig.BlizzardOdds}, there will be blizzards today");
+                }
+
+                specialWeatherTriggered = true;
+            }
+
+            //Dry Lightning is also here for such like the dry and arid climates 
+            //  which have so low rain chances they may never storm.
+            if (this.HasWeather(CurrentWeather.Snow))
+            {
+                double oddsRoll = Dice.NextDoublePositive();
+
+                if (oddsRoll <= ModConfig.ThundersnowOdds)
+                {
+                    this.AddWeather(CurrentWeather.Lightning);
+                    if (ModConfig.Verbose)
+                        Monitor.Log($"With roll {oddsRoll.ToString("N3")} against {ModConfig.ThundersnowOdds}, there will be thundersnow today");
+
+                    specialWeatherTriggered = true;
+                }
+            }
+
+            if (!(this.HasPrecip()))
+            {
+                double oddsRoll = Dice.NextDoublePositive();
+
+                if (oddsRoll <= ModConfig.DryLightning && this.TodayHigh >= ModConfig.DryLightningMinTemp)
+                {
+                    this.AddWeather(CurrentWeather.Lightning);
+                    if (ModConfig.Verbose)
+                        Monitor.Log($"With roll {oddsRoll.ToString("N3")} against {ModConfig.DryLightning}, there will be dry lightning today.");
+
+                    specialWeatherTriggered = true;
+                }
+
+                if (this.TodayHigh > ModConfig.TooHotOutside && ModConfig.HazardousWeather)
+                {
+                    this.AddWeather(CurrentWeather.Heatwave);
+                    specialWeatherTriggered = true;
+                }
+            }
+
+            if (this.TodayLow < ModConfig.TooColdOutside && !Game1.IsWinter)
+            {
+                if (ModConfig.HazardousWeather)
+                {
+                    this.AddWeather(CurrentWeather.Frost);
+                    specialWeatherTriggered = true;
+                }
+            }
+
+            return specialWeatherTriggered;
         }
     }
 }
