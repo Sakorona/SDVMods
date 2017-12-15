@@ -209,8 +209,8 @@ namespace ClimatesOfFerngillRebuild
 
         public void SetWeatherTime(SDVTime begin, SDVTime end)
         {
-            BeginTime = new SDVTime(begin);
-            ExpirTime = new SDVTime(end);
+                BeginTime = new SDVTime(begin);
+                ExpirTime = new SDVTime(end);
         }
 
         public Color CalculateEndLight(SDVTime end)

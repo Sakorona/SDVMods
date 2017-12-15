@@ -38,6 +38,8 @@ namespace ClimatesOfFerngillRebuild
         private CurrentWeather CurrentConditionsN { get; set; }
 
         internal List<ISDVWeather> CurrentWeathers { get; set; }
+
+        private bool HasSetEveningFog {get; set;}
         /// <summary>Fog object - handles fog</summary>
         //internal FerngillFog OurFog { get; set; }
 
@@ -92,7 +94,7 @@ namespace ClimatesOfFerngillRebuild
                 weather.UpdateWeather();
             }
 
-            if (SDVTime.CurrentTimePeriod == SDVTimePeriods.Afternoon)
+            if (SDVTime.CurrentTimePeriod == SDVTimePeriods.Afternoon && !HasSetEveningFog)
             {
                 //Get fog instance
                 List<ISDVWeather> fogWeather = this.GetWeatherMatchingType("fog");
@@ -109,6 +111,7 @@ namespace ClimatesOfFerngillRebuild
                     ExpirTime.ClampToTenMinutes();
 
                     weat.SetWeatherTime(BeginTime, ExpirTime);
+                    HasSetEveningFog = true;
 
                 }
             }
