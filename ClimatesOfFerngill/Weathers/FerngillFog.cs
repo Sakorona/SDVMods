@@ -244,33 +244,37 @@ namespace ClimatesOfFerngillRebuild
                 return;
 
             if (WeatherInProgress && !IsWeatherVisible)
-            { 
+            {
+            
                 CurrentFogType = FogType.Normal;
                 FogAlpha = 1f;
                 fogLight = FerngillFog.NormalOutdoor;
                 endLight = CalculateEndLight(ExpirTime);
+                Console.WriteLine($"[{Game1.timeOfDay}] Initating Normal Fog until {ExpirTime}. Calculated EndLight is {endLight}");
                 UpdateStatus(WeatherType, true);    
             }
 
             if (FogAlpha < .45 && IsWeatherVisible)
             {
                 UpdateStatus(WeatherType, false);
+                Console.WriteLine($"[{Game1.timeOfDay}] Turning fog icon off.");
             }
 
             if (WeatherExpirationTime <= SDVTime.CurrentTime && IsWeatherVisible)
             {
                 CurrentFogType = FogType.None;
-                Game1.outdoorLight = Color.White;
+                Game1.outdoorLight = endLight; //.... 
                 fogLight = Color.White;
                 FogAlpha = 0f;
-                
+                Console.WriteLine($"[{Game1.timeOfDay}] Turning fog icon off.");
+
                 UpdateStatus(WeatherType, false);
             }
 
             if (CurrentFogType == FogType.Dark || CurrentFogType == FogType.Normal && WeatherInProgress && IsWeatherVisible)
             {
                 int timeRemain = WeatherExpirationTime.ReturnIntTime() - Game1.timeOfDay;
-                int timeTotal = WeatherExpirationTime.ReturnIntTime() - 0600;
+                int timeTotal = WeatherExpirationTime.ReturnIntTime() - WeatherBeginTime.ReturnIntTime();
                 double percentage = 1 - (timeRemain / (double)timeTotal);
 
                 byte redDiff = (byte)Math.Abs(beginLight.R - endLight.R);

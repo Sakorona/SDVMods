@@ -97,7 +97,7 @@ namespace ClimatesOfFerngillRebuild
             if (SDVTime.CurrentTimePeriod == SDVTimePeriods.Afternoon && !HasSetEveningFog)
             {
                 //Get fog instance
-                List<ISDVWeather> fogWeather = this.GetWeatherMatchingType("fog");
+                List<ISDVWeather> fogWeather = this.GetWeatherMatchingType("Fog");
                 foreach(ISDVWeather weat in fogWeather)
                 {
                     SDVTime BeginTime, ExpirTime;
@@ -109,7 +109,7 @@ namespace ClimatesOfFerngillRebuild
 
                     BeginTime.ClampToTenMinutes();
                     ExpirTime.ClampToTenMinutes();
-
+                    Console.WriteLine($"Fog is set for {BeginTime} to {ExpirTime}");
                     weat.SetWeatherTime(BeginTime, ExpirTime);
                     HasSetEveningFog = true;
 
