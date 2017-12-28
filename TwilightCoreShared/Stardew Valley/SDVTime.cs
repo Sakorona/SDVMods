@@ -15,7 +15,9 @@ namespace TwilightShards.Stardew.Common
         Afternoon,
         Evening,
         Night,
-        LateNight
+        LateNight,
+        Noon,
+        Midnight
     }
 
     public class SDVTime
@@ -46,7 +48,10 @@ namespace TwilightShards.Stardew.Common
                 {
                     return SDVTimePeriods.Morning;
                 }
-                if (this.ReturnIntTime() >= 1200 && this.ReturnIntTime() < Game1.getStartingToGetDarkTime())
+                if (this.ReturnIntTime() == 1200) { 
+                    return SDVTimePeriods.Noon;
+                }
+                if (this.ReturnIntTime() > 1200 && this.ReturnIntTime() < Game1.getStartingToGetDarkTime())
                 {
                     return SDVTimePeriods.Afternoon;
                 }
@@ -59,6 +64,10 @@ namespace TwilightShards.Stardew.Common
                     this.ReturnIntTime() < 2300)
                 {
                     return SDVTimePeriods.Night;
+                }
+                if (this.ReturnIntTime() == 2400)
+                {
+                    return SDVTimePeriods.Midnight;
                 }
                 else
                 {

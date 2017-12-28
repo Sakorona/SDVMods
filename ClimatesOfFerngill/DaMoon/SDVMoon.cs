@@ -58,7 +58,6 @@ namespace ClimatesOfFerngillRebuild
             //divide it by the cycle.
             int currentCycle = (int)Math.Floor(SDVUtilities.GetDayFromDate(SDate.Now()) / (double)cycleLength);
             int currentDay = GetDayOfCycle(SDate.Now());
-            //Console.Write($"Day is {SDVUtilities.GetDayFromDate(SDate.Now())} with current cycle is {currentCycle} and currentDay is {currentDay}");
 
             MoonPhase ret = SDVMoon.GetLunarPhase(currentDay);
 

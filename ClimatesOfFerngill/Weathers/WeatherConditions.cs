@@ -3,6 +3,7 @@ using StardewModdingAPI;
 using StardewModdingAPI.Utilities;
 using StardewValley;
 using System.Collections.Generic;
+using System.Linq;
 using TwilightShards.Common;
 using static ClimatesOfFerngillRebuild.Sprites;
 using System;
@@ -10,7 +11,6 @@ using TwilightShards.Stardew.Common;
 
 namespace ClimatesOfFerngillRebuild
 {
-
     /// <summary>
     /// This class tracks the current the current weather of the game
     /// </summary>
@@ -40,8 +40,9 @@ namespace ClimatesOfFerngillRebuild
         internal List<ISDVWeather> CurrentWeathers { get; set; }
 
         private bool HasSetEveningFog {get; set;}
-        /// <summary>Fog object - handles fog</summary>
-        //internal FerngillFog OurFog { get; set; }
+
+        public bool GenerateEveningFog { get; set; }
+
 
         /// *************************************************************************
         /// ACCESS METHODS
@@ -94,25 +95,14 @@ namespace ClimatesOfFerngillRebuild
                 weather.UpdateWeather();
             }
 
-            if (SDVTime.CurrentTimePeriod == SDVTimePeriods.Afternoon && !HasSetEveningFog)
+            if (SDVTime.CurrentTimePeriod == SDVTimePeriods.Afternoon && GenerateEveningFog && !HasSetEveningFog && (!IsFestivalToday && !IsWeddingToday))
             {
                 //Get fog instance
-                List<ISDVWeather> fogWeather = this.GetWeatherMatchingType("Fog");
-                foreach(ISDVWeather weat in fogWeather)
+                FerngillFog ourFog = (FerngillFog)this.GetWeatherMatchingType("Fog").First();
+                if (!ourFog.WeatherInProgress)
                 {
-                    SDVTime BeginTime, ExpirTime;
-                    BeginTime = new SDVTime(Game1.getStartingToGetDarkTime());
-                    BeginTime.AddTime(Dice.Next(-15, 90));
-
-                    ExpirTime = new SDVTime(BeginTime);
-                    ExpirTime.AddTime(Dice.Next(120, 310));
-
-                    BeginTime.ClampToTenMinutes();
-                    ExpirTime.ClampToTenMinutes();
-                    Console.WriteLine($"Fog is set for {BeginTime} to {ExpirTime}");
-                    weat.SetWeatherTime(BeginTime, ExpirTime);
+                    ourFog.SetEveningFog();
                     HasSetEveningFog = true;
-
                 }
             }
         }
@@ -134,6 +124,8 @@ namespace ClimatesOfFerngillRebuild
 
         public bool IsTodayTempSet => TodayTemps != null;
         public bool IsTomorrowTempSet => TomorrowTemps != null;
+        public bool IsFestivalToday => CurrentConditionsN.HasFlag(CurrentWeather.Festival);
+        public bool IsWeddingToday => CurrentConditionsN.HasFlag(CurrentWeather.Wedding);
 
         /// <summary> This returns the high for today </summary>
         public double TodayHigh => TodayTemps.HigherBound;
@@ -217,6 +209,25 @@ namespace ClimatesOfFerngillRebuild
 
             else
                 CurrentConditionsN |= newWeather;
+        }
+
+        internal void ForceEveningFog()
+        {
+            //Get fog instance
+            List<ISDVWeather> fogWeather = this.GetWeatherMatchingType("Fog");
+            foreach (ISDVWeather weat in fogWeather)
+            {
+                SDVTime BeginTime, ExpirTime;
+                BeginTime = new SDVTime(Game1.getStartingToGetDarkTime());
+                BeginTime.AddTime(Dice.Next(-15, 90));
+
+                ExpirTime = new SDVTime(BeginTime);
+                ExpirTime.AddTime(Dice.Next(120, 310));
+
+                BeginTime.ClampToTenMinutes();
+                ExpirTime.ClampToTenMinutes();
+                weat.SetWeatherTime(BeginTime, ExpirTime);
+            }
         }
 
         /// <summary> Syntatic Sugar for Enum.HasFlag(). Done so if I choose to rewrite how it's accessed, less rewriting of invoking functions is needed. </summary>
@@ -330,12 +341,14 @@ namespace ClimatesOfFerngillRebuild
                 if (GeneralFunctions.ContainsOnlyMatchingFlags(CurrentConditionsN, (int)(CurrentWeather.Blizzard | CurrentWeather.Snow | CurrentWeather.Fog)))
                     return WeatherIcon.IconSnowFog;
 
+                if (GeneralFunctions.ContainsOnlyMatchingFlags(CurrentConditionsN, (int)(CurrentWeather.Sunny | CurrentWeather.Frost | CurrentWeather.Fog)))
+                    return WeatherIcon.IconSunnyFog;
+                if (GeneralFunctions.ContainsOnlyMatchingFlags(CurrentConditionsN, (int)(CurrentWeather.Rain | CurrentWeather.Frost | CurrentWeather.Fog)))
+                    return WeatherIcon.IconRainFog;
+
                 return WeatherIcon.IconError;
             }
         }
-
-        //pass through methods
-        
 
         /// ******************************************************************************
         /// CONSTRUCTORS
@@ -370,9 +383,13 @@ namespace ClimatesOfFerngillRebuild
            if (e.Weather == "Fog")
             {
                 if (e.Present)
+                {
                     CurrentConditionsN |= CurrentWeather.Fog;
+                }
                 else
+                {
                     CurrentConditionsN = CurrentConditionsN.RemoveFlags(CurrentWeather.Fog);
+                }
             }
 
             if (e.Weather == "Blizzard")
@@ -479,12 +496,13 @@ namespace ClimatesOfFerngillRebuild
         /// <summary> Force for festival only to match vanilla behavior. </summary>
         internal void ForceFestivalOnly() => CurrentConditionsN = CurrentWeather.Festival;
 
-        /// <summary>Gets a quick string describing the weather. Meant primarily for use within the class. </summary>
+        /// <summary>Gets a quick string describing the current weather.</summary>
         /// <returns>A quick ID of the weather</returns>
         private string GetWeatherType()
         {
             return WeatherConditions.GetWeatherType(CurrentConditionsN);
         }
+
 
         /// <summary>Gets a quick string describing the weather. Meant primarily for use within the class. </summary>
         /// <returns>A quick ID of the weather</returns>
@@ -524,6 +542,10 @@ namespace ClimatesOfFerngillRebuild
                 return "stormswithfrost";
             if (GeneralFunctions.ContainsOnlyMatchingFlags(CurrentConditions, (int)(CurrentWeather.Sunny | CurrentWeather.Frost)))
                 return "sunnyfrost";
+            if (GeneralFunctions.ContainsOnlyMatchingFlags(CurrentConditions, (int)(CurrentWeather.Sunny | CurrentWeather.Frost | CurrentWeather.Fog)))
+                return "sunnyfrostfog";
+            if (GeneralFunctions.ContainsOnlyMatchingFlags(CurrentConditions, (int)(CurrentWeather.Rain | CurrentWeather.Frost | CurrentWeather.Fog)))
+                return "rainyfrostfog";
             if (GeneralFunctions.ContainsOnlyMatchingFlags(CurrentConditions, (int)(CurrentWeather.Wind | CurrentWeather.Frost)))
                 return "windyfrost";
             if (GeneralFunctions.ContainsOnlyMatchingFlags(CurrentConditions, (int)(CurrentWeather.Rain | CurrentWeather.Frost)))
@@ -547,17 +569,14 @@ namespace ClimatesOfFerngillRebuild
             if (GeneralFunctions.ContainsOnlyMatchingFlags(CurrentConditions, (int)(CurrentWeather.Blizzard | CurrentWeather.Snow | CurrentWeather.Fog)))
                 return "blizzardfog";
 
-            return "ERROR";
+            return $"ERROR. Dumping raw data: {CurrentConditions}";
         }
-
-        /// ***************************************************************************
-        /// Description functions
-        /// ***************************************************************************
 
         ///<summary>This function returns the current condition (pulled from the translation helper.)</summary>
         internal string DescribeConditions()
         {
-            switch (GetWeatherType()){
+            switch (GetWeatherType())
+            {
                 case "rainy":
                     return Translation.Get("weather_rainy");
                 case "stormy":
@@ -614,58 +633,13 @@ namespace ClimatesOfFerngillRebuild
                     return Translation.Get("weather_fog", new { condition = Translation.Get("weather_blizzard") });
                 default:
                     return "ERROR";
-            }     
+            }
         }
-
-        public string GetTemperatureString(bool Scales, ITranslationHelper Helper)
-        {
-            string Temperature = "";
-
-            if (Scales)
-                Temperature = Helper.Get("weather-menu.temp_bothscales", new
-                {
-                    highTempC = this.TodayHigh.ToString("N1"),
-                    lowTempC = this.TodayLow.ToString("N1"),
-                    highTempF = GeneralFunctions.ConvCtF(this.TodayHigh).ToString("N1"),
-                    lowTempF = GeneralFunctions.ConvCtF(this.TodayLow).ToString("N1"),
-                });
-            else
-                Temperature = Helper.Get("weather-menu.temp_onlyscales", new
-                {
-                    highTempC = this.TodayHigh.ToString("N1"),
-                    lowTempC = this.TodayLow.ToString("N1")
-                });
-
-            return Temperature;
-        }
-
-        public string GetTomorrowTemperatureString(bool Scales, ITranslationHelper Helper)
-        {
-            string Temperature = "";
-
-            if (Scales)
-                Temperature = Helper.Get("weather-menu.temp_bothscales", new
-                {
-                    highTempC = this.TomorrowHigh.ToString("N1"),
-                    lowTempC = this.TomorrowLow.ToString("N1"),
-                    highTempF = GeneralFunctions.ConvCtF(this.TomorrowHigh).ToString("N1"),
-                    lowTempF = GeneralFunctions.ConvCtF(this.TomorrowLow).ToString("N1")
-                });
-            else
-                Temperature = Helper.Get("weather-menu.temp_onlyscales", new
-                {
-                    highTempC = this.TomorrowHigh.ToString("N1"),
-                    lowTempC = this.TomorrowLow.ToString("N1")
-                });
-
-            return Temperature;
-        }
-    
 
         /// <summary>
         /// This function returns a description of the object. A very important note that this is meant for debugging, and as such does not do localization.
         /// </summary>
-        /// <returns>A string describing hte object.</returns>
+        /// <returns>A string describing the object.</returns>
         public override string ToString()
         {
             string ret = "";
@@ -674,22 +648,22 @@ namespace ClimatesOfFerngillRebuild
             foreach (ISDVWeather weather in CurrentWeathers)
                 ret += weather.ToString() + Environment.NewLine;
             
-            ret += $"Weather set for tommorow is {WeatherConditions.GetWeatherType(WeatherConditions.ConvertToCurrentWeather(Game1.weatherForTomorrow))} with high {TomorrowTemps?.HigherBound.ToString("N3")} and low {TomorrowTemps?.LowerBound.ToString("N3")} ";
+            ret += $"Weather set for tommorow is {WeatherConditions.GetWeatherType(WeatherConditions.ConvertToCurrentWeather(Game1.weatherForTomorrow))} with high {TomorrowTemps?.HigherBound.ToString("N3")} and low {TomorrowTemps?.LowerBound.ToString("N3")}. Evening fog generated {GenerateEveningFog} ";
 
             return ret;
         }
-
+        
         internal bool TestForSpecialWeather(double fogChance)
         {
-            Console.WriteLine("testing for current conditions");
             bool specialWeatherTriggered = false;
             // Conditions: Blizzard - occurs in weather_snow in "winter"
             //             Dry Lightning - occurs if it's sunny in any season if temps exceed 25C.
             //             Frost and Heatwave check against the configuration.
             //             Thundersnow  - as Blizzard, but really rare.
-            //             Fog - per climate, although night fog in winter is a 50-80% flat possiblity.
+            //             Fog - per climate, although night fog in winter is double normal chance
 
-            fogChance = 1; //for testing purposes
+            GenerateEveningFog = Dice.NextDouble() < (Game1.currentSeason == "winter" ? fogChance * 2 : fogChance);
+            
             double fogRoll = Dice.NextDoublePositive();
 
             if (fogRoll < fogChance && !this.GetCurrentConditions().HasFlag(CurrentWeather.Wind))

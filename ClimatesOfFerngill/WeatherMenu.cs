@@ -188,9 +188,9 @@ namespace ClimatesOfFerngillRebuild
             // disable when game is using immediate sprite sorting
             if (!this.ValidatedDrawMode)
             {
-                IPrivateField<SpriteSortMode> sortModeField =
-                    this.Reflection.GetPrivateField<SpriteSortMode>(Game1.spriteBatch, "spriteSortMode", required: false) // XNA
-                    ?? this.Reflection.GetPrivateField<SpriteSortMode>(Game1.spriteBatch, "_sortMode"); // MonoGame
+                IReflectedField<SpriteSortMode> sortModeField =
+                    this.Reflection.GetField<SpriteSortMode>(Game1.spriteBatch, "spriteSortMode", required: false) // XNA
+                    ?? this.Reflection.GetField<SpriteSortMode>(Game1.spriteBatch, "_sortMode"); // MonoGame
                 if (sortModeField.GetValue() == SpriteSortMode.Immediate)
                 {
                     this.Monitor.Log("Aborted the weather draw because the game's current rendering mode isn't compatible with the mod's UI. This only happens in rare cases (e.g. the Stardew Valley Fair).", LogLevel.Warn);

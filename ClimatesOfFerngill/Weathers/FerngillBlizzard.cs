@@ -106,6 +106,11 @@ namespace ClimatesOfFerngillRebuild
 
         }
 
+        public override string ToString()
+        {
+            return $"Blizzard Weather from {BeginTime} to {ExpirTime}. Visible: {IsWeatherVisible}. ";
+        }
+
         public void DrawWeather()
         { 
             if (IsWeatherVisible && !(Game1.currentLocation is Desert))

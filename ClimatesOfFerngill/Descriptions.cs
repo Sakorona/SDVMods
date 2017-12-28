@@ -37,10 +37,78 @@ namespace ClimatesOfFerngillRebuild
             Helper = Translaton;
         }
 
-
         internal string GetDescOfDay(SDate date)
         {
             return Helper.Get("date" + GeneralFunctions.FirstLetterToUpper(date.Season) + date.Day);
+        }
+
+        public string GetTemperatureString(bool Scales, ITranslationHelper Helper, WeatherConditions cond)
+        {
+            string Temperature = "";
+
+            if (Scales)
+                Temperature = Helper.Get("weather-menu.temp_bothscales", new
+                {
+                    highTempC = cond.TodayHigh.ToString("N1"),
+                    lowTempC = cond.TodayLow.ToString("N1"),
+                    highTempF = GeneralFunctions.ConvCtF(cond.TodayHigh).ToString("N1"),
+                    lowTempF = GeneralFunctions.ConvCtF(cond.TodayLow).ToString("N1"),
+                });
+            else
+                Temperature = Helper.Get("weather-menu.temp_onlyscales", new
+                {
+                    highTempC = cond.TodayHigh.ToString("N1"),
+                    lowTempC = cond.TodayLow.ToString("N1")
+                });
+
+            return Temperature;
+        }
+
+        public string GetTomorrowTemperatureString(bool Scales, ITranslationHelper Helper, WeatherConditions cond)
+        {
+            string Temperature = "";
+
+            if (Scales)
+                Temperature = Helper.Get("weather-menu.temp_bothscales", new
+                {
+                    highTempC = cond.TomorrowHigh.ToString("N1"),
+                    lowTempC = cond.TomorrowLow.ToString("N1"),
+                    highTempF = GeneralFunctions.ConvCtF(cond.TomorrowHigh).ToString("N1"),
+                    lowTempF = GeneralFunctions.ConvCtF(cond.TomorrowLow).ToString("N1")
+                });
+            else
+                Temperature = Helper.Get("weather-menu.temp_onlyscales", new
+                {
+                    highTempC = cond.TomorrowHigh.ToString("N1"),
+                    lowTempC = cond.TomorrowLow.ToString("N1")
+                });
+
+            return Temperature;
+        }
+
+        internal string DescribeInGameWeather(int weather)
+        {
+            if (weather == Game1.weather_debris)
+                return Helper.Get("weather_wind");
+            if (weather == Game1.weather_festival)
+                return Helper.Get("weather_festival");
+            if (weather == Game1.weather_lightning)
+                return Helper.Get("weather_lightning");
+            if (weather == Game1.weather_rain)
+                return Helper.Get("weather_rainy");
+            if (weather == Game1.weather_snow)
+                return Helper.Get("weather_snow");
+            if (weather == Game1.weather_sunny)
+                return Helper.Get("weather_sunny");
+            if (weather == Game1.weather_wedding)
+                return Helper.Get("weather_wedding");
+
+            return "ERROR";
+        }
+
+        internal string GenerateTVForecast(WeatherConditions Current, SDVMoon Moon)
+        {
+            return "";
         }
 
         internal TemporaryAnimatedSprite GetWeatherOverlay(TV tv)

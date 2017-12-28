@@ -13,12 +13,10 @@ namespace ClimatesOfFerngillRebuild
         private WeatherConfig Config;
         private ITranslationHelper Helper;
         private bool FarmerSick;
-        private bool SickToday;
         private IMonitor Monitor;
 
         public StaminaDrain(WeatherConfig Options, ITranslationHelper SHelper, IMonitor mon)
         {
-            SickToday = false;
             Config = Options;
             Helper = SHelper;
             Monitor = mon;
@@ -37,7 +35,6 @@ namespace ClimatesOfFerngillRebuild
 
         public void OnNewDay()
         {
-            SickToday = false;
             FarmerSick = false;
         }
 
@@ -49,20 +46,12 @@ namespace ClimatesOfFerngillRebuild
 
         public void Reset()
         {
-            SickToday = false;
             FarmerSick = false;
         }
 
         public bool FarmerCanGetSick()
         {
-            if (FarmerSick)
-            {
-                if (Config.Verbose)
-                    Monitor.Log("Farmer is already sick, returning false");
-                return false;
-            }
-
-            if (SickToday && !Config.SickMoreThanOnce)
+            if (FarmerSick && !Config.SickMoreThanOnce)
                 return false;
 
             return true;
@@ -103,8 +92,11 @@ namespace ClimatesOfFerngillRebuild
             if (amtOutside >= Config.AffectedOutside && farmerCaughtCold || this.FarmerSick)
             {
                 //check if it's a valid condition
-                if (conditions.GetCurrentConditions().HasAnyFlags(CurrentWeather.Blizzard | CurrentWeather.Lightning) || (conditions.GetCurrentConditions().HasFlag(CurrentWeather.Frost) && SDVTime.IsNight) | (conditions.GetCurrentConditions().HasFlag(CurrentWeather.Heatwave) && !SDVTime.IsNight) && FarmerCanGetSick())
-                    this.MakeSick();
+                if (FarmerCanGetSick())
+                {
+                    if (conditions.GetCurrentConditions().HasAnyFlags(CurrentWeather.Blizzard | CurrentWeather.Lightning) || (conditions.GetCurrentConditions().HasFlag(CurrentWeather.Frost) && SDVTime.IsNight) | (conditions.GetCurrentConditions().HasFlag(CurrentWeather.Heatwave) && !SDVTime.IsNight))
+                        this.MakeSick();
+                }
 
                 /* //test status
                 if (Config.Verbose)              

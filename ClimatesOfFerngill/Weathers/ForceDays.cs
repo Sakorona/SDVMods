@@ -35,7 +35,7 @@ namespace ClimatesOfFerngillRebuild
             {
                 if (entry.Key.Day == Target.Day && entry.Key.Season == Target.Season)
                 {
-                    if (verbose) mon.Log($"Setting {entry.Value}");
+                    if (verbose) mon.Log($"Setting a forced value for tommorow: {entry.Value} for {entry.Key.Season} {entry.Key.Day}");
                     Game1.weatherForTomorrow = entry.Value;
                     return true;
                 }

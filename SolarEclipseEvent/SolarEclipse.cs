@@ -71,7 +71,7 @@ namespace SolarEclipseEvent
                     foreach (Furniture f in loc.furniture)
                     {
                         if (f.furniture_type == Furniture.window)
-                            Helper.Reflection.GetPrivateMethod(f, "addLights").Invoke(new object[] { Game1.currentLocation });
+                            Helper.Reflection.GetMethod(f, "addLights").Invoke(new object[] { Game1.currentLocation });
                     }
                 }
             }
@@ -92,7 +92,7 @@ namespace SolarEclipseEvent
                     foreach (Furniture f in loc.furniture)
                     {
                         if (f.furniture_type == Furniture.window)
-                            Helper.Reflection.GetPrivateMethod(f, "addLights").Invoke(new object[] { Game1.currentLocation });
+                            Helper.Reflection.GetMethod(f, "addLights").Invoke(new object[] { Game1.currentLocation });
                     }
                 }
 

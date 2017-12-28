@@ -77,13 +77,16 @@ namespace ClimatesOfFerngillRebuild
         private static MethodInfo TVMethodOverlay = typeof(TV).GetMethod("setWeatherOverlay", BindingFlags.Instance | BindingFlags.NonPublic);
         private static GameLocation.afterQuestionBehavior Callback;
         private static TV Target; */
-
-
         private Color nightColor = new Color((int)byte.MaxValue, (int)byte.MaxValue, 0);
         private bool Disabled = false;
         private int[] SeedsForDialogue;
 
         private bool IsFestivalDay => Utility.isFestivalDay(SDate.Now().Day, SDate.Now().Season);
+
+        public override object GetApi()
+        {
+            return new ClimatesOfFerngillApi(OurMoon, Conditions, StaminaMngr, WeatherOpt);
+        }
 
         public bool CanEdit<T>(IAssetInfo asset)
         {
@@ -139,7 +142,6 @@ namespace ClimatesOfFerngillRebuild
                 MenuEvents.MenuChanged += MenuEvents_MenuChanged;
                 GameEvents.UpdateTick += CheckForChanges;
                 SaveEvents.AfterReturnToTitle += ResetMod;
-                GraphicsEvents.OnPreRenderEvent += DrawBeforeScreenRenders;
                 GraphicsEvents.OnPostRenderGuiEvent += DrawOverMenus;
                 GraphicsEvents.OnPreRenderHudEvent += DrawPreHudObjects;
                 GraphicsEvents.OnPostRenderHudEvent += DrawObjects;
@@ -151,10 +153,7 @@ namespace ClimatesOfFerngillRebuild
                 //console commands
                 helper.ConsoleCommands
                       .Add("weather_settommorow", helper.Translation.Get("console-text.desc_tmrweather"), TomorrowWeatherChangeFromConsole)
-                      .Add("weather_changeweather", helper.Translation.Get("console-text.desc_setweather"), WeatherChangeFromConsole)
-                      .Add("debug_staminaforce", "Forces stamina drain level. Debug function", DebugStaForce)
-                      .Add("debug_weatherstatus", "Prints an overly detailed weahter status screen out to the console.", DebugWeather);
-
+                      .Add("weather_changeweather", helper.Translation.Get("console-text.desc_setweather"), WeatherChangeFromConsole);
                 
                 /*
                 CustomTVMod.removeChannel("weather");
@@ -178,19 +177,6 @@ namespace ClimatesOfFerngillRebuild
                 Monitor.Log("Weather Sprite is null");
 
             //CustomTVMod.showProgram(BackgroundSprite, OnScreenText, CustomTVMod.endProgram, WeatherSprite);
-        }
-
-        private void DrawBeforeScreenRenders(object sender, EventArgs e)
-        {
-            List<ISDVWeather> weather = Conditions.GetWeatherMatchingType("Fog");
-            foreach (ISDVWeather w in weather)
-            {
-                if (w != null && w.IsWeatherVisible)
-                {
-                    FerngillFog fog = (FerngillFog)w;
-                    Game1.outdoorLight = fog.fogLight;
-                }
-            }            
         }
 
         private void DrawOverMenus(object sender, EventArgs e)
@@ -237,7 +223,7 @@ namespace ClimatesOfFerngillRebuild
                         if (f.furniture_type == Furniture.window)
                         {
                             if (WeatherOpt.Verbose) Monitor.Log($"Attempting to remove the light for {f.name}");
-                            Helper.Reflection.GetPrivateMethod(f, "addLights").Invoke(new object[] { Game1.currentLocation });
+                            Helper.Reflection.GetMethod(f, "addLights").Invoke(new object[] { Game1.currentLocation });
                         }
                     }
                 }
@@ -260,7 +246,7 @@ namespace ClimatesOfFerngillRebuild
             {
                 bool stormDialogue = false;
                 double odds = Dice.NextDoublePositive(), stormOdds = GameClimate.GetStormOdds(SDate.Now().AddDays(1), Dice, DebugOutput);
-                List<string> lines = Helper.Reflection.GetPrivateValue<List<string>>(box, "dialogues");
+                List<string> lines = Helper.Reflection.GetField<List<string>>(box, "dialogues").GetValue();
                 if (lines.FirstOrDefault() == Game1.content.LoadString("Strings\\StringsFromCSFiles:Object.cs.12822"))
                 {
                     if (WeatherOpt.Verbose)
@@ -381,12 +367,7 @@ namespace ClimatesOfFerngillRebuild
         /// <returns>A string describing the weather</returns>
         public string GetWeatherForecast()
         {
-            string tvText = " ";
-
-            //HEREBEDRAGONS();
-
-
-            return tvText;
+            return DescriptionEngine.GenerateTVForecast(Conditions, OurMoon);
         }
 
         /// <summary>
@@ -440,7 +421,7 @@ namespace ClimatesOfFerngillRebuild
                         if (f.furniture_type == Furniture.window)
                         {
                             if (WeatherOpt.Verbose) Monitor.Log($"Attempting to remove the light for {f.name}");
-                            Helper.Reflection.GetPrivateMethod(f, "addLights").Invoke(new object[] { Game1.currentLocation });
+                            Helper.Reflection.GetMethod(f, "addLights").Invoke(new object[] { Game1.currentLocation });
                         }
                     }
                 }
@@ -467,7 +448,6 @@ namespace ClimatesOfFerngillRebuild
 
                     foreach (KeyValuePair<Vector2, TerrainFeature> tf in f.terrainFeatures)
                     {
-
                         if (count >= maxCrops)
                             break;
 
@@ -543,6 +523,11 @@ namespace ClimatesOfFerngillRebuild
             if (!Game1.eventUp)
             {
                 Game1.spriteBatch.Draw(OurIcons.WeatherSource, weatherMenu.position + new Vector2(116f, 68f), new Rectangle?(new Rectangle(0+ 12 * (int)Conditions.CurrentWeatherIcon, 0, 12, 8)), Color.White, 0.0f, Vector2.Zero, 4f, SpriteEffects.None, .1f);
+            }
+
+            if (!Game1.options.hardwareCursor)
+            {
+                Game1.spriteBatch.Draw(Game1.mouseCursors, new Vector2((float)Game1.getMouseX(), (float)Game1.getMouseY()), new Rectangle?(Game1.getSourceRectForStandardTileSheet(Game1.mouseCursors, Game1.options.SnappyMenus ? 44 : 0, 16, 16)), Color.White * Game1.mouseCursorTransparency, 0f, Vector2.Zero, (float)Game1.pixelZoom + Game1.dialogueButtonScale / 150f, SpriteEffects.None, 1f);
             }
         }
 
@@ -707,9 +692,7 @@ namespace ClimatesOfFerngillRebuild
             }
 
             if (WeatherOpt.Verbose)
-                Monitor.Log($"We've set the weather for Tomorrow. It is: {Game1.weatherForTomorrow}");
-
-            //The mod no longer duplicates the weather for tommorow tracking, and just polls the game.
+                Monitor.Log($"We've set the weather for Tomorrow. It is: {DescriptionEngine.DescribeInGameWeather(Game1.weatherForTomorrow)}");
         }
 
         private void UpdateWeatherOnNewDay()
@@ -750,16 +733,6 @@ namespace ClimatesOfFerngillRebuild
          * console commands
          * **************************************************************
          */
-
-        /// <summary>
-        /// This function changes the weather (Console Command)
-        /// </summary>
-        /// <param name="arg1">The command used</param>
-        /// <param name="arg2">The console command parameters</param>
-        private void DebugStaForce(string arg1, string[] arg2)
-        {
-            StaminaMngr.MakeSick();
-        }
 
         /// <summary>
         /// This function changes the weather (Console Command)

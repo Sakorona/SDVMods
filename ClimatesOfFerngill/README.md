@@ -1,6 +1,6 @@
 ﻿# Climates of Ferngill (Rebuild) You Can (Not) Have Weather
 
-Current Version (2 December 2017): v1.3-beta1
+Current Version (1 January 2018): v1.3-beta1
 
 ## What's New
 
@@ -67,6 +67,16 @@ If you're out in a blizzard during the day, it's *1.25 or 2.5 rounded down to 2.
 - Prismuth for the fog sprite
 
 ## Changelog
+v1.3alpha27
+- fixed the cold repeating itself
+- fog fade in/out is slowed down
+- easter egg removed
+
+
+v1.3alpha3
+- easter egg added - the desert has snow in real time Dec 15 til Jan 4.
+- a new fade in/out method of fog has been added, and the lighting system should work normally
+
 v1.3alpha2
 - Architecture change - now uses an interface to streamline adding new weathers to draw mechanics
 - Fog can now also be at night also. 
