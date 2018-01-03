@@ -1,5 +1,4 @@
 ﻿using Microsoft.Xna.Framework;
-using StardewModdingAPI.Utilities;
 using StardewValley;
 using StardewValley.Monsters;
 using StardewValley.TerrainFeatures;
@@ -24,7 +23,6 @@ namespace TwilightShards.Stardew.Common
                     return true;
                 }
             }
-
             return false;
         }
 
@@ -56,24 +54,6 @@ namespace TwilightShards.Stardew.Common
             }
 
             return s;
-        }
-
-        /// <summary>Get a number representing the number of days since Year 1 Spring 0. Mainly intended to have an absolute refrence</summary>
-        public static int GetDayFromDate(SDate Date)
-        {
-            int days = (Date.Year - 1) * 112; 
-            if (Date.Season == "spring")
-                days += 0;
-            else if (Date.Season == "summer")
-                days += 28;
-            else if (Date.Season == "fall")
-                days += 56;
-            else if (Date.Season == "winter")
-                days += 84;
-
-            days += Date.Day;
-
-            return days;
         }
 
         public static string PrintCurrentWeatherStatus()
@@ -127,29 +107,6 @@ namespace TwilightShards.Stardew.Common
             Game1.player.Stamina = 0;
             Game1.player.doEmote(36);
             Game1.farmerShouldPassOut = true;
-        }
-
-        public static string WeatherToString(int weather)
-        {
-            switch (weather)
-            {
-                case 0:
-                    return "Sunny";
-                case 1:
-                    return "Rain";
-                case 2:
-                    return "Debris";
-                case 3:
-                    return "Lightning";
-                case 4:
-                    return "Festival";
-                case 5:
-                    return "Snow";
-                case 6:
-                    return "Wedding";
-                default:
-                    return "<ERROR>";
-            }
         }
 
         public static int CropCountInFarm(Farm f)

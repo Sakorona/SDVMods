@@ -1,5 +1,6 @@
 ﻿using StardewValley;
 using System;
+using StardewModdingAPI.Utilities;
 using StardewModdingAPI;
 using StardewValley.TerrainFeatures;
 using TwilightShards.Common;
@@ -7,7 +8,6 @@ using System.Collections.Generic;
 using Microsoft.Xna.Framework;
 using StardewValley.Locations;
 using System.Linq;
-using StardewModdingAPI.Utilities;
 using TwilightShards.Stardew.Common;
 
 namespace ClimatesOfFerngillRebuild
@@ -56,7 +56,7 @@ namespace ClimatesOfFerngillRebuild
         public MoonPhase GetLunarPhase()
         {
             //divide it by the cycle.
-            int currentCycle = (int)Math.Floor(SDVUtilities.GetDayFromDate(SDate.Now()) / (double)cycleLength);
+            int currentCycle = (int)Math.Floor(SDate.Now().DaysSinceStart / (double)cycleLength);
             int currentDay = GetDayOfCycle(SDate.Now());
 
             MoonPhase ret = SDVMoon.GetLunarPhase(currentDay);
@@ -77,7 +77,7 @@ namespace ClimatesOfFerngillRebuild
 
         private static int GetDayOfCycle(SDate Today)
         {
-            return SDVUtilities.GetDayFromDate(Today) % cycleLength;
+            return Today.DaysSinceStart % cycleLength;
         }
 
         /// <summary>
@@ -88,7 +88,7 @@ namespace ClimatesOfFerngillRebuild
         public static MoonPhase GetLunarPhaseForDay(SDate Today)
         {
             //divide it by the cycle.
-            int currentCycle = (int)Math.Floor(SDVUtilities.GetDayFromDate(Today) / (double)cycleLength);
+            int currentCycle = (int)Math.Floor(Today.DaysSinceStart / (double)cycleLength);
             int currentDay = GetDayOfCycle(Today);
 
             return SDVMoon.GetLunarPhase(currentDay);

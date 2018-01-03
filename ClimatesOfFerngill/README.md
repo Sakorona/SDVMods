@@ -10,7 +10,7 @@ Current Version (1 January 2018): v1.3-beta1
 
 ## Requirements
 
-- SMAPI 2.2+
+- SMAPI 2.3+
 - CustomTV 1.11+ and it's dependencies
  
 ## Overview
@@ -65,9 +65,16 @@ If you're out in a blizzard during the day, it's *1.25 or 2.5 rounded down to 2.
 ## Acknowledgements
 - eemie for the moon sprites
 - Prismuth for the fog sprite
+- Pathoschild for ideas
+- ChefRude for testing
 
 ## Changelog
+v1.3alpha28
+ - evening fog will now respect the fact it's windy and stay away
+ - some of the debug output updated to be more useful
+
 v1.3alpha27
+- The weather icon is working, and the pointer properly draws over it now
 - fixed the cold repeating itself
 - fog fade in/out is slowed down
 - easter egg removed

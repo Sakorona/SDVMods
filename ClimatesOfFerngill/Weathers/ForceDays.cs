@@ -29,13 +29,13 @@ namespace ClimatesOfFerngillRebuild
             { new SDate(25, "winter"), Game1.weather_festival }
         };
 
-        public static bool CheckForForceDay(SDate Target, IMonitor mon, bool verbose)
+        public static bool CheckForForceDay(Descriptions Desc, SDate Target, IMonitor mon, bool verbose)
         {
             foreach (KeyValuePair<SDate, int> entry in ForceDays._forceDays)
             {
                 if (entry.Key.Day == Target.Day && entry.Key.Season == Target.Season)
                 {
-                    if (verbose) mon.Log($"Setting a forced value for tommorow: {entry.Value} for {entry.Key.Season} {entry.Key.Day}");
+                    if (verbose) mon.Log($"Setting a forced value for tommorow: {Desc.DescribeInGameWeather(entry.Value)} for {entry.Key.Season} {entry.Key.Day}");
                     Game1.weatherForTomorrow = entry.Value;
                     return true;
                 }

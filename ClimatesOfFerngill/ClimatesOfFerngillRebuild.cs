@@ -593,7 +593,7 @@ namespace ClimatesOfFerngillRebuild
                 return;
             }
 
-            if (ForceDays.CheckForForceDay(SDate.Now().AddDays(1),Monitor, WeatherOpt.Verbose))
+            if (ForceDays.CheckForForceDay(DescriptionEngine, SDate.Now().AddDays(1),Monitor, WeatherOpt.Verbose))
             {
                 if (WeatherOpt.Verbose)
                     Monitor.Log($"The game will force tomorrow. Aborting processing.", LogLevel.Trace);
