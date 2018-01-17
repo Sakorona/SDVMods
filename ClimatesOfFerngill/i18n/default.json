@@ -18,12 +18,90 @@
   //HUD Messages
   "hud-text.desc_stormtotem": "You hear a roll of thunder...",
   "hud-text.desc_sick": "You have caught a cold...!",
+  "hud-text.desc_exhaust": "The hotter temperatures outside are wearing you out more than normal.",
+  "hud-text.desc_freeze": "The freezing temperatures outside are making you sleepy, wearing you out.",
   "hud-text.desc_flu": "You have caught the flu and better take some medicine soon!",
   "hud-text.desc_frost_killed": "{{deadCrops}} crops died in the night due to the cold..!",
   "hud-text.desc_heatwave_dry": "The extreme heat has caused some of your crops to become dry....!",
   "hud-text.desc_heatwave_kill": "The extreme heat has caused some of your crops to dry out. If you don't water them, they'll die!",
   "hud-text.desc_heatwave_cropdeath": "Some of the crops have died due to lack of water!",
-  "hud-text.desc_cold_removed": "You feel the medicine clearing your sickness",
+  "hud-text.desc_cold_removed": "You feel the medicine clearing your sickness and soothing your exhaustion",
+
+  //Ferngill Locations
+  "fern-loc.0": "Castle Village",
+  "fern-loc.1": "Basket Town",
+  "fern-loc.2": "Pine Mesa City",
+  "fern-loc.3": "Point Break",
+  "fern-loc.4": "Minister Valley",
+  "fern-loc.5": "Grampleton",
+  "fern-loc.6": "Zuzu City",
+  "fern-loc.7": "Fort Josa",
+  "fern-loc.8": "Chestervale",
+  "fern-loc.9": "Fern Island",
+  "fern-loc.10": "Tanker Grove",
+  "fern-loc.11": "Pathos Isle",
+
+  //Weather - Generic Strings
+  "weat-loc.0": ".. concludes the weather in {{location}}#Now for Pelican Town, {{descWeather}}, with {{temperatureString}}. #Tommorow, expect {{tommorowWeather}} with {{tommorowTemperature}}.",
+  "weat-loc.1": "Now for Pelican Town, {{descWeather}}, with {{temperatureString}}.#Tommorow, expect {{tommorowWeather}} with {{tommorowTemperature}}.",
+  "weat-loc.2": "The weather for Stardew Valley will be {{todayWeather}} with {{temperatureStrings}}.#Tommorow, expect {{tommorowWeather}} with {{tommorowTemperature}}",
+
+  "weat-loc.fog.0": ".. concludes the weather in {{location}}#Now for Pelican Town, with the valley blanked in fog until {{fogTime}}, then expect {{todayWeather}}, with {{temperatureString}}.#Tommorow, expect {{tommorowWeather}} with {{tommorowTemperature}}.",
+  "weat-loc.fog.1": "Now for Pelican Town, fog will continue to blanket the region until {{fogTime}}, then expect {{todayWeather}}, with {{temperatureString}}.#Tommorow, expect {{tommorowWeather}} with {{tommorowTemperature}}.",
+  "weat-loc.fog.2": "Fog blankets Stardew Valley until {{fogTime}}, giving way to {{todayWeather}} with {{temperatureStrings}}.#Tommorow, expect {{tommorowWeather}} with {{tommorowTemperature}}",
+
+  
+  //Basic Weather
+  "weather-tommorow.sunny.0": "sun",
+  "weather-tommorow.sunny.1": "clear skies",
+
+  "weather-tommorow.rainy.0": "rain",
+  "weather-tommorow.rainy.1": "wet weather",
+
+  "weather-tommorow.debris.0": "wind",
+  "weather-tommorow.debris.1": "gusts",
+
+  "weather-tommorow.storms.0": "storms",
+  "weather-tomorrow.storms.1": "lightning and rain",
+
+  "weather-tommorow.snowy.0": "snow",
+  "weather-tomorrow.snowy.1": "icy weather",
+
+  "weather-tommorow.blizzard.0": "blizzards",
+  "weather-tomorrow.blizzard.1": "a near white out across the region",
+
+  //Weather Descriptions - Spring
+  "weat-spring.sunny.0": "it's a beautiful sunny day",
+  "weat-spring.sunny.1": "you're enjoying the sun on a warm spring morning",
+  "weat-spring.sunny.2": "it's another day for planting those gardens",
+
+  "weat-spring.rainy.0": "the rain is falling down today",
+  "weat-spring.rainy.1": "the flowers are getting a good nourshing from the rain",
+  "weat-spring.rainy.2": "it's a good day to stay inside and read, as the rain drenches the town",
+
+  "weat-spring.stormy.0": "the spring storms are blowing off the Gem Sea, so batten those hatches",
+  "weat-spring.stormy.1": "the storms blowing through the valley are expected to be all day",
+  "weat-spring.stormy.2": "expect lightning and thunder all day",
+
+  "weat-spring.debris.0": "the pollen is blowing today, so be careful if you're allergic",
+  "weat-spring.debris.1": "a front blowing through is blowing firecly today",
+  "weat-spring.debris.2": "a stiff wind will be blowing pollen all day",
+
+  "weat-spring.snow.0": "a late snow will be running through the valley",
+  "weat-spring.snow.1": "a possibly unpleasent surprise with snow throughout the day",
+  "weat-spring.snow.2": "the white stuff will be coming down today",
+
+  "weat-spring.blizzard.0": "an unusual blizzard is blowing through the valley",
+  "weat-spring.blizzard.1": "a late blizzard will make travel trecherous",
+  "weat-spring.blizzard.2": "the weather today will be severe, with blizzards blowing throughout the area",
+
+  "weat-spring.drythunder.0": "there will be thunder and lightning today, but no rain",
+  "weat-spring.drythunder.1": "due to the lack of moisture, the lightning today will not include rain",
+  "weat-spring.drythunder.2": "expect lightning and thunder but no rain today",
+
+  "weat-spring.thundersnow.0": "a rare and out of season thunder snow will be in the valley today",
+  "weat-spring.thundersnow.1": "a rare and out of season thunder snow will be in the valley today",
+  "weat-spring.thundersnow.2": "a rare and out of season thunder snow will be in the valley today",
 
   //Lunar Messages
   "moon-text.phase-full": "Full Moon",
@@ -41,7 +119,7 @@
   "moon-text.fullmoon_eff": "The powers of the full moon have helped {{cropsAffected}} crops grow..",
   "moon-text.newmoon_eff": "The powers of the new moon have caused {{cropsAffected}} crops to grow more slower...",
   "moon-desc.desc_moonphase": "Current Moon Phase: {{moonPhase}}",
-  
+
   //Weather Menu strings
   "weather-menu.opening": "This is Kylie from KZAM Radio, broadcasting on 92.5 out of Point Drake. It is the {{descDay}}, and here is the weather report for Stardew Valley:",
 

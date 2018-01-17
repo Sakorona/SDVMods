@@ -23,8 +23,8 @@ using TwilightShards.Stardew.Common;
 using TwilightShards.Common;
 using Microsoft.Xna.Framework.Graphics;
 using EnumsNET;
-//using CustomElementHandler;
-//using CustomTV;
+using PyTK.CustomElementHandler;
+using PyTK.CustomTV;
 #endregion
 
 namespace ClimatesOfFerngillRebuild
@@ -67,16 +67,8 @@ namespace ClimatesOfFerngillRebuild
         private IClickableMenu PreviousMenu;
 
         private Descriptions DescriptionEngine;
+        private Rectangle RWeatherIcon;
 
-        //tv overloading
-        /* private static FieldInfo Field = typeof(GameLocation).GetField("afterQuestion", BindingFlags.Instance | BindingFlags.NonPublic);
-        private static FieldInfo TVChannel = typeof(TV).GetField("currentChannel", BindingFlags.Instance | BindingFlags.NonPublic);
-        private static FieldInfo TVScreen = typeof(TV).GetField("screen", BindingFlags.Instance | BindingFlags.NonPublic);
-        private static FieldInfo TVScreenOverlay = typeof(TV).GetField("screenOverlay", BindingFlags.Instance | BindingFlags.NonPublic);
-        private static MethodInfo TVMethod = typeof(TV).GetMethod("getWeatherChannelOpening", BindingFlags.Instance | BindingFlags.NonPublic);
-        private static MethodInfo TVMethodOverlay = typeof(TV).GetMethod("setWeatherOverlay", BindingFlags.Instance | BindingFlags.NonPublic);
-        private static GameLocation.afterQuestionBehavior Callback;
-        private static TV Target; */
         private Color nightColor = new Color((int)byte.MaxValue, (int)byte.MaxValue, 0);
         private bool Disabled = false;
         private int[] SeedsForDialogue;
@@ -104,6 +96,7 @@ namespace ClimatesOfFerngillRebuild
         /// <param name="helper">The helper. </param>
         public override void Entry(IModHelper helper)
         {
+            RWeatherIcon = new Rectangle();
             WeatherOpt = helper.ReadConfig<WeatherConfig>();
             Dice = new MersenneTwister();
             DebugOutput = new StringBuilder();
@@ -113,7 +106,7 @@ namespace ClimatesOfFerngillRebuild
             Conditions = new WeatherConditions(OurIcons, Dice, Helper.Translation, Monitor, WeatherOpt);
             StaminaMngr = new StaminaDrain(WeatherOpt, Helper.Translation, Monitor);
             SeedsForDialogue = new int[] { Dice.Next(), Dice.Next() };
-            DescriptionEngine = new Descriptions(Helper.Translation);
+            DescriptionEngine = new Descriptions(Helper.Translation, Dice);
 
             queuedMsg = null;
             Vector2 snowPos = Vector2.Zero;
@@ -323,44 +316,6 @@ namespace ClimatesOfFerngillRebuild
             OurMoon.HandleMoonAtSleep(Game1.getFarm(), Helper.Translation);
         }
 
-        /*
-        #region TVOverride
-        public void TryHookTelevision()
-        {
-            if (Game1.currentLocation != null && Game1.currentLocation is DecoratableLocation && Game1.activeClickableMenu != null && Game1.activeClickableMenu is DialogueBox)
-            {
-                Callback = (GameLocation.afterQuestionBehavior)Field.GetValue(Game1.currentLocation);
-                if (Callback != null && Callback.Target.GetType() == typeof(TV))
-                {
-                    Field.SetValue(Game1.currentLocation, new GameLocation.afterQuestionBehavior(InterceptCallback));
-                    Target = (TV)Callback.Target;
-                }
-            }
-        }
-
-        public void InterceptCallback(SFarmer who, string answer)
-        {
-            if (answer != "Weather")
-            {
-                Callback(who, answer);
-                return;
-            }
-            TVChannel.SetValue(Target, 2);
-            TVScreen.SetValue(Target, new TemporaryAnimatedSprite(Game1.mouseCursors, new Rectangle(413, 305, 42, 28), 150f, 2, 999999, Target.getScreenPosition(), false, false, (float)((double)(Target.boundingBox.Bottom - 1) / 10000.0 + 9.99999974737875E-06), 0.0f, Color.White, Target.getScreenSizeModifier(), 0.0f, 0.0f, 0.0f, false));
-            Game1.drawObjectDialogue(Game1.parseText((string)TVMethod.Invoke(Target, null)));
-            Game1.afterDialogues = NextScene;
-        }
-
-        public void NextScene()
-        {
-            TVScreen.SetValue(Target, new TemporaryAnimatedSprite(Game1.mouseCursors, new Rectangle(497, 305, 42, 28), 9999f, 1, 999999, Target.getScreenPosition(), false, false, (float)((double)(Target.boundingBox.Bottom - 1) / 10000.0 + 9.99999974737875E-06), 0.0f, Color.White, Target.getScreenSizeModifier(), 0.0f, 0.0f, 0.0f, false));
-            Game1.drawObjectDialogue(Game1.parseText(GetWeatherForecast()));
-            TVMethodOverlay.Invoke(Target, null);
-            Game1.afterDialogues = Target.proceedToNextScene;
-        }
-        #endregion
-        */
-
         /// <summary>
         /// This function gets the forecast of the weather for the TV. 
         /// </summary>
@@ -464,10 +419,10 @@ namespace ClimatesOfFerngillRebuild
 
                     if (CropList.Count > 0)
                     {
-                        if (!WeatherOpt.AllowCropDeath)
-                            SDVUtilities.ShowMessage(Helper.Translation.Get("hud-text.desc_heatwave_dry"));
-                        else
+                        if (WeatherOpt.AllowCropDeath)
                             SDVUtilities.ShowMessage(Helper.Translation.Get("hud-text.desc_heatwave_kill"));
+                        else
+                            SDVUtilities.ShowMessage(Helper.Translation.Get("hud-text.desc_heatwave_dry"));
                     }
                 }
             }
@@ -522,7 +477,23 @@ namespace ClimatesOfFerngillRebuild
             //determine icon offset  
             if (!Game1.eventUp)
             {
-                Game1.spriteBatch.Draw(OurIcons.WeatherSource, weatherMenu.position + new Vector2(116f, 68f), new Rectangle?(new Rectangle(0+ 12 * (int)Conditions.CurrentWeatherIcon, 0, 12, 8)), Color.White, 0.0f, Vector2.Zero, 4f, SpriteEffects.None, .1f);
+                if ((int)Conditions.CurrentWeatherIcon != (int)WeatherIcon.IconError)
+                {
+                    RWeatherIcon = new Rectangle(0 + 12 * (int)Conditions.CurrentWeatherIcon, SDVTime.IsNight ? 8 : 0, 12, 8);
+                }
+
+                if ((int)Conditions.CurrentWeatherIcon == (int)WeatherIcon.IconBloodMoon)
+                {
+                    RWeatherIcon = new Rectangle(144, 8, 12, 8);
+                }
+
+                if ((int)Conditions.CurrentWeatherIcon == (int)WeatherIcon.IconError)
+                {
+                    RWeatherIcon = new Rectangle(144, 0, 12, 8);
+                }
+
+
+                Game1.spriteBatch.Draw(OurIcons.WeatherSource, weatherMenu.position + new Vector2(116f, 68f), RWeatherIcon, Color.White, 0.0f, Vector2.Zero, 4f, SpriteEffects.None, .1f);
             }
 
             if (!Game1.options.hardwareCursor)

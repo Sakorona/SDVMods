@@ -30,7 +30,7 @@ namespace ClimatesOfFerngillRebuild
 
             public Icons(IContentHelper helper)
             {
-                WeatherSource = helper.Load<Texture2D>(Path.Combine("Assets","WeatherIcons.png"));
+                WeatherSource = helper.Load<Texture2D>(Path.Combine("Assets","WeatherIcons2.png"));
                 MoonSource = helper.Load<Texture2D>(Path.Combine("Assets", "MoonPhases.png"));
                 FogTexture = helper.Load<Texture2D>(Path.Combine("Assets", "ThickerFog.png"));
                 source2 = Game1.mouseCursors;
@@ -134,16 +134,16 @@ namespace ClimatesOfFerngillRebuild
             public static readonly Rectangle BloodMoon = new Rectangle(317, 90, 37, 37);
 
             //Weather
-            public static readonly Rectangle WeatherSunny = new Rectangle(1, 27, 39, 38);
-            public static readonly Rectangle WeatherRainy = new Rectangle(40, 27, 35, 40);
-            public static readonly Rectangle WeatherStormy = new Rectangle(77, 27, 39, 40);
-            public static readonly Rectangle WeatherSnowy = new Rectangle(116, 27, 38, 41);
-            public static readonly Rectangle WeatherWindy = new Rectangle(155, 25, 42, 44);
-            public static readonly Rectangle WeatherWedding = new Rectangle(198, 27, 37, 38);
-            public static readonly Rectangle WeatherFestival = new Rectangle(235, 27, 47, 45);
-            public static readonly Rectangle WeatherBlizzard = new Rectangle(281, 27, 40, 42);
-            public static readonly Rectangle WeatherDryLightning = new Rectangle(321,27,33,39);
-            public static readonly Rectangle WeatherThundersnow = new Rectangle(355,26,39,40);
+            public static readonly Rectangle WeatherSunny = new Rectangle(1, 32, 39, 38);
+            public static readonly Rectangle WeatherRainy = new Rectangle(40, 32, 35, 40);
+            public static readonly Rectangle WeatherStormy = new Rectangle(77, 32, 39, 40);
+            public static readonly Rectangle WeatherSnowy = new Rectangle(116, 32, 38, 41);
+            public static readonly Rectangle WeatherWindy = new Rectangle(155, 30, 42, 44);
+            public static readonly Rectangle WeatherWedding = new Rectangle(198, 32, 37, 38);
+            public static readonly Rectangle WeatherFestival = new Rectangle(235, 32, 47, 45);
+            public static readonly Rectangle WeatherBlizzard = new Rectangle(281, 32, 40, 42);
+            public static readonly Rectangle WeatherDryLightning = new Rectangle(321,32,33,39);
+            public static readonly Rectangle WeatherThundersnow = new Rectangle(355,31,39,40);
 
             /// <summary>A down arrow for scrolling content.</summary>
             public static readonly Rectangle DownArrow = new Rectangle(12, 76, 40, 44);

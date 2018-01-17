@@ -66,9 +66,19 @@ If you're out in a blizzard during the day, it's *1.25 or 2.5 rounded down to 2.
 - eemie for the moon sprites
 - Prismuth for the fog sprite
 - Pathoschild for ideas
-- ChefRude for testing
+- ChefRude for testing and the night icon sprites (as well as better fog textures)
 
 ## Changelog
+-v1.3alpha30
+- reimplemented the text for the TV.
+
+-v1.3alpha29
+- moved to PyTK 
+- thanks to ChefRude's new neight icons, we now have night icons!
+- refined the mod's definition of night to be TrulyDarkTime
+- made the stamina drain mesages more descriptive to the reason induced
+- fixed some weather status icons to properly appear
+
 v1.3alpha28
  - evening fog will now respect the fact it's windy and stay away
  - some of the debug output updated to be more useful

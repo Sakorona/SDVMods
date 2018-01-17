@@ -26,7 +26,7 @@ namespace TwilightShards.Stardew.Common
         {
             get
             {
-                if (Game1.timeOfDay >= Game1.getStartingToGetDarkTime())
+                if (Game1.timeOfDay >= Game1.getTrulyDarkTime())
                     return true;
                 else
                     return false;

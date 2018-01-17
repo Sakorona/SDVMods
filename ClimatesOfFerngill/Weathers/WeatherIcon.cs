@@ -18,7 +18,12 @@ namespace ClimatesOfFerngillRebuild
         IconSnowFog = 11,
         IconError = 12,
         IconStormFog = 13,
-        IconThunderSnow = 14,
-        IconDryLightning= 15
+        IconThunderSnowFog = 14,
+        IconDryLightningFog = 15,
+        IconBlizzardFog = 16,
+        IconThunderSnow = 17,
+        IconDryLightning = 18,
+        IconDryLightningWind = 19,
+        IconBloodMoon = 20
     }
 }

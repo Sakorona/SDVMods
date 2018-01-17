@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
-VisualStudioVersion = 15.0.27110.0
+VisualStudioVersion = 15.0.27004.2009
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SolarEclipseEvent", "SolarEclipseEvent\SolarEclipseEvent.csproj", "{B932C1FD-CAC3-4A8C-8119-8D156F8CEB96}"
 EndProject
@@ -28,6 +28,8 @@ EndProject
 Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "TwilightCoreShared", "TwilightCoreShared\TwilightCoreShared.shproj", "{01DA90D0-EEC8-427B-9409-3168A8089F20}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "QuestOverhaul", "QuestOverhaul\QuestOverhaul.csproj", "{92E332E1-533E-42CA-B3EF-1E5BCFDD857B}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ForceWateringCheck", "ForceWateringCheck\ForceWateringCheck.csproj", "{10D94CF3-D6D0-412F-8008-66E4C07315CB}"
 EndProject
 Global
 	GlobalSection(SharedMSBuildProjectFiles) = preSolution
@@ -69,6 +71,10 @@ Global
 		{92E332E1-533E-42CA-B3EF-1E5BCFDD857B}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{92E332E1-533E-42CA-B3EF-1E5BCFDD857B}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{92E332E1-533E-42CA-B3EF-1E5BCFDD857B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{10D94CF3-D6D0-412F-8008-66E4C07315CB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{10D94CF3-D6D0-412F-8008-66E4C07315CB}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{10D94CF3-D6D0-412F-8008-66E4C07315CB}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{10D94CF3-D6D0-412F-8008-66E4C07315CB}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

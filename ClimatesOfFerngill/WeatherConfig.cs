@@ -47,7 +47,8 @@ namespace ClimatesOfFerngillRebuild
             DryLightningMinTemp = 34; //34 C, or 93.2 F
             HazardousWeather = false; //normally, hazardous weather is turned off
             TooHotOutside = 39; //At this temp, it's too hot outside, and you can have a heatwave. 39 C or 102.2 F default
-            TooColdOutside = 1; //At this temp, it's too cold outside, and you have a hard frost. 1 C or 33.8 F default
+            TooColdOutside = 1; //At this temp, it's too cold outside, and you have a hard frost. 1 C or 33.8 F default\
+
             AllowCropDeath = false; //even if you turn hazardous weather on, it won't enable crop death.
             SnowOnFall28 = false; //default setting - since if true, it will force
             StormTotemChange = true; //rain totems may spawn storms instead of rain totems.

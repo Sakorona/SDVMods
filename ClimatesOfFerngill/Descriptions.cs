@@ -9,32 +9,19 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using TwilightShards.Common;
+using TwilightShards.Stardew.Common;
 
 namespace ClimatesOfFerngillRebuild
 {
     class Descriptions
     {
-        private List<string> NonTownLocations = new List<string>()
-        {
-            "Castle Village",
-            "Basket Town",
-            "Pine Mesa City",
-            "Point Break",
-            "Minister Valley",
-            "Grampleton",
-            "Zuzu City",
-            "Fort Josa",
-            "Chestervale",
-            "Fern Island",
-            "Tanker Grove",
-            "Pathos Isle"
-        };
-
         private ITranslationHelper Helper;
+        private MersenneTwister OurDice;
 
-        public Descriptions(ITranslationHelper Translaton)
+        public Descriptions(ITranslationHelper Translaton, MersenneTwister mDice)
         {
             Helper = Translaton;
+            OurDice = mDice;
         }
 
         internal string GetDescOfDay(SDate date)
@@ -108,6 +95,14 @@ namespace ClimatesOfFerngillRebuild
 
         internal string GenerateTVForecast(WeatherConditions Current, SDVMoon Moon)
         {
+            string text = "";
+            string newSpacer = "#";
+            
+
+            if (SDVTime.CurrentTimePeriod == SDVTimePeriods.Morning)
+                
+
+
             return "";
         }
 
