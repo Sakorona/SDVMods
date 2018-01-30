@@ -312,7 +312,7 @@ namespace ClimatesOfFerngillRebuild
             if (Weather.CurrentWeatherIconBasic == WeatherIcon.IconBlizzard)
                 return Helper.Get($"weat-{season}.blizzard.{rNumber}");
             else if (Weather.CurrentWeatherIconBasic == WeatherIcon.IconSpringDebris || Weather.CurrentWeatherIconBasic == WeatherIcon.IconDebris)
-                return Helper.Get($"weat-{season}.wind.{rNumber}");
+                return Helper.Get($"weat-{season}.debris.{rNumber}");
             else if (Weather.CurrentWeatherIconBasic == WeatherIcon.IconDryLightning)
                 return Helper.Get($"weat-{season}.drylightning.{rNumber}");
             else if (Weather.CurrentWeatherIconBasic == WeatherIcon.IconSunny)
