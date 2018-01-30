@@ -13,6 +13,7 @@ namespace ClimatesOfFerngillRebuild
         private WeatherConfig Config;
         private ITranslationHelper Helper;
         private bool FarmerSick;
+        public bool FarmerHasBeenSick;
         private IMonitor Monitor;
 
         private readonly int FROST = 1;
@@ -33,6 +34,7 @@ namespace ClimatesOfFerngillRebuild
        public void MakeSick(int reason = 0)
         {
             FarmerSick = true;
+            FarmerHasBeenSick = true;
             if (reason == FROST)
             {
                 SDVUtilities.ShowMessage(Helper.Get("hud-text.desc_freeze"));
@@ -64,6 +66,9 @@ namespace ClimatesOfFerngillRebuild
         public bool FarmerCanGetSick()
         {
             if (FarmerSick && !Config.SickMoreThanOnce)
+                return false;
+
+            if (!Config.SickMoreThanOnce && FarmerHasBeenSick)
                 return false;
 
             return true;
@@ -118,8 +123,8 @@ namespace ClimatesOfFerngillRebuild
                 }
 
                 //test status
-                if (Config.Verbose)              
-                    Monitor.Log($"Status update. Farmer Sick: {FarmerSick} and Valid Conditions: {conditions.GetCurrentConditions().HasAnyFlags(CurrentWeather.Blizzard | CurrentWeather.Lightning) || (conditions.GetCurrentConditions().HasFlag(CurrentWeather.Frost) && SDVTime.IsNight) | (conditions.GetCurrentConditions().HasFlag(CurrentWeather.Heatwave) && !SDVTime.IsNight)}"); 
+                /*if (Config.Verbose)              
+                    Monitor.Log($"Status update. Farmer Sick: {FarmerSick} and Valid Conditions: {conditions.GetCurrentConditions().HasAnyFlags(CurrentWeather.Blizzard | CurrentWeather.Lightning) || (conditions.GetCurrentConditions().HasFlag(CurrentWeather.Frost) && SDVTime.IsNight) | (conditions.GetCurrentConditions().HasFlag(CurrentWeather.Heatwave) && !SDVTime.IsNight)}"); */
 
                 //now that we've done that, go through the various conditions
                 if (this.FarmerSick && conditions.GetCurrentConditions().HasFlag(CurrentWeather.Lightning))

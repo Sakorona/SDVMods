@@ -29,6 +29,10 @@ namespace ClimatesOfFerngillRebuild
         public double ChanceOfGettingSick { get; set; }
         public bool Use12HourTime { get; set; }
         public double BadMoonRising { get; set; }
+        public bool EclipseOn { get; set; }
+        public double EclipseChance { get; set; }
+        public bool SpawnMonsters { get; set; }
+        public bool SpawnMonstersAllFarms { get; set; }
 
         public bool Verbose { get; set; }
         
@@ -70,6 +74,12 @@ namespace ClimatesOfFerngillRebuild
 
             //general mod options
             Verbose = true;
+
+            //eclipse stuff
+            EclipseOn = true;
+            EclipseChance = .015;
+            SpawnMonsters = true;
+            SpawnMonstersAllFarms = false;
         }
     }
 }

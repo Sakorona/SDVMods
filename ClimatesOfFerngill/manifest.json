@@ -1,15 +1,16 @@
 {
   "Name": "Climates of Ferngill [Rebuild]",
   "Author": "KoihimeNakamura",
-  "Version": {
-    "MajorVersion": 1,
-    "MinorVersion": 3,
-    "PatchVersion": 0,
-    "Build": "rc4-alpha28-20172127"
-  },
+  "Version": "1.3.0-beta1",
   "Description": "Create a unique climate system with custom weathers, as well as add weather related events and commands.",
   "UniqueID": "KoihimeNakamura.ClimatesOfFerngill",
   "EntryDll": "ClimatesOfFerngill.dll",
   "MinimumApiVersion": "2.3",
+  "Dependencies": [
+    {
+      "UniqueID": "Platonymous.Toolkit",
+      "MinimumVersion": "0.7.0"
+    }
+  ],
   "UpdateKeys": [ "Nexus:604" ]
-}
+} 

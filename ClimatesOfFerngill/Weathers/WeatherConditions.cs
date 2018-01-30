@@ -43,6 +43,9 @@ namespace ClimatesOfFerngillRebuild
 
         public bool GenerateEveningFog { get; set; }
 
+        private bool FogCreationProhibited { get; set; }
+
+        public bool HasEveningFog { get => HasSetEveningFog; }
 
         /// *************************************************************************
         /// ACCESS METHODS
@@ -302,6 +305,18 @@ namespace ClimatesOfFerngillRebuild
                 if (GeneralFunctions.ContainsOnlyMatchingFlags(CurrentConditionsN, (int)(CurrentWeather.Lightning | CurrentWeather.Heatwave | CurrentWeather.Sunny)))
                     return WeatherIcon.IconDryLightning;
 
+                if (GeneralFunctions.ContainsOnlyMatchingFlags(CurrentConditionsN, (int)(CurrentWeather.Rain | CurrentWeather.Heatwave)))
+                    return WeatherIcon.IconRain;
+
+                if (GeneralFunctions.ContainsOnlyMatchingFlags(CurrentConditionsN, (int)(CurrentWeather.Rain | CurrentWeather.Heatwave | CurrentWeather.Fog)))
+                    return WeatherIcon.IconRainFog;
+
+                if (GeneralFunctions.ContainsOnlyMatchingFlags(CurrentConditionsN, (int)(CurrentWeather.Rain | CurrentWeather.Lightning | CurrentWeather.Heatwave)))
+                    return WeatherIcon.IconStorm;
+
+                if (GeneralFunctions.ContainsOnlyMatchingFlags(CurrentConditionsN, (int)(CurrentWeather.Rain | CurrentWeather.Lightning | CurrentWeather.Heatwave | CurrentWeather.Fog)))
+                    return WeatherIcon.IconStormFog;
+
                 if (GeneralFunctions.ContainsOnlyMatchingFlags(CurrentConditionsN, (int)(CurrentWeather.Heatwave | CurrentWeather.Sunny)))
                     return WeatherIcon.IconSunny;
 
@@ -309,6 +324,12 @@ namespace ClimatesOfFerngillRebuild
                     return WeatherIcon.IconDryLightning;
 
                 if (GeneralFunctions.ContainsOnlyMatchingFlags(CurrentConditionsN, (int)(CurrentWeather.Lightning | CurrentWeather.Heatwave | CurrentWeather.Wind)))
+                {
+                    if (SDate.Now().Season == "spring") return WeatherIcon.IconSpringDebris;
+                    else return WeatherIcon.IconDebris;
+                }
+
+                if (GeneralFunctions.ContainsOnlyMatchingFlags(CurrentConditionsN, (int)(CurrentWeather.Heatwave | CurrentWeather.Wind)))
                 {
                     if (SDate.Now().Season == "spring") return WeatherIcon.IconSpringDebris;
                     else return WeatherIcon.IconDebris;
@@ -351,6 +372,144 @@ namespace ClimatesOfFerngillRebuild
                     return WeatherIcon.IconSunnyFog;
                 if (GeneralFunctions.ContainsOnlyMatchingFlags(CurrentConditionsN, (int)(CurrentWeather.Rain | CurrentWeather.Frost | CurrentWeather.Fog)))
                     return WeatherIcon.IconRainFog;
+
+                Console.WriteLine($"Error. Current conditions are: {CurrentConditionsN}");
+
+                return WeatherIcon.IconError;
+            }
+        }
+
+        public bool BlockFog
+        {
+            get { return GenerateEveningFog;  }
+            set
+            {
+                GenerateEveningFog = value;
+            }
+        }
+
+        public WeatherIcon CurrentWeatherIconBasic
+        {
+            get
+            {
+                if (GeneralFunctions.ContainsOnlyMatchingFlags(CurrentConditionsN, (int)CurrentWeather.Rain))
+                    return WeatherIcon.IconRain;
+
+                if (GeneralFunctions.ContainsOnlyMatchingFlags(CurrentConditionsN, (int)(CurrentWeather.Rain | CurrentWeather.Lightning)))
+                    return WeatherIcon.IconStorm;
+
+                if (GeneralFunctions.ContainsOnlyMatchingFlags(CurrentConditionsN, (int)(CurrentWeather.Lightning | CurrentWeather.Sunny)))
+                    return WeatherIcon.IconDryLightning;
+
+                if (GeneralFunctions.ContainsOnlyMatchingFlags(CurrentConditionsN, (int)(CurrentWeather.Lightning | CurrentWeather.Wind)))
+                    return WeatherIcon.IconDryLightningWind;
+
+                if (GeneralFunctions.ContainsOnlyMatchingFlags(CurrentConditionsN, (int)(CurrentWeather.Lightning | CurrentWeather.Snow)))
+                    return WeatherIcon.IconThunderSnow;
+
+                if (GeneralFunctions.ContainsOnlyMatchingFlags(CurrentConditionsN, (int)CurrentWeather.Snow))
+                    return WeatherIcon.IconSnow;
+
+                if (GeneralFunctions.ContainsOnlyMatchingFlags(CurrentConditionsN, (int)(CurrentWeather.Snow | CurrentWeather.Blizzard)))
+                    return WeatherIcon.IconBlizzard;
+
+                if (GeneralFunctions.ContainsOnlyMatchingFlags(CurrentConditionsN, (int)CurrentWeather.Festival))
+                    return WeatherIcon.IconFestival;
+
+                if (GeneralFunctions.ContainsOnlyMatchingFlags(CurrentConditionsN, (int)CurrentWeather.Wedding))
+                    return WeatherIcon.IconWedding;
+
+                if (GeneralFunctions.ContainsOnlyMatchingFlags(CurrentConditionsN, (int)CurrentWeather.Sunny))
+                    return WeatherIcon.IconSunny;
+
+                if (GeneralFunctions.ContainsOnlyMatchingFlags(CurrentConditionsN, (int)CurrentWeather.Unset))
+                    return WeatherIcon.IconSunny;
+
+                if (GeneralFunctions.ContainsOnlyMatchingFlags(CurrentConditionsN, (int)CurrentWeather.Lightning))
+                    return WeatherIcon.IconDryLightning;
+
+                if (GeneralFunctions.ContainsOnlyMatchingFlags(CurrentConditionsN, (int)CurrentWeather.Wind))
+                {
+                    if (SDate.Now().Season == "spring") return WeatherIcon.IconSpringDebris;
+                    else return WeatherIcon.IconDebris;
+                }
+
+                if (GeneralFunctions.ContainsOnlyMatchingFlags(CurrentConditionsN, (int)(CurrentWeather.Snow | CurrentWeather.Lightning)))
+                    return WeatherIcon.IconThunderSnow;
+
+                if (GeneralFunctions.ContainsOnlyMatchingFlags(CurrentConditionsN, (int)(CurrentWeather.Sunny | CurrentWeather.Lightning)))
+                    return WeatherIcon.IconDryLightning;
+
+                if (GeneralFunctions.ContainsOnlyMatchingFlags(CurrentConditionsN, (int)(CurrentWeather.Lightning | CurrentWeather.Heatwave | CurrentWeather.Sunny)))
+                    return WeatherIcon.IconDryLightning;
+
+                if (GeneralFunctions.ContainsOnlyMatchingFlags(CurrentConditionsN, (int)(CurrentWeather.Rain | CurrentWeather.Heatwave)))
+                    return WeatherIcon.IconRain;
+
+                if (GeneralFunctions.ContainsOnlyMatchingFlags(CurrentConditionsN, (int)(CurrentWeather.Rain | CurrentWeather.Heatwave | CurrentWeather.Fog)))
+                    return WeatherIcon.IconRain;
+
+                if (GeneralFunctions.ContainsOnlyMatchingFlags(CurrentConditionsN, (int)(CurrentWeather.Rain | CurrentWeather.Lightning | CurrentWeather.Heatwave)))
+                    return WeatherIcon.IconStorm;
+
+                if (GeneralFunctions.ContainsOnlyMatchingFlags(CurrentConditionsN, (int)(CurrentWeather.Rain | CurrentWeather.Lightning | CurrentWeather.Heatwave | CurrentWeather.Fog)))
+                    return WeatherIcon.IconStormFog;
+
+                if (GeneralFunctions.ContainsOnlyMatchingFlags(CurrentConditionsN, (int)(CurrentWeather.Heatwave | CurrentWeather.Sunny)))
+                    return WeatherIcon.IconSunny;
+
+                if (GeneralFunctions.ContainsOnlyMatchingFlags(CurrentConditionsN, (int)(CurrentWeather.Lightning | CurrentWeather.Heatwave)))
+                    return WeatherIcon.IconDryLightning;
+
+                if (GeneralFunctions.ContainsOnlyMatchingFlags(CurrentConditionsN, (int)(CurrentWeather.Lightning | CurrentWeather.Heatwave | CurrentWeather.Wind)))
+                {
+                    if (SDate.Now().Season == "spring") return WeatherIcon.IconSpringDebris;
+                    else return WeatherIcon.IconDebris;
+                }
+
+                if (GeneralFunctions.ContainsOnlyMatchingFlags(CurrentConditionsN, (int)(CurrentWeather.Heatwave | CurrentWeather.Wind)))
+                {
+                    if (SDate.Now().Season == "spring") return WeatherIcon.IconSpringDebris;
+                    else return WeatherIcon.IconDebris;
+                }
+
+                //The more complex ones.
+                if (GeneralFunctions.ContainsOnlyMatchingFlags(CurrentConditionsN, (int)(CurrentWeather.Lightning | CurrentWeather.Sunny | CurrentWeather.Frost)))
+                    return WeatherIcon.IconSunny;
+                if (GeneralFunctions.ContainsOnlyMatchingFlags(CurrentConditionsN, (int)(CurrentWeather.Lightning | CurrentWeather.Rain | CurrentWeather.Frost)))
+                    return WeatherIcon.IconStorm;
+                if (GeneralFunctions.ContainsOnlyMatchingFlags(CurrentConditionsN, (int)(CurrentWeather.Sunny | CurrentWeather.Frost)))
+                    return WeatherIcon.IconSunny;
+                if (GeneralFunctions.ContainsOnlyMatchingFlags(CurrentConditionsN, (int)(CurrentWeather.Wind | CurrentWeather.Frost)))
+                {
+                    if (SDate.Now().Season == "spring") return WeatherIcon.IconSpringDebris;
+                    else return WeatherIcon.IconDebris;
+                }
+                if (GeneralFunctions.ContainsOnlyMatchingFlags(CurrentConditionsN, (int)(CurrentWeather.Rain | CurrentWeather.Frost)))
+                    return WeatherIcon.IconRain;
+                if (GeneralFunctions.ContainsOnlyMatchingFlags(CurrentConditionsN, (int)(CurrentWeather.Snow | CurrentWeather.Frost)))
+                    return WeatherIcon.IconSnow;
+                if (GeneralFunctions.ContainsOnlyMatchingFlags(CurrentConditionsN, (int)(CurrentWeather.Blizzard | CurrentWeather.Snow | CurrentWeather.Frost)))
+                    return WeatherIcon.IconBlizzard;
+
+                //And now for fog.
+                if (GeneralFunctions.ContainsOnlyMatchingFlags(CurrentConditionsN, (int)(CurrentWeather.Lightning | CurrentWeather.Fog | CurrentWeather.Sunny)))
+                    return WeatherIcon.IconSunny;
+                if (GeneralFunctions.ContainsOnlyMatchingFlags(CurrentConditionsN, (int)(CurrentWeather.Lightning | CurrentWeather.Rain | CurrentWeather.Fog)))
+                    return WeatherIcon.IconStorm;
+                if (GeneralFunctions.ContainsOnlyMatchingFlags(CurrentConditionsN, (int)(CurrentWeather.Sunny | CurrentWeather.Fog)))
+                    return WeatherIcon.IconSunny;
+                if (GeneralFunctions.ContainsOnlyMatchingFlags(CurrentConditionsN, (int)(CurrentWeather.Rain | CurrentWeather.Fog)))
+                    return WeatherIcon.IconRain;
+                if (GeneralFunctions.ContainsOnlyMatchingFlags(CurrentConditionsN, (int)(CurrentWeather.Snow | CurrentWeather.Fog)))
+                    return WeatherIcon.IconSnow;
+                if (GeneralFunctions.ContainsOnlyMatchingFlags(CurrentConditionsN, (int)(CurrentWeather.Blizzard | CurrentWeather.Snow | CurrentWeather.Fog)))
+                    return WeatherIcon.IconBlizzard;
+
+                if (GeneralFunctions.ContainsOnlyMatchingFlags(CurrentConditionsN, (int)(CurrentWeather.Sunny | CurrentWeather.Frost | CurrentWeather.Fog)))
+                    return WeatherIcon.IconSunny;
+                if (GeneralFunctions.ContainsOnlyMatchingFlags(CurrentConditionsN, (int)(CurrentWeather.Rain | CurrentWeather.Frost | CurrentWeather.Fog)))
+                    return WeatherIcon.IconRain;
 
                 Console.WriteLine($"Error. Current conditions are: {CurrentConditionsN}");
 
@@ -409,6 +568,16 @@ namespace ClimatesOfFerngillRebuild
             }
         }
 
+        public bool ContainsCondition(CurrentWeather cond)
+        {
+            if (CurrentConditionsN.HasFlag(cond))
+            {
+                return true;
+            }
+
+            return false;
+        }
+
         /// ******************************************************************************
         /// PROCESSING
         /// ******************************************************************************
@@ -427,6 +596,7 @@ namespace ClimatesOfFerngillRebuild
             foreach (ISDVWeather weather in CurrentWeathers)
                 weather.OnNewDay();
 
+            FogCreationProhibited = false;
             CurrentConditionsN = CurrentWeather.Unset;
             TodayTemps = TomorrowTemps; //If Tomorrow is null, should just allow it to be null.
             TomorrowTemps = null;
@@ -438,9 +608,26 @@ namespace ClimatesOfFerngillRebuild
             foreach (ISDVWeather weather in CurrentWeathers)
                 weather.Reset();
 
+            FogCreationProhibited = false;
             TodayTemps = null;
             TomorrowTemps = null;
             CurrentConditionsN = CurrentWeather.Unset;
+        }
+
+        public SDVTime GetFogTime()
+        {
+            foreach (ISDVWeather weather in CurrentWeathers)
+            {
+                if (weather is FerngillFog f)
+                {
+                    if (f.IsWeatherVisible)
+                        return f.WeatherExpirationTime;
+                    else
+                        return new SDVTime(600);
+                }
+            }
+
+            return new SDVTime(600);
         }
 
         /// <summary> This sets the temperatures from outside for today </summary>
@@ -670,10 +857,13 @@ namespace ClimatesOfFerngillRebuild
             //             Fog - per climate, although night fog in winter is double normal chance
 
             GenerateEveningFog = (Dice.NextDouble() < (Game1.currentSeason == "winter" ? fogChance * 2 : fogChance)) && !this.GetCurrentConditions().HasFlag(CurrentWeather.Wind);
+
+            if (BlockFog)
+                GenerateEveningFog = false;
             
             double fogRoll = Dice.NextDoublePositive();
 
-            if (fogRoll < fogChance && !this.GetCurrentConditions().HasFlag(CurrentWeather.Wind))
+            if (fogRoll < fogChance && !this.GetCurrentConditions().HasFlag(CurrentWeather.Wind) && !BlockFog)
             {
                 this.CreateWeather("Fog");
 

@@ -3,27 +3,21 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Reflection;
 using System.Text;
-
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Input;
-
 using StardewValley;
 using StardewValley.Locations;
 using StardewValley.Menus;
 using StardewValley.Objects;
 using StardewValley.TerrainFeatures;
-
 using StardewModdingAPI;
 using StardewModdingAPI.Events;
 using StardewModdingAPI.Utilities;
-using SFarmer = StardewValley.Farmer;
 using TwilightShards.Stardew.Common;
 using TwilightShards.Common;
 using Microsoft.Xna.Framework.Graphics;
 using EnumsNET;
-using PyTK.CustomElementHandler;
 using PyTK.CustomTV;
 #endregion
 
@@ -73,6 +67,9 @@ namespace ClimatesOfFerngillRebuild
         private bool Disabled = false;
         private int[] SeedsForDialogue;
 
+        public bool IsEclipse { get; set; }
+        public int ResetTicker { get; set; }
+
         private bool IsFestivalDay => Utility.isFestivalDay(SDate.Now().Day, SDate.Now().Season);
 
         public override object GetApi()
@@ -106,7 +103,7 @@ namespace ClimatesOfFerngillRebuild
             Conditions = new WeatherConditions(OurIcons, Dice, Helper.Translation, Monitor, WeatherOpt);
             StaminaMngr = new StaminaDrain(WeatherOpt, Helper.Translation, Monitor);
             SeedsForDialogue = new int[] { Dice.Next(), Dice.Next() };
-            DescriptionEngine = new Descriptions(Helper.Translation, Dice);
+            DescriptionEngine = new Descriptions(Helper.Translation, Dice, WeatherOpt, Monitor);
 
             queuedMsg = null;
             Vector2 snowPos = Vector2.Zero;
@@ -135,6 +132,7 @@ namespace ClimatesOfFerngillRebuild
                 MenuEvents.MenuChanged += MenuEvents_MenuChanged;
                 GameEvents.UpdateTick += CheckForChanges;
                 SaveEvents.AfterReturnToTitle += ResetMod;
+                SaveEvents.AfterLoad += SaveEvents_AfterLoad;
                 GraphicsEvents.OnPostRenderGuiEvent += DrawOverMenus;
                 GraphicsEvents.OnPreRenderHudEvent += DrawPreHudObjects;
                 GraphicsEvents.OnPostRenderHudEvent += DrawObjects;
@@ -146,30 +144,44 @@ namespace ClimatesOfFerngillRebuild
                 //console commands
                 helper.ConsoleCommands
                       .Add("weather_settommorow", helper.Translation.Get("console-text.desc_tmrweather"), TomorrowWeatherChangeFromConsole)
-                      .Add("weather_changeweather", helper.Translation.Get("console-text.desc_setweather"), WeatherChangeFromConsole);
-                
-                /*
-                CustomTVMod.removeChannel("weather");
-                CustomTVMod.removeChannel("Weather");
-                CustomTVMod.addChannel("Weather", "Weather Report", DisplayWeather); 
-                */
+                      .Add("weather_changeweather", helper.Translation.Get("console-text.desc_setweather"), WeatherChangeFromConsole)
+                      .Add("world_solareclipse", "Starts the solar eclipse.", SolarEclipseEvent_CommandFired);
             }
+        }
+
+        private void SolarEclipseEvent_CommandFired(string command, string[] args)
+        {
+            IsEclipse = true;
+            Game1.globalOutdoorLighting = .5f; //force lightning change.
+            Game1.currentLocation.switchOutNightTiles();
+            Game1.ambientLight = nightColor;
+            Monitor.Log("Setting the eclipse event to true");
+        }
+
+        private void SaveEvents_AfterLoad(object sender, EventArgs e)
+        {
+            CustomTVMod.changeAction("weather", DisplayWeather);
         }
 
         public void DisplayWeather(TV tv, TemporaryAnimatedSprite sprite, StardewValley.Farmer who, string answer)
         {
             TemporaryAnimatedSprite BackgroundSprite = new TemporaryAnimatedSprite(Game1.mouseCursors, new Rectangle(497, 305, 42, 28), 9999f, 1, 999999, tv.getScreenPosition(), false, false, (float)((double)(tv.boundingBox.Bottom - 1) / 10000.0 + 9.99999974737875E-06), 0.0f, Color.White, tv.getScreenSizeModifier(), 0.0f, 0.0f, 0.0f, false);
-            TemporaryAnimatedSprite WeatherSprite = DescriptionEngine.GetWeatherOverlay(tv);
+            TemporaryAnimatedSprite WeatherSprite = DescriptionEngine.GetWeatherOverlay(Conditions, tv);
 
+            /*
             string OnScreenText = Game1.content.LoadString("Strings\\StringsFromCSFiles:TV.cs.13136");
             OnScreenText += "#";
+            */
+            string OnScreenText = "";
 
             if (BackgroundSprite is null)
                 Monitor.Log("Background Sprite is null");
             if (WeatherSprite is null)
                 Monitor.Log("Weather Sprite is null");
 
-            //CustomTVMod.showProgram(BackgroundSprite, OnScreenText, CustomTVMod.endProgram, WeatherSprite);
+            OnScreenText += DescriptionEngine.GenerateTVForecast(Conditions, OurMoon);
+
+            CustomTVMod.showProgram(BackgroundSprite, OnScreenText, CustomTVMod.endProgram, WeatherSprite);
         }
 
         private void DrawOverMenus(object sender, EventArgs e)
@@ -206,6 +218,25 @@ namespace ClimatesOfFerngillRebuild
         /// <param name="e">Parameters</param>
         private void LocationEvents_CurrentLocationChanged(object sender, EventArgsCurrentLocationChanged e)
         {
+
+            if (IsEclipse)
+            {
+                Game1.globalOutdoorLighting = .5f;
+                Game1.currentLocation.switchOutNightTiles();
+                Game1.ambientLight = nightColor;
+
+
+                if (!Game1.currentLocation.isOutdoors && Game1.currentLocation is DecoratableLocation)
+                {
+                    var loc = Game1.currentLocation as DecoratableLocation;
+                    foreach (Furniture f in loc.furniture)
+                    {
+                        if (f.furniture_type == Furniture.window)
+                            Helper.Reflection.GetMethod(f, "addLights").Invoke(new object[] { Game1.currentLocation });
+                    }
+                }
+            }
+
             if (Conditions.HasWeather(CurrentWeather.Fog))
             {
                 if (!Game1.currentLocation.isOutdoors && Game1.currentLocation is DecoratableLocation)
@@ -215,7 +246,7 @@ namespace ClimatesOfFerngillRebuild
                     {
                         if (f.furniture_type == Furniture.window)
                         {
-                            if (WeatherOpt.Verbose) Monitor.Log($"Attempting to remove the light for {f.name}");
+                            //if (WeatherOpt.Verbose) Monitor.Log($"Attempting to remove the light for {f.name}");
                             Helper.Reflection.GetMethod(f, "addLights").Invoke(new object[] { Game1.currentLocation });
                         }
                     }
@@ -277,7 +308,7 @@ namespace ClimatesOfFerngillRebuild
         /// <param name="e"></param>
         private void OnEndOfDay(object sender, EventArgs e)
         {
-            if (Conditions.HasWeather(CurrentWeather.Frost))
+            if (Conditions.HasWeather(CurrentWeather.Frost) && WeatherOpt.AllowCropDeath)
             {
                 Farm f = Game1.getFarm();
                 int count = 0, maxCrops = (int)Math.Floor(SDVUtilities.CropCountInFarm(f) * WeatherOpt.DeadCropPercentage);
@@ -312,6 +343,9 @@ namespace ClimatesOfFerngillRebuild
                 }
             }
 
+            if (IsEclipse)
+                IsEclipse = false;
+
             //moon works after frost does
             OurMoon.HandleMoonAtSleep(Game1.getFarm(), Helper.Translation);
         }
@@ -334,6 +368,14 @@ namespace ClimatesOfFerngillRebuild
         {
             if (!Context.IsWorldReady)
                 return;
+
+            if (IsEclipse && ResetTicker > 0)
+            {
+                Game1.globalOutdoorLighting = .5f;
+                Game1.ambientLight = nightColor;
+                Game1.currentLocation.switchOutNightTiles();
+                ResetTicker = 0;
+            }
 
             Conditions.MoveWeathers();
 
@@ -365,6 +407,43 @@ namespace ClimatesOfFerngillRebuild
 
             Conditions.TenMinuteUpdate();
 
+            if (IsEclipse)
+            {
+                Game1.globalOutdoorLighting = .5f;
+                Game1.ambientLight = nightColor;
+                Game1.currentLocation.switchOutNightTiles();
+                ResetTicker = 1;
+
+                if (!Game1.currentLocation.isOutdoors && Game1.currentLocation is DecoratableLocation)
+                {
+                    var loc = Game1.currentLocation as DecoratableLocation;
+                    foreach (Furniture f in loc.furniture)
+                    {
+                        if (f.furniture_type == Furniture.window)
+                            Helper.Reflection.GetMethod(f, "addLights").Invoke(new object[] { Game1.currentLocation });
+                    }
+                }
+
+                if ((Game1.farmEvent == null && Game1.random.NextDouble() < (0.25 - Game1.dailyLuck / 2.0))
+                    && ((WeatherOpt.SpawnMonsters && Game1.spawnMonstersAtNight) || (WeatherOpt.SpawnMonstersAllFarms)))
+                {
+                    Monitor.Log("Spawning a monster, or attempting to.", LogLevel.Debug);
+                    if (Game1.random.NextDouble() < 0.25)
+                    {
+                        if (this.Equals(Game1.currentLocation))
+                        {
+                            Game1.getFarm().spawnFlyingMonstersOffScreen();
+                            return;
+                        }
+                    }
+                    else
+                    {
+                        Game1.getFarm().spawnGroundMonsterOffScreen();
+                    }
+                }
+
+            }
+
             if (Conditions.HasWeather(CurrentWeather.Fog)) 
             {
                 if (!Game1.currentLocation.isOutdoors && Game1.currentLocation is DecoratableLocation)
@@ -375,7 +454,7 @@ namespace ClimatesOfFerngillRebuild
                         //Yes, *add* lights removes them. No, don't ask me why.
                         if (f.furniture_type == Furniture.window)
                         {
-                            if (WeatherOpt.Verbose) Monitor.Log($"Attempting to remove the light for {f.name}");
+                            //if (WeatherOpt.Verbose) Monitor.Log($"Attempting to remove the light for {f.name}");
                             Helper.Reflection.GetMethod(f, "addLights").Invoke(new object[] { Game1.currentLocation });
                         }
                     }
@@ -527,6 +606,14 @@ namespace ClimatesOfFerngillRebuild
                 Monitor.Log("StaminaMngr is null");
             if (GameClimate is null)
                 Monitor.Log("GameClimate is null");
+
+            if (Dice.NextDouble() < WeatherOpt.EclipseChance && WeatherOpt.EclipseOn && OurMoon.CurrentPhase == MoonPhase.FullMoon &&
+                SDate.Now().DaysSinceStart > 2)
+            {
+                IsEclipse = true;
+                Game1.addHUDMessage(new HUDMessage("It looks like a rare solar eclipse will darken the sky all day!"));
+                Conditions.BlockFog = true;
+            }
 
             SeedsForDialogue[0] = Dice.Next();
             SeedsForDialogue[1] = Dice.Next();
@@ -848,7 +935,7 @@ namespace ClimatesOfFerngillRebuild
         /// </summary>
         private void ShowMenu()
         {
-            string MenuText = "";
+            string MenuText = DescriptionEngine.GenerateMenuPopup(Conditions, OurMoon);
 
             // show menu
             this.PreviousMenu = Game1.activeClickableMenu;

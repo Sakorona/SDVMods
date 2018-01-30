@@ -11,7 +11,8 @@ Current Version (1 January 2018): v1.3-beta1
 ## Requirements
 
 - SMAPI 2.3+
-- CustomTV 1.11+ and it's dependencies
+- Stardew Valley 1.2.33+
+- PyTK 0.7.0+
  
 ## Overview
 
@@ -69,10 +70,24 @@ If you're out in a blizzard during the day, it's *1.25 or 2.5 rounded down to 2.
 - ChefRude for testing and the night icon sprites (as well as better fog textures)
 
 ## Changelog
--v1.3alpha30
-- reimplemented the text for the TV.
+v1.3beta1
+- merged in the solar eclipse mod.
+- text fixes
+- added in weather popup
+- solar eclipse will now only trigger on full moons and will prohibit fog formation.
+- updated manifest to require PyTK to prevent any issues with it not loading before this mod.
 
--v1.3alpha29
+v1.3alpha41
+- fixes tv icon
+- text fixes
+
+-v1.3alpha40
+- reimplemented the text for the TV.
+- fixed the heatwave icons
+- fixed stamina issue with getting sick more than once
+- fixed a bug where frost kills didn't respect allow crop death
+
+v1.3alpha29
 - moved to PyTK 
 - thanks to ChefRude's new neight icons, we now have night icons!
 - refined the mod's definition of night to be TrulyDarkTime
@@ -89,7 +104,6 @@ v1.3alpha27
 - fog fade in/out is slowed down
 - easter egg removed
 
-
 v1.3alpha3
 - easter egg added - the desert has snow in real time Dec 15 til Jan 4.
 - a new fade in/out method of fog has been added, and the lighting system should work normally
@@ -97,7 +111,6 @@ v1.3alpha3
 v1.3alpha2
 - Architecture change - now uses an interface to streamline adding new weathers to draw mechanics
 - Fog can now also be at night also. 
-- 
 
 v1.2rc2-2 (v1.3-beta1)
 - refactoring
@@ -105,7 +118,6 @@ v1.2rc2-2 (v1.3-beta1)
 - new fog texture
 - now reuses CustomTV to make sure it's compatible with stuff like DailyNews
 - #%@%@%@@@@%@%@@%@%@
-- 
 
 v1.2rc2 (v1.3-beta1)
 - fog is now properly dark and either way, the fog fades over time.
@@ -158,11 +170,6 @@ v1.1.12 beta
 - fixed an issue with festivals
 - added stamina drains back in
 - heatwaves and frosts are back in, and now it triggers during certain times.
-
-##Requirements
-
-- Stardew Valley: 1.2.33+
-- SMAPI: 1.15.4+ 
 
 ## Config Options
 
@@ -226,3 +233,11 @@ over a certain value.). Valid 0-1, but it's recommended that this is kept low. D
  - 'Use12HourTime' - Tells it whether or not to use 12hour time or not in displays. Defaults to false.
 
  - 'BadMoonRising' - Chance of a blood moon on a full moon. Default: .004 (.4%). Valid Range is 0 to 1.
+
+ - 'EclipseOn' - Whether or not the eclipse is enabled. Defaults to on. (NOTE: Will not trigger until at least Spring 2, and must be a full moon.)
+
+ - 'EclipseChance' - The chance of an eclipse every full moon. Defaults to 1.5%.
+
+ - 'SpawnMonsters' - Controls if monsters spawn on your wilderness farm. Default: on
+
+ - 'SpawnMonstersAllFarms' - Controls if monsters spawn on all farms. Default: off
