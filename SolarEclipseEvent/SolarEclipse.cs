@@ -32,7 +32,7 @@ namespace SolarEclipseEvent
 
             Config = Helper.ReadConfig<EclipseConfig>();
 
-            if (Disabled)
+            if (!Disabled)
             {
                 helper.ConsoleCommands
                     .Add("world_solareclipse", "Starts the solar eclipse.", SolarEclipseEvent_CommandFired);
