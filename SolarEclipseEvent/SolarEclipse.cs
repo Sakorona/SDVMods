@@ -14,24 +14,38 @@ namespace SolarEclipseEvent
         public bool GameLoaded { get; set; }
         public bool IsEclipse { get; set; }
         public int ResetTicker { get; set; }
+        public bool Disabled { get; set; }
 
         private Color nightColor = new Color((int) byte.MaxValue, (int) byte.MaxValue, 0);
 
         public override void Entry(IModHelper helper)
         {
+            Disabled = false;
+            if (this.Helper.ModRegistry.IsLoaded("KoihimeNakamura.ClimatesOfFerngill"))
+            {
+                IManifest manifest = this.Helper.ModRegistry.Get("KoihimeNakamura.ClimatesOfFerngill");
+                if (manifest.Version.IsNewerThan("1.3.0-beta1")) {
+                    Disabled = true;
+                    Monitor.Log("Disabled due to version 1.3.0+ of Climates of Ferngill loaded", LogLevel.Alert);
+                }                        
+            }
+
             Config = Helper.ReadConfig<EclipseConfig>();
 
-            helper.ConsoleCommands
-                .Add("world_solareclipse", "Starts the solar eclipse.", SolarEclipseEvent_CommandFired);
+            if (Disabled)
+            {
+                helper.ConsoleCommands
+                    .Add("world_solareclipse", "Starts the solar eclipse.", SolarEclipseEvent_CommandFired);
 
-            SaveEvents.AfterLoad += SaveEvents_AfterLoad;
-            SaveEvents.BeforeSave += SaveEvents_BeforeSave;
-            TimeEvents.AfterDayStarted += TimeEvents_AfterDayStarted;
-            TimeEvents.TimeOfDayChanged += TimeEvents_TimeOfDayChanged;
-            GameEvents.UpdateTick += GameEvents_UpdateTick;
-            LocationEvents.CurrentLocationChanged += LocationEvents_CurrentLocationChanged;
+                SaveEvents.AfterLoad += SaveEvents_AfterLoad;
+                SaveEvents.BeforeSave += SaveEvents_BeforeSave;
+                TimeEvents.AfterDayStarted += TimeEvents_AfterDayStarted;
+                TimeEvents.TimeOfDayChanged += TimeEvents_TimeOfDayChanged;
+                GameEvents.UpdateTick += GameEvents_UpdateTick;
+                LocationEvents.CurrentLocationChanged += LocationEvents_CurrentLocationChanged;
 
-            ResetTicker = 0;
+                ResetTicker = 0;
+            }
         }
 
         private void GameEvents_UpdateTick(object sender, EventArgs e)

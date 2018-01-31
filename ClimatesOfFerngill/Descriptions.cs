@@ -6,8 +6,6 @@ using StardewValley.Objects;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using TwilightShards.Common;
 using TwilightShards.Stardew.Common;
 
@@ -198,7 +196,6 @@ namespace ClimatesOfFerngillRebuild
                 return Helper.Get($"weat-loc.{nRandom}", talkParams);
             }
 
-
             return "";
         }
 
@@ -338,7 +335,7 @@ namespace ClimatesOfFerngillRebuild
 
         internal TemporaryAnimatedSprite GetWeatherOverlay(WeatherConditions Current, TV tv)
         {
-            Rectangle placement = new Rectangle(413, 333, 13, 33);
+            Rectangle placement = new Rectangle(413, 333, 13, 13);
 
             switch (Current.CurrentWeatherIconBasic)
             {
@@ -351,7 +348,10 @@ namespace ClimatesOfFerngillRebuild
                     placement = new Rectangle(465, 333, 13, 13);
                     break;
                 case WeatherIcon.IconDebris:
-                    placement = Game1.currentSeason.Equals("spring") ? new Rectangle(465, 359, 13, 13) : (Game1.currentSeason.Equals("fall") ? new Rectangle(413, 359, 13, 13) : new Rectangle(465, 346, 13, 13));
+                    placement = (Game1.currentSeason.Equals("fall") ? new Rectangle(413, 359, 13, 13) : new Rectangle(465, 346, 13, 13));
+                    break;
+                case WeatherIcon.IconSpringDebris:
+                    placement = new Rectangle(465, 359, 13, 13);
                     break;
                 case WeatherIcon.IconStorm:
                     placement = new Rectangle(413, 346, 13, 13);

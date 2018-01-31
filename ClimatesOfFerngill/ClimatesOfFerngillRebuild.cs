@@ -23,7 +23,7 @@ using PyTK.CustomTV;
 
 namespace ClimatesOfFerngillRebuild
 {
-    public class ClimatesOfFerngill : Mod, IAssetEditor
+    public class ClimatesOfFerngill : Mod
     {
         /// <summary> The options file </summary>
         private WeatherConfig WeatherOpt { get; set; }
@@ -39,7 +39,6 @@ namespace ClimatesOfFerngillRebuild
 
         /// <summary> This is used to display icons on the menu </summary>
         private Sprites.Icons OurIcons { get; set; }
-
         private StringBuilder DebugOutput;
 
         /// <summary> The moon object </summary>
@@ -49,45 +48,21 @@ namespace ClimatesOfFerngillRebuild
         private StaminaDrain StaminaMngr;
         private int TicksOutside;
         private int TicksTotal;
-
-        //for events
         private int ExpireTime;
         private List<Vector2> CropList;
-
-        //queued string
         private HUDMessage queuedMsg;
 
         /// <summary> This is used to allow the menu to revert back to a previous menu </summary>
         private IClickableMenu PreviousMenu;
-
         private Descriptions DescriptionEngine;
         private Rectangle RWeatherIcon;
-
         private Color nightColor = new Color((int)byte.MaxValue, (int)byte.MaxValue, 0);
         private bool Disabled = false;
         private int[] SeedsForDialogue;
-
         public bool IsEclipse { get; set; }
         public int ResetTicker { get; set; }
 
         private bool IsFestivalDay => Utility.isFestivalDay(SDate.Now().Day, SDate.Now().Season);
-
-        public override object GetApi()
-        {
-            return new ClimatesOfFerngillApi(OurMoon, Conditions, StaminaMngr, WeatherOpt);
-        }
-
-        public bool CanEdit<T>(IAssetInfo asset)
-        {
-            return asset.AssetNameEquals(@"Strings\StringsFromCSFiles");
-        }
-
-        //edit the asset.
-        public void Edit<T>(IAssetData asset)
-        {
-            IDictionary<string, string> data = asset.AsDictionary<string, string>().Data;
-            data["TV.cs.13136"] = "Welcome to KOZU 5... your number one source for weather, news, and entertainment.";
-        }
 
         /// <summary> Main mod function. </summary>
         /// <param name="helper">The helper. </param>
@@ -104,7 +79,6 @@ namespace ClimatesOfFerngillRebuild
             StaminaMngr = new StaminaDrain(WeatherOpt, Helper.Translation, Monitor);
             SeedsForDialogue = new int[] { Dice.Next(), Dice.Next() };
             DescriptionEngine = new Descriptions(Helper.Translation, Dice, WeatherOpt, Monitor);
-
             queuedMsg = null;
             Vector2 snowPos = Vector2.Zero;
             TicksOutside = 0;
@@ -140,7 +114,6 @@ namespace ClimatesOfFerngillRebuild
                 ControlEvents.KeyPressed += (sender, e) => this.ReceiveKeyPress(e.KeyPressed, this.WeatherOpt.Keyboard);
                 MenuEvents.MenuClosed += (sender, e) => this.ReceiveMenuClosed(e.PriorMenu);
 
-
                 //console commands
                 helper.ConsoleCommands
                       .Add("weather_settommorow", helper.Translation.Get("console-text.desc_tmrweather"), TomorrowWeatherChangeFromConsole)
@@ -168,10 +141,6 @@ namespace ClimatesOfFerngillRebuild
             TemporaryAnimatedSprite BackgroundSprite = new TemporaryAnimatedSprite(Game1.mouseCursors, new Rectangle(497, 305, 42, 28), 9999f, 1, 999999, tv.getScreenPosition(), false, false, (float)((double)(tv.boundingBox.Bottom - 1) / 10000.0 + 9.99999974737875E-06), 0.0f, Color.White, tv.getScreenSizeModifier(), 0.0f, 0.0f, 0.0f, false);
             TemporaryAnimatedSprite WeatherSprite = DescriptionEngine.GetWeatherOverlay(Conditions, tv);
 
-            /*
-            string OnScreenText = Game1.content.LoadString("Strings\\StringsFromCSFiles:TV.cs.13136");
-            OnScreenText += "#";
-            */
             string OnScreenText = "";
 
             if (BackgroundSprite is null)
@@ -187,7 +156,6 @@ namespace ClimatesOfFerngillRebuild
         private void DrawOverMenus(object sender, EventArgs e)
         {
             //revised this so it properly draws over the canon moon. :v
-            //And .. yeah.
             if (Game1.showingEndOfNightStuff && Game1.activeClickableMenu is ShippingMenu menu && !Game1.wasRainingYesterday)
             {
                 Game1.spriteBatch.Draw(OurIcons.MoonSource, new Vector2((float)(Game1.viewport.Width - 80 * Game1.pixelZoom), (float)Game1.pixelZoom), OurIcons.GetNightMoonSprite(SDVMoon.GetLunarPhaseForDay(SDate.Now().AddDays(-1))), Color.LightBlue, 0.0f, Vector2.Zero, (float)Game1.pixelZoom * 1.5f, SpriteEffects.None, 1f);
@@ -218,13 +186,11 @@ namespace ClimatesOfFerngillRebuild
         /// <param name="e">Parameters</param>
         private void LocationEvents_CurrentLocationChanged(object sender, EventArgsCurrentLocationChanged e)
         {
-
             if (IsEclipse)
             {
                 Game1.globalOutdoorLighting = .5f;
                 Game1.currentLocation.switchOutNightTiles();
                 Game1.ambientLight = nightColor;
-
 
                 if (!Game1.currentLocation.isOutdoors && Game1.currentLocation is DecoratableLocation)
                 {
@@ -297,8 +263,6 @@ namespace ClimatesOfFerngillRebuild
                         lines.Add(Game1.content.LoadString("Strings\\StringsFromCSFiles:Object.cs.12822"));
                 }
             }
-
-            //TryHookTelevision();
         }
 
         /// <summary>
@@ -603,8 +567,7 @@ namespace ClimatesOfFerngillRebuild
             if (Game1.isActionAtCurrentCursorTile || Game1.activeClickableMenu != null)
                 return;
             Game1.mouseCursorTransparency = 1f;
-        }
-    
+        }    
 
         private void ResetMod(object sender, EventArgs e)
         {
@@ -755,8 +718,7 @@ namespace ClimatesOfFerngillRebuild
                         Game1.weatherForTomorrow = Game1.weather_rain;
                 }
 
-                //tracking time!
-                //Snow fall on Fall 28, if the flag is set.
+                //tracking time! - Snow fall on Fall 28, if the flag is set.
                 if (Game1.dayOfMonth == 28 && Game1.currentSeason == "fall" && WeatherOpt.SnowOnFall28)
                 {
                     Conditions.ForceTodayTemps(2, -1);

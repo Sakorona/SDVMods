@@ -70,6 +70,11 @@ If you're out in a blizzard during the day, it's *1.25 or 2.5 rounded down to 2.
 - ChefRude for testing and the night icon sprites (as well as better fog textures)
 
 ## Changelog
+v1.3beta3
+- .. somehow the text fixes didn't take?
+- cleaned up various elements of the code - no longer attempts to IAssetEditor
+- fixes the spring wind icon not appearing on the TV.
+
 v1.3beta2
 - text fixes: spring wind may not display properly on the TV
 - fix for the mouse not properly redrawing
