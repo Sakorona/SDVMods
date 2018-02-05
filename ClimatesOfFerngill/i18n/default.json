@@ -42,12 +42,12 @@
   "fern-loc.11": "Pathos Isle",
 
   //Weather - Generic Strings
-  "weat-loc.0": ".. concludes the weather in {{location}}.#Now for Pelican Town, expect {{descWeather}}, with a high of {{todayHigh}} and low {{todayLow}}.{{condWarning}}{{eveningFog}} #Tomorrow, expect {{tomorrowWeather}} with a high of {{tomorrowHigh}} and low of {{tomorrowLow}}",
-  "weat-loc.1": "Now for Pelican Town, expect {{descWeather}}, with a high of {{todayHigh}} and low {{todayLow}}.{{condWarning}}{{eveningFog}}#Tomorrow, expect {{tomorrowWeather}} with a high of {{tomorrowHigh}} and low of {{tomorrowLow}}",
+  "weat-loc.0": ".. concludes the weather in {{location}}.#Now for Pelican Town, expect {{descWeather}}, with a high of {{todayHigh}} and low {{todayLow}}. {{condWarning}}{{eveningFog}} #Tomorrow, expect {{tomorrowWeather}} with a high of {{tomorrowHigh}} and low of {{tomorrowLow}}",
+  "weat-loc.1": "Now for Pelican Town, expect {{descWeather}}, with a high of {{todayHigh}} and low {{todayLow}}. {{condWarning}}{{eveningFog}}#Tomorrow, expect {{tomorrowWeather}} with a high of {{tomorrowHigh}} and low of {{tomorrowLow}}",
   "weat-loc.2": "The weather for Stardew Valley will be {{todayWeather}} with a high of {{todayHigh}} and low {{todayLow}}.{{condWarning}}{{eveningFog}}#Tomorrow, expect {{tomorrowWeather}} with a high of {{tomorrowHigh}} and low of {{tomorrowLow}}",
 
-  "weat-loc.fog.0": ".. concludes the weather in {{location}}.#Now for Pelican Town, the valley will be blanked in fog until about {{fogTime}}, then expect {{descWeather}}, with a high of {{todayHigh}} and low {{todayLow}}.{{condWarning}}{{eveningFog}}#Tomorrow, expect {{tomorrowWeather}} with a high of {{tomorrowHigh}} and low of {{tomorrowLow}}",
-  "weat-loc.fog.1": "Now for Pelican Town, fog will continue to blanket the region until roughly {{fogTime}}, then expect {{descWeather}}, with a high of {{todayHigh}} and low {{todayLow}}.{{condWarning}}{{eveningFog}}#Tomorrow, expect {{tomorrowWeather}} with a high of {{tomorrowHigh}} and low of {{tomorrowLow}}.",
+  "weat-loc.fog.0": ".. concludes the weather in {{location}}.#Now for Pelican Town, the valley will be blanked in fog until about {{fogTime}}, then expect {{descWeather}}, with a high of {{todayHigh}} and low {{todayLow}}. {{condWarning}}{{eveningFog}}#Tomorrow, expect {{tomorrowWeather}} with a high of {{tomorrowHigh}} and low of {{tomorrowLow}}",
+  "weat-loc.fog.1": "Now for Pelican Town, fog will continue to blanket the region until roughly {{fogTime}}, then expect {{descWeather}}, with a high of {{todayHigh}} and low {{todayLow}}. {{condWarning}}{{eveningFog}}#Tomorrow, expect {{tomorrowWeather}} with a high of {{tomorrowHigh}} and low of {{tomorrowLow}}.",
   "weat-loc.fog.2": "Fog will be blanketing Stardew Valley until an anticipated {{fogTime}}, giving way to {{descWeather}} with a high of {{todayHigh}} and low {{todayLow}}.{{condWarning}}{{eveningFog}}#Tomorrow, expect {{tomorrowWeather}} with a high of {{tomorrowHigh}} and low of {{tomorrowLow}}",
 
   //Weather - Morning Strings
@@ -58,17 +58,17 @@
   //Weather - Afternoon Strings
   "weat-afternoon.0": "As morning gives way to afternoon, the weather will continue to be {{descWeather}} with a high of {{todayHigh}} and low {{todayLow}}.{{condWarning}}{{eveningFog}}#Tomorrow, expect {{tomorrowWeather}} with a high of {{tomorrowHigh}} and low of {{tomorrowLow}}",
   "weat-afternoon.1": "The weather continues to be {{descWeather}} with a high of {{todayHigh}} and low {{todayLow}}.{{condWarning}}{{eveningFog}}#Tomorrow, expect {{tomorrowWeather}} withwith a high of {{tomorrowHigh}} and low of {{tomorrowLow}}",
-  "weat-afternoon.2": "The weather continues to be {{descWeather}} with a high of {{todayHigh}} and low {{todayLow}}.{{condWarning}}{{eveningFog}}#Tomorrow, expect {{tomorrowWeather}} with a high of {{tomorrowHigh}} and low of {{tomorrowLow}}",
+  "weat-afternoon.2": "The weather is currently {{descWeather}} with a high of {{todayHigh}} and low {{todayLow}}.{{condWarning}}{{eveningFog}}#Tomorrow, anticipate {{tomorrowWeather}} with a high of {{tomorrowHigh}} and low of {{tomorrowLow}}",
 
   //Weather - Evening Strings
   "weat-evening.0": "The sun sets over the studio, bringing a close to today.#{{condString}}{{eveningFog}}Tomorrow, expect {{tomorrowWeather}} with a high of {{tomorrowHigh}} and low of {{tomorrowLow}}",
-  "weat-evening.1": "{{condString}}{{eveningFog}}Tomorrow, expect {{tomorrowWeather}} with high:{{tomorrowHigh}} and low:{{tomorrowLow}}",
-  "weat-evening.2": "{{condString}}{{eveningFog}}Tomorrow, expect {{tomorrowWeather}} with high:{{tomorrowHigh}} and low:{{tomorrowLow}}",
+  "weat-evening.1": "{{condString}}{{eveningFog}}Tomorrow, expect {{tomorrowWeather}} with high: {{tomorrowHigh}} and low: {{tomorrowLow}}",
+  "weat-evening.2": "{{condString}}{{eveningFog}}Tomorrow, anticipate {{tomorrowWeather}} with high: {{tomorrowHigh}} and low: {{tomorrowLow}}",
 
   //Weather - Night
   "weat-night.0": "{{condString}}{{eveningFog}Tomorrow, expect {{tomorrowWeather}} with a high of {{tomorrowHigh}} and low of {{tomorrowLow}}.",
-  "weat-night.1": "{{condString}}{{eveningFog}}Tomorrow, expect {{tomorrowWeather}} with high:{{tomorrowHigh}} and low:{{tomorrowLow}}",
-  "weat-night.2": "{{condString}}{{eveningFog}}Tomorrow, expect {{tomorrowWeather}} with high:{{tomorrowHigh}} and low:{{tomorrowLow}}",
+  "weat-night.1": "{{condString}}{{eveningFog}}Tomorrow, it should be {{tomorrowWeather}} with high: {{tomorrowHigh}} and low: {{tomorrowLow}}",
+  "weat-night.2": "{{condString}}{{eveningFog}}For tomorrow, expect {{tomorrowWeather}} with high: {{tomorrowHigh}} and low: {{tomorrowLow}}",
 
   //Weather - Midnight
   "weat-midnight.0": "As the witching hour reigns, the weather for tomorrow is {{tomorrowWeather}} with a high of {{tomorrowHigh}} and low of {{tomorrowLow}}.",
@@ -93,47 +93,36 @@
   "weat-wedTomorrow.0": "Today, expect {{weather}} with high:{{high}} and low:{{low}}#Tommorow, for the wedding, expect {{tomorrowWeather}}",
 
   //Weather - Condition Strings
-  "weather-condition.heatwave.0": "RWS: A heatwave is expected for the Stardew Valley area out to Zuzu City. Please keep hydrated!",
-  "weather-condition.heatwave.1": "RWS: A heatwave is expected for areas bordering the Gem Sea.",
-  "weather-condition.heatwave.2": "RWS: A heatwave is in progress for areas bordering the Gem Sea.",
+  "weather-condition.heatwave.0": "RWS: A heatwave is expected for the Stardew Valley area out to Zuzu City. Please keep hydrated! ",
+  "weather-condition.heatwave.1": "RWS: A heatwave is expected for areas bordering the Gem Sea. ",
+  "weather-condition.heatwave.2": "RWS: A heatwave is in progress for areas bordering the Gem Sea. ",
 
-  "weather-condition.frost.0": "RWS: An unsesaonal frost is expected from areas south and east of Minister Valley, including Stardew Valley. Please keep bundled up!",
-  "weather-condition.frost.1": "RWS: A frost is expected for areas bordering the Gem Sea. Expect early crop death, as well as possible hypothermia.",
-  "weather-condition.frost.2": "RWS: An overnight frost is expected for areas bordering the Gem Sea.",
+  "weather-condition.frost.0": "RWS: An unsesaonal frost is expected from areas south and east of Minister Valley, including Stardew Valley. Please keep bundled up! ",
+  "weather-condition.frost.1": "RWS: A frost is expected for areas bordering the Gem Sea. Expect early crop death, as well as possible hypothermia. ",
+  "weather-condition.frost.2": "RWS: An overnight frost is expected for areas bordering the Gem Sea. ",
+
+  "weather-condition.whiteout.0": "RWS: An extreme blizzard is sweeping over the region, whiting out the region. ",
+  "weather-condition.whiteout.1": "RWS: A howling blizzard is expected throughout the valley. Do not travel if at all possible. ",
+  "weather-condition.whiteout.2": "RWS: Expect near zero visiblity outside as a blizzard passes through. ",
 
   //this is the night string
-  "weather-condition.frost.night": "Forecasters are already seeing the temperatures dip dangerously low, and you should expect frosts outside tonight.",
-  "weather-condition.evenFog": "Fog is predicted this evening from {{startTime}} to {{endTime}}",
-
-  //Basic Weather
-  "weather-tomorrow.sunny.0": "sun",
-  "weather-tomorrow.sunny.1": "clear skies",
-
-  "weather-tomorrow.rainy.0": "rain",
-  "weather-tomorrow.rainy.1": "wet weather",
-
-  "weather-tomorrow.debris.0": "wind",
-  "weather-tomorrow.debris.1": "gusts",
-
-  "weather-tomorrow.storms.0": "storms",
-  "weather-tomorrow.storms.1": "lightning and rain",
-
-  "weather-tomorrow.snowy.0": "snow",
-  "weather-tomorrow.snowy.1": "icy weather",
-
-  "weather-tomorrow.blizzard.0": "blizzards",
-  "weather-tomorrow.blizzard.1": "a near white out across the region",
+  "weather-condition.frost.night": "Forecasters are already seeing the temperatures dip dangerously low, and you should expect frosts outside tonight. ",
+  "weather-condition.evenFog": "Fog is predicted this evening from {{startTime}} to {{endTime}}. ",
 
   //Weather Descriptions - Spring
-  "weat-spring.sunny.0": "a beautiful sunny day",
-  "weat-spring.sunny.1": "a good day to enjoy the sun on a warm spring morning",
-  "weat-spring.sunny.2": "it's another day for planting those gardens",
+  "weat-spring.sunny_daytime.0": "a beautiful sunny day",
+  "weat-spring.sunny_daytime.1": "a good day to enjoy the sun on a warm spring morning",
+  "weat-spring.sunny_daytime.2": "it's another day for planting those gardens",
+
+  "weat-spring.sunny_nighttime.0": "a clear spring night",
+  "weat-spring.sunny_nighttime.1": "a cold and beautiful sky viewing night",
+  "weat-spring.sunny_nighttime.2": "the rest of the day in a chilly night",
 
   "weat-spring.rainy.0": "rain to fall down",
   "weat-spring.rainy.1": "a gentle downpour of preciptation to nourish all of those flowers",
   "weat-spring.rainy.2": "a good day to stay inside and read, as the rain drenches the town",
 
-  "weat-spring.stormy.0": "the spring storms are blowing off the Gem Sea, so batten those hatches",
+  "weat-spring.stormy.0": "the spring storms are blowing off the Gem Sea.",
   "weat-spring.stormy.1": "the storms blowing through the valley are expected to be all day",
   "weat-spring.stormy.2": "expect lightning and thunder all day",
 
@@ -153,20 +142,24 @@
   "weat-spring.drythunder.1": "due to the lack of moisture, the lightning will not include rain",
   "weat-spring.drythunder.2": "expect lightning and thunder but no rain",
 
-  "weat-spring.thundersnow.0": "a rare and out of season thunder snow will be in the valley" ,
+  "weat-spring.thundersnow.0": "a rare and out of season thunder snow will be in the valley",
   "weat-spring.thundersnow.1": "a rare and out of season thunder snow will be in the valley",
   "weat-spring.thundersnow.2": "a rare and out of season thunder snow will be in the valley",
 
   //Weather Descriptions - Summer
-  "weat-summer.sunny.0": "a hot sunny day",
-  "weat-summer.sunny.1": "a good day to enjoy the sun",
-  "weat-summer.sunny.2": "a bright cheery day",
+  "weat-summer.sunny_daytime.0": "a hot sunny day",
+  "weat-summer.sunny_daytime.1": "a good day to enjoy the sun",
+  "weat-summer.sunny_daytime.2": "a bright cheery day",
+
+  "weat-summer.sunny_nighttime.0": "a warm summer night",
+  "weat-summer.sunny_nighttime.1": "to enjoy a warm clear night",
+  "weat-summer.sunny_nighttime.2": "a great night to stargaze",
 
   "weat-summer.rainy.0": "a rain falling down",
   "weat-summer.rainy.1": "a rain providing a relief from the sun",
   "weat-summer.rainy.2": "a good day to stay inside and read, as the rain drenches the town",
 
-  "weat-summer.stormy.0": "more summer storms blowing off the Gem Sea, so batten those hatches",
+  "weat-summer.stormy.0": "more summer storms blowing off the Gem Sea. Make sure to batten those hatches down!",
   "weat-summer.stormy.1": "that the storms blowing through the valley will last all day",
   "weat-summer.stormy.2": "lightning and thunder all day",
 
@@ -187,15 +180,19 @@
   "weat-summer.thundersnow.2": "a rare and out of season thunder snow will be in the valley",
 
   //Weather Descriptions - Fall
-  "weat-fall.sunny.0": "a cool sunny day",
-  "weat-fall.sunny.1": "a good day to enjoy the sun on a chilly fall morning",
-  "weat-fall.sunny.2": "a bright cheery day",
+  "weat-fall.sunny_daytime.0": "a cool sunny day",
+  "weat-fall.sunny_daytime.1": "a good day to enjoy the sun on a chilly fall morning",
+  "weat-fall.sunny_daytime.2": "a bright cheery day",
+
+  "weat-fall.sunny_nighttime.0": "a chilly clear night",
+  "weat-fall.sunny_nighttime.1": "a chilly night",
+  "weat-fall.sunny_nighttime.2": "a good night to sit out on the porch",
 
   "weat-fall.rainy.0": "a rain falling down",
   "weat-fall.rainy.1": "a sign of the advancing rain on the valley",
   "weat-fall.rainy.2": "a good day to stay inside and read, as the rain drenches the town",
 
-  "weat-fall.stormy.0": "the fall storms are blowing off the Gem Sea, so batten those hatches",
+  "weat-fall.stormy.0": "the fall storms are blowing off the Gem Sea",
   "weat-fall.stormy.1": "the storms blowing through the valley are expected to come in waves all day",
   "weat-fall.stormy.2": "expect lightning and thunder all day",
 
@@ -220,9 +217,13 @@
   "weat-fall.thundersnow.2": "an almost unheard of thunder snow will be in the valley",
 
   //Weather Descriptions - Winter
-  "weat-winter.sunny.0": "a cool sunny day",
-  "weat-winter.sunny.1": "a good day to enjoy the sun on a chilly winter morning",
-  "weat-winter.sunny.2": "a bright cheery day in that peculiar winter way",
+  "weat-winter.sunny_daytime.0": "a cool sunny day",
+  "weat-winter.sunny_daytime.1": "a good day to enjoy the sun on a chilly winter morning",
+  "weat-winter.sunny_daytime.2": "a bright winter cheery day",
+
+  "weat-winter.sunny_nighttime.0": "a frigid sunny night",
+  "weat-winter.sunny_nighttime.1": "a good day to drink hot chocolate from inside",
+  "weat-winter.sunny_nighttime.2": "a frozen cloudless night",
 
   "weat-winter.rainy.0": "an unusually warm day sees rain pouring down",
   "weat-winter.rainy.1": "a sign of the advancing rain on the valley",
@@ -271,16 +272,22 @@
 
   //Weather Menu strings
   "weather-menu.opening": "This is Kylie from KZAM Radio, broadcasting on 92.5 out of Point Drake. It is the {{descDay}}, and here is the weather report for Stardew Valley:",
+  "weather-menu.openingS1D1": "This is Kylie from KZAM Radio, broadcasting on 92.5 out of Point Drake. It is the beginning of the year, the {{descDay}}, and here is the weather report for Stardew Valley:",
+  "weather-menu.openingS4D28": "This is Kylie from KZAM Radio, broadcasting on 92.5 out of Point Drake. It is the end of the year, the {{descDay}}, and here is the weather report for Stardew Valley:",
   "weather-menu.condition.frost": "RWS Warning: Frost tonight.",
   "weather-menu.condition.heatwave": "RWS Warning: Heatwave expected through the day.",
-  "weather-menu.current": "Current Conditions: {{todayCondition}}. High: {{todayHigh}} with Low: {{todayLow}}. {{fogString}}",
-  "weather-menu.fog": "Fog present until {{fogTime}}",
-  "weather-menu.fogFuture": "Expected fog at {{fogTime}} to {{endFog}}",
+  "weather-menu.current": "Current Conditions: {{todayCondition}}. High: {{todayHigh}} with Low: {{todayLow}}.{{fogString}}",
+  "weather-menu.fog": "Fog present until {{fogTime}}.",
+  "weather-menu.expectedFog": " Evening fog is expected as well.",
+  "weather-menu.fogFuture": " Expected fog later at about {{fogTime}} to {{endFog}}.",
   "weather-menu.tomorrow": "Tomorrow's Forecast: {{tomorrowCondition}}. High: {{tomorrowHigh}} with Low: {{tomorrowLow}}.",
 
   //basic conditions
+  "weather_sunny_daytime": "Sunny",
+  "weather_sunny_nighttime": "Clear",
   "weather_sunny": "Sunny",
-  "weather_wind": "Debris",
+  "weather_whiteout": "White Out",
+  "weather_wind": "Windy",
   "weather_lightning": "Stormy",
   "weather_snow": "Snowy",
   "weather_rainy": "Rainy",

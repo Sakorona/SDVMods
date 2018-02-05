@@ -58,6 +58,7 @@
   <ItemGroup>
     <Compile Include="ClimatesOfFerngillApi.cs" />
     <Compile Include="DaMoon\MoonPhase.cs" />
+    <Compile Include="Weathers\FerngillWhiteOut.cs" />
     <Compile Include="Weathers\ForceDays.cs" />
     <Compile Include="Weathers\ISDVWeather.cs" />
     <Compile Include="Weathers\IWeatherEvent.cs" />

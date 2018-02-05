@@ -32,5 +32,6 @@ namespace ClimatesOfFerngillRebuild
        void UpdateWeather();
        void CreateWeather();
        void MoveWeather();
+       void EndWeather();
     }
 }

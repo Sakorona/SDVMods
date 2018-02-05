@@ -145,10 +145,16 @@ namespace ClimatesOfFerngillRebuild
                     condList.Add("Night Fog");
                 }
 
-                if (this.FarmerSick && conditions.GetCurrentConditions().HasFlag(CurrentWeather.Blizzard))
+                if (this.FarmerSick && conditions.GetCurrentConditions().HasFlag(CurrentWeather.Blizzard) && !conditions.GetCurrentConditions().HasFlag(CurrentWeather.WhiteOut))
                 {
                     totalMulti += 1.25;
                     condList.Add("Blizzard");
+                }
+
+                if (this.FarmerSick && conditions.GetCurrentConditions().HasFlag(CurrentWeather.Blizzard) && conditions.GetCurrentConditions().HasFlag(CurrentWeather.WhiteOut))
+                {
+                    totalMulti += 2.25;
+                    condList.Add("White Out");
                 }
 
                 if (this.FarmerSick && conditions.GetCurrentConditions().HasFlag(CurrentWeather.Frost) && SDVTime.IsNight)

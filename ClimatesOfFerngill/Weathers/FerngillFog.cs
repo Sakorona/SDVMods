@@ -11,18 +11,12 @@ using static ClimatesOfFerngillRebuild.Sprites;
 
 namespace ClimatesOfFerngillRebuild
 {
-    // This was a class, but honestly, we should probably just move all of the fog things into one struct. 
     /// <summary> This tracks fog details </summary>
     internal class FerngillFog : ISDVWeather
     {
         public event EventHandler<WeatherNotificationArgs> OnUpdateStatus;
 
-        //private bool AmbientFog { get; set; }
-        //private readonly static Rectangle FogSource = new Rectangle(640, 0, 64, 64);
         public static Rectangle FogSource = new Rectangle(0, 0, 64, 64);
-        private readonly static Color DarkOutdoor = new Color(180, 175, 105);
-        private readonly static Color NormalOutdoor = new Color(135, 120, 145);
-
         private Color FogColor = Color.White * 1.25f;
 
         internal Icons Sheet;
@@ -46,8 +40,6 @@ namespace ClimatesOfFerngillRebuild
         public bool IsWeatherVisible => (CurrentFogType != FogType.None);
 
         public string WeatherType => "Fog";
-
-        private bool AfternoonFightDet { get; set; }
 
         /// <summary> Returns the expiration time of fog. Note that this doesn't sanity check if the fog is even visible. </summary>
         public SDVTime WeatherExpirationTime => (ExpirTime ?? new SDVTime(0600));
@@ -77,11 +69,9 @@ namespace ClimatesOfFerngillRebuild
         /// <param name="t">The time for the fog to expire</param>
         public void SetWeatherExpirationTime(SDVTime t) => ExpirTime = t;
         public void SetWeatherBeginTime(SDVTime t) => BeginTime = t;
-        public SDVTimePeriods FogTimeSpan { get; set; }
-
+        public SDVTimePeriods FogTimeSpan { get; set;}
         private MersenneTwister Dice { get; set; }
         private WeatherConfig ModConfig { get; set; }
-
         private bool FadeOutFog { get; set; }
         private bool FadeInFog { get; set; }
         private Stopwatch FogElapsed { get; set; }
@@ -96,7 +86,6 @@ namespace ClimatesOfFerngillRebuild
             this.Monitor = Monitor;
             this.Dice = Dice;
             this.ModConfig = config;
-            AfternoonFightDet = false;
             this.FogTimeSpan = FogPeriod;
             FogElapsed = new Stopwatch();
         }
@@ -114,7 +103,6 @@ namespace ClimatesOfFerngillRebuild
             BeginTime = null;
             ExpirTime = null;
             FogAlpha = 0f;
-            AfternoonFightDet = false;
             FadeOutFog = false;
             FadeInFog = false;
             FogElapsed.Reset(); 
@@ -204,30 +192,20 @@ namespace ClimatesOfFerngillRebuild
                 UpdateStatus(WeatherType, true);
         }
 
-        public void SetWeatherTime(SDVTime begin, SDVTime end)
+        public void EndWeather()
         {
-                BeginTime = new SDVTime(begin);
-                ExpirTime = new SDVTime(end);
+            if (IsWeatherVisible)
+            {
+                ExpirTime = new SDVTime(SDVTime.CurrentTime - 10);
+                CurrentFogType = FogType.None;
+                UpdateStatus(WeatherType, false);
+            }
         }
 
-        public Color CalculateEndLight(SDVTime end)
+        public void SetWeatherTime(SDVTime begin, SDVTime end)
         {
-            int endTime = end.ReturnIntTime();
-
-            if (endTime >= Game1.getTrulyDarkTime())
-            {
-                float num = Math.Min(0.93f, (float)(0.75 + ((int)(endTime - endTime % 100 + endTime % 100 / 10 * 16.6599998474121) - Game1.getTrulyDarkTime() + Game1.gameTimeInterval / 7000.0 * 16.6000003814697) * 0.000624999986030161));
-                return (Game1.isRaining ? DarkOutdoor : Game1.eveningColor) * num;
-            }
-            else if (endTime >= Game1.getStartingToGetDarkTime())
-            {
-                float num = Math.Min(0.93f, (float)(0.300000011920929 + ((int)(endTime - endTime % 100 + endTime % 100 / 10 * 16.6599998474121) - Game1.getStartingToGetDarkTime() + (double)Game1.gameTimeInterval / 7000.0 * 16.6000003814697) * 0.00224999990314245));
-                return (Game1.isRaining ? DarkOutdoor : Game1.eveningColor) * num;
-            }
-            else if (Game1.isRaining)
-                return Game1.ambientLight * 0.3f;
-            else
-                return new Color(0, 0, 0); // I have a sneaking suspcion
+            BeginTime = new SDVTime(begin);
+            ExpirTime = new SDVTime(end);
         }
 
         public override string ToString()

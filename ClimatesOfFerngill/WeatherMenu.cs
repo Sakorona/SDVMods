@@ -8,10 +8,6 @@ using StardewModdingAPI;
 using StardewValley;
 using StardewValley.Menus;
 using Pathoschild.Stardew.UIF;
-using System.Linq;
-using StardewModdingAPI.Utilities;
-using TwilightShards.Stardew.Common;
-using TwilightShards.Common;
 
 namespace ClimatesOfFerngillRebuild
 {
@@ -34,26 +30,8 @@ namespace ClimatesOfFerngillRebuild
         /// <summary>The aspect ratio of the page background.</summary>
         private readonly Vector2 AspectRatio = new Vector2(Sprites.Letter.Sprite.Width, Sprites.Letter.Sprite.Height);
 
-        /// <summary>The spacing around the scroll buttons.</summary>
-        private readonly int ScrollButtonGutter = 15;
-
         /// <summary> To da Moon, Princess!  </summary>
         private SDVMoon OurMoon;
-
-        /// <summary>The amount to scroll long content on each up/down scroll.</summary>
-        private readonly int ScrollAmount;
-
-        /// <summary>The clickable 'scroll up' icon.</summary>
-        private readonly ClickableTextureComponent ScrollUpButton;
-
-        /// <summary>The clickable 'scroll down' icon.</summary>
-        private readonly ClickableTextureComponent ScrollDownButton;
-
-        /// <summary>The maximum pixels to scroll.</summary>
-        private int MaxScroll;
-
-        /// <summary>The number of pixels to scroll.</summary>
-        private int CurrentScroll;
 
         /// <summary> The current weather status </summary>
         private WeatherConditions CurrentWeather;
@@ -78,7 +56,7 @@ namespace ClimatesOfFerngillRebuild
         ****/
         /// <summary>Construct an instance.</summary>
         /// <param name="monitor">Encapsulates logging and monitoring.</param>
-        public WeatherMenu(IMonitor monitor, IReflectionHelper reflectionHelper, Sprites.Icons Icon, ITranslationHelper Helper, WeatherConditions weat, SDVMoon Termina, WeatherConfig ModCon, int scroll, string text)
+        public WeatherMenu(IMonitor monitor, IReflectionHelper reflectionHelper, Sprites.Icons Icon, ITranslationHelper Helper, WeatherConditions weat, SDVMoon Termina, WeatherConfig ModCon, string text)
         {
             // save data
             this.MenuText = text;
@@ -86,14 +64,9 @@ namespace ClimatesOfFerngillRebuild
             this.Reflection = reflectionHelper;
             this.Helper = Helper;
             this.CurrentWeather = weat;
-            this.ScrollAmount = scroll;
             this.IconSheet = Icon;
             this.OurMoon = Termina;
             this.OurConfig = ModCon;
-
-            // add scroll buttons
-            this.ScrollUpButton = new ClickableTextureComponent(Rectangle.Empty, Sprites.Icons.source2, Sprites.Icons.UpArrow, 1);
-            this.ScrollDownButton = new ClickableTextureComponent(Rectangle.Empty, Sprites.Icons.source2, Sprites.Icons.DownArrow, 1);
 
             // update layout
             this.UpdateLayout();
@@ -102,16 +75,6 @@ namespace ClimatesOfFerngillRebuild
         /****
         ** Events
         ****/
-
-        /// <summary>The method invoked when the player scrolls the mouse wheel on the lookup UI.</summary>
-        /// <param name="direction">The scroll direction.</param>
-        public override void receiveScrollWheelAction(int direction)
-        {
-            if (direction > 0)    // positive number scrolls content up
-                this.ScrollUp();
-            else
-                this.ScrollDown();
-        }
 
         /// <summary>The method invoked when the player left-clicks on the lookup UI.</summary>
         /// <param name="x">The X-position of the cursor.</param>
@@ -158,18 +121,6 @@ namespace ClimatesOfFerngillRebuild
         /****
         ** Methods
         ****/
-
-        /// <summary>Scroll up the menu content by the specified amount (if possible).</summary>
-        public void ScrollUp()
-        {
-            this.CurrentScroll -= this.ScrollAmount;
-        }
-
-        /// <summary>Scroll down the menu content by the specified amount (if possible).</summary>
-        public void ScrollDown()
-        {
-            this.CurrentScroll += this.ScrollAmount;
-        }
 
         /// <summary>Handle a left-click from the player's mouse or controller.</summary>
         /// <param name="x">The x-position of the cursor.</param>
@@ -218,69 +169,43 @@ namespace ClimatesOfFerngillRebuild
             // and I kinda want to have this where I can understand what it's for 
             float spaceWidth = DrawHelper.GetSpaceWidth(font);
 
+
             // draw background
             // (This uses a separate sprite batch because it needs to be drawn before the
             // foreground batch, and we can't use the foreground batch because the background is
             // outside the clipping area.)
-            using (SpriteBatch backgroundBatch = new SpriteBatch(Game1.graphics.GraphicsDevice))
+            //spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.NonPremultiplied, SamplerState.PointClamp, null, null);
+            spriteBatch.DrawSprite(Sprites.Letter.Sheet, Sprites.Letter.Sprite, x, y, scale: width / (float)Sprites.Letter.Sprite.Width);
+            //spriteBatch.End();
+            
+            // begin draw
+            
+            // draw weather icon
+            spriteBatch.Draw(IconSheet.WeatherSource, new Vector2(x + leftOffset, y + topOffset), IconSheet.GetWeatherSprite(CurrentWeather.GetCurrentConditions()), Color.White);
+            leftOffset += 72;
+            string weatherString = "";
+
+            // draw text as sent from outside the menu
+            float wrapWidth = this.width - leftOffset - gutter;
             {
-                backgroundBatch.Begin(SpriteSortMode.Deferred, BlendState.NonPremultiplied, SamplerState.PointClamp, null, null);
-                backgroundBatch.DrawSprite(Sprites.Letter.Sheet, Sprites.Letter.Sprite, x, y, scale: width / (float)Sprites.Letter.Sprite.Width);
-                backgroundBatch.End();
+                Vector2 textSize = spriteBatch.DrawTextBlock(font, MenuText, new Vector2(x + leftOffset, y + topOffset), wrapWidth);
+                topOffset += textSize.Y;
+                topOffset += lineHeight;
+
             }
 
-            // draw foreground
-            // (This uses a separate sprite batch to set a clipping area for scrolling.)
-            using (SpriteBatch contentBatch = new SpriteBatch(Game1.graphics.GraphicsDevice))
-            {
-                // begin draw
-                GraphicsDevice device = Game1.graphics.GraphicsDevice;
-                device.ScissorRectangle = new Rectangle(x + gutter, y + gutter, (int)contentWidth, (int)contentHeight);
-                contentBatch.Begin(SpriteSortMode.Deferred, BlendState.NonPremultiplied, SamplerState.PointClamp, null, new RasterizerState { ScissorTestEnable = true });
+            //draw moon info
+            spriteBatch.Draw(IconSheet.MoonSource, new Vector2(x + 15, y + topOffset), 
+                IconSheet.GetMoonSprite(OurMoon.CurrentPhase), Color.White);
 
-                // scroll view
-                this.CurrentScroll = Math.Max(0, this.CurrentScroll); // don't scroll past top
-                this.CurrentScroll = Math.Min(this.MaxScroll, this.CurrentScroll); // don't scroll past bottom
-                topOffset -= this.CurrentScroll; // scrolled down == move text up
+            weatherString = Helper.Get("moon-desc.desc_moonphase", 
+                new { moonPhase = SDVMoon.DescribeMoonPhase(OurMoon.CurrentPhase, Helper)});
 
-                // draw weather icon
-                contentBatch.Draw(IconSheet.WeatherSource, new Vector2(x + leftOffset, y + topOffset), IconSheet.GetWeatherSprite(CurrentWeather.GetCurrentConditions()), Color.White);
-                leftOffset += 72;
-                string weatherString = "";
+            Vector2 moonText = spriteBatch.DrawTextBlock(font, 
+                weatherString, new Vector2(x + leftOffset, y + topOffset), wrapWidth);
 
-                // draw text as sent from outside the menu
-                float wrapWidth = this.width - leftOffset - gutter;
-                {
-                    Vector2 textSize = contentBatch.DrawTextBlock(font, MenuText, new Vector2(x + leftOffset, y + topOffset), wrapWidth);
-                    topOffset += textSize.Y;
-                    topOffset += lineHeight;
+            topOffset += lineHeight; //stop moon from being cut off.
 
-                }
-
-                //draw moon info
-                contentBatch.Draw(IconSheet.MoonSource, new Vector2(x + 15, y + topOffset), 
-                    IconSheet.GetMoonSprite(OurMoon.CurrentPhase), Color.White);
-
-                weatherString = Helper.Get("moon-desc.desc_moonphase", 
-                    new { moonPhase = SDVMoon.DescribeMoonPhase(OurMoon.CurrentPhase, Helper)});
-
-                Vector2 moonText = contentBatch.DrawTextBlock(font, 
-                    weatherString, new Vector2(x + leftOffset, y + topOffset), wrapWidth);
-
-                topOffset += lineHeight; //stop moon from being cut off.
-
-                // update max scroll
-                this.MaxScroll = Math.Max(0, (int)(topOffset - contentHeight + this.CurrentScroll));
-
-                // draw scroll icons
-                if (this.MaxScroll > 0 && this.CurrentScroll > 0)
-                    this.ScrollUpButton.draw(contentBatch);
-                if (this.MaxScroll > 0 && this.CurrentScroll < this.MaxScroll)
-                    this.ScrollDownButton.draw(spriteBatch);
-
-                // end draw
-                contentBatch.End();
-            }
             this.drawMouse(Game1.spriteBatch);
         }
 
@@ -303,7 +228,7 @@ namespace ClimatesOfFerngillRebuild
             // update up/down buttons
             int x = this.xPositionOnScreen;
             int y = this.yPositionOnScreen;
-            int gutter = this.ScrollButtonGutter;
+            int gutter = 16;
             float contentHeight = this.height - gutter * 2;
         }
 

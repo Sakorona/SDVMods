@@ -24,6 +24,8 @@ namespace ClimatesOfFerngillRebuild
         IconThunderSnow = 17,
         IconDryLightning = 18,
         IconDryLightningWind = 19,
-        IconBloodMoon = 20
+        IconWhiteOut = 20,
+        IconWhiteOutFog = 21,
+        IconBloodMoon = 99
     }
 }

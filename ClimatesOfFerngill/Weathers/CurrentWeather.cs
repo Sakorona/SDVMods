@@ -19,6 +19,7 @@ namespace ClimatesOfFerngillRebuild
         Blizzard = 256,
         Fog = 512,
         Frost = 1024,
-        Heatwave = 2048
+        Heatwave = 2048,
+        WhiteOut = 4096
     }
 }

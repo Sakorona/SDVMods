@@ -45,7 +45,7 @@ namespace ClimatesOfFerngillRebuild
 
         private bool FogCreationProhibited { get; set; }
 
-        public bool HasEveningFog { get => HasSetEveningFog; }
+        private SDVTime MorningFogExpir { get; set; }
 
         /// *************************************************************************
         /// ACCESS METHODS
@@ -82,12 +82,17 @@ namespace ClimatesOfFerngillRebuild
             return desc;
         }
 
-        public void CreateWeather(string Type)
+        public void CreateWeather(string Type, bool IsMorningFog = false)
         {
             foreach (ISDVWeather weather in CurrentWeathers)
             {
                 if (weather.WeatherType == Type)
                     weather.CreateWeather();
+
+                if (Type == "Fog" && IsMorningFog)
+                {
+                    MorningFogExpir = weather.WeatherExpirationTime;
+                }
             }
         }
 
@@ -254,7 +259,7 @@ namespace ClimatesOfFerngillRebuild
         public WeatherIcon CurrentWeatherIcon
         {
             get
-            {               
+            {
                 if (GeneralFunctions.ContainsOnlyMatchingFlags(CurrentConditionsN, (int)CurrentWeather.Rain))
                     return WeatherIcon.IconRain;
 
@@ -275,6 +280,9 @@ namespace ClimatesOfFerngillRebuild
 
                 if (GeneralFunctions.ContainsOnlyMatchingFlags(CurrentConditionsN, (int)(CurrentWeather.Snow | CurrentWeather.Blizzard)))
                     return WeatherIcon.IconBlizzard;
+
+                if (GeneralFunctions.ContainsOnlyMatchingFlags(CurrentConditionsN, (int)(CurrentWeather.Snow | CurrentWeather.Blizzard | CurrentWeather.WhiteOut)))
+                    return WeatherIcon.IconWhiteOut;
 
                 if (GeneralFunctions.ContainsOnlyMatchingFlags(CurrentConditionsN, (int)CurrentWeather.Festival))
                     return WeatherIcon.IconFestival;
@@ -340,6 +348,8 @@ namespace ClimatesOfFerngillRebuild
                     return WeatherIcon.IconSunny;
                 if (GeneralFunctions.ContainsOnlyMatchingFlags(CurrentConditionsN, (int)(CurrentWeather.Lightning | CurrentWeather.Rain | CurrentWeather.Frost)))
                     return WeatherIcon.IconStorm;
+                if (GeneralFunctions.ContainsOnlyMatchingFlags(CurrentConditionsN, (int)(CurrentWeather.Snow | CurrentWeather.Blizzard | CurrentWeather.WhiteOut)))
+                    return WeatherIcon.IconWhiteOut;
                 if (GeneralFunctions.ContainsOnlyMatchingFlags(CurrentConditionsN, (int)(CurrentWeather.Sunny | CurrentWeather.Frost)))
                     return WeatherIcon.IconSunny;
                 if (GeneralFunctions.ContainsOnlyMatchingFlags(CurrentConditionsN, (int)(CurrentWeather.Wind | CurrentWeather.Frost)))
@@ -352,6 +362,8 @@ namespace ClimatesOfFerngillRebuild
                 if (GeneralFunctions.ContainsOnlyMatchingFlags(CurrentConditionsN, (int)(CurrentWeather.Snow | CurrentWeather.Frost)))
                     return WeatherIcon.IconSnow;
                 if (GeneralFunctions.ContainsOnlyMatchingFlags(CurrentConditionsN, (int)(CurrentWeather.Blizzard | CurrentWeather.Snow | CurrentWeather.Frost)))
+                    return WeatherIcon.IconBlizzard;
+                if (GeneralFunctions.ContainsOnlyMatchingFlags(CurrentConditionsN, (int)(CurrentWeather.Blizzard | CurrentWeather.Snow | CurrentWeather.Frost | CurrentWeather.WhiteOut)))
                     return WeatherIcon.IconBlizzard;
 
                 //And now for fog.
@@ -372,6 +384,8 @@ namespace ClimatesOfFerngillRebuild
                     return WeatherIcon.IconSunnyFog;
                 if (GeneralFunctions.ContainsOnlyMatchingFlags(CurrentConditionsN, (int)(CurrentWeather.Rain | CurrentWeather.Frost | CurrentWeather.Fog)))
                     return WeatherIcon.IconRainFog;
+                if (GeneralFunctions.ContainsOnlyMatchingFlags(CurrentConditionsN, (int)(CurrentWeather.Snow | CurrentWeather.Blizzard | CurrentWeather.WhiteOut | CurrentWeather.Fog)))
+                    return WeatherIcon.IconWhiteOutFog;
 
                 Console.WriteLine($"Error. Current conditions are: {CurrentConditionsN}");
 
@@ -379,14 +393,7 @@ namespace ClimatesOfFerngillRebuild
             }
         }
 
-        public bool BlockFog
-        {
-            get { return GenerateEveningFog;  }
-            set
-            {
-                GenerateEveningFog = value;
-            }
-        }
+        public bool BlockFog { get; set; }
 
         public WeatherIcon CurrentWeatherIconBasic
         {
@@ -412,6 +419,9 @@ namespace ClimatesOfFerngillRebuild
 
                 if (GeneralFunctions.ContainsOnlyMatchingFlags(CurrentConditionsN, (int)(CurrentWeather.Snow | CurrentWeather.Blizzard)))
                     return WeatherIcon.IconBlizzard;
+
+                if (GeneralFunctions.ContainsOnlyMatchingFlags(CurrentConditionsN, (int)(CurrentWeather.Blizzard | CurrentWeather.Snow | CurrentWeather.WhiteOut)))
+                    return WeatherIcon.IconWhiteOut;
 
                 if (GeneralFunctions.ContainsOnlyMatchingFlags(CurrentConditionsN, (int)CurrentWeather.Festival))
                     return WeatherIcon.IconFestival;
@@ -453,7 +463,7 @@ namespace ClimatesOfFerngillRebuild
                     return WeatherIcon.IconStorm;
 
                 if (GeneralFunctions.ContainsOnlyMatchingFlags(CurrentConditionsN, (int)(CurrentWeather.Rain | CurrentWeather.Lightning | CurrentWeather.Heatwave | CurrentWeather.Fog)))
-                    return WeatherIcon.IconStormFog;
+                    return WeatherIcon.IconStorm;
 
                 if (GeneralFunctions.ContainsOnlyMatchingFlags(CurrentConditionsN, (int)(CurrentWeather.Heatwave | CurrentWeather.Sunny)))
                     return WeatherIcon.IconSunny;
@@ -491,6 +501,8 @@ namespace ClimatesOfFerngillRebuild
                     return WeatherIcon.IconSnow;
                 if (GeneralFunctions.ContainsOnlyMatchingFlags(CurrentConditionsN, (int)(CurrentWeather.Blizzard | CurrentWeather.Snow | CurrentWeather.Frost)))
                     return WeatherIcon.IconBlizzard;
+                if (GeneralFunctions.ContainsOnlyMatchingFlags(CurrentConditionsN, (int)(CurrentWeather.Blizzard | CurrentWeather.Snow | CurrentWeather.Frost | CurrentWeather.WhiteOut)))
+                    return WeatherIcon.IconWhiteOut;
 
                 //And now for fog.
                 if (GeneralFunctions.ContainsOnlyMatchingFlags(CurrentConditionsN, (int)(CurrentWeather.Lightning | CurrentWeather.Fog | CurrentWeather.Sunny)))
@@ -510,6 +522,8 @@ namespace ClimatesOfFerngillRebuild
                     return WeatherIcon.IconSunny;
                 if (GeneralFunctions.ContainsOnlyMatchingFlags(CurrentConditionsN, (int)(CurrentWeather.Rain | CurrentWeather.Frost | CurrentWeather.Fog)))
                     return WeatherIcon.IconRain;
+                if (GeneralFunctions.ContainsOnlyMatchingFlags(CurrentConditionsN, (int)(CurrentWeather.Blizzard | CurrentWeather.Snow | CurrentWeather.Fog | CurrentWeather.WhiteOut)))
+                    return WeatherIcon.IconWhiteOut;
 
                 Console.WriteLine($"Error. Current conditions are: {CurrentConditionsN}");
 
@@ -537,7 +551,7 @@ namespace ClimatesOfFerngillRebuild
             CurrentWeathers = new List<ISDVWeather>
             {
                 new FerngillFog(Sheets, Config.Verbose, monitor, Dice, Config, SDVTimePeriods.Morning),
-                //new FerngillFog(Sheets, Config.Verbose, monitor, Dice, Config, SDVTimePeriods.Evening),
+                new FerngillWhiteOut(Dice, Config),
                 new FerngillBlizzard(Dice, Config)
             };
 
@@ -547,11 +561,23 @@ namespace ClimatesOfFerngillRebuild
   
         private void ProcessWeatherChanges(object sender, WeatherNotificationArgs e)
         {
-           if (e.Weather == "Fog")
+            if (e.Weather == "WhiteOut")
             {
                 if (e.Present)
                 {
-                    CurrentConditionsN |= CurrentWeather.Fog;
+                    CurrentConditionsN = CurrentConditionsN | CurrentWeather.WhiteOut;
+                }
+                else
+                {
+                    CurrentConditionsN = CurrentConditionsN.RemoveFlags(CurrentWeather.WhiteOut);
+                }
+            }
+
+            if (e.Weather == "Fog")
+            {
+                if (e.Present)
+                {
+                    CurrentConditionsN = CurrentConditionsN | CurrentWeather.Fog;
                 }
                 else
                 {
@@ -561,8 +587,9 @@ namespace ClimatesOfFerngillRebuild
 
             if (e.Weather == "Blizzard")
             {
+  
                 if (e.Present)
-                    CurrentConditionsN |= CurrentWeather.Blizzard;
+                    CurrentConditionsN = CurrentConditionsN | CurrentWeather.Blizzard;
                 else
                     CurrentConditionsN = CurrentConditionsN.RemoveFlags(CurrentWeather.Blizzard);
             }
@@ -600,6 +627,7 @@ namespace ClimatesOfFerngillRebuild
             CurrentConditionsN = CurrentWeather.Unset;
             TodayTemps = TomorrowTemps; //If Tomorrow is null, should just allow it to be null.
             TomorrowTemps = null;
+            MorningFogExpir = new SDVTime(600);
         }
 
         /// <summary> This function resets the weather object to basic. </summary>
@@ -612,6 +640,7 @@ namespace ClimatesOfFerngillRebuild
             TodayTemps = null;
             TomorrowTemps = null;
             CurrentConditionsN = CurrentWeather.Unset;
+            MorningFogExpir = new SDVTime(600);
         }
 
         public SDVTime GetFogTime()
@@ -663,7 +692,7 @@ namespace ClimatesOfFerngillRebuild
         }
 
         internal void SetTodayWeather()
-        {
+        {      
             CurrentConditionsN = CurrentWeather.Unset; //reset the flag.
 
             if (!Game1.isDebrisWeather && !Game1.isRaining && !Game1.isSnowing)
@@ -683,6 +712,17 @@ namespace ClimatesOfFerngillRebuild
 
             if (Game1.weddingToday)
                 AddWeather(CurrentWeather.Wedding);
+
+            //check current weathers.
+            foreach (ISDVWeather weat in CurrentWeathers)
+            {
+                if (weat.WeatherType == "Fog" && weat.IsWeatherVisible)
+                    CurrentConditionsN |= CurrentWeather.Fog;
+                if (weat.WeatherType == "Blizzard" && weat.IsWeatherVisible)
+                    CurrentConditionsN |= CurrentWeather.Blizzard;
+                if (weat.WeatherType == "WhiteOut" && weat.IsWeatherVisible)
+                    CurrentConditionsN |= CurrentWeather.WhiteOut;
+            }
         }
 
         /// <summary> Force for wedding only to match vanilla behavior. </summary>
@@ -856,7 +896,8 @@ namespace ClimatesOfFerngillRebuild
             //             Thundersnow  - as Blizzard, but really rare.
             //             Fog - per climate, although night fog in winter is double normal chance
 
-            GenerateEveningFog = (Dice.NextDouble() < (Game1.currentSeason == "winter" ? fogChance * 2 : fogChance)) && !this.GetCurrentConditions().HasFlag(CurrentWeather.Wind);
+            //GenerateEveningFog = (Dice.NextDouble() < (Game1.currentSeason == "winter" ? fogChance * 2 : fogChance)) && !this.GetCurrentConditions().HasFlag(CurrentWeather.Wind);
+            GenerateEveningFog = true;
 
             if (BlockFog)
                 GenerateEveningFog = false;
@@ -865,7 +906,7 @@ namespace ClimatesOfFerngillRebuild
 
             if (fogRoll < fogChance && !this.GetCurrentConditions().HasFlag(CurrentWeather.Wind) && !BlockFog)
             {
-                this.CreateWeather("Fog");
+                this.CreateWeather("Fog", true);
 
                 if (ModConfig.Verbose)
                     Monitor.Log($"{FogDescription(fogRoll, fogChance)}");
@@ -881,6 +922,10 @@ namespace ClimatesOfFerngillRebuild
                     this.CreateWeather("Blizzard");
                     if (ModConfig.Verbose)
                         Monitor.Log($"With roll {blizRoll.ToString("N3")} against {ModConfig.BlizzardOdds}, there will be blizzards today");
+                    if (Dice.NextDoublePositive() < .05)
+                    {
+                        this.CreateWeather("WhiteOut");
+                    }
                 }
 
                 specialWeatherTriggered = true;
@@ -930,6 +975,17 @@ namespace ClimatesOfFerngillRebuild
                     specialWeatherTriggered = true;
                 }
             }
+
+            //test for spring conversion.- 50% chance
+            if (this.HasWeather(CurrentWeather.Rain) && this.HasWeather(CurrentWeather.Frost) && Game1.currentSeason == "spring" && Dice.NextDoublePositive() <= .5)
+            {
+                CurrentConditionsN.RemoveFlags(CurrentWeather.Rain);
+                CurrentConditionsN |= CurrentWeather.Snow;
+                Game1.isRaining = false;
+                Game1.isSnowing = true;
+                specialWeatherTriggered = true;
+            }
+
 
             return specialWeatherTriggered;
         }

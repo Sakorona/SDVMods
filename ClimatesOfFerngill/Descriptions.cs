@@ -60,7 +60,7 @@ namespace ClimatesOfFerngillRebuild
             }
             else
             {
-                return $"{temp.ToString("N1")}";
+                return $"{temp.ToString("N1")} C";
             }
         }
 
@@ -76,8 +76,14 @@ namespace ClimatesOfFerngillRebuild
 
         internal string GenerateMenuPopup(WeatherConditions Current, SDVMoon Moon)
         {
+            string text = "";
 
-            string text = Helper.Get("weather-menu.opening", new { descDay = Helper.Get($"date{UpperSeason(SDate.Now().Season)}{SDate.Now().Day}") }) + Environment.NewLine + Environment.NewLine;
+            if (SDate.Now().Season == "spring" && SDate.Now().Day == 1)
+                text = Helper.Get("weather-menu.openingS1D1", new { descDay = Helper.Get($"date{UpperSeason(SDate.Now().Season)}{SDate.Now().Day}") }) + Environment.NewLine + Environment.NewLine;
+            else if (SDate.Now().Season == "winter" && SDate.Now().Day == 28)
+                text = Helper.Get("weather-menu.openingS4D28", new { descDay = Helper.Get($"date{UpperSeason(SDate.Now().Season)}{SDate.Now().Day}") }) + Environment.NewLine + Environment.NewLine;
+            else
+                text = Helper.Get("weather-menu.opening", new { descDay = Helper.Get($"date{UpperSeason(SDate.Now().Season)}{SDate.Now().Day}") }) + Environment.NewLine + Environment.NewLine;
 
             if (Current.ContainsCondition(CurrentWeather.Heatwave))
             {
@@ -85,30 +91,36 @@ namespace ClimatesOfFerngillRebuild
             }
 
             if (Current.ContainsCondition(CurrentWeather.Frost))
-            {
+            { 
                 text += Helper.Get("weather-menu.condition.frost") + Environment.NewLine;
             }
+
+            ISDVWeather CurrentFog = Current.GetWeatherMatchingType("Fog").First();
+            string fogString = "";
+
+            //  If the fog is visible, we don't need to display fog information. However, if it's in the morning, 
+            //    and we know evening fog is likely, we should display the message it's expected
+            // That said, if it's not, we need to pull the fog information down, assuming it's been reset. This checks that the fog end
+            //    time is *before* now. To avoid nested trinary statements..
+            if (SDVTime.CurrentTime < CurrentFog.WeatherExpirationTime && Current.GenerateEveningFog && CurrentFog.WeatherBeginTime < new SDVTime(1200))
+                fogString = Helper.Get("weather-menu.expectedFog");
+            if (CurrentFog.WeatherBeginTime > SDVTime.CurrentTime && Current.GenerateEveningFog)
+                fogString = Helper.Get("weather-menu.fogFuture",
+                    new
+                    {
+                        fogTime = CurrentFog.WeatherBeginTime.ToString(),
+                        endFog = CurrentFog.WeatherExpirationTime.ToString()
+                    });
 
             //Current Conditions.
             text += Helper.Get("weather-menu.current", new
             {
-                todayCondition = (Current.HasWeather(CurrentWeather.Fog) ? Helper.Get("weather-menu.fog", new { condition = GetBasicWeather(Current, Game1.currentSeason) }) : GetBasicWeather(Current, Game1.currentSeason)),
-               todayHigh = GetTemperatureString(Current.TodayHigh),
-               todayLow = GetTemperatureString(Current.TodayLow),
-               fogString = (Current.HasEveningFog? Helper.Get("weather-menu.fogFuture", 
-                        new {
-                            fogTime = Current.GetWeatherMatchingType("Fog").First().WeatherBeginTime.ToString(),
-                            endFog = Current.GetWeatherMatchingType("Fog").First().WeatherExpirationTime.ToString()
-                        }) 
-                    : (Current.GetWeatherMatchingType("Fog").First().IsWeatherVisible? 
-                    Helper.Get("weather-menu.fog", 
-                        new {
-                            fogTime = Current.GetWeatherMatchingType("Fog").First().IsWeatherVisible ?  
-                            Current.GetWeatherMatchingType("Fog").First().WeatherExpirationTime.ToString(): ""
-                        }) : "")
-                  )
+                todayCondition = Current.HasWeather(CurrentWeather.Fog) ? Helper.Get("weather-menu.fog", new { condition = GetBasicWeather(Current, Game1.currentSeason), fogTime = CurrentFog.IsWeatherVisible ? CurrentFog.WeatherExpirationTime.ToString() : "" }) : GetBasicWeather(Current, Game1.currentSeason),
+
+                todayHigh = GetTemperatureString(Current.TodayHigh),
+                todayLow = GetTemperatureString(Current.TodayLow),
+                fogString = fogString               
             }) + Environment.NewLine;
-            text += Environment.NewLine;
 
             //Tomorrow weather
             text += Helper.Get("weather-menu.tomorrow", 
@@ -133,10 +145,11 @@ namespace ClimatesOfFerngillRebuild
                 { "fogTime", Current.GetFogTime().ToString() },
                 { "todayHigh", GetTemperatureString(Current.TodayHigh) },
                 { "todayLow", GetTemperatureString(Current.TodayLow) },
-                { "tomorrowWeather", GetWeather(Game1.weatherForTomorrow, Game1.currentSeason) },
+                { "tomorrowWeather", GetWeather(Game1.weatherForTomorrow, Game1.currentSeason, true) },
                 { "tomorrowHigh", GetTemperatureString(Current.TomorrowHigh) },
                 { "tomorrowLow", GetTemperatureString(Current.TomorrowLow) },
                 { "condWarning", GetCondWarning(Current) },
+                { "condString", GetCondWarning(Current) },
                 { "eveningFog", GetEveningFog(Current) }
             };
 
@@ -153,10 +166,10 @@ namespace ClimatesOfFerngillRebuild
             //festival today
             else if (Current.HasWeather(CurrentWeather.Festival))
             {
-                return Helper.Get("weat-fesTomorrow.0", talkParams);
+                return Helper.Get("weat-fesToday.0", talkParams);
             }
 
-            //festival tomrrow
+            //festival tomorrow
             else if (SDVUtilities.GetFestivalName(SDate.Now().AddDays(1)) != "")
             {
                 return Helper.Get("weat-fesTomorrow.0", talkParams);
@@ -201,17 +214,24 @@ namespace ClimatesOfFerngillRebuild
 
         private string GetEveningFog(WeatherConditions Current)
         {
-            if (Current.HasEveningFog)
+            if (Current.GenerateEveningFog)
             {
                 var fList = Current.GetWeatherMatchingType("Fog");
                 foreach (ISDVWeather weat in fList)
                 {
                    if (weat is FerngillFog fWeat)
                     {
-                        return Helper.Get("weather-condition.evenFog", new { startTime = fWeat.WeatherBeginTime.ToString(), endTime = fWeat.WeatherExpirationTime.ToString() });
+                        if (Current.GetWeatherMatchingType("Fog").First().IsWeatherVisible && (SDVTime.CurrentTime > new SDVTime(1200)))
+                            return Helper.Get("weather-condition.fog", new { fogTime = fWeat.WeatherExpirationTime.ToString() });
+                        else
+                        {
+                            if (fWeat.WeatherBeginTime != fWeat.WeatherExpirationTime)
+                                return Helper.Get("weather-condition.evenFog", new { startTime = fWeat.WeatherBeginTime.ToString(), endTime = fWeat.WeatherExpirationTime.ToString() });
+                            else
+                                return "";
+                        }
                     }
                 }
-
                 return "";
             }
             else
@@ -222,34 +242,35 @@ namespace ClimatesOfFerngillRebuild
         {
             int rNumber = OurDice.Next(2);
             if (Current.ContainsCondition(CurrentWeather.Heatwave))
-            {
                 return Helper.Get($"weather-condition.heatwave.{rNumber}");
-            }
 
             if (Current.ContainsCondition(CurrentWeather.Frost))
-            {
                 return Helper.Get($"weather-condition.frost.{rNumber}");
-            }
+
+            if (Current.ContainsCondition(CurrentWeather.WhiteOut))
+                return Helper.Get($"weather-condition.whiteout.{rNumber}");
 
             return "";            
         }
 
-        private string GetWeather(int weather, string season)
+        private string GetWeather(int weather, string season, bool TomorrowWeather = false)
         {
             int rNumber = OurDice.Next(2);
 
             if (weather == Game1.weather_debris)
                 return Helper.Get($"weat-{season}.debris.{rNumber}");
-            else if (weather == Game1.weather_festival || weather == Game1.weather_wedding)
-                return Helper.Get($"weat-{season}.sunny.{rNumber}");
+            else if (weather == Game1.weather_festival || weather == Game1.weather_wedding || weather == Game1.weather_sunny && SDVTime.CurrentIntTime < Game1.getModeratelyDarkTime() && !TomorrowWeather)
+                return Helper.Get($"weat-{season}.sunny_daytime.{rNumber}");
+            else if (weather == Game1.weather_festival || weather == Game1.weather_wedding || weather == Game1.weather_sunny && SDVTime.CurrentIntTime >= Game1.getModeratelyDarkTime() && !TomorrowWeather)
+                return Helper.Get($"weat-{season}.sunny_nighttime.{rNumber}");
+            else if (weather == Game1.weather_festival || weather == Game1.weather_wedding || weather == Game1.weather_sunny && TomorrowWeather)
+                return Helper.Get($"weat-{season}.sunny_daytime.{rNumber}");
             else if (weather == Game1.weather_lightning)
                 return Helper.Get($"weat-{season}.stormy.{rNumber}");
             else if (weather == Game1.weather_rain)
                 return Helper.Get($"weat-{season}.rainy.{rNumber}");
             else if (weather == Game1.weather_snow)
                 return Helper.Get($"weat-{season}.snow.{rNumber}");
-            else if (weather == Game1.weather_sunny)
-                return Helper.Get($"weat-{season}.sunny.{rNumber}");
 
             return "ERROR";
         }
@@ -276,16 +297,16 @@ namespace ClimatesOfFerngillRebuild
 
         private string GetBasicWeather(WeatherConditions Weather, string season)
         {
-            int rNumber = OurDice.Next(2);
-
-            if (Weather.CurrentWeatherIconBasic == WeatherIcon.IconBlizzard)
+            if (Weather.CurrentWeatherIconBasic == WeatherIcon.IconBlizzard || Weather.CurrentWeatherIconBasic == WeatherIcon.IconWhiteOut)
                 return Helper.Get($"weather_blizzard");
             else if (Weather.CurrentWeatherIconBasic == WeatherIcon.IconSpringDebris || Weather.CurrentWeatherIconBasic == WeatherIcon.IconDebris)
                 return Helper.Get($"weather_wind");
             else if (Weather.CurrentWeatherIconBasic == WeatherIcon.IconDryLightning)
                 return Helper.Get($"weather_drylightning");
-            else if (Weather.CurrentWeatherIconBasic == WeatherIcon.IconSunny)
-                return Helper.Get($"weather_sunny");
+            else if (Weather.CurrentWeatherIconBasic == WeatherIcon.IconSunny && SDVTime.CurrentIntTime < Game1.getModeratelyDarkTime())
+                return Helper.Get($"weather_sunny_daytime");
+            else if (Weather.CurrentWeatherIconBasic == WeatherIcon.IconSunny && SDVTime.CurrentIntTime >= Game1.getModeratelyDarkTime())
+                return Helper.Get($"weather_sunny_nighttime");
             else if (Weather.CurrentWeatherIconBasic == WeatherIcon.IconStorm)
                 return Helper.Get($"weather_lightning");
             else if (Weather.CurrentWeatherIconBasic == WeatherIcon.IconSnow)
@@ -301,19 +322,20 @@ namespace ClimatesOfFerngillRebuild
             return "ERROR";
         }
 
-
         private string GetWeather(WeatherConditions Weather, string season)
         {
             int rNumber = OurDice.Next(2);
 
-            if (Weather.CurrentWeatherIconBasic == WeatherIcon.IconBlizzard)
+            if (Weather.CurrentWeatherIconBasic == WeatherIcon.IconBlizzard || Weather.CurrentWeatherIconBasic == WeatherIcon.IconWhiteOut)
                 return Helper.Get($"weat-{season}.blizzard.{rNumber}");
             else if (Weather.CurrentWeatherIconBasic == WeatherIcon.IconSpringDebris || Weather.CurrentWeatherIconBasic == WeatherIcon.IconDebris)
                 return Helper.Get($"weat-{season}.debris.{rNumber}");
             else if (Weather.CurrentWeatherIconBasic == WeatherIcon.IconDryLightning)
                 return Helper.Get($"weat-{season}.drylightning.{rNumber}");
-            else if (Weather.CurrentWeatherIconBasic == WeatherIcon.IconSunny)
-                return Helper.Get($"weat-{season}.sunny.{rNumber}");
+            else if (Weather.CurrentWeatherIconBasic == WeatherIcon.IconWedding || Weather.CurrentWeatherIconBasic == WeatherIcon.IconFestival || Weather.CurrentWeatherIconBasic == WeatherIcon.IconSunny && SDVTime.CurrentIntTime <  Game1.getModeratelyDarkTime())
+                return Helper.Get($"weat-{season}.sunny_daytime.{rNumber}");
+            else if (Weather.CurrentWeatherIconBasic == WeatherIcon.IconSunny || Weather.CurrentWeatherIconBasic == WeatherIcon.IconWedding || Weather.CurrentWeatherIconBasic == WeatherIcon.IconFestival && SDVTime.CurrentIntTime >= Game1.getModeratelyDarkTime())
+                return Helper.Get($"weat-{season}.sunny_nighttime.{rNumber}");
             else if (Weather.CurrentWeatherIconBasic == WeatherIcon.IconStorm)
                 return Helper.Get($"weat-{season}.stormy.{rNumber}");
             else if (Weather.CurrentWeatherIconBasic == WeatherIcon.IconSnow)
@@ -322,8 +344,6 @@ namespace ClimatesOfFerngillRebuild
                 return Helper.Get($"weat-{season}.rainy.{rNumber}");
             else if (Weather.CurrentWeatherIconBasic == WeatherIcon.IconThunderSnow)
                 return Helper.Get($"weat-{season}.thundersnow.{rNumber}");
-            else if (Weather.CurrentWeatherIconBasic == WeatherIcon.IconWedding || Weather.CurrentWeatherIconBasic == WeatherIcon.IconFestival)
-                return Helper.Get($"weat-{season}.sunny.{rNumber}");
 
             return "ERROR";
         }
@@ -361,6 +381,7 @@ namespace ClimatesOfFerngillRebuild
                     break;
                 case WeatherIcon.IconSnow:
                 case WeatherIcon.IconBlizzard:
+                case WeatherIcon.IconWhiteOut:
                     placement = new Rectangle(465, 346, 13, 13);
                     break;
             }

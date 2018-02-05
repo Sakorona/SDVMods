@@ -797,29 +797,57 @@ namespace ClimatesOfFerngillRebuild
                     Game1.isSnowing = Game1.isLightning = Game1.isDebrisWeather = false;
                     Game1.isRaining = true;
                     Game1.debrisWeather.Clear();
+                    Conditions.GetWeatherMatchingType("Blizzard").First().EndWeather();
+                    Conditions.GetWeatherMatchingType("WhiteOut").First().EndWeather();
                     Monitor.Log(Helper.Translation.Get("console-text.weatherset_rain"), LogLevel.Info);
                     break;
                 case "storm":
                     Game1.isSnowing = Game1.isDebrisWeather = false;
                     Game1.isLightning = Game1.isRaining = true;
                     Game1.debrisWeather.Clear();
+                    Conditions.GetWeatherMatchingType("Blizzard").First().EndWeather();
+                    Conditions.GetWeatherMatchingType("WhiteOut").First().EndWeather();
                     Monitor.Log(Helper.Translation.Get("console-text.weatherset_storm"), LogLevel.Info);
                     break;
                 case "snow":
                     Game1.isRaining = Game1.isLightning = Game1.isDebrisWeather = false;
                     Game1.isSnowing = true;
                     Game1.debrisWeather.Clear();
+                    Conditions.GetWeatherMatchingType("Blizzard").First().EndWeather();
+                    Conditions.GetWeatherMatchingType("WhiteOut").First().EndWeather();
                     Monitor.Log(Helper.Translation.Get("console-text.weatherset_snow"), LogLevel.Info);
                     break;
                 case "debris":
                     Game1.isSnowing = Game1.isLightning = Game1.isRaining = false;
+                    Conditions.GetWeatherMatchingType("Blizzard").First().EndWeather();
+                    Conditions.GetWeatherMatchingType("Fog").First().EndWeather();
+                    Conditions.GetWeatherMatchingType("WhiteOut").First().EndWeather();
                     Game1.isDebrisWeather = true;
                     Game1.populateDebrisWeatherArray();
                     Monitor.Log(Helper.Translation.Get("console-text.weatherset_debris", LogLevel.Info));
                     break;
                 case "sunny":
+                    Conditions.GetWeatherMatchingType("Blizzard").First().EndWeather();
+                    Conditions.GetWeatherMatchingType("Fog").First().EndWeather();
+                    Conditions.GetWeatherMatchingType("WhiteOut").First().EndWeather();
                     Game1.isSnowing = Game1.isLightning = Game1.isRaining = Game1.isRaining = false;
                     Monitor.Log(Helper.Translation.Get("console-text.weatherset_sun", LogLevel.Info));
+                    break;
+                case "blizzard":
+                    Game1.isRaining = Game1.isLightning = Game1.isDebrisWeather = false;
+                    Game1.isSnowing = true;
+                    Game1.debrisWeather.Clear();
+                    Conditions.GetWeatherMatchingType("Blizzard").First().CreateWeather();
+                    Conditions.GetWeatherMatchingType("WhiteOut").First().EndWeather();
+                    Monitor.Log(Helper.Translation.Get("console-text.weatherset_snow"), LogLevel.Info);
+                    break;
+                case "whiteout":
+                    Game1.isRaining = Game1.isLightning = Game1.isDebrisWeather = false;
+                    Game1.isSnowing = true;
+                    Game1.debrisWeather.Clear();
+                    Conditions.GetWeatherMatchingType("Blizzard").First().CreateWeather();
+                    Conditions.GetWeatherMatchingType("WhiteOut").First().CreateWeather();
+                    Monitor.Log(Helper.Translation.Get("console-text.weatherset_snow"), LogLevel.Info);
                     break;
             }
 
@@ -927,7 +955,7 @@ namespace ClimatesOfFerngillRebuild
             // show menu
             this.PreviousMenu = Game1.activeClickableMenu;
             Game1.activeClickableMenu = new WeatherMenu(Monitor, this.Helper.Reflection, OurIcons, Helper.Translation, Conditions, 
-                OurMoon, WeatherOpt, 160, MenuText);
+                OurMoon, WeatherOpt, MenuText);
         }
 
         /// <summary>

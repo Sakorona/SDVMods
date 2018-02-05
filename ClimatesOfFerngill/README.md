@@ -1,12 +1,13 @@
 ﻿# Climates of Ferngill (Rebuild) You Can (Not) Have Weather
 
-Current Version (1 January 2018): v1.3-beta1
+Current Version (4 Feburary 2018): 1.3
 
 ## What's New
 
 - Fog!
 - Blizzards, Thundersnow
 - A more customizable weather system
+- More descriptive and varied weather reports
 
 ## Requirements
 
@@ -39,13 +40,14 @@ Every ten minutes, the mod checks to see if you've been outside for a certain pe
 *Special Weathers: Thundersnow, Blizzard
 (NB: While you incur a stamina penalty for being sick in fog, it deliberately does not trigger this.)
 
-The penalties are cumulative - that is, they add up to the final multiplier.
+The penalties are **cumulative** - that is, they add up to the final multiplier.
 *Lightning : +100% ( 1)
 *Thundersnow: +100% (1)
 *Thundersnow (nighttime): +50% (.5)
 *Foggy: +50% (.5)
 *Foggy (nightime) +25% (.25)
 *Blizzard: +125% (1.25)
+*Blizzard: **White Out**+225% (2.25)
 *Blizzard (nighttime) +50% (.5)
 *Frost (nightime): +125% (1.25) - this is not during the winter. During winter, the frost penalty is untriggered.
 *Heatwave (daytime): +125% (1.25)
@@ -55,7 +57,7 @@ The calculated number is then rounded __down__
 For example, therefore, if you're outduring a storm, with the base of 2, you only take a stamina penalty of 2. But if it's also a heatwave, your penatly is now (+1+1.25)=*2.25 or 4.5. So a penalty of 4.
 If you're out in a blizzard during the day, it's *1.25 or 2.5 rounded down to 2. If you're out in that blizzard at night, another .5 (1.25+.5) is added making it 1.75 or 3.5 rounded down to 3.
 
-(This does mean a foggy blizzard at night is (+.5+.25+1.25+.5 or *2.25), and if you somehow get this in fall, would be *3.5)
+(This does mean a foggy blizzard at night is (+.5+.25+1.25+.5 or *2.25), and if you somehow get this in fall, would be *3.5. And somehow, if you get a whiteout, it would be *3.25 and *4.5!)
 
 ## Known Issues
 
@@ -70,6 +72,36 @@ If you're out in a blizzard during the day, it's *1.25 or 2.5 rounded down to 2.
 - ChefRude for testing and the night icon sprites (as well as better fog textures)
 
 ## Changelog
+v1.3
+- custom popup text on first and last day of the year
+
+v1.3beta8
+ - updated descriptors for (sunny, at night)
+ - updated evening fog descriptor to not show the fog beginning once started
+ - added special descriptors for the easter egg.
+ - some differnation done on current descriptors
+ - fixed some issues lingering with fog lines not spacing correctly
+ - refined some of the text to read more cleanly
+ - added conversion chance for snow in spring if it's cold enough
+
+v1.3beta7
+ - Updated the console command code to be more.. proper.
+ - Added a easter egg blizzard mode.
+
+v1.3beta6
+ - ISDVWeather now implements a EndWeather 
+ - Console commands can now arbitarily trigger blizzards
+ - Fog code cleaned up to remove old code
+ - Sprites cleaned up to remove old sprite code.
+ - Festival text fixes
+
+v1.3beta5
+- fog text fixes (remove duplicate fog text, evening fog properly display)
+
+v1.3beta4
+- text fixes (fog Time not appearing, temperature string incomplete)
+- modified the menu screen to work properly over fog.
+
 v1.3beta3
 - .. somehow the text fixes didn't take?
 - cleaned up various elements of the code - no longer attempts to IAssetEditor
@@ -239,14 +271,14 @@ over a certain value.). Valid 0-1, but it's recommended that this is kept low. D
 
  - 'ChanceOfGettingSick' - Controls the chance you'll get sick when conditions are matched. Default is set to '.7' for (70% chance). Valid Range is 0 to 1.
 
- - 'Use12HourTime' - Tells it whether or not to use 12hour time or not in displays. Defaults to false.
+ - 'Use12HourTime' - Tells it whether or not to use 12hour time or not in displays. Defaults to false. Valid: true, false
 
  - 'BadMoonRising' - Chance of a blood moon on a full moon. Default: .004 (.4%). Valid Range is 0 to 1.
 
- - 'EclipseOn' - Whether or not the eclipse is enabled. Defaults to on. (NOTE: Will not trigger until at least Spring 2, and must be a full moon.)
+ - 'EclipseOn' - Whether or not the eclipse is enabled. Defaults to true. (NOTE: Will not trigger until at least Spring 2, and must be a full moon.) (valid: true, false)
 
- - 'EclipseChance' - The chance of an eclipse every full moon. Defaults to 1.5%.
+ - 'EclipseChance' - The chance of an eclipse every full moon. Defaults to .015 (1.5%) Valid Range is 0 to 1.
 
- - 'SpawnMonsters' - Controls if monsters spawn on your wilderness farm. Default: on
+ - 'SpawnMonsters' - Controls if monsters spawn on your wilderness farm. Default: true. Valid: true, false
 
- - 'SpawnMonstersAllFarms' - Controls if monsters spawn on all farms. Default: off
+ - 'SpawnMonstersAllFarms' - Controls if monsters spawn on all farms. Default: false. Valid: true, false

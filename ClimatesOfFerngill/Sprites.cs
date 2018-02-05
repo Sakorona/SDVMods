@@ -143,14 +143,7 @@ namespace ClimatesOfFerngillRebuild
             public static readonly Rectangle WeatherFestival = new Rectangle(235, 32, 47, 45);
             public static readonly Rectangle WeatherBlizzard = new Rectangle(281, 32, 40, 42);
             public static readonly Rectangle WeatherDryLightning = new Rectangle(321,32,33,39);
-            public static readonly Rectangle WeatherThundersnow = new Rectangle(355,31,39,40);
-
-            /// <summary>A down arrow for scrolling content.</summary>
-            public static readonly Rectangle DownArrow = new Rectangle(12, 76, 40, 44);
-
-            /// <summary>An up arrow for scrolling content.</summary>
-            public static readonly Rectangle UpArrow = new Rectangle(76, 72, 40, 44);
-            
+            public static readonly Rectangle WeatherThundersnow = new Rectangle(355,31,39,40);            
         }
 
         public static Texture2D Pixel => LazyPixel.Value;
