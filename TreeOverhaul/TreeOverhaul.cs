@@ -26,7 +26,7 @@ namespace TreeOverhaul
         {
             TimeEvents.AfterDayStarted += Events_NewDay;
             treeOverhaulConfig = helper.ReadConfig<TreeOverhaulConfig>();
-            this.Monitor.Log(GetType().Name + " has loaded");
+            this.Monitor.Log(GetType().Name + " has loaded", LogLevel.Trace);
         }
 
         public void Events_NewDay(object sender, EventArgs e)

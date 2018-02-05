@@ -390,7 +390,7 @@
       "WeatherChances": [
         {
           "WeatherType": "rain",
-          "BaseValue": 0.494,
+          "BaseValue": -0.494,
           "ChangeRate": 0.0424,
           "VariableLowerBound": -0.07,
           "VariableHigherBound": 0.07
@@ -405,7 +405,7 @@
         {
           "WeatherType": "debris",
           "BaseValue": 1.4932,
-          "ChangeRate": 0.044,
+          "ChangeRate": -0.044,
           "VariableLowerBound": 0.0,
           "VariableHigherBound": 0.1
         },

@@ -1,15 +1,32 @@
 ﻿using Microsoft.Xna.Framework;
+using StardewModdingAPI.Utilities;
 using StardewValley;
 using StardewValley.Monsters;
 using StardewValley.TerrainFeatures;
 using System;
 using System.Collections.Generic;
 using TwilightShards.Common;
+using xTile.Dimensions;
+using SObject = StardewValley.Object;
 
 namespace TwilightShards.Stardew.Common
 {
     public static class SDVUtilities
     {
+        public static bool TileIsClearForSpawning(GameLocation checkLoc, Vector2 tileVector,  StardewValley.Object tile)
+        {
+            if (tile == null && checkLoc.doesTileHaveProperty((int)tileVector.X, (int)tileVector.Y, "Diggable", "Back") != null && (checkLoc.isTileLocationOpen(new Location((int)tileVector.X * Game1.tileSize, (int)tileVector.Y * Game1.tileSize)) && !checkLoc.isTileOccupied(tileVector, "")) && checkLoc.doesTileHaveProperty((int)tileVector.X, (int)tileVector.Y, "Water", "Back") == null)
+            {
+                string PropCheck = checkLoc.doesTileHaveProperty((int)tileVector.X, (int)tileVector.Y, "NoSpawn", "Back");
+
+                if (PropCheck == null || !PropCheck.Equals("Grass") && !PropCheck.Equals("All") && !PropCheck.Equals("True"))
+                {
+                    return true;
+                }
+            }
+            return false;
+        }
+
         public static void ShakeScreenOnLowStamina()
         {
             Game1.staminaShakeTimer = 1000;
@@ -48,6 +65,37 @@ namespace TwilightShards.Stardew.Common
                     $"It is Snowy: {Game1.isSnowing} {Environment.NewLine}" +
                     $"It is Debris Weather: {Game1.isDebrisWeather} {Environment.NewLine}";
         }
+
+        internal static string GetFestivalName(SDate date)
+        {
+            int dayOfMonth = date.Day;
+            string currentSeason = date.Season;
+
+            switch (currentSeason)
+            {
+                case ("spring"):
+                    if (dayOfMonth == 13) return "Egg Festival";
+                    if (dayOfMonth == 24) return "Flower Dance";
+                    break;
+                case ("winter"):
+                    if (dayOfMonth == 8) return "Festival of Ice";
+                    if (dayOfMonth == 25) return "Feast of the Winter Star";
+                    break;
+                case ("fall"):
+                    if (dayOfMonth == 16) return "Stardew Valley Fair";
+                    if (dayOfMonth == 27) return "Spirit's Eve";
+                    break;
+                case ("summer"):
+                    if (dayOfMonth == 11) return "Luau";
+                    if (dayOfMonth == 28) return "Dance of the Moonlight Jellies";
+                    break;
+                default:
+                    return "";
+            }
+
+            return "";
+        }
+
 
         private static string GetFestivalName(int dayOfMonth, string currentSeason)
         {
@@ -91,29 +139,6 @@ namespace TwilightShards.Stardew.Common
             Game1.player.Stamina = 0;
             Game1.player.doEmote(36);
             Game1.farmerShouldPassOut = true;
-        }
-
-        public static string WeatherToString(int weather)
-        {
-            switch (weather)
-            {
-                case 0:
-                    return "Sunny";
-                case 1:
-                    return "Rain";
-                case 2:
-                    return "Debris";
-                case 3:
-                    return "Lightning";
-                case 4:
-                    return "Festival";
-                case 5:
-                    return "Snow";
-                case 6:
-                    return "Wedding";
-                default:
-                    return "<ERROR>";
-            }
         }
 
         public static int CropCountInFarm(Farm f)
@@ -166,6 +191,41 @@ namespace TwilightShards.Stardew.Common
                 };
                 characters.Add((NPC)bat);
             }
+        }
+
+        public static int CreateWeeds(GameLocation spawnLoc, int numOfWeeds)
+        {
+            if (spawnLoc == null)
+                throw new Exception("The passed spawn location cannot be null!");
+
+            int CreatedWeeds = 0;
+
+            for (int i = 0; i <= numOfWeeds; i++)
+            {
+                //limit number of attempts per attempt to 10.
+                int numberOfAttempts = 0;
+                while (numberOfAttempts < 3)
+                {
+                    //get a random tile.
+                    int xTile = Game1.random.Next(spawnLoc.map.DisplayWidth / Game1.tileSize);
+                    int yTile = Game1.random.Next(spawnLoc.map.DisplayHeight / Game1.tileSize);
+                    Vector2 randomVector = new Vector2((float)xTile, (float)yTile);
+                    spawnLoc.objects.TryGetValue(randomVector, out SObject @object);
+
+                    if (SDVUtilities.TileIsClearForSpawning(spawnLoc, randomVector, @object))
+                    {
+                        //for now, don't spawn in winter.
+                        if (Game1.currentSeason != "winter")
+                        {
+                            //spawn the weed
+                            spawnLoc.objects.Add(randomVector, new SObject(randomVector, GameLocation.getWeedForSeason(Game1.random, Game1.currentSeason), 1));
+                            CreatedWeeds++;
+                        }
+                    }
+                    numberOfAttempts++; // this might have been more useful INSIDE the while loop.
+                }
+            }
+            return CreatedWeeds;
         }
     }
 }

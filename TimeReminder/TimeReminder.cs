@@ -1,7 +1,10 @@
-﻿using StardewModdingAPI;
+﻿using Microsoft.Xna.Framework;
+using StardewModdingAPI;
 using StardewModdingAPI.Events;
 using StardewValley;
+using StardewValley.TerrainFeatures;
 using System;
+using System.Collections.Generic;
 
 namespace TimeReminder
 {

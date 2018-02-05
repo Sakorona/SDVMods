@@ -9,6 +9,7 @@
     <Import_RootNamespace>TwilightCoreShared</Import_RootNamespace>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="$(MSBuildThisFileDirectory)GeneralFunctions.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)OurExtensions.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)PRNG\MersenneTwister.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)PRNG\MTwisterExtensions.cs" />

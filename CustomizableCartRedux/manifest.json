@@ -4,8 +4,8 @@
   "Version": {
     "MajorVersion": 1,
     "MinorVersion": 1,
-    "PatchVersion": 0,
-    "Build": "20170917"
+    "PatchVersion": 1,
+    "Build": ""
   },
   "Description": "Allows you to alter the chances of the traveling cart appearing. Credit to Yyeahdude for the original idea.",
   "UniqueID": "KoihimeNakamura.CCR",

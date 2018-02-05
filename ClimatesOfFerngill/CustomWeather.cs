@@ -4,14 +4,9 @@ using StardewValley;
 
 namespace ClimatesOfFerngillRebuild
 {
-    public class CustomWeather
+    public class CustomWeatherOld
     {
         private Vector2 snowPos; //snow elements
-
-        public CustomWeather()
-        {
-
-        }
 
         public void DrawBlizzard()
         {
