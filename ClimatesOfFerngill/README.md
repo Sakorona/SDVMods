@@ -1,6 +1,6 @@
 ﻿# Climates of Ferngill (Rebuild) You Can (Not) Have Weather
 
-Current Version (4 Feburary 2018): 1.3
+Current Version (8 Feburary 2018): 1.3.2
 
 ## What's New
 
@@ -72,6 +72,12 @@ If you're out in a blizzard during the day, it's *1.25 or 2.5 rounded down to 2.
 - ChefRude for testing and the night icon sprites (as well as better fog textures)
 
 ## Changelog
+v1.3.2
+- the moon also disappears now when the rest of the shipping menu fades
+
+v1.3.1
+- fixed the evening fog. Forgot to remove the debug line.
+
 v1.3
 - custom popup text on first and last day of the year
 

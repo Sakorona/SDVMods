@@ -155,8 +155,14 @@ namespace ClimatesOfFerngillRebuild
 
         private void DrawOverMenus(object sender, EventArgs e)
         {
+            bool outro = false;
             //revised this so it properly draws over the canon moon. :v
-            if (Game1.showingEndOfNightStuff && Game1.activeClickableMenu is ShippingMenu menu && !Game1.wasRainingYesterday)
+            if (Game1.activeClickableMenu is ShippingMenu ourMenu)
+            {
+                outro = Helper.Reflection.GetField<bool>(ourMenu, "outro").GetValue();
+            }
+
+            if (Game1.showingEndOfNightStuff && !Game1.wasRainingYesterday && !outro)
             {
                 Game1.spriteBatch.Draw(OurIcons.MoonSource, new Vector2((float)(Game1.viewport.Width - 80 * Game1.pixelZoom), (float)Game1.pixelZoom), OurIcons.GetNightMoonSprite(SDVMoon.GetLunarPhaseForDay(SDate.Now().AddDays(-1))), Color.LightBlue, 0.0f, Vector2.Zero, (float)Game1.pixelZoom * 1.5f, SpriteEffects.None, 1f);
             }
@@ -770,7 +776,8 @@ namespace ClimatesOfFerngillRebuild
                     
             if (Conditions.TestForSpecialWeather(GameClimate.GetClimateForDate(SDate.Now()).RetrieveOdds(Dice, "fog", SDate.Now().Day, DebugOutput)))
             {
-                Monitor.Log("Special weather created!");
+                if (WeatherOpt.Verbose)
+                    Monitor.Log("Special weather created!");
             }
         }
 

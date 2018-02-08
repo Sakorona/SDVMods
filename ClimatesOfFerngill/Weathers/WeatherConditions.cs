@@ -896,8 +896,7 @@ namespace ClimatesOfFerngillRebuild
             //             Thundersnow  - as Blizzard, but really rare.
             //             Fog - per climate, although night fog in winter is double normal chance
 
-            //GenerateEveningFog = (Dice.NextDouble() < (Game1.currentSeason == "winter" ? fogChance * 2 : fogChance)) && !this.GetCurrentConditions().HasFlag(CurrentWeather.Wind);
-            GenerateEveningFog = true;
+            GenerateEveningFog = (Dice.NextDouble() < (Game1.currentSeason == "winter" ? fogChance * 2 : fogChance)) && !this.GetCurrentConditions().HasFlag(CurrentWeather.Wind);
 
             if (BlockFog)
                 GenerateEveningFog = false;
