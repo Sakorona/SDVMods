@@ -34,6 +34,8 @@ namespace ClimatesOfFerngillRebuild
         /// <summary>Track tomorrow's temperature</summary>
         private RangePair TomorrowTemps;
 
+        private SDVMoon Moon;
+
         /// <summary>Track current conditions</summary>
         private CurrentWeather CurrentConditionsN { get; set; }
 
@@ -386,6 +388,8 @@ namespace ClimatesOfFerngillRebuild
                     return WeatherIcon.IconRainFog;
                 if (GeneralFunctions.ContainsOnlyMatchingFlags(CurrentConditionsN, (int)(CurrentWeather.Snow | CurrentWeather.Blizzard | CurrentWeather.WhiteOut | CurrentWeather.Fog)))
                     return WeatherIcon.IconWhiteOutFog;
+                if (Moon.CurrentPhase == MoonPhase.BloodMoon)
+                    return WeatherIcon.IconBloodMoon;
 
                 Console.WriteLine($"Error. Current conditions are: {CurrentConditionsN}");
 
@@ -524,6 +528,8 @@ namespace ClimatesOfFerngillRebuild
                     return WeatherIcon.IconRain;
                 if (GeneralFunctions.ContainsOnlyMatchingFlags(CurrentConditionsN, (int)(CurrentWeather.Blizzard | CurrentWeather.Snow | CurrentWeather.Fog | CurrentWeather.WhiteOut)))
                     return WeatherIcon.IconWhiteOut;
+                if (Moon.CurrentPhase == MoonPhase.BloodMoon)
+                    return WeatherIcon.IconBloodMoon;
 
                 Console.WriteLine($"Error. Current conditions are: {CurrentConditionsN}");
 
@@ -541,12 +547,13 @@ namespace ClimatesOfFerngillRebuild
         /// <param name="Dice">pRNG</param>
         /// <param name="monitor">SMAPI log object</param>
         /// <param name="Config">Game configuration</param>
-        public WeatherConditions(Icons Sheets, MersenneTwister Dice, ITranslationHelper Translation, IMonitor monitor, WeatherConfig Config)
+        public WeatherConditions(Icons Sheets, MersenneTwister Dice, ITranslationHelper Translation, IMonitor monitor, SDVMoon Termina, WeatherConfig Config)
         {
             this.Monitor = monitor;
             this.ModConfig = Config;
             this.Dice = Dice;
             this.Translation = Translation;
+            this.Moon = Termina;
             CurrentConditionsN = CurrentWeather.Unset;
             CurrentWeathers = new List<ISDVWeather>
             {

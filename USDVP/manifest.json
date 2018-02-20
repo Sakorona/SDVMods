@@ -1,12 +1,7 @@
 ﻿{
   "Name": "USDVP",
   "Author": "KoihimeNakamura",
-  "Version": {
-    "MajorVersion": 0,
-    "MinorVersion": 1,
-    "PatchVersion": 0,
-    "Build": "alpha-201801"
-  },
+  "Version": "0.0.16",
   "Description": "Patches various bugs in the game.",
   "UniqueID": "KoihimeNakamura.USDVP",
   "EntryDll": "USDVP.dll",

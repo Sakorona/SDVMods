@@ -3,16 +3,8 @@ using StardewModdingAPI;
 using StardewModdingAPI.Events;
 using StardewValley;
 using System;
-using TwilightShards.Common;
 using StardewValley.Quests;
-using TwilightShards.Stardew.Common;
-using SObject = StardewValley.Object;
-using StardewValley.Menus;
-using System.Collections.Specialized;
 using StardewValley.Monsters;
-using System.Collections.Generic;
-using StardewValley.TerrainFeatures;
-using System.Linq;
 
 namespace TwilightShards.USDVP
 {
@@ -20,30 +12,10 @@ namespace TwilightShards.USDVP
     {
         public override void Entry(IModHelper Helper)
         {
-            SaveEvents.AfterLoad += GameEvents_OneSecondTick;
-           
+            SaveEvents.AfterLoad += AfterLoadFixes;
         }
 
-        private void SaveEvents_BeforeSave(object sender, EventArgs e)
-        {            
-            //resolve bug 3 (issue 46)
-            foreach (GameLocation location in Game1.locations)
-            {
-                for (int index = location.terrainFeatures.Count - 1; index >= 0; --index)
-                {
-                    KeyValuePair<Vector2, TerrainFeature> keyValuePair = location.terrainFeatures.ElementAt<KeyValuePair<Vector2, TerrainFeature>>(index);
-                    if (!location.isTileOnMap(keyValuePair.Key))
-                    {
-                        SerializableDictionary<Vector2, TerrainFeature> terrainFeatures = location.terrainFeatures;
-                        keyValuePair = location.terrainFeatures.ElementAt<KeyValuePair<Vector2, TerrainFeature>>(index);
-                        Vector2 key = keyValuePair.Key;
-                        terrainFeatures.Remove(key);
-                    }
-                }
-            }          
-        }
-
-        private void GameEvents_OneSecondTick(object sender, EventArgs e)
+        private void AfterLoadFixes(object sender, EventArgs e)
         {
             if (!Context.IsWorldReady)
                 return;

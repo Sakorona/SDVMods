@@ -1,6 +1,6 @@
 ﻿# Climates of Ferngill (Rebuild) You Can (Not) Have Weather
 
-Current Version (8 Feburary 2018): 1.3.2
+Current Version (13 Feburary 2018): 1.3.3
 
 ## What's New
 
@@ -72,8 +72,14 @@ If you're out in a blizzard during the day, it's *1.25 or 2.5 rounded down to 2.
 - ChefRude for testing and the night icon sprites (as well as better fog textures)
 
 ## Changelog
+v1.3.3
+- Harvey's 8-heart scene gives the temp scale. C now is Kraggs, the in-game scale.
+- Dual lightning strikes removed (was erroneously triggering additional lightning on stormy daysaw)
+- Apparently I never actually wrote in the code to spawn ghosts. :|
+
 v1.3.2
 - the moon also disappears now when the rest of the shipping menu fades
+- hazardous moon events can be turned off.
 
 v1.3.1
 - fixed the evening fog. Forgot to remove the debug line.
@@ -288,3 +294,5 @@ over a certain value.). Valid 0-1, but it's recommended that this is kept low. D
  - 'SpawnMonsters' - Controls if monsters spawn on your wilderness farm. Default: true. Valid: true, false
 
  - 'SpawnMonstersAllFarms' - Controls if monsters spawn on all farms. Default: false. Valid: true, false
+
+ - 'HazardousMoonEvents' - Turns on or off moon events that hinder the player. Default: false. Valid: true, false.

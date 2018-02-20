@@ -9,6 +9,7 @@ using Microsoft.Xna.Framework;
 using StardewValley.Locations;
 using System.Linq;
 using TwilightShards.Stardew.Common;
+using StardewValley.Monsters;
 
 namespace ClimatesOfFerngillRebuild
 {
@@ -182,7 +183,7 @@ namespace ClimatesOfFerngillRebuild
                     Game1.addHUDMessage(new HUDMessage(Helper.Get("moon-text.fullmoon_eff", new { cropsAffected = cropsAffected })));
             }
 
-            if (CurrentPhase == MoonPhase.NewMoon)
+            if (CurrentPhase == MoonPhase.NewMoon && ModConfig.HazardousMoonEvents)
             {
                 if (f != null)
                 {
@@ -204,6 +205,45 @@ namespace ClimatesOfFerngillRebuild
             }
         }
 
+        public void TenMinuteUpdate()
+        {
+            if (this.CheckForGhostSpawn() && SDVTime.CurrentIntTime > Game1.getStartingToGetDarkTime())
+            {
+                GameLocation f = Game1.currentLocation;
+                Vector2 zero = Vector2.Zero;
+                switch (Game1.random.Next(4))
+                {
+                    case 0:
+                        zero.X = (float)Game1.random.Next(f.map.Layers[0].LayerWidth);
+                        break;
+                    case 1:
+                        zero.X = (float)(f.map.Layers[0].LayerWidth - 1);
+                        zero.Y = (float)Game1.random.Next(f.map.Layers[0].LayerHeight);
+                        break;
+                    case 2:
+                        zero.Y = (float)(f.map.Layers[0].LayerHeight - 1);
+                        zero.X = (float)Game1.random.Next(f.map.Layers[0].LayerWidth);
+                        break;
+                    case 3:
+                        zero.Y = (float)Game1.random.Next(f.map.Layers[0].LayerHeight);
+                        break;
+                }
+                if (Utility.isOnScreen(zero * (float)Game1.tileSize, Game1.tileSize))
+                    zero.X -= (float)Game1.viewport.Width;
+
+                List<NPC> characters = f.characters;
+                Ghost ghost = new Ghost(zero * (float)Game1.tileSize)
+                {
+                    focusedOnFarmers = true,
+                    wildernessFarmMonster = false,
+                    willDestroyObjectsUnderfoot = false,
+                };
+                characters.Add((NPC)ghost);
+
+                Game1.addHUDMessage(new HUDMessage("DEBUG: Ghost spawned"));
+            }
+        }
+
         public void HandleMoonAfterWake(ITranslationHelper Helper)
         {
             if (Game1.getLocationFromName("Beach") is null)
@@ -216,7 +256,7 @@ namespace ClimatesOfFerngillRebuild
                 return;
 
             //new moon processing
-            if (CurrentPhase == MoonPhase.NewMoon)
+            if (CurrentPhase == MoonPhase.NewMoon && ModConfig.HazardousMoonEvents)
             {
                 List<KeyValuePair<Vector2, StardewValley.Object>> entries = (from o in b.objects
                                                                              where beachItems.Contains(o.Value.parentSheetIndex)
@@ -238,34 +278,35 @@ namespace ClimatesOfFerngillRebuild
             //full moon processing
             if (CurrentPhase == MoonPhase.FullMoon)
             {
-                int parentSheetIndex = 0;
-                Rectangle rectangle = new Rectangle(65, 11, 25, 12);
-                for (int index = 0; index < 5; ++index)
-                {
 
-                    //get the item ID to spawn
-                    parentSheetIndex = moonBeachItems.GetRandomItem(Dice);
-                    if (Dice.NextDouble() <= .0001)
-                        parentSheetIndex = 392; //rare chance for a Nautlius Shell.
-
-                    else if (Dice.NextDouble() > .0001 && Dice.NextDouble() <= .45)
-                        parentSheetIndex = 589;
-
-                    else if (Dice.NextDouble() > .45 && Dice.NextDouble() <= .62)
-                        parentSheetIndex = 60;
-
-
-                    if (Dice.NextDouble() < BeachSpawnChance)
+                    int parentSheetIndex = 0;
+                    Rectangle rectangle = new Rectangle(65, 11, 25, 12);
+                    for (int index = 0; index < 5; ++index)
                     {
-                        Vector2 v = new Vector2((float)Game1.random.Next(rectangle.X, rectangle.Right), (float)Game1.random.Next(rectangle.Y, rectangle.Bottom));
-                        itemsChanged++;
-                        if (b.isTileLocationTotallyClearAndPlaceable(v))
-                            b.dropObject(new StardewValley.Object(parentSheetIndex, 1, false, -1, 0), v * (float)Game1.tileSize, Game1.viewport, true, null);
-                    }
-                }
 
-                if (itemsChanged > 0)
-                    Game1.addHUDMessage(new HUDMessage(Helper.Get("moon-text.hud_message_full")));
+                        //get the item ID to spawn
+                        parentSheetIndex = moonBeachItems.GetRandomItem(Dice);
+                        if (Dice.NextDouble() <= .0001)
+                            parentSheetIndex = 392; //rare chance for a Nautlius Shell.
+
+                        else if (Dice.NextDouble() > .0001 && Dice.NextDouble() <= .45)
+                            parentSheetIndex = 589;
+
+                        else if (Dice.NextDouble() > .45 && Dice.NextDouble() <= .62)
+                            parentSheetIndex = 60;
+
+
+                        if (Dice.NextDouble() < BeachSpawnChance)
+                        {
+                            Vector2 v = new Vector2((float)Game1.random.Next(rectangle.X, rectangle.Right), (float)Game1.random.Next(rectangle.Y, rectangle.Bottom));
+                            itemsChanged++;
+                            if (b.isTileLocationTotallyClearAndPlaceable(v))
+                                b.dropObject(new StardewValley.Object(parentSheetIndex, 1, false, -1, 0), v * (float)Game1.tileSize, Game1.viewport, true, null);
+                        }
+                    }
+
+                    if (itemsChanged > 0)
+                        Game1.addHUDMessage(new HUDMessage(Helper.Get("moon-text.hud_message_full")));
             }
         }
 
@@ -327,7 +368,7 @@ namespace ClimatesOfFerngillRebuild
         {
             if (Game1.timeOfDay > Game1.getTrulyDarkTime() && Game1.currentLocation.isOutdoors && Game1.currentLocation is Farm)
             {
-                if (CurrentPhase is MoonPhase.FullMoon && Dice.NextDouble() < GhostChance)
+                if (CurrentPhase is MoonPhase.FullMoon && Dice.NextDouble() < GhostChance && ModConfig.HazardousMoonEvents)
                 {
                     return true;
                 }

@@ -19,6 +19,7 @@ using TwilightShards.Common;
 using Microsoft.Xna.Framework.Graphics;
 using EnumsNET;
 using PyTK.CustomTV;
+using StardewValley.Monsters;
 #endregion
 
 namespace ClimatesOfFerngillRebuild
@@ -75,7 +76,7 @@ namespace ClimatesOfFerngillRebuild
             OurMoon = new SDVMoon(WeatherOpt, Dice);
             OurIcons = new Sprites.Icons(Helper.Content);
             CropList = new List<Vector2>();
-            Conditions = new WeatherConditions(OurIcons, Dice, Helper.Translation, Monitor, WeatherOpt);
+            Conditions = new WeatherConditions(OurIcons, Dice, Helper.Translation, Monitor, OurMoon, WeatherOpt);
             StaminaMngr = new StaminaDrain(WeatherOpt, Helper.Translation, Monitor);
             SeedsForDialogue = new int[] { Dice.Next(), Dice.Next() };
             DescriptionEngine = new Descriptions(Helper.Translation, Dice, WeatherOpt, Monitor);
@@ -116,9 +117,50 @@ namespace ClimatesOfFerngillRebuild
 
                 //console commands
                 helper.ConsoleCommands
-                      .Add("weather_settommorow", helper.Translation.Get("console-text.desc_tmrweather"), TomorrowWeatherChangeFromConsole)
-                      .Add("weather_changeweather", helper.Translation.Get("console-text.desc_setweather"), WeatherChangeFromConsole)
-                      .Add("world_solareclipse", "Starts the solar eclipse.", SolarEclipseEvent_CommandFired);
+                      .Add("world_tmrwweather", helper.Translation.Get("console-text.desc_tmrweather"), TomorrowWeatherChangeFromConsole)
+                      .Add("world_setweather", helper.Translation.Get("console-text.desc_setweather"), WeatherChangeFromConsole)
+                      .Add("world_solareclipse", "Starts the solar eclipse.", SolarEclipseEvent_CommandFired)
+                      .Add("debug_spawnmonster", "Spawns a monster!", SpawnMonster_CommandFired);
+            }
+        }
+
+        private void SpawnMonster_CommandFired(string arg1, string[] arg2)
+        {
+            for (int index = 0; index < 15; ++index)
+            {
+                GameLocation f = Game1.currentLocation;
+                Vector2 zero = Vector2.Zero;
+                Vector2 randomTile = f.getRandomTile();
+                if (Utility.isOnScreen(Utility.Vector2ToPoint(randomTile), Game1.tileSize, (GameLocation)f))
+                    randomTile.X -= (float)(Game1.viewport.Width / Game1.tileSize);
+                if (f.isTileLocationTotallyClearAndPlaceable(randomTile))
+                {
+                    bool flag;
+                    if (Game1.player.CombatLevel >= 8 && Game1.random.NextDouble() < 0.15)
+                    {
+                        List<NPC> characters = f.characters;
+                        ShadowBrute shadowBrute = new ShadowBrute(randomTile * Game1.tileSize);
+                        characters.Add((NPC)shadowBrute);
+                        flag = true;
+                    }
+                    else if (Game1.random.NextDouble() < 0.65 && f.isTileLocationTotallyClearAndPlaceable(randomTile))
+                    {
+                        List<NPC> characters = f.characters;
+                        RockGolem rockGolem = new RockGolem(randomTile * Game1.tileSize, Game1.player.CombatLevel);
+                        characters.Add((NPC)rockGolem);
+                        flag = true;
+                    }
+                    else
+                    {
+                        int mineLevel = 140;
+                        List<NPC> characters = f.characters;
+                        GreenSlime greenSlime = new GreenSlime(randomTile * Game1.tileSize, mineLevel);
+                        characters.Add((NPC)greenSlime);
+                        flag = true;
+                    }
+                    if (!flag || !Game1.currentLocation.Equals(this))
+                        break;
+                }
             }
         }
 
@@ -162,7 +204,7 @@ namespace ClimatesOfFerngillRebuild
                 outro = Helper.Reflection.GetField<bool>(ourMenu, "outro").GetValue();
             }
 
-            if (Game1.showingEndOfNightStuff && !Game1.wasRainingYesterday && !outro)
+            if (Game1.showingEndOfNightStuff && !Game1.wasRainingYesterday && !outro && Game1.activeClickableMenu is ShippingMenu)
             {
                 Game1.spriteBatch.Draw(OurIcons.MoonSource, new Vector2((float)(Game1.viewport.Width - 80 * Game1.pixelZoom), (float)Game1.pixelZoom), OurIcons.GetNightMoonSprite(SDVMoon.GetLunarPhaseForDay(SDate.Now().AddDays(-1))), Color.LightBlue, 0.0f, Vector2.Zero, (float)Game1.pixelZoom * 1.5f, SpriteEffects.None, 1f);
             }
@@ -431,7 +473,7 @@ namespace ClimatesOfFerngillRebuild
                 }
             }
 
-            if (Game1.currentLocation.isOutdoors && Conditions.HasWeather(CurrentWeather.Lightning) && Game1.timeOfDay < 2400)
+            if (Game1.currentLocation.isOutdoors && Conditions.HasWeather(CurrentWeather.Lightning) && !Conditions.HasWeather(CurrentWeather.Rain) && Game1.timeOfDay < 2400)
                 Utility.performLightningUpdate();
 
             //queued messages clear
@@ -495,6 +537,9 @@ namespace ClimatesOfFerngillRebuild
                 if (cDead)
                     SDVUtilities.ShowMessage(Helper.Translation.Get("hud-text.desc_heatwave_cropdeath"));
             }
+
+            //moon 10-minute
+            OurMoon.TenMinuteUpdate();
 
             float oldStamina = Game1.player.stamina;
             Game1.player.stamina += StaminaMngr.TenMinuteTick(Conditions, TicksOutside, TicksTotal, Dice);
