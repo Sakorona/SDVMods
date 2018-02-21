@@ -75,6 +75,9 @@ If you're out in a blizzard during the day, it's *1.25 or 2.5 rounded down to 2.
 v1.3.4
 - Blood Moon implementation
 - Refactored the weather object to be easier to debug and extend
+- Updated and expanded some of the dialogue
+- Dry lightning will no longer happen period when it's frost conditions
+- After consideration, wind will still restrict fog from spawning. 
 
 v1.3.3
 - Harvey's 8-heart scene gives the temp scale. C now is Kraggs, the in-game scale.

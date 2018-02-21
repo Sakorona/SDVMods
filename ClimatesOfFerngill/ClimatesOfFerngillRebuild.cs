@@ -120,8 +120,14 @@ namespace ClimatesOfFerngillRebuild
                       .Add("world_tmrwweather", helper.Translation.Get("console-text.desc_tmrweather"), TomorrowWeatherChangeFromConsole)
                       .Add("world_setweather", helper.Translation.Get("console-text.desc_setweather"), WeatherChangeFromConsole)
                       .Add("world_solareclipse", "Starts the solar eclipse.", SolarEclipseEvent_CommandFired)
-                      .Add("debug_spawnmonster", "Spawns a monster!", SpawnMonster_CommandFired);
+                      .Add("debug_spawnmonster", "Spawns a monster!", SpawnMonster_CommandFired)
+                      .Add("debug_forceBloodMoon", "Forces Blood Moon", ForceBloodMoon);
             }
+        }
+
+        private void ForceBloodMoon(string arg1, string[] arg2)
+        {
+            OurMoon.ForceBloodMoon();
         }
 
         private void SpawnMonster_CommandFired(string arg1, string[] arg2)
@@ -204,9 +210,9 @@ namespace ClimatesOfFerngillRebuild
                 outro = Helper.Reflection.GetField<bool>(ourMenu, "outro").GetValue();
             }
 
-            if (Game1.showingEndOfNightStuff && !Game1.wasRainingYesterday && !outro && Game1.activeClickableMenu is ShippingMenu)
+            if (Game1.showingEndOfNightStuff && !Game1.wasRainingYesterday && !outro && Game1.activeClickableMenu is ShippingMenu currMenu)
             {
-                Game1.spriteBatch.Draw(OurIcons.MoonSource, new Vector2((float)(Game1.viewport.Width - 80 * Game1.pixelZoom), (float)Game1.pixelZoom), OurIcons.GetNightMoonSprite(SDVMoon.GetLunarPhaseForDay(SDate.Now().AddDays(-1))), Color.LightBlue, 0.0f, Vector2.Zero, (float)Game1.pixelZoom * 1.5f, SpriteEffects.None, 1f);
+                Game1.spriteBatch.Draw(OurIcons.MoonSource, new Vector2(Game1.viewport.Width - 65 * Game1.pixelZoom, Game1.pixelZoom), OurIcons.GetNightMoonSprite(SDVMoon.GetLunarPhaseForDay(SDate.Now().AddDays(-1))), Color.LightBlue, 0.0f, Vector2.Zero, Game1.pixelZoom * 1.5f, SpriteEffects.None, 1f);
             }
         }
 
@@ -249,6 +255,11 @@ namespace ClimatesOfFerngillRebuild
                             Helper.Reflection.GetMethod(f, "addLights").Invoke(new object[] { Game1.currentLocation });
                     }
                 }
+            }
+
+            if (OurMoon.CurrentPhase == MoonPhase.BloodMoon)
+            {
+                Game1.currentLocation.waterColor = Color.PaleVioletRed;
             }
 
             if (Conditions.HasWeather(CurrentWeather.Fog))
@@ -626,6 +637,7 @@ namespace ClimatesOfFerngillRebuild
             ExpireTime = 0;
             CropList.Clear(); 
             DebugOutput.Clear();
+            OurMoon.Reset();
             StaminaMngr.Reset();
             TicksOutside = 0;
             TicksTotal = 0;
@@ -661,6 +673,7 @@ namespace ClimatesOfFerngillRebuild
             Conditions.OnNewDay();
             UpdateWeatherOnNewDay();
             SetTommorowWeather();
+            OurMoon.OnNewDay();
             OurMoon.HandleMoonAfterWake(Helper.Translation);
             StaminaMngr.OnNewDay();
             TicksOutside = 0;

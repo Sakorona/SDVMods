@@ -20,7 +20,7 @@ namespace ClimatesOfFerngillRebuild
         private WeatherConfig ModConfig;
 
         //internal trackers
-         private static int cycleLength = 14;
+        private static int cycleLength = 14;
 
         //chances for various things
         private double CropGrowthChance;
@@ -28,6 +28,9 @@ namespace ClimatesOfFerngillRebuild
         private double GhostChance;
         private double BeachRemovalChance;
         private double BeachSpawnChance;
+
+        //is blood moon
+        private bool IsBloodMoon;
 
         //internal arrays
         internal readonly int[] beachItems = new int[] { 393, 397, 392, 394 };
@@ -37,6 +40,7 @@ namespace ClimatesOfFerngillRebuild
         {
             Dice = rng;
             ModConfig = config;
+            IsBloodMoon = false;
 
             //set chances.
             CropGrowthChance = .09;
@@ -46,13 +50,22 @@ namespace ClimatesOfFerngillRebuild
             GhostChance = .02;
         }
 
+        public void OnNewDay()
+        {
+            IsBloodMoon = false;
+        }
+
+        public void Reset()
+        {
+            IsBloodMoon = false;
+        }
 
         public override string ToString()
         {
             return DescribeMoonPhase() + " on day " + GetDayOfCycle();
         }
 
-        public MoonPhase CurrentPhase => GetLunarPhase();
+        public MoonPhase CurrentPhase => (!IsBloodMoon) ? GetLunarPhase() : MoonPhase.BloodMoon;
         
         public MoonPhase GetLunarPhase()
         {
@@ -93,6 +106,20 @@ namespace ClimatesOfFerngillRebuild
             int currentDay = GetDayOfCycle(Today);
 
             return SDVMoon.GetLunarPhase(currentDay);
+        }
+
+        public void UpdateForBloodMoon()
+        {
+            //So the only phases that can spawn the moon are when the moon is >80%. So.. WaxingGibbeous, Full, WaningGibbeous. 
+            //Odds are 1.5% and .375% respectivally.
+            if (CurrentPhase == MoonPhase.FullMoon && Dice.NextDoublePositive() <= .015)
+            {
+                IsBloodMoon = true;
+            }
+            else if ((CurrentPhase == MoonPhase.WaxingGibbeous || CurrentPhase == MoonPhase.WaningGibbeous) && Dice.NextDoublePositive() <= .00375)
+            {
+                IsBloodMoon = true;
+            }
         }
 
         private static MoonPhase GetLunarPhase(int day)
@@ -205,8 +232,18 @@ namespace ClimatesOfFerngillRebuild
             }
         }
 
+        internal void ForceBloodMoon()
+        {
+            IsBloodMoon = true;
+        }
+
         public void TenMinuteUpdate()
         {
+            if (SDVTime.CurrentIntTime == (Game1.getStartingToGetDarkTime() - 100))
+            {
+                UpdateForBloodMoon();
+            }
+
             if (this.CheckForGhostSpawn() && SDVTime.CurrentIntTime > Game1.getStartingToGetDarkTime())
             {
                 GameLocation f = Game1.currentLocation;
