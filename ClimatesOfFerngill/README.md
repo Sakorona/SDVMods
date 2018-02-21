@@ -72,6 +72,10 @@ If you're out in a blizzard during the day, it's *1.25 or 2.5 rounded down to 2.
 - ChefRude for testing and the night icon sprites (as well as better fog textures)
 
 ## Changelog
+v1.3.4
+- Blood Moon implementation
+- Refactored the weather object to be easier to debug and extend
+
 v1.3.3
 - Harvey's 8-heart scene gives the temp scale. C now is Kraggs, the in-game scale.
 - Dual lightning strikes removed (was erroneously triggering additional lightning on stormy daysaw)

@@ -25,6 +25,7 @@ namespace ClimatesOfFerngillRebuild
         internal FogType CurrentFogType { get; set; }
 
         private bool VerboseDebug { get; set; }
+        public bool BloodMoon { get; set; }
         private IMonitor Monitor { get; set; }
 
         /// <summary>  The alpha attribute of the fog. </summary>
@@ -84,6 +85,7 @@ namespace ClimatesOfFerngillRebuild
             ExpirTime = null;
             VerboseDebug = Verbose;
             this.Monitor = Monitor;
+            this.BloodMoon = false;
             this.Dice = Dice;
             this.ModConfig = config;
             this.FogTimeSpan = FogPeriod;
@@ -102,6 +104,7 @@ namespace ClimatesOfFerngillRebuild
             CurrentFogType = FogType.None;
             BeginTime = null;
             ExpirTime = null;
+            BloodMoon = false;
             FogAlpha = 0f;
             FadeOutFog = false;
             FadeInFog = false;
@@ -271,6 +274,10 @@ namespace ClimatesOfFerngillRebuild
                             if (Game1.isStartingToGetDarkOut())
                             {
                                 FogColor = Color.LightBlue;
+                            }
+                            if (BloodMoon)
+                            {
+                                FogColor = Color.DarkRed;
                             }
 
                             Game1.spriteBatch.Draw(fogTexture, position, new Microsoft.Xna.Framework.Rectangle?

@@ -42,8 +42,7 @@
       <HintPath>..\packages\Enums.NET.2.3.1\lib\net45\Enums.NET.dll</HintPath>
     </Reference>
     <Reference Include="PyTK">
-      <HintPath>D:\GalaxyClient\Games\Stardew Valley\Mods\PyTK\PyTK.dll</HintPath>
-      <Private>False</Private>
+      <HintPath>..\..\..\Desktop\Stardew Valley\Mods\PyTK\PyTK.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.ComponentModel.DataAnnotations" />
@@ -58,6 +57,7 @@
   <ItemGroup>
     <Compile Include="ClimatesOfFerngillApi.cs" />
     <Compile Include="DaMoon\MoonPhase.cs" />
+    <Compile Include="WeatherData\WeatherData.cs" />
     <Compile Include="Weathers\FerngillWhiteOut.cs" />
     <Compile Include="Weathers\ForceDays.cs" />
     <Compile Include="Weathers\ISDVWeather.cs" />

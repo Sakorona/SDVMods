@@ -296,6 +296,7 @@
   "weather_drylightning": "Dry Lightning",
   "weather_blizzard": "Blizzard",
   "weather_frost": "Frost with {{condition}}",
+  "weather_frost_night": "Clear and Frosty",
   "weather_heatwave": "Heatwave",
   "weather_drylightningheatwave": "Dry Lightning with Heatwave",
   "weather_drylightningheatwavesunny": "Dry Lightning with Heatwave and sun",
