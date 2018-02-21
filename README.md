@@ -8,17 +8,20 @@ documentation, licenses, and release notes. May have other related projects that
 * **[Customizable Cart Redux](https://rd.nexusmods.com/stardewvalley/mods/1402)**<small> ([source](CustomizableCartRedux))</small>
   _Lets you customize when the cart appears, and how many items it has._
 
-* **Quest Overhaul** <small>([source](QuestOverhaul))</small>
-  _This will overhaul the quest system, with more to come._
+* **USDVP** <small>([source](USDVP))</small>
+  _A in progress patch mod for Stardew Valley._
+
+* **ArtifactsInOmniGeodes**<small> ([source](ArtifactsInOmniGeodes))</small>
+  _Baby port of a XNB mod that no longer works with SDV 1.2 for personal use._
   
 * **Tree Overhaul**<small> ([source](TreeOverhaul))</small>
   _This is the source code for the unofficial patch I am maintaining to make it compatibile with 2.0_
 
 * **[Climates of Ferngill (Rebuild)](http://www.nexusmods.com/stardewvalley/mods/604)** <small>([source](ClimatesOfFerngill))</small>  
-  _Creates a different climate system. This is a relatively basic approach, and may have more features in the future. It works by creating a base chance and a value that can increase (or decrease) as the month passes for weather._
+  _Creates a different climate system, with customs weather and a moon. Also stamina changes. Follow the link for more details._
 
 * **[Solar Eclipse Event](http://www.nexusmods.com/stardewvalley/mods/897)** <small>([source](SolarEclipseEvent))</small>  
-  _This adds the possibility of a solar eclipse to your game! Configurable chance. Also will spawn monsters if you have a wilderness farm in line with the same percentages as the base game._
+  _This adds the possibility of a solar eclipse to your game! Configurable chance. Also will spawn monsters if you have a wilderness farm in line with the same percentages as the base game. Now implemented into Climates of Ferngill, but kept as it still works for people who might want it seperate._
 
 * **[Time Reminder](http://www.nexusmods.com/stardewvalley/mods/1000)** <small>([source](TimeReminder))</small>  
   _Alerts you of system time after a configurable number of minutes._
