@@ -74,7 +74,11 @@ If you're out in a blizzard during the day, it's *1.25 or 2.5 rounded down to 2.
 ## Changelog
 v1.3.4
 - Blood Moon implementation
+-- water turns red, fog turns red
+-- sale prices up 45%
+-- monsters spawn every 6 real-world seconds outside.
 - Refactored the weather object to be easier to debug and extend
+- Fixed issue with stamina clearer not requiring drinking the item.
 - Updated and expanded some of the dialogue
 - Dry lightning will no longer happen period when it's frost conditions
 - After consideration, wind will still restrict fog from spawning. 

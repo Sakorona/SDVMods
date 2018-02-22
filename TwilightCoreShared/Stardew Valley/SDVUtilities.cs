@@ -193,6 +193,63 @@ namespace TwilightShards.Stardew.Common
             }
         }
 
+        public static void SpawnFlyingMonster(GameLocation location)
+        {
+            Vector2 zero = Vector2.Zero;
+            switch (Game1.random.Next(4))
+            {
+                case 0:
+                    zero.X = Game1.random.Next(Game1.currentLocation.map.Layers[0].LayerWidth);
+                    break;
+                case 1:
+                    zero.X = location.map.Layers[0].LayerWidth - 1;
+                    zero.Y = Game1.random.Next(Game1.currentLocation.map.Layers[0].LayerHeight);
+                    break;
+                case 2:
+                    zero.Y = (location.map.Layers[0].LayerHeight - 1);
+                    zero.X = Game1.random.Next(Game1.currentLocation.map.Layers[0].LayerWidth);
+                    break;
+                case 3:
+                    zero.Y = Game1.random.Next(Game1.currentLocation.map.Layers[0].LayerHeight);
+                    break;
+            }
+            if (Utility.isOnScreen(zero * Game1.tileSize, Game1.tileSize))
+                zero.X -= Game1.viewport.Width;
+
+            if (Game1.player.CombatLevel >= 10 && Game1.random.NextDouble() < 0.25)
+            {
+                Serpent serpent = new Serpent(zero * Game1.tileSize)
+                {
+                    focusedOnFarmers = true
+                };
+                location.characters.Add((NPC)serpent);
+            }
+            else if (Game1.player.CombatLevel >= 8 && Game1.random.NextDouble() < 0.5)
+            {
+                Bat bat = new Bat(zero * Game1.tileSize, 81)
+                {
+                    focusedOnFarmers = true
+                };
+                location.characters.Add((NPC)bat);
+            }
+            else if (Game1.player.CombatLevel >= 5 && Game1.random.NextDouble() < 0.5)
+            {
+                Bat bat = new Bat(zero * Game1.tileSize, 41)
+                {
+                    focusedOnFarmers = true
+                };
+                location.characters.Add((NPC)bat);
+            }
+            else
+            {
+                Bat bat = new Bat(zero * Game1.tileSize, 1)
+                {
+                    focusedOnFarmers = true
+                };
+               location.characters.Add((NPC)bat);
+            }
+        }
+
         public static int CreateWeeds(GameLocation spawnLoc, int numOfWeeds)
         {
             if (spawnLoc == null)

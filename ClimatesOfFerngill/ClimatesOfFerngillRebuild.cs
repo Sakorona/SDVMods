@@ -19,7 +19,7 @@ using TwilightShards.Common;
 using Microsoft.Xna.Framework.Graphics;
 using EnumsNET;
 using PyTK.CustomTV;
-using StardewValley.Monsters;
+using SObject = StardewValley.Object;
 #endregion
 
 namespace ClimatesOfFerngillRebuild
@@ -50,6 +50,7 @@ namespace ClimatesOfFerngillRebuild
         private int TicksOutside;
         private int TicksTotal;
         private int ExpireTime;
+        private int SecondCount;
         private List<Vector2> CropList;
         private HUDMessage queuedMsg;
 
@@ -59,9 +60,10 @@ namespace ClimatesOfFerngillRebuild
         private Rectangle RWeatherIcon;
         private Color nightColor = new Color((int)byte.MaxValue, (int)byte.MaxValue, 0);
         private bool Disabled = false;
-        private int[] SeedsForDialogue;
         public bool IsEclipse { get; set; }
         public int ResetTicker { get; set; }
+        private bool wasEating = false;
+        private int prevToEatStack = -1;
 
         private bool IsFestivalDay => Utility.isFestivalDay(SDate.Now().Day, SDate.Now().Season);
 
@@ -78,13 +80,10 @@ namespace ClimatesOfFerngillRebuild
             CropList = new List<Vector2>();
             Conditions = new WeatherConditions(OurIcons, Dice, Helper.Translation, Monitor, OurMoon, WeatherOpt);
             StaminaMngr = new StaminaDrain(WeatherOpt, Helper.Translation, Monitor);
-            SeedsForDialogue = new int[] { Dice.Next(), Dice.Next() };
             DescriptionEngine = new Descriptions(Helper.Translation, Dice, WeatherOpt, Monitor);
             queuedMsg = null;
+            SecondCount = TicksOutside = TicksTotal = ExpireTime = 0;
             Vector2 snowPos = Vector2.Zero;
-            TicksOutside = 0;
-            TicksTotal = 0;
-            ExpireTime = 0;
 
             if (WeatherOpt.Verbose) Monitor.Log($"Loading climate type: {WeatherOpt.ClimateType} from file", LogLevel.Trace);
 
@@ -102,6 +101,7 @@ namespace ClimatesOfFerngillRebuild
             {
                 //subscribe to events
                 TimeEvents.AfterDayStarted += HandleNewDay;
+                GameEvents.OneSecondTick += GameEvents_OneSecondTick;
                 SaveEvents.BeforeSave += OnEndOfDay;
                 TimeEvents.TimeOfDayChanged += TenMinuteUpdate;
                 MenuEvents.MenuChanged += MenuEvents_MenuChanged;
@@ -120,54 +120,27 @@ namespace ClimatesOfFerngillRebuild
                       .Add("world_tmrwweather", helper.Translation.Get("console-text.desc_tmrweather"), TomorrowWeatherChangeFromConsole)
                       .Add("world_setweather", helper.Translation.Get("console-text.desc_setweather"), WeatherChangeFromConsole)
                       .Add("world_solareclipse", "Starts the solar eclipse.", SolarEclipseEvent_CommandFired)
-                      .Add("debug_spawnmonster", "Spawns a monster!", SpawnMonster_CommandFired)
                       .Add("debug_forceBloodMoon", "Forces Blood Moon", ForceBloodMoon);
+            }
+        }
+
+        private void GameEvents_OneSecondTick(object sender, EventArgs e)
+        {
+            if (Context.IsWorldReady)
+            {
+                SecondCount++;
+                if (SecondCount == 6)
+                {
+                    SecondCount = 0;
+                    if (Game1.currentLocation.isOutdoors && OurMoon.CurrentPhase == MoonPhase.BloodMoon)
+                        SDVUtilities.SpawnFlyingMonster(Game1.currentLocation);
+                }
             }
         }
 
         private void ForceBloodMoon(string arg1, string[] arg2)
         {
             OurMoon.ForceBloodMoon();
-        }
-
-        private void SpawnMonster_CommandFired(string arg1, string[] arg2)
-        {
-            for (int index = 0; index < 15; ++index)
-            {
-                GameLocation f = Game1.currentLocation;
-                Vector2 zero = Vector2.Zero;
-                Vector2 randomTile = f.getRandomTile();
-                if (Utility.isOnScreen(Utility.Vector2ToPoint(randomTile), Game1.tileSize, (GameLocation)f))
-                    randomTile.X -= (float)(Game1.viewport.Width / Game1.tileSize);
-                if (f.isTileLocationTotallyClearAndPlaceable(randomTile))
-                {
-                    bool flag;
-                    if (Game1.player.CombatLevel >= 8 && Game1.random.NextDouble() < 0.15)
-                    {
-                        List<NPC> characters = f.characters;
-                        ShadowBrute shadowBrute = new ShadowBrute(randomTile * Game1.tileSize);
-                        characters.Add((NPC)shadowBrute);
-                        flag = true;
-                    }
-                    else if (Game1.random.NextDouble() < 0.65 && f.isTileLocationTotallyClearAndPlaceable(randomTile))
-                    {
-                        List<NPC> characters = f.characters;
-                        RockGolem rockGolem = new RockGolem(randomTile * Game1.tileSize, Game1.player.CombatLevel);
-                        characters.Add((NPC)rockGolem);
-                        flag = true;
-                    }
-                    else
-                    {
-                        int mineLevel = 140;
-                        List<NPC> characters = f.characters;
-                        GreenSlime greenSlime = new GreenSlime(randomTile * Game1.tileSize, mineLevel);
-                        characters.Add((NPC)greenSlime);
-                        flag = true;
-                    }
-                    if (!flag || !Game1.currentLocation.Equals(this))
-                        break;
-                }
-            }
         }
 
         private void SolarEclipseEvent_CommandFired(string command, string[] args)
@@ -289,7 +262,22 @@ namespace ClimatesOfFerngillRebuild
             if (GameClimate is null)
                 Monitor.Log("GameClimate is null");
             if (e.NewMenu is null)
-                Monitor.Log("e.NewMenu is null");              
+                Monitor.Log("e.NewMenu is null");     
+            
+            if (e.NewMenu is ShopMenu menu)
+            {
+                if (OurMoon.CurrentPhase == MoonPhase.BloodMoon)
+                {
+                    Helper.Reflection.GetField<float>(menu, "sellPercentage").SetValue(1.45f);
+                }
+                else
+                {
+                    if (Helper.Reflection.GetField<float>(menu,"sellPercentage").GetValue() != 1f)
+                    {
+                        Helper.Reflection.GetField<float>(menu, "sellPercentage").SetValue(1f);
+                    }
+                }
+            }
 
             if (e.NewMenu is DialogueBox box)
             {
@@ -402,13 +390,22 @@ namespace ClimatesOfFerngillRebuild
 
             Conditions.MoveWeathers();
 
-            if (Game1.isEating)
-            { 
-                StardewValley.Object obj = Game1.player.itemToEat as StardewValley.Object;
 
-                if (obj.ParentSheetIndex == 351)
-                    StaminaMngr.ClearDrain();
+            if (Game1.isEating != wasEating)
+            {
+                if (!Game1.isEating)
+                {
+                    // Apparently this happens when the ask to eat dialog opens, but they pressed no.
+                    // So make sure something was actually consumed.
+                    if (prevToEatStack != -1 && (prevToEatStack - 1 == Game1.player.itemToEat.Stack))
+                    {
+                        if (Game1.player.itemToEat.parentSheetIndex == 351)
+                            StaminaMngr.ClearDrain();
+                    }
+                }
+                prevToEatStack = (Game1.player.itemToEat != null ? Game1.player.itemToEat.Stack : -1);
             }
+            wasEating = Game1.isEating;
 
             if (Game1.currentLocation.isOutdoors)
             {
@@ -641,6 +638,7 @@ namespace ClimatesOfFerngillRebuild
             StaminaMngr.Reset();
             TicksOutside = 0;
             TicksTotal = 0;
+            SecondCount = 0;
         }
 
         private void HandleNewDay(object sender, EventArgs e)
@@ -666,8 +664,7 @@ namespace ClimatesOfFerngillRebuild
                 Conditions.BlockFog = true;
             }
 
-            SeedsForDialogue[0] = Dice.Next();
-            SeedsForDialogue[1] = Dice.Next();
+            SecondCount = 0;
             CropList.Clear(); //clear the crop list
             DebugOutput.Clear();
             Conditions.OnNewDay();
@@ -680,7 +677,6 @@ namespace ClimatesOfFerngillRebuild
             ExpireTime = 0;
             TicksTotal = 0;
         }
-
         private void SetTommorowWeather()
         {
             //if tomorrow is a festival or wedding, we need to set the weather and leave.
