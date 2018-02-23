@@ -164,10 +164,12 @@ namespace TwilightShards.Stardew.Common
         {
             Vector2 zero = Vector2.Zero;
             Vector2 randomTile = Vector2.Zero;
+            int numTries = 0;
             do
             {
                 randomTile = location.getRandomTile();
-            } while (GetDistance(randomTile, Game1.player.position) > 45);            
+                numTries++;
+            } while (GetDistance(randomTile, Game1.player.position) > 45 && numTries < 10000);            
 
             if (Utility.isOnScreen(Utility.Vector2ToPoint(randomTile), Game1.tileSize, location))
                 randomTile.X -= (Game1.viewport.Width / Game1.tileSize);
