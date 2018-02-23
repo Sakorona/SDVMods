@@ -20,6 +20,7 @@ using Microsoft.Xna.Framework.Graphics;
 using EnumsNET;
 using PyTK.CustomTV;
 using SObject = StardewValley.Object;
+using StardewValley.Monsters;
 #endregion
 
 namespace ClimatesOfFerngillRebuild
@@ -126,14 +127,19 @@ namespace ClimatesOfFerngillRebuild
 
         private void GameEvents_OneSecondTick(object sender, EventArgs e)
         {
-            if (Context.IsWorldReady)
+            if (Context.IsPlayerFree)
             {
-                SecondCount++;
-                if (SecondCount == 6)
+                if (Game1.game1.IsActive)
+                    SecondCount++;
+
+                if (SecondCount == 10)
                 {
                     SecondCount = 0;
                     if (Game1.currentLocation.isOutdoors && OurMoon.CurrentPhase == MoonPhase.BloodMoon)
-                        SDVUtilities.SpawnFlyingMonster(Game1.currentLocation);
+                    {
+                        Monitor.Log("Spawning monster....");
+                        SDVUtilities.SpawnMonster(Game1.currentLocation);
+                    }
                 }
             }
         }
@@ -232,7 +238,7 @@ namespace ClimatesOfFerngillRebuild
 
             if (OurMoon.CurrentPhase == MoonPhase.BloodMoon)
             {
-                Game1.currentLocation.waterColor = Color.PaleVioletRed;
+                Game1.currentLocation.waterColor = OurMoon.BloodMoonWater;
             }
 
             if (Conditions.HasWeather(CurrentWeather.Fog))
@@ -264,11 +270,17 @@ namespace ClimatesOfFerngillRebuild
             if (e.NewMenu is null)
                 Monitor.Log("e.NewMenu is null");     
             
-            if (e.NewMenu is ShopMenu menu)
+            if (e.NewMenu is ShopMenu menu && menu.portraitPerson != null)
             {
                 if (OurMoon.CurrentPhase == MoonPhase.BloodMoon)
                 {
-                    Helper.Reflection.GetField<float>(menu, "sellPercentage").SetValue(1.45f);
+                    Helper.Reflection.GetField<float>(menu, "sellPercentage").SetValue(.75f);
+                    var itemPriceAndStock = Helper.Reflection.GetField<Dictionary<Item, int[]>>(menu, "itemPriceAndStock").GetValue();
+                    foreach (KeyValuePair<Item, int[]> kvp in itemPriceAndStock)
+                    {
+                        kvp.Value[0] = (int)Math.Floor(kvp.Value[0] * 1.85);
+                    }
+
                 }
                 else
                 {
@@ -319,6 +331,19 @@ namespace ClimatesOfFerngillRebuild
         /// <param name="e"></param>
         private void OnEndOfDay(object sender, EventArgs e)
         {
+            //cleanup any spawned monsters
+            foreach(GameLocation l in Game1.locations)
+            {
+                if (l is Farm)
+                    continue;
+
+                for (int index = l.characters.Count - 1; index >= 0; --index)
+                {
+                    if (l.characters[index] is Monster)
+                        l.characters.RemoveAt(index);
+                }
+            }
+
             if (Conditions.HasWeather(CurrentWeather.Frost) && WeatherOpt.AllowCropDeath)
             {
                 Farm f = Game1.getFarm();

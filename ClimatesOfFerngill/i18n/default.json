@@ -49,6 +49,7 @@
   "weat-loc.fog.0": ".. concludes the weather in {{location}}.#Now for Pelican Town, the valley will be blanked in fog until about {{fogTime}}, then expect {{descWeather}}, with a high of {{todayHigh}} and low {{todayLow}}. {{condWarning}}{{eveningFog}}#Tomorrow, expect {{tomorrowWeather}} with a high of {{tomorrowHigh}} and low of {{tomorrowLow}}",
   "weat-loc.fog.1": "Now for Pelican Town, fog will continue to blanket the region until roughly {{fogTime}}, then expect {{descWeather}}, with a high of {{todayHigh}} and low {{todayLow}}. {{condWarning}}{{eveningFog}}#Tomorrow, expect {{tomorrowWeather}} with a high of {{tomorrowHigh}} and low of {{tomorrowLow}}.",
   "weat-loc.fog.2": "Fog will be blanketing Stardew Valley until an anticipated {{fogTime}}, giving way to {{descWeather}} with a high of {{todayHigh}} and low {{todayLow}}.{{condWarning}}{{eveningFog}}#Tomorrow, expect {{tomorrowWeather}} with a high of {{tomorrowHigh}} and low of {{tomorrowLow}}",
+  "weat-gen.bloodmoon.0": "Today, PANIC! PANIC! THE BLOOD MOON HAS DESCENDED!!!!#I mean...Now for Pelican Town, expect {{descWeather}}, with a high of {{todayHigh}} and low {{todayLow}}. {{condWarning}}{{eveningFog}} #Tomorrow, expect {{tomorrowWeather}} with a high of {{tomorrowHigh}} and low of {{tomorrowLow}}",
 
   //Weather - Morning Strings
   "weat-morn.0": "Good morning to all our viewers. Today, expect {{descWeather}} with a high of {{todayHigh}} and low {{todayLow}}.{{condWarning}}{{eveningFog}}#Tomorrow, expect {{tomorrowWeather}} with a high of {{tomorrowHigh}} and low of {{tomorrowLow}}",
@@ -85,12 +86,14 @@
 
   //And Tomorrow
   "weat-fesTomorrow.0": "Today, expect {{descWeather}} with high:{{todayHigh}} and low:{{todayLow}}#Tommorow, for the {{festivalTomorrow}}, expect {{tomorrowWeather}}",
+  "weat-fesTomorrow.BM.0": "Today, PANIC! PANIC! THE BLOOD MOON HAS DESCENDED!!!!#I mean, expect {{descWeather}} with high:{{todayHigh}} and low:{{todayLow}}#Tommorow, for the {{festivalTomorrow}}, expect {{tomorrowWeather}}",
 
   //Weather - Wedding Today
   "weat-wedToday.0": "Today, in Stardew Valley, for the wedding, expect {{weather}}.#Tomorrow, expect {{tomorrowWeather}} with a high of {{tomorrowHigh}} and low {{tomorrowLow}}",
 
   //And Tomorrow
   "weat-wedTomorrow.0": "Today, expect {{weather}} with high:{{high}} and low:{{low}}#Tommorow, for the wedding, expect {{tomorrowWeather}}",
+  "weat-wedTomorrow.BM.0": "Today, PANIC! PANIC! THE BLOOD MOON HAS DESCENDED!!!!#I mean, expect {{descWeather}} with high:{{todayHigh}} and low:{{todayLow}}#Tommorow, for the wedding, expect {{tomorrowWeather}}",
 
   //Weather - Condition Strings
   "weather-condition.heatwave.0": "RWS: A heatwave is expected for the Stardew Valley area out to Zuzu City. Please keep hydrated! ",
@@ -276,6 +279,7 @@
   "weather-menu.openingS4D28": "This is Kylie from KZAM Radio, broadcasting on 92.5 out of Point Drake. It is the end of the year, the {{descDay}}, and here is the weather report for Stardew Valley:",
   "weather-menu.condition.frost": "RWS Warning: Frost tonight.",
   "weather-menu.condition.heatwave": "RWS Warning: Heatwave expected through the day.",
+  "weather-menu.condition.bloodmoon": "Beware, for the blood moon rises.....",
   "weather-menu.current": "Current Conditions: {{todayCondition}}. High: {{todayHigh}} with Low: {{todayLow}}.{{fogString}}",
   "weather-menu.fog": "Fog present until {{fogTime}}.",
   "weather-menu.expectedFog": " Evening fog is expected as well.",
@@ -283,6 +287,7 @@
   "weather-menu.tomorrow": "Tomorrow's Forecast: {{tomorrowCondition}}. High: {{tomorrowHigh}} with Low: {{tomorrowLow}}.",
 
   //basic conditions
+  "weat-bloodmoon":  "Blood Moon",
   "weather_sunny_daytime": "Sunny",
   "weather_sunny_nighttime": "Clear",
   "weather_sunny": "Sunny",
@@ -295,7 +300,6 @@
   "weather_wedding": "Wedding",
   "weather_drylightning": "Dry Lightning",
   "weather_blizzard": "Blizzard",
-  "weather_whiteOut": "White Out Blizzard",
   "weather_frost": "Frost with {{condition}}",
   "weather_frostTwo": "Frost with {{condition}} and {{conditionB}}",
   "weather_heatwaveCond": "Heatwave with {{condition}}",

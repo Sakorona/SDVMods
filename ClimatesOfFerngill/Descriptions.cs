@@ -95,6 +95,11 @@ namespace ClimatesOfFerngillRebuild
                 text += Helper.Get("weather-menu.condition.frost") + Environment.NewLine;
             }
 
+            if (Moon.CurrentPhase == MoonPhase.BloodMoon)
+            {
+                text += Helper.Get("weather-menu.condition.bloodmoon") + Environment.NewLine;
+            }
+
             ISDVWeather CurrentFog = Current.GetWeatherMatchingType("Fog").First();
             string fogString = "";
 
@@ -157,8 +162,26 @@ namespace ClimatesOfFerngillRebuild
             SDVTimePeriods CurrentPeriod = SDVTime.CurrentTimePeriod; //get the current time period
             int nRandom = OurDice.Next(2);
 
+            //blood moon checks
+            if (Game1.countdownToWedding == 1 && Moon.CurrentPhase == MoonPhase.BloodMoon)
+            {
+                talkParams["tomrrowWeather"] = Helper.Get($"weat-{Game1.currentSeason}.sunny.{nRandom}");
+                return Helper.Get("weat-wedTomorrow.BM.0", talkParams);
+            }
+
+            //festival tomorrow
+            else if (SDVUtilities.GetFestivalName(SDate.Now().AddDays(1)) != "" && Moon.CurrentPhase == MoonPhase.BloodMoon)
+            {
+                return Helper.Get("weat-fesTomorrow.BM.0", talkParams);
+            }
+
+            else if (Moon.CurrentPhase ==  MoonPhase.BloodMoon)
+            {
+                return Helper.Get("weat-gen.bloodmoon.0", talkParams);
+            }
+
             //first, check for special conditions -fog, festival, wedding
-            if (Current.HasWeather(CurrentWeather.Fog))
+            else if (Current.HasWeather(CurrentWeather.Fog))
             {
                 return Helper.Get($"weat-loc.fog.{nRandom}", talkParams);
             }
@@ -332,7 +355,7 @@ namespace ClimatesOfFerngillRebuild
                 return Helper.Get($"weat-{season}.debris.{rNumber}");
             else if (Weather.CurrentWeatherIconBasic == WeatherIcon.IconDryLightning)
                 return Helper.Get($"weat-{season}.drylightning.{rNumber}");
-            else if (Weather.CurrentWeatherIconBasic == WeatherIcon.IconWedding || Weather.CurrentWeatherIconBasic == WeatherIcon.IconFestival || Weather.CurrentWeatherIconBasic == WeatherIcon.IconSunny && SDVTime.CurrentIntTime <  Game1.getModeratelyDarkTime())
+            else if (Weather.CurrentWeatherIconBasic == WeatherIcon.IconWedding || Weather.CurrentWeatherIconBasic == WeatherIcon.IconFestival || Weather.CurrentWeatherIconBasic == WeatherIcon.IconSunny && SDVTime.CurrentIntTime < Game1.getModeratelyDarkTime())
                 return Helper.Get($"weat-{season}.sunny_daytime.{rNumber}");
             else if (Weather.CurrentWeatherIconBasic == WeatherIcon.IconSunny || Weather.CurrentWeatherIconBasic == WeatherIcon.IconWedding || Weather.CurrentWeatherIconBasic == WeatherIcon.IconFestival && SDVTime.CurrentIntTime >= Game1.getModeratelyDarkTime())
                 return Helper.Get($"weat-{season}.sunny_nighttime.{rNumber}");
@@ -344,7 +367,8 @@ namespace ClimatesOfFerngillRebuild
                 return Helper.Get($"weat-{season}.rainy.{rNumber}");
             else if (Weather.CurrentWeatherIconBasic == WeatherIcon.IconThunderSnow)
                 return Helper.Get($"weat-{season}.thundersnow.{rNumber}");
-
+            else if (Weather.CurrentWeatherIconBasic == WeatherIcon.IconBloodMoon)
+                return Helper.Get($"weat-bloodmoon");
             return "ERROR";
         }
 

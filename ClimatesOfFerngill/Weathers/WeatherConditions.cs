@@ -219,6 +219,18 @@ namespace ClimatesOfFerngillRebuild
         {
             foreach (ISDVWeather weather in CurrentWeathers)
                 weather.DrawWeather();
+
+
+            //if it's a blood moon out..
+            if (Moon.CurrentPhase == MoonPhase.BloodMoon)
+            {
+                if (this.GetWeatherMatchingType("Fog").First().IsWeatherVisible)
+                {
+                    //Get fog instance
+                    FerngillFog ourFog = (FerngillFog)this.GetWeatherMatchingType("Fog").First();
+                    ourFog.BloodMoon = true;
+                }
+            }
         }
 
         public void MoveWeathers()
@@ -267,17 +279,6 @@ namespace ClimatesOfFerngillRebuild
                 {
                     ourFog.SetEveningFog();
                     HasSetEveningFog = true;
-                }
-            }
-
-            //if it's a blood moon out..
-            if (Moon.CurrentPhase == MoonPhase.BloodMoon)
-            {
-                if (this.GetWeatherMatchingType("Fog").First().IsWeatherVisible)
-                {
-                    //Get fog instance
-                    FerngillFog ourFog = (FerngillFog)this.GetWeatherMatchingType("Fog").First();
-                    ourFog.BloodMoon = true;
                 }
             }
         }

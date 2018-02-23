@@ -28,6 +28,7 @@ namespace ClimatesOfFerngillRebuild
         private double GhostChance;
         private double BeachRemovalChance;
         private double BeachSpawnChance;
+        public Color BloodMoonWater = Color.Red * 0.8f;
 
         //is blood moon
         private bool IsBloodMoon;
@@ -112,13 +113,15 @@ namespace ClimatesOfFerngillRebuild
         {
             //So the only phases that can spawn the moon are when the moon is >80%. So.. WaxingGibbeous, Full, WaningGibbeous. 
             //Odds are 1.5% and .375% respectivally.
-            if (CurrentPhase == MoonPhase.FullMoon && Dice.NextDoublePositive() <= .015)
+            if (CurrentPhase == MoonPhase.FullMoon && Dice.NextDoublePositive() <= .015 && !Game1.isFestival() && !Game1.weddingToday)
             {
                 IsBloodMoon = true;
+                Game1.currentLocation.waterColor = BloodMoonWater;
             }
-            else if ((CurrentPhase == MoonPhase.WaxingGibbeous || CurrentPhase == MoonPhase.WaningGibbeous) && Dice.NextDoublePositive() <= .00375)
+            else if ((CurrentPhase == MoonPhase.WaxingGibbeous || CurrentPhase == MoonPhase.WaningGibbeous) && Dice.NextDoublePositive() <= .00125 && !Game1.isFestival() && !Game1.weddingToday)
             {
                 IsBloodMoon = true;
+                Game1.currentLocation.waterColor = BloodMoonWater;
             }
         }
 
@@ -235,6 +238,7 @@ namespace ClimatesOfFerngillRebuild
         internal void ForceBloodMoon()
         {
             IsBloodMoon = true;
+            Game1.currentLocation.waterColor = Color.PaleVioletRed;
         }
 
         public void TenMinuteUpdate()

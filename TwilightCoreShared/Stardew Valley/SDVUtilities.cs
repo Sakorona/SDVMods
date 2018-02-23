@@ -4,6 +4,7 @@ using StardewValley;
 using StardewValley.Monsters;
 using StardewValley.TerrainFeatures;
 using System;
+using System.Linq;
 using System.Collections.Generic;
 using TwilightShards.Common;
 using xTile.Dimensions;
@@ -32,12 +33,12 @@ namespace TwilightShards.Stardew.Common
             Game1.staminaShakeTimer = 1000;
             for (int i = 0; i < 4; i++)
             {
-                Game1.screenOverlayTempSprites.Add(new TemporaryAnimatedSprite(Game1.mouseCursors, new Microsoft.Xna.Framework.Rectangle(366, 412, 5, 6), new Vector2((float)(Game1.random.Next(Game1.tileSize / 2) + Game1.viewport.Width - (48 + Game1.tileSize / 8)), (float)(Game1.viewport.Height - 224 - Game1.tileSize / 4 - (int)((double)(Game1.player.MaxStamina - 270) * 0.715))), false, 0.012f, Color.SkyBlue)
+                Game1.screenOverlayTempSprites.Add(new TemporaryAnimatedSprite(Game1.mouseCursors, new Microsoft.Xna.Framework.Rectangle(366, 412, 5, 6), new Vector2((Game1.random.Next(Game1.tileSize / 2) + Game1.viewport.Width - (48 + Game1.tileSize / 8)), (Game1.viewport.Height - 224 - Game1.tileSize / 4 - (int)((Game1.player.MaxStamina - 270) * 0.715))), false, 0.012f, Color.SkyBlue)
                 {
                     motion = new Vector2(-2f, -10f),
                     acceleration = new Vector2(0f, 0.5f),
                     local = true,
-                    scale = (float)(Game1.pixelZoom + Game1.random.Next(-1, 0)),
+                    scale = (Game1.pixelZoom + Game1.random.Next(-1, 0)),
                     delayBeforeAnimationStart = i * 30
                 });
             }
@@ -66,36 +67,7 @@ namespace TwilightShards.Stardew.Common
                     $"It is Debris Weather: {Game1.isDebrisWeather} {Environment.NewLine}";
         }
 
-        internal static string GetFestivalName(SDate date)
-        {
-            int dayOfMonth = date.Day;
-            string currentSeason = date.Season;
-
-            switch (currentSeason)
-            {
-                case ("spring"):
-                    if (dayOfMonth == 13) return "Egg Festival";
-                    if (dayOfMonth == 24) return "Flower Dance";
-                    break;
-                case ("winter"):
-                    if (dayOfMonth == 8) return "Festival of Ice";
-                    if (dayOfMonth == 25) return "Feast of the Winter Star";
-                    break;
-                case ("fall"):
-                    if (dayOfMonth == 16) return "Stardew Valley Fair";
-                    if (dayOfMonth == 27) return "Spirit's Eve";
-                    break;
-                case ("summer"):
-                    if (dayOfMonth == 11) return "Luau";
-                    if (dayOfMonth == 28) return "Dance of the Moonlight Jellies";
-                    break;
-                default:
-                    return "";
-            }
-
-            return "";
-        }
-
+        internal static string GetFestivalName(SDate date) => SDVUtilities.GetFestivalName(date.Day, date.Season);
 
         private static string GetFestivalName(int dayOfMonth, string currentSeason)
         {
@@ -118,10 +90,10 @@ namespace TwilightShards.Stardew.Common
                     if (dayOfMonth == 28) return "Dance of the Moonlight Jellies";
                     break;
                 default:
-                    return $"Festival on {currentSeason} {dayOfMonth}";
+                    return $"";
             }
 
-            return $"Festival on {currentSeason} {dayOfMonth} (failed switch)";
+            return $"";
 
         }
 
@@ -143,23 +115,12 @@ namespace TwilightShards.Stardew.Common
 
         public static int CropCountInFarm(Farm f)
         {
-            int count = 0;
-
-            foreach (KeyValuePair<Vector2, TerrainFeature> tf in f.terrainFeatures)
-            {
-                if (tf.Value is HoeDirt curr && curr.crop != null)
-                {
-                    count++;
-                }
-            }
-
-            return count;
+            return f.terrainFeatures.Values.Where(c => c is HoeDirt curr && curr.crop != null).Count();
         }
 
         public static void SpawnGhostOffScreen(MersenneTwister Dice)
         {
             Vector2 zero = Vector2.Zero;
-
             if (Game1.getFarm() is Farm ourFarm)
             {
                 switch (Game1.random.Next(4))
@@ -184,69 +145,73 @@ namespace TwilightShards.Stardew.Common
                     zero.X -= (float)Game1.viewport.Width;
 
                 List<NPC> characters = ourFarm.characters;
-                Ghost bat = new Ghost(zero * Game1.tileSize)
+                Ghost ghost = new Ghost(zero * Game1.tileSize)
                 {
                     focusedOnFarmers = true,
                     wildernessFarmMonster = true
                 };
-                characters.Add((NPC)bat);
+                ghost.reloadSprite();
+                characters.Add(ghost);
             }
         }
 
-        public static void SpawnFlyingMonster(GameLocation location)
+        public static double GetDistance(Vector2 alpha, Vector2 beta)
+        {
+            return Math.Sqrt(Math.Pow(beta.X - alpha.X, 2) + Math.Pow(beta.Y - alpha.Y, 2));
+        }
+
+        public static void SpawnMonster(GameLocation location)
         {
             Vector2 zero = Vector2.Zero;
-            switch (Game1.random.Next(4))
+            Vector2 randomTile = Vector2.Zero;
+            do
             {
-                case 0:
-                    zero.X = Game1.random.Next(Game1.currentLocation.map.Layers[0].LayerWidth);
-                    break;
-                case 1:
-                    zero.X = location.map.Layers[0].LayerWidth - 1;
-                    zero.Y = Game1.random.Next(Game1.currentLocation.map.Layers[0].LayerHeight);
-                    break;
-                case 2:
-                    zero.Y = (location.map.Layers[0].LayerHeight - 1);
-                    zero.X = Game1.random.Next(Game1.currentLocation.map.Layers[0].LayerWidth);
-                    break;
-                case 3:
-                    zero.Y = Game1.random.Next(Game1.currentLocation.map.Layers[0].LayerHeight);
-                    break;
-            }
-            if (Utility.isOnScreen(zero * Game1.tileSize, Game1.tileSize))
-                zero.X -= Game1.viewport.Width;
+                randomTile = location.getRandomTile();
+            } while (GetDistance(randomTile, Game1.player.position) > 45);            
 
-            if (Game1.player.CombatLevel >= 10 && Game1.random.NextDouble() < 0.25)
+            if (Utility.isOnScreen(Utility.Vector2ToPoint(randomTile), Game1.tileSize, location))
+                randomTile.X -= (Game1.viewport.Width / Game1.tileSize);
+
+            if (location.isTileLocationTotallyClearAndPlaceable(randomTile))
             {
-                Serpent serpent = new Serpent(zero * Game1.tileSize)
+                if (Game1.player.CombatLevel >= 10 && Game1.random.NextDouble() < .05)
                 {
-                    focusedOnFarmers = true
-                };
-                location.characters.Add((NPC)serpent);
-            }
-            else if (Game1.player.CombatLevel >= 8 && Game1.random.NextDouble() < 0.5)
-            {
-                Bat bat = new Bat(zero * Game1.tileSize, 81)
+                    Skeleton skeleton = new Skeleton(randomTile * Game1.tileSize)
+                    {
+                        focusedOnFarmers = true
+                    };
+                    location.characters.Add(skeleton);
+                }
+
+                if (Game1.player.CombatLevel >= 8 && Game1.random.NextDouble() < 0.15)
                 {
-                    focusedOnFarmers = true
-                };
-                location.characters.Add((NPC)bat);
-            }
-            else if (Game1.player.CombatLevel >= 5 && Game1.random.NextDouble() < 0.5)
-            {
-                Bat bat = new Bat(zero * Game1.tileSize, 41)
+                    ShadowBrute shadowBrute = new ShadowBrute(randomTile * Game1.tileSize)
+                    {
+                        focusedOnFarmers = true
+                    };
+                    location.characters.Add(shadowBrute);
+                }
+                else if (Game1.random.NextDouble() < 0.65 && location.isTileLocationTotallyClearAndPlaceable(randomTile))
                 {
-                    focusedOnFarmers = true
-                };
-                location.characters.Add((NPC)bat);
-            }
-            else
-            {
-                Bat bat = new Bat(zero * Game1.tileSize, 1)
+                    RockGolem rockGolem = new RockGolem(randomTile * (float)Game1.tileSize, Game1.player.CombatLevel)
+                    {
+                        focusedOnFarmers = true
+                    };
+                    location.characters.Add(rockGolem);
+                }
+                else
                 {
-                    focusedOnFarmers = true
-                };
-               location.characters.Add((NPC)bat);
+                    int mineLevel = 1;
+                    if (Game1.player.CombatLevel >= 10)
+                        mineLevel = 140;
+                    else if (Game1.player.CombatLevel >= 8)
+                        mineLevel = 100;
+                    else if (Game1.player.CombatLevel >= 4)
+                        mineLevel = 41;
+
+                    GreenSlime greenSlime = new GreenSlime(randomTile * Game1.tileSize, mineLevel);
+                    location.characters.Add(greenSlime);
+                }
             }
         }
 

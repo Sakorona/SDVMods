@@ -1,6 +1,6 @@
 ﻿# Climates of Ferngill (Rebuild) You Can (Not) Have Weather
 
-Current Version (13 Feburary 2018): 1.3.3
+Current Version (22 Feburary 2018): 1.3.4
 
 ## What's New
 
@@ -28,7 +28,17 @@ This mod does the following:
 - Going out in storms, blizzards, frosts and heatwaves is now more perilous, as it drains your stamina. Thankfully, 
     a 'Muscle Remedy' has been found to cure even the hardiest flu
 
-## Stamina System
+### Blood Moon
+
+A blood moon is a rare event in Pelican Town. It only appears to happen 1 in 67 times on a full moon, and 1 in 800 times on a waning or waxing gibbeous moon. During this event, you can spot it by the red fog and red water. In addition, shopkeepers are often more anxious and drive harder bargins. Outside, monsters roam.
+
+Thankfully, they don't appear to spawn on wedding and festival days..
+
+-- sale prices down 20%
+-- buy prices up 85%
+-- monsters spawn every 10 real-world seconds if you are outside.
+
+### Stamina System
 
 __Very Important: Read this before you alter StaminaDrain in the config!__
 
@@ -73,10 +83,7 @@ If you're out in a blizzard during the day, it's *1.25 or 2.5 rounded down to 2.
 
 ## Changelog
 v1.3.4
-- Blood Moon implementation
--- water turns red, fog turns red
--- sale prices up 45%
--- monsters spawn every 6 real-world seconds outside.
+- Blood Moon implementation (see README notes)
 - Refactored the weather object to be easier to debug and extend
 - Fixed issue with stamina clearer not requiring drinking the item.
 - Updated and expanded some of the dialogue
