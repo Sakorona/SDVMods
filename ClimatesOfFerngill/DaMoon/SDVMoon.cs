@@ -113,12 +113,7 @@ namespace ClimatesOfFerngillRebuild
         {
             //So the only phases that can spawn the moon are when the moon is >80%. So.. WaxingGibbeous, Full, WaningGibbeous. 
             //Odds are 1.5% and .375% respectivally.
-            if (CurrentPhase == MoonPhase.FullMoon && Dice.NextDoublePositive() <= .015 && !Game1.isFestival() && !Game1.weddingToday)
-            {
-                IsBloodMoon = true;
-                Game1.currentLocation.waterColor = BloodMoonWater;
-            }
-            else if ((CurrentPhase == MoonPhase.WaxingGibbeous || CurrentPhase == MoonPhase.WaningGibbeous) && Dice.NextDoublePositive() <= .00125 && !Game1.isFestival() && !Game1.weddingToday)
+            if (CurrentPhase == MoonPhase.FullMoon && Dice.NextDoublePositive() <= ModConfig.BadMoonRising && !Game1.isFestival() && !Game1.weddingToday && ModConfig.HazardousMoonEvents)
             {
                 IsBloodMoon = true;
                 Game1.currentLocation.waterColor = BloodMoonWater;

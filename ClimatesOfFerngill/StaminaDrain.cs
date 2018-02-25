@@ -104,7 +104,7 @@ namespace ClimatesOfFerngillRebuild
             if (Game1.player.hat?.which == 4 && conditions.GetCurrentConditions().HasFlag(CurrentWeather.Heatwave) && !SDVTime.IsNight)
                 sickOdds -= .11;
 
-            farmerCaughtCold = (Dice.NextDoublePositive() <= sickOdds);
+            farmerCaughtCold = (Dice.NextDoublePositive() <= sickOdds) && (Config.StaminaDrain > 0);
 
             if (amtOutside >= Config.AffectedOutside && farmerCaughtCold || this.FarmerSick)
             {
