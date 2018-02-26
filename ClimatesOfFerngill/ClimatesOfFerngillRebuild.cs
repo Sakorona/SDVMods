@@ -64,7 +64,9 @@ namespace ClimatesOfFerngillRebuild
         public bool IsEclipse { get; set; }
         public int ResetTicker { get; set; }
         private bool wasEating = false;
+        private bool UseJsonAssetsApi = false;
         private int prevToEatStack = -1;
+        private Integrations.IJsonAssetsApi JAAPi;
 
         private bool IsFestivalDay => Utility.isFestivalDay(SDate.Now().Day, SDate.Now().Season);
 
@@ -107,6 +109,7 @@ namespace ClimatesOfFerngillRebuild
                 TimeEvents.TimeOfDayChanged += TenMinuteUpdate;
                 MenuEvents.MenuChanged += MenuEvents_MenuChanged;
                 GameEvents.UpdateTick += CheckForChanges;
+                GameEvents.FirstUpdateTick += GameEvents_FirstUpdateTick;
                 SaveEvents.AfterReturnToTitle += ResetMod;
                 SaveEvents.AfterLoad += SaveEvents_AfterLoad;
                 GraphicsEvents.OnPostRenderGuiEvent += DrawOverMenus;
@@ -122,6 +125,58 @@ namespace ClimatesOfFerngillRebuild
                       .Add("world_setweather", helper.Translation.Get("console-text.desc_setweather"), WeatherChangeFromConsole)
                       .Add("world_solareclipse", "Starts the solar eclipse.", SolarEclipseEvent_CommandFired)
                       .Add("debug_forceBloodMoon", "Forces Blood Moon", ForceBloodMoon);
+            }
+        }
+
+        private void GameEvents_FirstUpdateTick(object sender, EventArgs e)
+        {
+            IManifest manifestCheck = Helper.ModRegistry.Get("spacechase0.JsonAssets");
+            if (manifestCheck != null)
+            {
+                if (!manifestCheck.Version.IsOlderThan("1.1"))
+                {
+                    UseJsonAssetsApi = true;
+                    JAAPi = Helper.ModRegistry.GetApi<Integrations.IJsonAssetsApi>("spacechase0.JsonAssets");
+
+                    if (JAAPi != null)
+                    {
+                        JAAPi.AddedItemsToShop += JAAPi_AddedItemsToShop;
+                        Monitor.Log("JsonAssets Integration enabled", LogLevel.Info);
+                    }
+                }
+                else
+                {
+                    Monitor.Log($"JsonAssets detected, but not of a sufficient version. Req:1.1.0. Detected:{manifestCheck.Version.ToString()}. Skipping..");
+                }
+            }
+            else
+            {
+                Monitor.Log("JsonAssets not present. Skipping Integration.");
+            }
+        }
+
+        private void JAAPi_AddedItemsToShop(object sender, EventArgs e)
+        {
+            if (Game1.activeClickableMenu is ShopMenu menu)
+            {
+                if (OurMoon.CurrentPhase == MoonPhase.BloodMoon)
+                {
+                    Monitor.Log("Firing off replacement...");
+                    Helper.Reflection.GetField<float>(menu, "sellPercentage").SetValue(.75f);
+                    var itemPriceAndStock = Helper.Reflection.GetField<Dictionary<Item, int[]>>(menu, "itemPriceAndStock").GetValue();
+                    foreach (KeyValuePair<Item, int[]> kvp in itemPriceAndStock)
+                    {
+                        kvp.Value[0] = (int)Math.Floor(kvp.Value[0] * 1.85);
+                    }
+
+                }
+                else
+                {
+                    if (Helper.Reflection.GetField<float>(menu, "sellPercentage").GetValue() != 1f)
+                    {
+                        Helper.Reflection.GetField<float>(menu, "sellPercentage").SetValue(1f);
+                    }
+                }
             }
         }
 
@@ -268,25 +323,27 @@ namespace ClimatesOfFerngillRebuild
             if (GameClimate is null)
                 Monitor.Log("GameClimate is null");
             if (e.NewMenu is null)
-                Monitor.Log("e.NewMenu is null");     
-            
-            if (e.NewMenu is ShopMenu menu && menu.portraitPerson != null)
+                Monitor.Log("e.NewMenu is null");
+            if (!UseJsonAssetsApi)
             {
-                if (OurMoon.CurrentPhase == MoonPhase.BloodMoon)
+                if (e.NewMenu is ShopMenu menu && menu.portraitPerson != null)
                 {
-                    Helper.Reflection.GetField<float>(menu, "sellPercentage").SetValue(.75f);
-                    var itemPriceAndStock = Helper.Reflection.GetField<Dictionary<Item, int[]>>(menu, "itemPriceAndStock").GetValue();
-                    foreach (KeyValuePair<Item, int[]> kvp in itemPriceAndStock)
+                    if (OurMoon.CurrentPhase == MoonPhase.BloodMoon)
                     {
-                        kvp.Value[0] = (int)Math.Floor(kvp.Value[0] * 1.85);
-                    }
+                        Helper.Reflection.GetField<float>(menu, "sellPercentage").SetValue(.75f);
+                        var itemPriceAndStock = Helper.Reflection.GetField<Dictionary<Item, int[]>>(menu, "itemPriceAndStock").GetValue();
+                        foreach (KeyValuePair<Item, int[]> kvp in itemPriceAndStock)
+                        {
+                            kvp.Value[0] = (int)Math.Floor(kvp.Value[0] * 1.85);
+                        }
 
-                }
-                else
-                {
-                    if (Helper.Reflection.GetField<float>(menu,"sellPercentage").GetValue() != 1f)
+                    }
+                    else
                     {
-                        Helper.Reflection.GetField<float>(menu, "sellPercentage").SetValue(1f);
+                        if (Helper.Reflection.GetField<float>(menu, "sellPercentage").GetValue() != 1f)
+                        {
+                            Helper.Reflection.GetField<float>(menu, "sellPercentage").SetValue(1f);
+                        }
                     }
                 }
             }

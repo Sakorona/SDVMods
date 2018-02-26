@@ -217,6 +217,19 @@ namespace TwilightShards.Stardew.Common
             }
         }
 
+        public static void AdvanceCropOneStep(GameLocation loc, HoeDirt h)
+        {
+            
+
+
+        }
+
+        public static void AdvanceArbitrarySteps(GameLocation loc, HoeDirt h, int numDays)
+        {
+            for (int i = 0; i < numDays; i++)
+                AdvanceCropOneStep(loc, h);
+        }
+
         public static int CreateWeeds(GameLocation spawnLoc, int numOfWeeds)
         {
             if (spawnLoc == null)
