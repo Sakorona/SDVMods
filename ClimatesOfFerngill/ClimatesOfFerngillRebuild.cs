@@ -19,7 +19,6 @@ using TwilightShards.Common;
 using Microsoft.Xna.Framework.Graphics;
 using EnumsNET;
 using PyTK.CustomTV;
-using SObject = StardewValley.Object;
 using StardewValley.Monsters;
 #endregion
 
@@ -135,11 +134,11 @@ namespace ClimatesOfFerngillRebuild
             {
                 if (!manifestCheck.Version.IsOlderThan("1.1"))
                 {
-                    UseJsonAssetsApi = true;
                     JAAPi = Helper.ModRegistry.GetApi<Integrations.IJsonAssetsApi>("spacechase0.JsonAssets");
 
                     if (JAAPi != null)
                     {
+                        UseJsonAssetsApi = true;
                         JAAPi.AddedItemsToShop += JAAPi_AddedItemsToShop;
                         Monitor.Log("JsonAssets Integration enabled", LogLevel.Info);
                     }
@@ -168,7 +167,6 @@ namespace ClimatesOfFerngillRebuild
                     {
                         kvp.Value[0] = (int)Math.Floor(kvp.Value[0] * 1.85);
                     }
-
                 }
                 else
                 {
@@ -336,7 +334,6 @@ namespace ClimatesOfFerngillRebuild
                         {
                             kvp.Value[0] = (int)Math.Floor(kvp.Value[0] * 1.85);
                         }
-
                     }
                     else
                     {

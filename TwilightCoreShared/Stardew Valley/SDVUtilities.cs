@@ -217,14 +217,28 @@ namespace TwilightShards.Stardew.Common
             }
         }
 
-        public static void AdvanceCropOneStep(GameLocation loc, HoeDirt h)
+        private static void AdvanceCropOneStep(GameLocation loc, HoeDirt h)
         {
-            
+           Crop currCrop = h.crop;
 
+           if (currCrop == null)
+                return;
 
+           //due to how this will be called, we do need to some checking
+           if (!currCrop.seasonsToGrowIn.Contains(Game1.currentSeason) || currCrop.dead)
+           {
+                 currCrop.dead = true;
+           }
+           else
+           {
+                if (h.state == HoeDirt.watered)
+                {
+
+                }
+           }
         }
 
-        public static void AdvanceArbitrarySteps(GameLocation loc, HoeDirt h, int numDays)
+        public static void AdvanceArbitrarySteps(GameLocation loc, HoeDirt h, int numDays = 1)
         {
             for (int i = 0; i < numDays; i++)
                 AdvanceCropOneStep(loc, h);
