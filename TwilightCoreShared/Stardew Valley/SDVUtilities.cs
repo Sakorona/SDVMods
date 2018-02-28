@@ -218,9 +218,11 @@ namespace TwilightShards.Stardew.Common
             }
         }
 
-        private static void AdvanceCropOneStep(GameLocation loc, HoeDirt h)
+        private static void AdvanceCropOneStep(GameLocation loc, HoeDirt h, Vector2 position)
         {
             Crop currCrop = h.crop;
+            int xPos = (int)position.X;
+            int yPos = (int)position.Y;
 
             if (currCrop == null)
                 return;
@@ -232,16 +234,103 @@ namespace TwilightShards.Stardew.Common
             }
             else
             {
-                
+                if (h.state == HoeDirt.watered)
+                {
+                    //get the day of the current phase - if it's fully grown, we can just leave it here.
+                    if (currCrop.fullyGrown)
+                        currCrop.dayOfCurrentPhase = currCrop.dayOfCurrentPhase - 1;
+                    else
+                    {
+                        //check to sere what the count of current days is
+
+                        int phaseCount = 0; //get the count of days in the current phase
+                        if (currCrop.phaseDays.Count > 0)
+                            phaseCount = currCrop.phaseDays[Math.Min(currCrop.phaseDays.Count - 1, currCrop.currentPhase)];
+                        else
+                            phaseCount = 0;
+
+                        currCrop.dayOfCurrentPhase = Math.Min(currCrop.dayOfCurrentPhase + 1, phaseCount);
+
+                        //check phases
+                        if (currCrop.dayOfCurrentPhase >= phaseCount && currCrop.currentPhase < currCrop.phaseDays.Count - 1)
+                        {
+                            currCrop.currentPhase++;
+                            currCrop.dayOfCurrentPhase = 0;
+                        }
+
+                        //skip negative day or 0 day crops.
+                        while (currCrop.currentPhase < currCrop.phaseDays.Count - 1 && currCrop.phaseDays.Count > 0 && currCrop.phaseDays[currCrop.currentPhase] <= 0)
+                        {
+                            currCrop.currentPhase++;
+                        }
+
+                        //handle wild crops
+                        if (currCrop.isWildSeedCrop() && currCrop.phaseToShow == -1 && currCrop.currentPhase > 0)
+                            currCrop.phaseToShow = Game1.random.Next(1, 7);
+
+                        //and now giant crops
+                        double giantChance = new Random((int)Game1.uniqueIDForThisGame + (int)Game1.stats.daysPlayed + xPos * 2000 + yPos).NextDouble();
+
+                        if (loc is Farm && currCrop.currentPhase == currCrop.phaseDays.Count - 1 && IsValidGiantCrop(currCrop.indexOfHarvest) &&
+                            giantChance <= 0.01)
+                        {
+                            for (int i = xPos - 1; i <= xPos + 1; i++)
+                            {
+                                for (int j = yPos - 1; j <= yPos + 1; j++)
+                                {
+                                    Vector2 tile = new Vector2((float)i, (float)j);
+                                    if (!loc.terrainFeatures.ContainsKey(tile) || !(loc.terrainFeatures[tile] is HoeDirt) ||
+                                        (loc.terrainFeatures[tile] as HoeDirt).crop?.indexOfHarvest == currCrop.indexOfHarvest)
+                                    {
+                                        return; //no longer needs to process.
+                                    }
+                                }
+                            }
+
+
+                            //replace for giant crops.
+                            for (int i = xPos - 1; i <= xPos + 1; i++)
+                            {
+                                for (int j = yPos - 1; j <= yPos + 1; j++)
+                                {
+                                    Vector2 tile = new Vector2((float)i, (float)j);
+                                    (loc.terrainFeatures[tile] as HoeDirt).crop = (Crop)null;
+                                }
+                            }
+
+                        (loc as Farm).resourceClumps.Add((ResourceClump)new GiantCrop(currCrop.indexOfHarvest, new Vector2((float)(xPos - 1), (float)(yPos - 1))));
+
+                        }
+                    }
+                }
+                //process some edge cases for non watered crops.
+                if (currCrop.fullyGrown && currCrop.dayOfCurrentPhase > 0 ||
+                    currCrop.currentPhase < currCrop.phaseDays.Count - 1 ||
+                    !currCrop.isWildSeedCrop())
+
+                    return; //stop processing
+
+                //replace wild crops**
+
 
 
             }
         }
 
-        public static void AdvanceArbitrarySteps(GameLocation loc, HoeDirt h, int numDays = 1)
+        private static bool IsValidGiantCrop(int cropID)
+        {
+            int[] crops = new int[] { 276, 190, 254 };
+
+            if (crops.Contains(cropID))
+                return true;
+
+            return false;
+        }
+
+        public static void AdvanceArbitrarySteps(GameLocation loc, HoeDirt h, Vector2 position, int numDays = 1)
         {
             for (int i = 0; i < numDays; i++)
-                AdvanceCropOneStep(loc, h);
+                AdvanceCropOneStep(loc, h, position);
         }
 
         public static int CreateWeeds(GameLocation spawnLoc, int numOfWeeds)
