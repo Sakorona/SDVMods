@@ -2,6 +2,7 @@
 using StardewModdingAPI.Utilities;
 using StardewValley;
 using StardewValley.Monsters;
+using StardewValley.Locations;
 using StardewValley.TerrainFeatures;
 using System;
 using System.Linq;
@@ -219,23 +220,22 @@ namespace TwilightShards.Stardew.Common
 
         private static void AdvanceCropOneStep(GameLocation loc, HoeDirt h)
         {
-           Crop currCrop = h.crop;
+            Crop currCrop = h.crop;
 
-           if (currCrop == null)
+            if (currCrop == null)
                 return;
 
-           //due to how this will be called, we do need to some checking
-           if (!currCrop.seasonsToGrowIn.Contains(Game1.currentSeason) || currCrop.dead)
-           {
-                 currCrop.dead = true;
-           }
-           else
-           {
-                if (h.state == HoeDirt.watered)
-                {
+            //due to how this will be called, we do need to some checking
+            if (!loc.name.Equals("Greenhouse") && (currCrop.dead || !currCrop.seasonsToGrowIn.Contains(Game1.currentSeason)))
+            {
+                currCrop.dead = true;
+            }
+            else
+            {
+                
 
-                }
-           }
+
+            }
         }
 
         public static void AdvanceArbitrarySteps(GameLocation loc, HoeDirt h, int numDays = 1)
