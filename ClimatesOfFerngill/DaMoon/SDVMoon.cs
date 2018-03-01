@@ -175,32 +175,7 @@ namespace ClimatesOfFerngillRebuild
                 {
                     if (TF.Value is HoeDirt curr && curr.crop != null && Dice.NextDouble() < CropGrowthChance)
                     {
-                        if (curr.state == HoeDirt.watered) //make sure it's watered
-                        {
-                            cropsAffected++;
-                            int phaseDays = 0;
-                            if (curr.crop.fullyGrown) {
-                                curr.crop.dayOfCurrentPhase--;
-                            }
-                            else
-                            {
-                                if (curr.crop.phaseDays.Count > 0)
-                                    phaseDays = curr.crop.phaseDays[Math.Min(curr.crop.phaseDays.Count - 1, curr.crop.currentPhase)];
-
-                                curr.crop.dayOfCurrentPhase = Math.Min(curr.crop.dayOfCurrentPhase + 1, phaseDays);
-                            }
-
-                            
-                            int phaseDayCount = (curr.crop.phaseDays.Count > 0 ? 
-                                curr.crop.phaseDays[Math.Min(curr.crop.phaseDays.Count - 1, curr.crop.currentPhase)] : 0);
-
-                            if (curr.crop.dayOfCurrentPhase >= phaseDayCount && 
-                                curr.crop.currentPhase < curr.crop.phaseDays.Count - 1)
-                            {
-                                curr.crop.currentPhase = curr.crop.currentPhase + 1;
-                                curr.crop.dayOfCurrentPhase = 0;
-                            }
-                        }
+                        SDVUtilities.AdvanceArbitrarySteps(f, curr, TF.Key);                       
                     }
                 }
 

@@ -312,8 +312,32 @@ namespace TwilightShards.Stardew.Common
 
                 //replace wild crops**
 
+                //remove any object here. o.O
+                loc.objects.Remove(position);
 
+                string season = Game1.currentSeason;
+                switch (currCrop.whichForageCrop)
+                {
+                    case 495:
+                        season = "spring";
+                        break;
+                    case 496:
+                        season = "summer";
+                        break;
+                    case 497:
+                        season = "fall";
+                        break;
+                    case 498:
+                        season = "winter";
+                        break;
+                }
+                loc.objects.Add(position, new StardewValley.Object(position, currCrop.getRandomWildCropForSeason(season), 1)
+                {
+                    isSpawnedObject = true,
+                    canBeGrabbed = true
+                });
 
+                //the normal iteration has a safe-call that isn't neded here               
             }
         }
 
