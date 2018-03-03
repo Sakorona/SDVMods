@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
-VisualStudioVersion = 15.0.27004.2009
+VisualStudioVersion = 15.0.27130.2036
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SolarEclipseEvent", "SolarEclipseEvent\SolarEclipseEvent.csproj", "{B932C1FD-CAC3-4A8C-8119-8D156F8CEB96}"
 EndProject
@@ -30,6 +30,10 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "USDVP", "USDVP\USDVP.csproj", "{92E332E1-533E-42CA-B3EF-1E5BCFDD857B}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ArtifactsInOmniGeodes", "ArtifactsInOmniGeodes\ArtifactsInOmniGeodes.csproj", "{FC40086C-3D02-4AB3-A46C-691FD4CE57E2}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LunarDisturbances", "LunarDisturbances\LunarDisturbances.csproj", "{55F6041A-5800-4287-BEF7-A83F2D9A49A5}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WeatherIllnesses", "WeatherIllnesses\WeatherIllnesses.csproj", "{E89B6A73-1B1F-44FF-AF10-867F0D1425F9}"
 EndProject
 Global
 	GlobalSection(SharedMSBuildProjectFiles) = preSolution
@@ -75,6 +79,14 @@ Global
 		{FC40086C-3D02-4AB3-A46C-691FD4CE57E2}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{FC40086C-3D02-4AB3-A46C-691FD4CE57E2}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{FC40086C-3D02-4AB3-A46C-691FD4CE57E2}.Release|Any CPU.Build.0 = Release|Any CPU
+		{55F6041A-5800-4287-BEF7-A83F2D9A49A5}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{55F6041A-5800-4287-BEF7-A83F2D9A49A5}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{55F6041A-5800-4287-BEF7-A83F2D9A49A5}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{55F6041A-5800-4287-BEF7-A83F2D9A49A5}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E89B6A73-1B1F-44FF-AF10-867F0D1425F9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E89B6A73-1B1F-44FF-AF10-867F0D1425F9}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E89B6A73-1B1F-44FF-AF10-867F0D1425F9}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E89B6A73-1B1F-44FF-AF10-867F0D1425F9}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

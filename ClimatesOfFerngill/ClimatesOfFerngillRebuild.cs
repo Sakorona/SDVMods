@@ -44,15 +44,10 @@ namespace ClimatesOfFerngillRebuild
 
         /// <summary> The moon object </summary>
         private SDVMoon OurMoon;
-
-        //for stamina management
-        private StaminaDrain StaminaMngr;
-        private int TicksOutside;
-        private int TicksTotal;
-        private int ExpireTime;
         private int SecondCount;
         private List<Vector2> CropList;
         private HUDMessage queuedMsg;
+        private int ExpireTime;
 
         /// <summary> This is used to allow the menu to revert back to a previous menu </summary>
         private IClickableMenu PreviousMenu;
@@ -62,12 +57,19 @@ namespace ClimatesOfFerngillRebuild
         private bool Disabled = false;
         public bool IsEclipse { get; set; }
         public int ResetTicker { get; set; }
-        private bool wasEating = false;
         private bool UseJsonAssetsApi = false;
-        private int prevToEatStack = -1;
         private Integrations.IJsonAssetsApi JAAPi;
 
         private bool IsFestivalDay => Utility.isFestivalDay(SDate.Now().Day, SDate.Now().Season);
+
+        private IClimatesOfFerngillAPI API;
+        public override object GetApi()
+        {
+            if (API == null)
+                API = new ClimatesOfFerngillAPI(Conditions);
+
+            return API;
+        }
 
         /// <summary> Main mod function. </summary>
         /// <param name="helper">The helper. </param>
@@ -81,10 +83,9 @@ namespace ClimatesOfFerngillRebuild
             OurIcons = new Sprites.Icons(Helper.Content);
             CropList = new List<Vector2>();
             Conditions = new WeatherConditions(OurIcons, Dice, Helper.Translation, Monitor, OurMoon, WeatherOpt);
-            StaminaMngr = new StaminaDrain(WeatherOpt, Helper.Translation, Monitor);
             DescriptionEngine = new Descriptions(Helper.Translation, Dice, WeatherOpt, Monitor);
             queuedMsg = null;
-            SecondCount = TicksOutside = TicksTotal = ExpireTime = 0;
+            SecondCoun = ExpireTime = 0;
             Vector2 snowPos = Vector2.Zero;
 
             if (WeatherOpt.Verbose) Monitor.Log($"Loading climate type: {WeatherOpt.ClimateType} from file", LogLevel.Trace);
@@ -121,9 +122,7 @@ namespace ClimatesOfFerngillRebuild
                 //console commands
                 helper.ConsoleCommands
                       .Add("world_tmrwweather", helper.Translation.Get("console-text.desc_tmrweather"), TomorrowWeatherChangeFromConsole)
-                      .Add("world_setweather", helper.Translation.Get("console-text.desc_setweather"), WeatherChangeFromConsole)
-                      .Add("world_solareclipse", "Starts the solar eclipse.", SolarEclipseEvent_CommandFired)
-                      .Add("debug_forceBloodMoon", "Forces Blood Moon", ForceBloodMoon);
+                      .Add("world_setweather", helper.Translation.Get("console-text.desc_setweather"), WeatherChangeFromConsole);
             }
         }
 
@@ -467,31 +466,7 @@ namespace ClimatesOfFerngillRebuild
                 ResetTicker = 0;
             }
 
-            Conditions.MoveWeathers();
-
-
-            if (Game1.isEating != wasEating)
-            {
-                if (!Game1.isEating)
-                {
-                    // Apparently this happens when the ask to eat dialog opens, but they pressed no.
-                    // So make sure something was actually consumed.
-                    if (prevToEatStack != -1 && (prevToEatStack - 1 == Game1.player.itemToEat.Stack))
-                    {
-                        if (Game1.player.itemToEat.parentSheetIndex == 351)
-                            StaminaMngr.ClearDrain();
-                    }
-                }
-                prevToEatStack = (Game1.player.itemToEat != null ? Game1.player.itemToEat.Stack : -1);
-            }
-            wasEating = Game1.isEating;
-
-            if (Game1.currentLocation.isOutdoors)
-            {
-                TicksOutside++;
-            }
-
-            TicksTotal++;            
+            Conditions.MoveWeathers();           
         }
 
         /// <summary>
@@ -627,15 +602,6 @@ namespace ClimatesOfFerngillRebuild
 
             //moon 10-minute
             OurMoon.TenMinuteUpdate();
-
-            float oldStamina = Game1.player.stamina;
-            Game1.player.stamina += StaminaMngr.TenMinuteTick(Conditions, TicksOutside, TicksTotal, Dice);
-
-            if (Game1.player.stamina <= 0)
-                SDVUtilities.FaintPlayer();
-
-            TicksTotal = 0;
-            TicksOutside = 0;
         }
 
         /// <summary>
@@ -714,9 +680,6 @@ namespace ClimatesOfFerngillRebuild
             CropList.Clear(); 
             DebugOutput.Clear();
             OurMoon.Reset();
-            StaminaMngr.Reset();
-            TicksOutside = 0;
-            TicksTotal = 0;
             SecondCount = 0;
         }
 
@@ -730,8 +693,6 @@ namespace ClimatesOfFerngillRebuild
                 Monitor.Log("OurMoon is null");
             if (Conditions == null)
                 Monitor.Log("CurrentWeather is null");
-            if (StaminaMngr == null)
-                Monitor.Log("StaminaMngr is null");
             if (GameClimate is null)
                 Monitor.Log("GameClimate is null");
 
@@ -751,10 +712,7 @@ namespace ClimatesOfFerngillRebuild
             SetTommorowWeather();
             OurMoon.OnNewDay();
             OurMoon.HandleMoonAfterWake(Helper.Translation);
-            StaminaMngr.OnNewDay();
-            TicksOutside = 0;
             ExpireTime = 0;
-            TicksTotal = 0;
         }
         private void SetTommorowWeather()
         {

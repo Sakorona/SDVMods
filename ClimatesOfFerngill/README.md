@@ -260,11 +260,11 @@ over a certain value.). Valid 0-1, but it's recommended that this is kept low. D
 - `DryLightningMinTemp` - This controls the minimum temperature to trigger the DryLightning event. 
   Defaults to `34`. Values are in Celsius. (34 C is 93.2 F)
 
-- 'TooColdOutside' - This controls the temperature required (the *low* temperature required) to trigger the Frost event. Note this is a Spring and Fall event, and will potentially kill crops
+- `TooColdOutside` - This controls the temperature required (the *low* temperature required) to trigger the Frost event. Note this is a Spring and Fall event, and will potentially kill crops
   Defaults to '-3'. Values are in Celsius (1 C is 33.8 F). 
   NOTE: Frosts trigger at dark
 
-- 'TooHotOutside' - This controls the temperature required (the *high* temperature required) to trigger the Heatwave event.
+- `TooHotOutside` - This controls the temperature required (the *high* temperature required) to trigger the Heatwave event.
   Defaults to '39'. Values are in Celsius (39 C is 102.2 F)
   NOTE : Heatwaves taper off at night.
 
@@ -289,31 +289,31 @@ over a certain value.). Valid 0-1, but it's recommended that this is kept low. D
 
 - `AllowCropDeath` - Default: `false`. Normally, hazardous weather won't kill crops, just stop them growing. This reenables crop death.'
 
-- 'AffectedOutside' - The percentage outside you need to be within a 10 minute span to be affected by stamina events.
+- `AffectedOutside` - The percentage outside you need to be within a 10 minute span to be affected by stamina events.
  Defaults to '.65', valid values are between 0 and 1. To turn stamina drains off entirely, set it to 0. 
 
- - 'SickMoreThanOnce' - By default, the false means you can only get sick once a day. Set it to true to be affected by multiple colds.
+ - `SickMoreThanOnce` - This setting controls whether or not you can get sick once you have cured yourself. Default: `false`. Valid: `true, false`
 
- - 'StaminaDrain' - This is an int containing the default stamina drain for hazardous events. See the writeup (soon) for more information. Default is '2'. Valid range is any number between foo and bar.'
+ - `StaminaDrain` - This is an int containing the default stamina drain for hazardous events. See the writeup (soon) for more information. Default is '2'. Valid range is any number between foo and bar.'
 
- - 'DeadCropPercentage' - The amount of crops that a heatwave and frost can kill. (Note: Frost will kill more than heatwaves). Default: '.1' Valid range is 0 to 1.
+ - `DeadCropPercentage` - The amount of crops that a heatwave and frost can kill. (Note: Frost will kill more than heatwaves). Default: '.1' Valid range is 0 to 1.
 
- - 'CropResistance' - This represents the resistance an average crop has to heatwaves and frosts. Default: '.4' Valid Range is 0 to 1.
+ - `CropResistance` - This represents the resistance an average crop has to heatwaves and frosts. Default: '.4' Valid Range is 0 to 1.
 
- - 'DarkFogChance' - This controls the chance of the darker fog appearing. Default is set to '.0875' (or a 1/8th chance if it's foggy it'll be dark fog.) Valid Range is 0 to 1.
+ - `DarkFogChance` - This controls the chance of the darker fog appearing. Default is set to '.0875' (or a 1/8th chance if it's foggy it'll be dark fog.) Valid Range is 0 to 1.
 
- - 'ChanceOfGettingSick' - Controls the chance you'll get sick when conditions are matched. Default is set to '.7' for (70% chance). Valid Range is 0 to 1.
+ - `ChanceOfGettingSick` - Controls the chance you'll get sick when conditions are matched. Default is set to '.7' for (70% chance). Valid Range is 0 to 1.
 
- - 'Use12HourTime' - Tells it whether or not to use 12hour time or not in displays. Defaults to false. Valid: true, false
+ - `Use12HourTime` - Tells it whether or not to use 12hour time or not in displays. Defaults to false. Valid: true, false
 
- - 'BadMoonRising' - Chance of a blood moon on a full moon. Default: .004 (.4%). Valid Range is 0 to 1.
+ - `BadMoonRising` - Chance of a blood moon on a full moon. Default: .004 (.4%). Valid Range is 0 to 1.
 
- - 'EclipseOn' - Whether or not the eclipse is enabled. Defaults to true. (NOTE: Will not trigger until at least Spring 2, and must be a full moon.) (valid: true, false)
+ - `EclipseOn` - Whether or not the eclipse is enabled. Defaults to true. (NOTE: Will not trigger until at least Spring 2, and must be a full moon.) (valid: true, false)
 
- - 'EclipseChance' - The chance of an eclipse every full moon. Defaults to .015 (1.5%) Valid Range is 0 to 1.
+ - `EclipseChance` - The chance of an eclipse every full moon. Defaults to .015 (1.5%) Valid Range is 0 to 1.
 
- - 'SpawnMonsters' - Controls if monsters spawn on your wilderness farm. Default: true. Valid: true, false
+ - `SpawnMonsters` - Controls if monsters spawn on your wilderness farm. Default: true. Valid: true, false
 
- - 'SpawnMonstersAllFarms' - Controls if monsters spawn on all farms. Default: false. Valid: true, false
+ - `SpawnMonstersAllFarms` - Controls if monsters spawn on all farms. Default: false. Valid: true, false
 
- - 'HazardousMoonEvents' - Turns on or off moon events that hinder the player. Default: false. Valid: true, false.
+ - `HazardousMoonEvents` - Turns on or off moon events that hinder the player. Default: false. Valid: true, false.

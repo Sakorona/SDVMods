@@ -1,50 +1,24 @@
 ﻿namespace ClimatesOfFerngillRebuild
 {
-    internal class ClimatesOfFerngillApi
+    public interface IClimatesOfFerngillAPI
     {
-        private SDVMoon Termina;
+        string GetCurrentWeatherName();
+    }
+    
+    public class ClimatesOfFerngillAPI : IClimatesOfFerngillAPI
+    {
         private WeatherConditions CurrentConditions;
-        private WeatherConfig ModConfig;
-        private StaminaDrain StaminaManager;
 
-        //Constructor
-        internal ClimatesOfFerngillApi(SDVMoon moon, WeatherConditions cond, StaminaDrain manager, WeatherConfig config)
+        public void LoadData(WeatherConditions Cond) => CurrentConditions = Cond;
+
+        public ClimatesOfFerngillAPI(WeatherConditions cond)
         {
-            Termina = moon;
-            CurrentConditions = cond;
-            StaminaManager = manager;
-            ModConfig = config;
+            LoadData(cond);
         }
 
-        MoonPhase GetCurrentMoonPhase()
+        public string GetCurrentWeatherName()
         {
-            return Termina.CurrentPhase;
-        }
-
-        bool IsFarmerSick()
-        {
-            return StaminaManager.IsSick();
-        }
-
-        CurrentWeather GetWeatherConditions()
-        {
-            return CurrentConditions.GetCurrentConditions();
-        }
-
-        bool IsFoggyOutside()
-        {
-            foreach (ISDVWeather w in CurrentConditions.GetWeatherMatchingType("Fog"))
-            {
-                if (w.IsWeatherVisible)
-                    return true;
-            }
-
-            return false;            
-        }
-
-        bool HasPrecip()
-        {
-            return CurrentConditions.HasPrecip();
+            return CurrentConditions.Weathers[(int)CurrentConditions.GetCurrentConditions()].ConditionName;
         }
 
     }

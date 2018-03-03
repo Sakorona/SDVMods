@@ -18,6 +18,7 @@ namespace ClimatesOfFerngillRebuild
         //encapsulated members
         private MersenneTwister Dice;
         private WeatherConfig ModConfig;
+        private ITranslationHelper Translations;
 
         //internal trackers
         private static int cycleLength = 14;
@@ -37,11 +38,12 @@ namespace ClimatesOfFerngillRebuild
         internal readonly int[] beachItems = new int[] { 393, 397, 392, 394 };
         internal readonly int[] moonBeachItems = new int[] { 393, 394, 560, 586, 587, 589, 397 };
 
-        public SDVMoon(WeatherConfig config, MersenneTwister rng)
+        public SDVMoon(WeatherConfig config, MersenneTwister rng, ITranslationHelper Trans)
         {
             Dice = rng;
             ModConfig = config;
             IsBloodMoon = false;
+            Translations = Trans;
 
             //set chances.
             CropGrowthChance = .09;
@@ -106,7 +108,7 @@ namespace ClimatesOfFerngillRebuild
             int currentCycle = (int)Math.Floor(Today.DaysSinceStart / (double)cycleLength);
             int currentDay = GetDayOfCycle(Today);
 
-            return SDVMoon.GetLunarPhase(currentDay);
+            return GetLunarPhase(currentDay);
         }
 
         public void UpdateForBloodMoon()
@@ -158,7 +160,7 @@ namespace ClimatesOfFerngillRebuild
         /// Handles events that fire at sleep.
         /// </summary>
         /// <param name="f"></param>
-        public void HandleMoonAtSleep(Farm f, ITranslationHelper Helper)
+        public void HandleMoonAtSleep(Farm f)
         {
             if (f == null)
                 return;
@@ -180,7 +182,7 @@ namespace ClimatesOfFerngillRebuild
                 }
 
                 if (cropsAffected > 0)
-                    Game1.addHUDMessage(new HUDMessage(Helper.Get("moon-text.fullmoon_eff", new { cropsAffected = cropsAffected })));
+                    Game1.addHUDMessage(new HUDMessage(Translations.Get("moon-text.fullmoon_eff", new { cropsAffected = cropsAffected })));
             }
 
             if (CurrentPhase == MoonPhase.NewMoon && ModConfig.HazardousMoonEvents)
@@ -201,7 +203,7 @@ namespace ClimatesOfFerngillRebuild
                 }
 
                 if (cropsAffected > 0)
-                    Game1.addHUDMessage(new HUDMessage(Helper.Get("moon-text.newmoon_eff", new { cropsAffected = cropsAffected })));
+                    Game1.addHUDMessage(new HUDMessage(Translations.Get("moon-text.newmoon_eff", new { cropsAffected = cropsAffected })));
             }
         }
 
@@ -218,32 +220,32 @@ namespace ClimatesOfFerngillRebuild
                 UpdateForBloodMoon();
             }
 
-            if (this.CheckForGhostSpawn() && SDVTime.CurrentIntTime > Game1.getStartingToGetDarkTime() && Game1.currentLocation is Farm && Game1.whichFarm == Farm.combat_layout)
+            if (CheckForGhostSpawn() && SDVTime.CurrentIntTime > Game1.getStartingToGetDarkTime() && Game1.currentLocation is Farm && Game1.whichFarm == Farm.combat_layout)
             {
                 GameLocation f = Game1.currentLocation;
                 Vector2 zero = Vector2.Zero;
                 switch (Game1.random.Next(4))
                 {
                     case 0:
-                        zero.X = (float)Game1.random.Next(f.map.Layers[0].LayerWidth);
+                        zero.X = Game1.random.Next(f.map.Layers[0].LayerWidth);
                         break;
                     case 1:
-                        zero.X = (float)(f.map.Layers[0].LayerWidth - 1);
-                        zero.Y = (float)Game1.random.Next(f.map.Layers[0].LayerHeight);
+                        zero.X = (f.map.Layers[0].LayerWidth - 1);
+                        zero.Y = Game1.random.Next(f.map.Layers[0].LayerHeight);
                         break;
                     case 2:
-                        zero.Y = (float)(f.map.Layers[0].LayerHeight - 1);
-                        zero.X = (float)Game1.random.Next(f.map.Layers[0].LayerWidth);
+                        zero.Y = (f.map.Layers[0].LayerHeight - 1);
+                        zero.X = Game1.random.Next(f.map.Layers[0].LayerWidth);
                         break;
                     case 3:
-                        zero.Y = (float)Game1.random.Next(f.map.Layers[0].LayerHeight);
+                        zero.Y = Game1.random.Next(f.map.Layers[0].LayerHeight);
                         break;
                 }
-                if (Utility.isOnScreen(zero * (float)Game1.tileSize, Game1.tileSize))
-                    zero.X -= (float)Game1.viewport.Width;
+                if (Utility.isOnScreen(zero * Game1.tileSize, Game1.tileSize))
+                    zero.X -= Game1.viewport.Width;
 
                 List<NPC> characters = f.characters;
-                Ghost ghost = new Ghost(zero * (float)Game1.tileSize)
+                Ghost ghost = new Ghost(zero * Game1.tileSize)
                 {
                     focusedOnFarmers = true,
                     wildernessFarmMonster = false,
@@ -255,7 +257,12 @@ namespace ClimatesOfFerngillRebuild
             }
         }
 
-        public void HandleMoonAfterWake(ITranslationHelper Helper)
+        public string GetMenuString()
+        {
+            return Translations.Get("moon-desc.desc_moonphase", new { moonPhase = SDVMoon.DescribeMoonPhase(CurrentPhase, Translations) });
+        }
+
+        public void HandleMoonAfterWake()
         {
             if (Game1.getLocationFromName("Beach") is null)
                 throw new Exception("... Please reinstall your game");
@@ -283,7 +290,7 @@ namespace ClimatesOfFerngillRebuild
                 }
 
                 if (itemsChanged > 0)
-                    Game1.addHUDMessage(new HUDMessage(Helper.Get("moon-text.hud_message_new")));
+                    Game1.addHUDMessage(new HUDMessage(Translations.Get("moon-text.hud_message_new")));
             }
 
             //full moon processing
@@ -317,7 +324,7 @@ namespace ClimatesOfFerngillRebuild
                     }
 
                     if (itemsChanged > 0)
-                        Game1.addHUDMessage(new HUDMessage(Helper.Get("moon-text.hud_message_full")));
+                        Game1.addHUDMessage(new HUDMessage(Translations.Get("moon-text.hud_message_full")));
             }
         }
 

@@ -59,6 +59,26 @@ namespace TwilightShards.Stardew.Common
             return s;
         }
 
+        public static string GetWeatherName()
+        {
+            if ((!Game1.isRaining) && (!Game1.isDebrisWeather) && (!Game1.isSnowing) && (!Game1.isLightning) && (!Utility.isFestivalDay(Game1.dayOfMonth, Game1.currentSeason)) && (!Game1.weddingToday))
+                return "sunny";
+            if (Utility.isFestivalDay(Game1.dayOfMonth, Game1.currentSeason))
+                return "festival";
+            if (Game1.weddingToday)
+                return "wedding";
+            if (Game1.isRaining)
+                return "rain";
+            if (Game1.isDebrisWeather)
+                return "debris";
+            if (Game1.isSnowing)
+                return "snowy";
+            if (Game1.isRaining && Game1.isLightning)
+                return "stormy";
+
+            return "ERROR";
+        }
+
         public static string PrintCurrentWeatherStatus()
         {
             return $"Printing current weather status:" +

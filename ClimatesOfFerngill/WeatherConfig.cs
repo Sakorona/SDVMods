@@ -20,13 +20,9 @@ namespace ClimatesOfFerngillRebuild
         public bool ShowBothScales { get; set; }
         public double TooColdOutside { get; set; }
         public double TooHotOutside { get; set; }
-        public double AffectedOutside { get; set; }
-        public int StaminaDrain { get; set; }
-        public bool SickMoreThanOnce { get; set; }
         public double DeadCropPercentage { get; set; }
         public double CropResistance { get; set; }
         public double DarkFogChance { get; set; }
-        public double ChanceOfGettingSick { get; set; }
         public bool Use12HourTime { get; set; }
         public double BadMoonRising { get; set; }
         public bool EclipseOn { get; set; }
