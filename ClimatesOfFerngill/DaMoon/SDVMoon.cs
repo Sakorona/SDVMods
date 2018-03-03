@@ -218,7 +218,7 @@ namespace ClimatesOfFerngillRebuild
                 UpdateForBloodMoon();
             }
 
-            if (this.CheckForGhostSpawn() && SDVTime.CurrentIntTime > Game1.getStartingToGetDarkTime())
+            if (this.CheckForGhostSpawn() && SDVTime.CurrentIntTime > Game1.getStartingToGetDarkTime() && Game1.currentLocation is Farm && Game1.whichFarm == Farm.combat_layout)
             {
                 GameLocation f = Game1.currentLocation;
                 Vector2 zero = Vector2.Zero;

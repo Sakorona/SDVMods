@@ -142,7 +142,7 @@ namespace USDVP
                 ObjectsOutsideBounds.Clear();
             }
             
-            __instance.lightLevel = 0.0f; //??
+           // __instance.lightLevel = 0.0f; //??
 
             if (__instance.name.Equals("BugLand"))
             {

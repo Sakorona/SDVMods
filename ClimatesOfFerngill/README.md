@@ -1,6 +1,6 @@
 ﻿# Climates of Ferngill (Rebuild) You Can (Not) Have Weather
 
-Current Version (22 Feburary 2018): 1.3.4
+Current Version (3 March 2018): 1.3.4
 
 ## What's New
 
@@ -11,8 +11,8 @@ Current Version (22 Feburary 2018): 1.3.4
 
 ## Requirements
 
-- SMAPI 2.3+
-- Stardew Valley 1.2.33+
+- SMAPI 2.5+
+- Stardew Valley 1.2.33
 - PyTK 0.7.0+
  
 ## Overview
@@ -88,12 +88,13 @@ v1.3.4
 - Fixed issue with stamina clearer not requiring drinking the item.
 - Updated and expanded some of the dialogue
 - Dry lightning will no longer happen period when it's frost conditions
-- After consideration, wind will still restrict fog from spawning. 
+- After consideration, wind will still restrict fog from spawning.
+- Flag to stop the light from changing (if the stutter bothers you)
 
 v1.3.3
 - Harvey's 8-heart scene gives the temp scale. C now is Kraggs, the in-game scale.
 - Dual lightning strikes removed (was erroneously triggering additional lightning on stormy daysaw)
-- Apparently I never actually wrote in the code to spawn ghosts. :|
+- Apparently I never actually wrote in the code to spawn ghosts. :| Due to engine limitations, occurs only on wilderness farms.
 
 v1.3.2
 - the moon also disappears now when the rest of the shipping menu fades
@@ -266,6 +267,8 @@ over a certain value.). Valid 0-1, but it's recommended that this is kept low. D
 - 'TooHotOutside' - This controls the temperature required (the *high* temperature required) to trigger the Heatwave event.
   Defaults to '39'. Values are in Celsius (39 C is 102.2 F)
   NOTE : Heatwaves taper off at night.
+
+- `DarkenLightInFog` - If set to true, will darken the window when foggy. Set it to false if you want to disable this behavior if the flashes are a problem.
 
 - `SnowOnFall28` - If set to true, this will force snow fall and appropriate temperatures on Fall 28. Default: `false`,
   Valid: `true` or `false`

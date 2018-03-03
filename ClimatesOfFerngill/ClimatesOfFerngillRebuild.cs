@@ -296,7 +296,7 @@ namespace ClimatesOfFerngillRebuild
 
             if (Conditions.HasWeather(CurrentWeather.Fog))
             {
-                if (!Game1.currentLocation.isOutdoors && Game1.currentLocation is DecoratableLocation)
+                if (!Game1.currentLocation.isOutdoors && Game1.currentLocation is DecoratableLocation && WeatherOpt.DarkenLightInFog)
                 {
                     var loc = Game1.currentLocation as DecoratableLocation;
                     foreach (Furniture f in loc.furniture)

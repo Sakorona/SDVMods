@@ -34,6 +34,7 @@ namespace ClimatesOfFerngillRebuild
         public bool SpawnMonsters { get; set; }
         public bool SpawnMonstersAllFarms { get; set; }
         public bool HazardousMoonEvents { get; set; }
+        public bool DarkenLightInFog { get; set; }
 
         public bool Verbose { get; set; }
         
@@ -60,6 +61,7 @@ namespace ClimatesOfFerngillRebuild
             AllowStormsSpringYear1 = false; //default setting - maintains the fact that starting players may not 
             ShowBothScales = true; //default setting.
             DeadCropPercentage = .1; //default setting
+            DarkenLightInFog = true; //default setting
             CropResistance = .75; //default settting
             DarkFogChance = .0875; //default setting
             Use12HourTime = false; //default setting
