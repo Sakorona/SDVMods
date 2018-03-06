@@ -57,10 +57,10 @@ namespace ClimatesOfFerngillRebuild
         private bool Disabled = false;
         public bool IsEclipse { get; set; }
         public int ResetTicker { get; set; }
+
+        //Integrations
         private bool UseJsonAssetsApi = false;
         private Integrations.IJsonAssetsApi JAAPi;
-
-        private bool IsFestivalDay => Utility.isFestivalDay(SDate.Now().Day, SDate.Now().Season);
 
         private IClimatesOfFerngillAPI API;
         public override object GetApi()
@@ -85,7 +85,7 @@ namespace ClimatesOfFerngillRebuild
             Conditions = new WeatherConditions(OurIcons, Dice, Helper.Translation, Monitor, OurMoon, WeatherOpt);
             DescriptionEngine = new Descriptions(Helper.Translation, Dice, WeatherOpt, Monitor);
             queuedMsg = null;
-            SecondCoun = ExpireTime = 0;
+            SecondCount = ExpireTime = 0;
             Vector2 snowPos = Vector2.Zero;
 
             if (WeatherOpt.Verbose) Monitor.Log($"Loading climate type: {WeatherOpt.ClimateType} from file", LogLevel.Trace);

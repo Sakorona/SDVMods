@@ -74,7 +74,6 @@
     <Compile Include="Pathoschild.Stardew.UIF\IFormattedText.cs" />
     <Compile Include="DaMoon\SDVMoon.cs" />
     <Compile Include="Sprites.cs" />
-    <Compile Include="StaminaDrain.cs" />
     <Compile Include="WeatherMenu.cs" />
     <Compile Include="WeatherData\WeatherParameters.cs" />
     <Compile Include="ClimatesOfFerngillRebuild.cs" />

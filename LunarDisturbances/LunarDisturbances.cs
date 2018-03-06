@@ -5,7 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using StardewModdingAPI;
 
-namespace LunarDisturbances
+namespace TwilightShards.LunarDisturbances
 {
     public class LunarDisturbances : Mod
     {

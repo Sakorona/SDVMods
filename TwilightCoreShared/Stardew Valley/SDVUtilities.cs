@@ -63,7 +63,7 @@ namespace TwilightShards.Stardew.Common
         {
             if ((!Game1.isRaining) && (!Game1.isDebrisWeather) && (!Game1.isSnowing) && (!Game1.isLightning) && (!Utility.isFestivalDay(Game1.dayOfMonth, Game1.currentSeason)) && (!Game1.weddingToday))
                 return "sunny";
-            if (Utility.isFestivalDay(Game1.dayOfMonth, Game1.currentSeason))
+            if (SDVUtilities.IsFestivalDay)
                 return "festival";
             if (Game1.weddingToday)
                 return "wedding";
@@ -87,6 +87,8 @@ namespace TwilightShards.Stardew.Common
                     $"It is Snowy: {Game1.isSnowing} {Environment.NewLine}" +
                     $"It is Debris Weather: {Game1.isDebrisWeather} {Environment.NewLine}";
         }
+
+        internal static bool IsFestivalDay => Utility.isFestivalDay(SDate.Now().Day, SDate.Now().Season);
 
         internal static string GetFestivalName(SDate date) => SDVUtilities.GetFestivalName(date.Day, date.Season);
 

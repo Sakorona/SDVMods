@@ -84,11 +84,6 @@ namespace TwilightShards.WeatherIllnesses
                  Monitor.Log($"Ticks: {ticksOutside}/{ticksTotal} with percentage {amtOutside.ToString("N3")} against" +
                      $" target {IllOptions.PercentageOutside}"); 
 
-            //Logic: At all times, if the today danger is not null, we should consider processing.
-            //However: If it's frost, only at night. If it's a heatwave, only during the day.
-            //So this means: if it's storming, you can get sick. If it's a blizzard or thundersnow.. you can get sick
-            //If it's frost or heatwave during the appropriate time.. you can get sick
-
             //First, update the sick status
             bool farmerCaughtCold = false;
             double sickOdds = IllOptions.ChanceOfGettingSick - Game1.dailyLuck;
@@ -154,25 +149,25 @@ namespace TwilightShards.WeatherIllnesses
                     condList.Add("White Out");
                 }
 
-                if (this.FarmerSick && conditions.GetCurrentConditions().HasFlag(CurrentWeather.Frost) && SDVTime.IsNight)
+                if (this.FarmerSick && conditions.Contains("frost") && SDVTime.IsNight)
                 {
                     totalMulti += 1.25;
                     condList.Add("Night Frost");
                 }
 
-                if (this.FarmerSick && conditions.GetCurrentConditions().HasAllFlags(CurrentWeather.Lightning | CurrentWeather.Snow) && SDVTime.IsNight)
+                if (this.FarmerSick && conditions.Contains("thundersnow") && SDVTime.IsNight)
                 {
                     totalMulti += .5;
                     condList.Add("Night Thundersnow");
                 }
 
-                if (this.FarmerSick && conditions.GetCurrentConditions().HasFlag(CurrentWeather.Blizzard) && SDVTime.IsNight)
+                if (this.FarmerSick && conditions.Contains("blizzard") && SDVTime.IsNight)
                 {
                     totalMulti += .5;
                     condList.Add("Night Blizzard");
                 }
 
-                if (this.FarmerSick && conditions.GetCurrentConditions().HasFlag(CurrentWeather.Heatwave) && !SDVTime.IsNight)
+                if (this.FarmerSick && conditions.Contains("heatwave") && !SDVTime.IsNight)
                 {
                     totalMulti += 1.25;
                     condList.Add("Day Heatwave");
