@@ -79,7 +79,7 @@ namespace ClimatesOfFerngillRebuild
             WeatherOpt = helper.ReadConfig<WeatherConfig>();
             Dice = new MersenneTwister();
             DebugOutput = new StringBuilder();
-            OurMoon = new SDVMoon(WeatherOpt, Dice);
+            OurMoon = new SDVMoon(WeatherOpt, Dice, Helper.Translation);
             OurIcons = new Sprites.Icons(Helper.Content);
             CropList = new List<Vector2>();
             Conditions = new WeatherConditions(OurIcons, Dice, Helper.Translation, Monitor, OurMoon, WeatherOpt);
@@ -436,7 +436,7 @@ namespace ClimatesOfFerngillRebuild
                 IsEclipse = false;
 
             //moon works after frost does
-            OurMoon.HandleMoonAtSleep(Game1.getFarm(), Helper.Translation);
+            OurMoon.HandleMoonAtSleep(Game1.getFarm());
         }
 
         /// <summary>
@@ -711,7 +711,7 @@ namespace ClimatesOfFerngillRebuild
             UpdateWeatherOnNewDay();
             SetTommorowWeather();
             OurMoon.OnNewDay();
-            OurMoon.HandleMoonAfterWake(Helper.Translation);
+            OurMoon.HandleMoonAfterWake();
             ExpireTime = 0;
         }
         private void SetTommorowWeather()
@@ -1052,8 +1052,7 @@ namespace ClimatesOfFerngillRebuild
 
             // show menu
             this.PreviousMenu = Game1.activeClickableMenu;
-            Game1.activeClickableMenu = new WeatherMenu(Monitor, this.Helper.Reflection, OurIcons, Helper.Translation, Conditions, 
-                OurMoon, WeatherOpt, MenuText);
+            Game1.activeClickableMenu = new WeatherMenu(Monitor, this.Helper.Reflection, OurIcons, Conditions, MenuText);
         }
 
         /// <summary>

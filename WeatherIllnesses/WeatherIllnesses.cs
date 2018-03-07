@@ -19,7 +19,6 @@ namespace TwilightShards.WeatherIllnesses
 
         private int TicksOutside;
         private int TicksTotal;
-        private int ExpireTime;
         private int prevToEatStack = -1;
         private bool wasEating = false;
 

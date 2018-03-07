@@ -64,13 +64,6 @@ namespace ClimatesOfFerngillRebuild
             BadMoonRising = .004; //default setting
 
             // be able to deal with lightning strikes
-
-            //stamina options
-            AffectedOutside = .65;
-            StaminaDrain = 2;
-            SickMoreThanOnce = false;
-            ChanceOfGettingSick = .7;
-
             //general mod options
             Verbose = true;
 

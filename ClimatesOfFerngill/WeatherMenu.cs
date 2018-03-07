@@ -27,9 +27,6 @@ namespace ClimatesOfFerngillRebuild
         /// <summary>The aspect ratio of the page background.</summary>
         private readonly Vector2 AspectRatio = new Vector2(Sprites.Letter.Sprite.Width, Sprites.Letter.Sprite.Height);
 
-        /// <summary> To da Moon, Princess!  </summary>
-        private SDVMoon OurMoon;
-
         /// <summary> The current weather status </summary>
         private WeatherConditions CurrentWeather;
 
@@ -50,7 +47,7 @@ namespace ClimatesOfFerngillRebuild
         ****/
         /// <summary>Construct an instance.</summary>
         /// <param name="monitor">Encapsulates logging and monitoring.</param>
-        public WeatherMenu(IMonitor monitor, IReflectionHelper reflectionHelper, Sprites.Icons Icon, WeatherConditions weat, SDVMoon Termina, string text)
+        public WeatherMenu(IMonitor monitor, IReflectionHelper reflectionHelper, Sprites.Icons Icon, WeatherConditions weat, string text)
         {
             // save data
             MenuText = text;
@@ -58,7 +55,6 @@ namespace ClimatesOfFerngillRebuild
             Reflection = reflectionHelper;
             CurrentWeather = weat;
             IconSheet = Icon;
-            OurMoon = Termina;
 
             // update layout
             UpdateLayout();
@@ -171,7 +167,6 @@ namespace ClimatesOfFerngillRebuild
             // draw weather icon
             spriteBatch.Draw(IconSheet.WeatherSource, new Vector2(x + leftOffset, y + topOffset), IconSheet.GetWeatherSprite(CurrentWeather.GetCurrentConditions()), Color.White);
             leftOffset += 72;
-            string weatherString = "";
 
             // draw text as sent from outside the menu
             float wrapWidth = width - leftOffset - gutter;
@@ -181,7 +176,9 @@ namespace ClimatesOfFerngillRebuild
                 topOffset += lineHeight;
             }
 
+            /*
             //draw moon info
+            string weatherString = "";
             spriteBatch.Draw(IconSheet.MoonSource, new Vector2(x + 15, y + topOffset), 
                 IconSheet.GetMoonSprite(OurMoon.CurrentPhase), Color.White);
 
@@ -189,6 +186,7 @@ namespace ClimatesOfFerngillRebuild
 
             Vector2 moonText = spriteBatch.DrawTextBlock(font, 
                 weatherString, new Vector2(x + leftOffset, y + topOffset), wrapWidth);
+            */
 
             topOffset += lineHeight; //stop moon from being cut off.
 

@@ -55,7 +55,6 @@ namespace ClimatesOfFerngillRebuild
         {
             if (ModConfig.ShowBothScales)
             {
-                //Temp =  "34 C (100 F)"
                 return $"{temp.ToString("N1")} Kraggs ({GeneralFunctions.ConvCtF(temp).ToString("N1")} F)";
             }
             else

@@ -17,15 +17,10 @@
 
   //HUD Messages
   "hud-text.desc_stormtotem": "You hear a roll of thunder...",
-  "hud-text.desc_sick": "You have caught a cold...!",
-  "hud-text.desc_exhaust": "The hotter temperatures outside are wearing you out more than normal.",
-  "hud-text.desc_freeze": "The freezing temperatures outside are making you sleepy, wearing you out.",
-  "hud-text.desc_flu": "You have caught the flu and better take some medicine soon!",
   "hud-text.desc_frost_killed": "{{deadCrops}} crops died in the night due to the cold..!",
   "hud-text.desc_heatwave_dry": "The extreme heat has caused some of your crops to become dry....!",
   "hud-text.desc_heatwave_kill": "The extreme heat has caused some of your crops to dry out. If you don't water them, they'll die!",
   "hud-text.desc_heatwave_cropdeath": "Some of the crops have died due to lack of water!",
-  "hud-text.desc_cold_removed": "You feel the medicine clearing your sickness and soothing your exhaustion",
 
   //Ferngill Locations
   "fern-loc.0": "Castle Village",
