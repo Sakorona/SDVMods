@@ -1,6 +1,6 @@
 ﻿namespace TwilightShards.WeatherIllnesses.Integrations
 {
-    interface IClimatesOfFerngillAPI
+    public interface IClimatesOfFerngillAPI
     {
         string GetCurrentWeatherName();
     }

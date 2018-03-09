@@ -31,7 +31,7 @@ namespace TwilightShards.WeatherIllnesses
         {
             IllnessConfig = helper.ReadConfig<IllnessConfig>();
             Dice = new MersenneTwister();
-
+            StaminaMngr = new StaminaDrain(IllnessConfig, Helper.Translation, Monitor);
             TicksOutside = TicksTotal = 0;
 
             SaveEvents.AfterReturnToTitle += HandleResetToMenu;
@@ -91,6 +91,9 @@ namespace TwilightShards.WeatherIllnesses
 
         private void HandleChangesPerTick(object sender, EventArgs e)
         {
+            if (!Game1.hasLoadedGame)
+                return;
+
             if (Game1.isEating != wasEating)
             {
                 if (!Game1.isEating)
