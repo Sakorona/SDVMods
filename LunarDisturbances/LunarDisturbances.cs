@@ -1,8 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using StardewModdingAPI;
 using TwilightShards.Common;
 using StardewValley;
@@ -14,6 +11,7 @@ using StardewModdingAPI.Utilities;
 using StardewValley.Objects;
 using StardewValley.Locations;
 using StardewValley.Monsters;
+using TwilightShards.Stardew.Common;
 
 namespace TwilightShards.LunarDisturbances
 {
@@ -28,6 +26,7 @@ namespace TwilightShards.LunarDisturbances
         private Color nightColor = new Color((int)byte.MaxValue, (int)byte.MaxValue, 0);
         private Integrations.IJsonAssetsApi JAAPi;
         internal int ResetTicker { get; set; }
+        private int SecondCount;
 
         private ILunarDisturbancesAPI API;
 
@@ -95,6 +94,8 @@ namespace TwilightShards.LunarDisturbances
             if (Game1.showingEndOfNightStuff && !Game1.wasRainingYesterday && !outro && Game1.activeClickableMenu is ShippingMenu currMenu)
             {
                 Game1.spriteBatch.Draw(OurIcons.MoonSource, new Vector2(Game1.viewport.Width - 65 * Game1.pixelZoom, Game1.pixelZoom), OurIcons.GetNightMoonSprite(SDVMoon.GetLunarPhaseForDay(SDate.Now().AddDays(-1))), Color.LightBlue, 0.0f, Vector2.Zero, Game1.pixelZoom * 1.5f, SpriteEffects.None, 1f);
+
+                SDVUtilities.RedrawMouseCursor();
             }
         }
 
@@ -183,7 +184,6 @@ namespace TwilightShards.LunarDisturbances
             }
         }
 
-
         /// <summary>
         /// This checks for things every second.
         /// </summary>
@@ -267,6 +267,25 @@ namespace TwilightShards.LunarDisturbances
 
             OurMoon.OnNewDay();
             OurMoon.HandleMoonAfterWake();
+        }
+
+        private void GameEvents_OneSecondTick(object sender, EventArgs e)
+        {
+            if (Context.IsPlayerFree)
+            {
+                if (Game1.game1.IsActive)
+                    SecondCount++;
+
+                if (SecondCount == 10)
+                {
+                    SecondCount = 0;
+                    if (Game1.currentLocation.isOutdoors && OurMoon.CurrentPhase == MoonPhase.BloodMoon)
+                    {
+                        Monitor.Log("Spawning monster....");
+                        SDVUtilities.SpawnMonster(Game1.currentLocation);
+                    }
+                }
+            }
         }
 
         private void JAAPi_AddedItemsToShop(object sender, EventArgs e)

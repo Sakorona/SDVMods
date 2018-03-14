@@ -2,7 +2,6 @@
 using StardewModdingAPI.Utilities;
 using StardewValley;
 using StardewValley.Monsters;
-using StardewValley.Locations;
 using StardewValley.TerrainFeatures;
 using System;
 using System.Linq;
@@ -10,6 +9,8 @@ using System.Collections.Generic;
 using TwilightShards.Common;
 using xTile.Dimensions;
 using SObject = StardewValley.Object;
+using Microsoft.Xna.Framework.Graphics;
+using Microsoft.Xna.Framework.Input;
 
 namespace TwilightShards.Stardew.Common
 {
@@ -377,6 +378,37 @@ namespace TwilightShards.Stardew.Common
         {
             for (int i = 0; i < numDays; i++)
                 AdvanceCropOneStep(loc, h, position);
+        }
+
+        public static void RedrawMouseCursor()
+        {
+            if (Game1.activeClickableMenu == null && Game1.mouseCursor > -1 && (Mouse.GetState().X != 0 || Mouse.GetState().Y != 0) && (Game1.getOldMouseX() != 0 || Game1.getOldMouseY() != 0))
+            {
+                if (Game1.mouseCursorTransparency <= 0.0 || !Utility.canGrabSomethingFromHere(Game1.getOldMouseX() + Game1.viewport.X, Game1.getOldMouseY() + Game1.viewport.Y, Game1.player) || Game1.mouseCursor == 3)
+                {
+                    if (Game1.player.ActiveObject != null && Game1.mouseCursor != 3 && !Game1.eventUp)
+                    {
+                        if (Game1.mouseCursorTransparency > 0.0 || Game1.options.showPlacementTileForGamepad)
+                        {
+                            Game1.player.ActiveObject.drawPlacementBounds(Game1.spriteBatch, Game1.currentLocation);
+                            if (Game1.mouseCursorTransparency > 0.0)
+                            {
+                                bool flag = Utility.playerCanPlaceItemHere(Game1.currentLocation, Game1.player.CurrentItem, Game1.getMouseX() + Game1.viewport.X, Game1.getMouseY() + Game1.viewport.Y, Game1.player) || Utility.isThereAnObjectHereWhichAcceptsThisItem(Game1.currentLocation, Game1.player.CurrentItem, Game1.getMouseX() + Game1.viewport.X, Game1.getMouseY() + Game1.viewport.Y) && Utility.withinRadiusOfPlayer(Game1.getMouseX() + Game1.viewport.X, Game1.getMouseY() + Game1.viewport.Y, 1, Game1.player);
+                                Game1.player.CurrentItem.drawInMenu(Game1.spriteBatch, new Vector2((Game1.getMouseX() + Game1.tileSize / 4), (Game1.getMouseY() + Game1.tileSize / 4)), flag ? (float)(Game1.dialogueButtonScale / 75.0 + 1.0) : 1f, flag ? 1f : 0.5f, 0.999f);
+                            }
+                        }
+                    }
+                    else if (Game1.mouseCursor == 0 && Game1.isActionAtCurrentCursorTile)
+                        Game1.mouseCursor = Game1.isInspectionAtCurrentCursorTile ? 5 : 2;
+                }
+                if (!Game1.options.hardwareCursor)
+                    Game1.spriteBatch.Draw(Game1.mouseCursors, new Vector2(Game1.getMouseX(), Game1.getMouseY()), new Microsoft.Xna.Framework.Rectangle?(Game1.getSourceRectForStandardTileSheet(Game1.mouseCursors, Game1.mouseCursor, 16, 16)), Color.White * Game1.mouseCursorTransparency, 0.0f, Vector2.Zero, Game1.pixelZoom + Game1.dialogueButtonScale / 150f, SpriteEffects.None, 1f);
+                Game1.wasMouseVisibleThisFrame = Game1.mouseCursorTransparency > 0.0;
+            }
+            Game1.mouseCursor = 0;
+            if (Game1.isActionAtCurrentCursorTile || Game1.activeClickableMenu != null)
+                return;
+            Game1.mouseCursorTransparency = 1f;
         }
 
         public static int CreateWeeds(GameLocation spawnLoc, int numOfWeeds)

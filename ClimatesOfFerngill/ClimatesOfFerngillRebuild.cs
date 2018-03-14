@@ -19,7 +19,6 @@ using TwilightShards.Common;
 using Microsoft.Xna.Framework.Graphics;
 using EnumsNET;
 using PyTK.CustomTV;
-using StardewValley.Monsters;
 #endregion
 
 namespace ClimatesOfFerngillRebuild
@@ -42,7 +41,6 @@ namespace ClimatesOfFerngillRebuild
         private Sprites.Icons OurIcons { get; set; }
         private StringBuilder DebugOutput;
 
-        private int SecondCount;
         private List<Vector2> CropList;
         private HUDMessage queuedMsg;
         private int ExpireTime;
@@ -81,7 +79,7 @@ namespace ClimatesOfFerngillRebuild
             Conditions = new WeatherConditions(OurIcons, Dice, Helper.Translation, Monitor, WeatherOpt);
             DescriptionEngine = new Descriptions(Helper.Translation, Dice, WeatherOpt, Monitor);
             queuedMsg = null;
-            SecondCount = ExpireTime = 0;
+            ExpireTime = 0;
             Vector2 snowPos = Vector2.Zero;
 
             if (WeatherOpt.Verbose) Monitor.Log($"Loading climate type: {WeatherOpt.ClimateType} from file", LogLevel.Trace);
@@ -100,7 +98,6 @@ namespace ClimatesOfFerngillRebuild
             {
                 //subscribe to events
                 TimeEvents.AfterDayStarted += HandleNewDay;
-                GameEvents.OneSecondTick += GameEvents_OneSecondTick;
                 SaveEvents.BeforeSave += OnEndOfDay;
                 TimeEvents.TimeOfDayChanged += TenMinuteUpdate;
                 MenuEvents.MenuChanged += MenuEvents_MenuChanged;
@@ -148,24 +145,6 @@ namespace ClimatesOfFerngillRebuild
             }
         }
 
-        private void GameEvents_OneSecondTick(object sender, EventArgs e)
-        {
-            if (Context.IsPlayerFree && UseLunarDisturbancesApi)
-            {
-                if (Game1.game1.IsActive)
-                    SecondCount++;
-
-                if (SecondCount == 10)
-                {
-                    SecondCount = 0;
-                    if (Game1.currentLocation.isOutdoors && MoonAPI.GetCurrentMoonPhase() == "Blood Moon")
-                    {
-                        Monitor.Log("Spawning monster....");
-                        SDVUtilities.SpawnMonster(Game1.currentLocation);
-                    }
-                }
-            }
-        }
         
         private void SaveEvents_AfterLoad(object sender, EventArgs e)
         {
@@ -193,8 +172,6 @@ namespace ClimatesOfFerngillRebuild
 
             CustomTVMod.showProgram(BackgroundSprite, OnScreenText, CustomTVMod.endProgram, WeatherSprite);
         }
-
-
 
         private void DebugWeather(string arg1, string[] arg2)
         {
@@ -481,38 +458,11 @@ namespace ClimatesOfFerngillRebuild
                     RWeatherIcon = new Rectangle(144, 0, 12, 8);
                 }
 
-
                 Game1.spriteBatch.Draw(OurIcons.WeatherSource, weatherMenu.position + new Vector2(116f, 68f), RWeatherIcon, Color.White, 0.0f, Vector2.Zero, 4f, SpriteEffects.None, .1f);
             }
 
             //redraw mouse cursor
-            if (Game1.activeClickableMenu == null && Game1.mouseCursor > -1 && (Mouse.GetState().X != 0 || Mouse.GetState().Y != 0) && (Game1.getOldMouseX() != 0 || Game1.getOldMouseY() != 0))
-            {
-                if (Game1.mouseCursorTransparency <= 0.0 || !Utility.canGrabSomethingFromHere(Game1.getOldMouseX() + Game1.viewport.X, Game1.getOldMouseY() + Game1.viewport.Y, Game1.player) || Game1.mouseCursor == 3)
-                {
-                    if (Game1.player.ActiveObject != null && Game1.mouseCursor != 3 && !Game1.eventUp)
-                    {
-                        if (Game1.mouseCursorTransparency > 0.0 || Game1.options.showPlacementTileForGamepad)
-                        {
-                            Game1.player.ActiveObject.drawPlacementBounds(Game1.spriteBatch, Game1.currentLocation);
-                            if (Game1.mouseCursorTransparency > 0.0)
-                            {
-                                bool flag = Utility.playerCanPlaceItemHere(Game1.currentLocation, Game1.player.CurrentItem, Game1.getMouseX() + Game1.viewport.X, Game1.getMouseY() + Game1.viewport.Y, Game1.player) || Utility.isThereAnObjectHereWhichAcceptsThisItem(Game1.currentLocation, Game1.player.CurrentItem, Game1.getMouseX() + Game1.viewport.X, Game1.getMouseY() + Game1.viewport.Y) && Utility.withinRadiusOfPlayer(Game1.getMouseX() + Game1.viewport.X, Game1.getMouseY() + Game1.viewport.Y, 1, Game1.player);
-                                Game1.player.CurrentItem.drawInMenu(Game1.spriteBatch, new Vector2((Game1.getMouseX() + Game1.tileSize / 4), (Game1.getMouseY() + Game1.tileSize / 4)), flag ? (float)(Game1.dialogueButtonScale / 75.0 + 1.0) : 1f, flag ? 1f : 0.5f, 0.999f);
-                            }
-                        }
-                    }
-                    else if (Game1.mouseCursor == 0 && Game1.isActionAtCurrentCursorTile)
-                        Game1.mouseCursor = Game1.isInspectionAtCurrentCursorTile ? 5 : 2;
-                }
-                if (!Game1.options.hardwareCursor)
-                    Game1.spriteBatch.Draw(Game1.mouseCursors, new Vector2(Game1.getMouseX(), Game1.getMouseY()), new Microsoft.Xna.Framework.Rectangle?(Game1.getSourceRectForStandardTileSheet(Game1.mouseCursors, Game1.mouseCursor, 16, 16)), Color.White * Game1.mouseCursorTransparency, 0.0f, Vector2.Zero, Game1.pixelZoom + Game1.dialogueButtonScale / 150f, SpriteEffects.None, 1f);
-                Game1.wasMouseVisibleThisFrame = Game1.mouseCursorTransparency > 0.0;
-            }
-            Game1.mouseCursor = 0;
-            if (Game1.isActionAtCurrentCursorTile || Game1.activeClickableMenu != null)
-                return;
-            Game1.mouseCursorTransparency = 1f;
+            SDVUtilities.RedrawMouseCursor();
         }    
 
         private void ResetMod(object sender, EventArgs e)
@@ -521,7 +471,6 @@ namespace ClimatesOfFerngillRebuild
             ExpireTime = 0;
             CropList.Clear(); 
             DebugOutput.Clear();
-            SecondCount = 0;
         }
 
         private void HandleNewDay(object sender, EventArgs e)
@@ -535,7 +484,6 @@ namespace ClimatesOfFerngillRebuild
             if (GameClimate is null)
                 Monitor.Log("GameClimate is null");
 
-            SecondCount = 0;
             CropList.Clear(); //clear the crop list
             DebugOutput.Clear();
             Conditions.OnNewDay();
