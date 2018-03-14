@@ -186,10 +186,10 @@ namespace ClimatesOfFerngillRebuild
 
             Vector2 moonText = spriteBatch.DrawTextBlock(font, 
                 weatherString, new Vector2(x + leftOffset, y + topOffset), wrapWidth);
-            */
+            
 
             topOffset += lineHeight; //stop moon from being cut off.
-
+            */
             drawMouse(Game1.spriteBatch);
         }
 

@@ -82,6 +82,10 @@ If you're out in a blizzard during the day, it's *1.25 or 2.5 rounded down to 2.
 - ChefRude for testing and the night icon sprites (as well as better fog textures)
 
 ## Changelog
+v1.4.0
+- Mod split into three - moon is now Lunar Disturbances, stamina is now WeatherIllnesses.
+- fix for the weather icon in Climates.
+
 v1.3.4
 - Blood Moon implementation (see README notes)
 - Refactored the weather object to be easier to debug and extend

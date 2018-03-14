@@ -73,7 +73,7 @@ namespace ClimatesOfFerngillRebuild
             return "error";
         }
 
-        internal string GenerateMenuPopup(WeatherConditions Current, SDVMoon Moon)
+        internal string GenerateMenuPopup(WeatherConditions Current, string MoonPhase = "")
         {
             string text = "";
 
@@ -94,7 +94,7 @@ namespace ClimatesOfFerngillRebuild
                 text += Helper.Get("weather-menu.condition.frost") + Environment.NewLine;
             }
 
-            if (Moon.CurrentPhase == MoonPhase.BloodMoon)
+            if (MoonPhase == "Blood Moon")
             {
                 text += Helper.Get("weather-menu.condition.bloodmoon") + Environment.NewLine;
             }
@@ -137,7 +137,7 @@ namespace ClimatesOfFerngillRebuild
             return text;
         }
 
-        internal string GenerateTVForecast(WeatherConditions Current, SDVMoon Moon)
+        internal string GenerateTVForecast(WeatherConditions Current, string MoonPhase = "")
         {            
             //assemble params
             var talkParams = new Dictionary<string, string>
@@ -162,19 +162,19 @@ namespace ClimatesOfFerngillRebuild
             int nRandom = OurDice.Next(2);
 
             //blood moon checks
-            if (Game1.countdownToWedding == 1 && Moon.CurrentPhase == MoonPhase.BloodMoon)
+            if (Game1.countdownToWedding == 1 && MoonPhase == "Blood Moon")
             {
                 talkParams["tomrrowWeather"] = Helper.Get($"weat-{Game1.currentSeason}.sunny.{nRandom}");
                 return Helper.Get("weat-wedTomorrow.BM.0", talkParams);
             }
 
             //festival tomorrow
-            else if (SDVUtilities.GetFestivalName(SDate.Now().AddDays(1)) != "" && Moon.CurrentPhase == MoonPhase.BloodMoon)
+            else if (SDVUtilities.GetFestivalName(SDate.Now().AddDays(1)) != "" && MoonPhase == "Blood Moon")
             {
                 return Helper.Get("weat-fesTomorrow.BM.0", talkParams);
             }
 
-            else if (Moon.CurrentPhase ==  MoonPhase.BloodMoon)
+            else if (MoonPhase == "Blood Moon")
             {
                 return Helper.Get("weat-gen.bloodmoon.0", talkParams);
             }

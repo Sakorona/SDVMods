@@ -56,8 +56,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="ClimatesOfFerngillApi.cs" />
-    <Compile Include="DaMoon\MoonPhase.cs" />
-    <Compile Include="Integrations\IJsonAssetsApi.cs" />
+    <Compile Include="Integrations\ILunarDisturbancesAPI.cs" />
     <Compile Include="WeatherData\WeatherData.cs" />
     <Compile Include="Weathers\FerngillWhiteOut.cs" />
     <Compile Include="Weathers\ForceDays.cs" />
@@ -72,7 +71,6 @@
     <Compile Include="Pathoschild.Stardew.UIF\DrawHelper.cs" />
     <Compile Include="Pathoschild.Stardew.UIF\FormattedText.cs" />
     <Compile Include="Pathoschild.Stardew.UIF\IFormattedText.cs" />
-    <Compile Include="DaMoon\SDVMoon.cs" />
     <Compile Include="Sprites.cs" />
     <Compile Include="WeatherMenu.cs" />
     <Compile Include="WeatherData\WeatherParameters.cs" />

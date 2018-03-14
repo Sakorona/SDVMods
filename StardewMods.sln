@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
-VisualStudioVersion = 15.0.27130.2036
+VisualStudioVersion = 15.0.26403.0
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SolarEclipseEvent", "SolarEclipseEvent\SolarEclipseEvent.csproj", "{B932C1FD-CAC3-4A8C-8119-8D156F8CEB96}"
 EndProject
@@ -40,6 +40,7 @@ Global
 		TwilightCoreShared\TwilightCoreShared.projitems*{01da90d0-eec8-427b-9409-3168a8089f20}*SharedItemsImports = 13
 		TwilightCoreShared\TwilightCoreShared.projitems*{251ac91d-397e-42af-925d-3c7d1a9c72d5}*SharedItemsImports = 4
 		TwilightCoreShared\TwilightCoreShared.projitems*{288636be-8ae8-4c50-a07d-18223377bf98}*SharedItemsImports = 4
+		TwilightCoreShared\TwilightCoreShared.projitems*{55f6041a-5800-4287-bef7-a83f2d9a49a5}*SharedItemsImports = 4
 		TwilightCoreShared\TwilightCoreShared.projitems*{92e332e1-533e-42ca-b3ef-1e5bcfdd857b}*SharedItemsImports = 4
 		TwilightCoreShared\TwilightCoreShared.projitems*{e89b6a73-1b1f-44ff-af10-867f0d1425f9}*SharedItemsImports = 4
 	EndGlobalSection

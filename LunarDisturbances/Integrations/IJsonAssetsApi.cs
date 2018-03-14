@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace ClimatesOfFerngillRebuild.Integrations
+namespace TwilightShards.LunarDisturbances.Integrations
 {
     public interface IJsonAssetsApi
     {

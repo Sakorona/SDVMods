@@ -3,21 +3,21 @@ using System;
 using StardewModdingAPI.Utilities;
 using StardewModdingAPI;
 using StardewValley.TerrainFeatures;
-using TwilightShards.Common;
 using System.Collections.Generic;
 using Microsoft.Xna.Framework;
 using StardewValley.Locations;
 using System.Linq;
-using TwilightShards.Stardew.Common;
 using StardewValley.Monsters;
+using TwilightShards.Common;
+using TwilightShards.Stardew.Common;
 
-namespace ClimatesOfFerngillRebuild
+namespace TwilightShards.LunarDisturbances
 {
     public class SDVMoon
     {
         //encapsulated members
         private MersenneTwister Dice;
-        private WeatherConfig ModConfig;
+        private MoonConfig ModConfig;
         private ITranslationHelper Translations;
 
         //internal trackers
@@ -38,7 +38,7 @@ namespace ClimatesOfFerngillRebuild
         internal readonly int[] beachItems = new int[] { 393, 397, 392, 394 };
         internal readonly int[] moonBeachItems = new int[] { 393, 394, 560, 586, 587, 589, 397 };
 
-        public SDVMoon(WeatherConfig config, MersenneTwister rng, ITranslationHelper Trans)
+        public SDVMoon(MoonConfig config, MersenneTwister rng, ITranslationHelper Trans)
         {
             Dice = rng;
             ModConfig = config;
@@ -355,7 +355,7 @@ namespace ClimatesOfFerngillRebuild
             }
         }
 
-        private string DescribeMoonPhase()
+        public string DescribeMoonPhase()
         {
             switch (this.CurrentPhase)
             {
@@ -377,6 +377,8 @@ namespace ClimatesOfFerngillRebuild
                     return "Waxing Crescent";
                 case MoonPhase.WaxingGibbeous:
                     return "Waxing Gibbeous";
+                case MoonPhase.BloodMoon:
+                    return "Blood Moon";
                 default:
                     return "Text Error";
             }

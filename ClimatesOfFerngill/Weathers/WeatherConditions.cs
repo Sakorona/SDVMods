@@ -37,21 +37,17 @@ namespace ClimatesOfFerngillRebuild
         /// <summary>Track tomorrow's temperature</summary>
         private RangePair TomorrowTemps;
 
-        /// <summary> Track the Moon - it may be used for weathers. </summary>
-        private SDVMoon Moon;
-
         /// <summary>Track current conditions</summary>
         private CurrentWeather CurrentConditionsN { get; set; }
 
         /// <summary>The list of custom weathers </summary>
         internal List<ISDVWeather> CurrentWeathers { get; set; }
 
+        private Integrations.ILunarDisturbancesAPI MoonInfo;
+
         //evening fog details
         private bool HasSetEveningFog {get; set;}
         public bool GenerateEveningFog { get; set; }
-
-        /// <summary> This field is used to block fog generation due to other events (such as a solar eclipse)</summary>
-        public bool BlockFog { get; set; }
 
         /// ******************************************************************************
         /// CONSTRUCTORS
@@ -63,14 +59,14 @@ namespace ClimatesOfFerngillRebuild
         /// <param name="Dice">pRNG</param>
         /// <param name="monitor">SMAPI log object</param>
         /// <param name="Config">Game configuration</param>
-        public WeatherConditions(Icons Sheets, MersenneTwister Dice, ITranslationHelper Translation, IMonitor monitor, SDVMoon Termina, WeatherConfig Config)
+        public WeatherConditions(Icons Sheets, MersenneTwister Dice, ITranslationHelper Translation, IMonitor monitor, WeatherConfig Config, Integrations.ILunarDisturbancesAPI MoonAccess)
         {
             this.Monitor = monitor;
             this.ModConfig = Config;
             this.Dice = Dice;
             this.Translation = Translation;
-            this.Moon = Termina;
             this.Weathers = PopulateWeathers();
+            MoonInfo = MoonAccess;
 
             CurrentConditionsN = CurrentWeather.Unset;
             CurrentWeathers = new List<ISDVWeather>
@@ -88,8 +84,12 @@ namespace ClimatesOfFerngillRebuild
         {
             get
             {
-                if (Moon.CurrentPhase == MoonPhase.BloodMoon)
-                    return WeatherIcon.IconBloodMoon;
+                if (MoonInfo != null)
+                {
+                    if (MoonInfo.GetCurrentMoonPhase() == "Blood Moon")
+                        return WeatherIcon.IconBloodMoon;
+                }
+
                 if (Weathers.ContainsKey((int)CurrentConditionsN))
                     return Weathers[(int)CurrentConditionsN].Icon;
                 else
@@ -101,8 +101,12 @@ namespace ClimatesOfFerngillRebuild
         {
             get
             {
-                if (Moon.CurrentPhase == MoonPhase.BloodMoon)
-                    return WeatherIcon.IconBloodMoon;
+                if (MoonInfo != null)
+                {
+                    if (MoonInfo.GetCurrentMoonPhase() == "Blood Moon")
+                        return WeatherIcon.IconBloodMoon;
+                }
+
                 if (Weathers.ContainsKey((int)CurrentConditionsN))
                     return Weathers[(int)CurrentConditionsN].IconBasic;
                 else
@@ -220,9 +224,8 @@ namespace ClimatesOfFerngillRebuild
             foreach (ISDVWeather weather in CurrentWeathers)
                 weather.DrawWeather();
 
-
             //if it's a blood moon out..
-            if (Moon.CurrentPhase == MoonPhase.BloodMoon)
+            if (MoonInfo != null && MoonInfo.GetCurrentMoonPhase() == "Blood Moon")
             {
                 if (this.GetWeatherMatchingType("Fog").First().IsWeatherVisible)
                 {
@@ -629,6 +632,11 @@ namespace ClimatesOfFerngillRebuild
             //             Fog - per climate, although night fog in winter is double normal chance
 
             GenerateEveningFog = (Dice.NextDouble() < (Game1.currentSeason == "winter" ? fogChance * 2 : fogChance)) && !this.GetCurrentConditions().HasFlag(CurrentWeather.Wind);
+
+            bool BlockFog = false;
+
+            if (MoonInfo != null && MoonInfo.GetCurrentMoonPhase() == "Blood Moon")
+                BlockFog = true;
 
             if (BlockFog)
                 GenerateEveningFog = false;

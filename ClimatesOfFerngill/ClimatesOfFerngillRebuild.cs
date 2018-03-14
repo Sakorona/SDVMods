@@ -42,8 +42,6 @@ namespace ClimatesOfFerngillRebuild
         private Sprites.Icons OurIcons { get; set; }
         private StringBuilder DebugOutput;
 
-        /// <summary> The moon object </summary>
-        private SDVMoon OurMoon;
         private int SecondCount;
         private List<Vector2> CropList;
         private HUDMessage queuedMsg;
@@ -53,14 +51,13 @@ namespace ClimatesOfFerngillRebuild
         private IClickableMenu PreviousMenu;
         private Descriptions DescriptionEngine;
         private Rectangle RWeatherIcon;
-        private Color nightColor = new Color((int)byte.MaxValue, (int)byte.MaxValue, 0);
         private bool Disabled = false;
         public bool IsEclipse { get; set; }
         public int ResetTicker { get; set; }
 
         //Integrations
-        private bool UseJsonAssetsApi = false;
-        private Integrations.IJsonAssetsApi JAAPi;
+        private bool UseLunarDisturbancesApi = false;
+        private Integrations.ILunarDisturbancesAPI MoonAPI = null;
 
         private IClimatesOfFerngillAPI API;
         public override object GetApi()
@@ -79,10 +76,9 @@ namespace ClimatesOfFerngillRebuild
             WeatherOpt = helper.ReadConfig<WeatherConfig>();
             Dice = new MersenneTwister();
             DebugOutput = new StringBuilder();
-            OurMoon = new SDVMoon(WeatherOpt, Dice, Helper.Translation);
             OurIcons = new Sprites.Icons(Helper.Content);
             CropList = new List<Vector2>();
-            Conditions = new WeatherConditions(OurIcons, Dice, Helper.Translation, Monitor, OurMoon, WeatherOpt);
+            Conditions = new WeatherConditions(OurIcons, Dice, Helper.Translation, Monitor, WeatherOpt, MoonAPI);
             DescriptionEngine = new Descriptions(Helper.Translation, Dice, WeatherOpt, Monitor);
             queuedMsg = null;
             SecondCount = ExpireTime = 0;
@@ -112,7 +108,6 @@ namespace ClimatesOfFerngillRebuild
                 GameEvents.FirstUpdateTick += GameEvents_FirstUpdateTick;
                 SaveEvents.AfterReturnToTitle += ResetMod;
                 SaveEvents.AfterLoad += SaveEvents_AfterLoad;
-                GraphicsEvents.OnPostRenderGuiEvent += DrawOverMenus;
                 GraphicsEvents.OnPreRenderHudEvent += DrawPreHudObjects;
                 GraphicsEvents.OnPostRenderHudEvent += DrawObjects;
                 LocationEvents.CurrentLocationChanged += LocationEvents_CurrentLocationChanged;
@@ -128,58 +123,34 @@ namespace ClimatesOfFerngillRebuild
 
         private void GameEvents_FirstUpdateTick(object sender, EventArgs e)
         {
-            IManifest manifestCheck = Helper.ModRegistry.Get("spacechase0.JsonAssets");
+            //testing for ZA MOON, YOUR HIGHNESS.
+            IManifest manifestCheck = Helper.ModRegistry.Get("KoihimeNakamura.LunarDisturbances");
             if (manifestCheck != null)
             {
-                if (!manifestCheck.Version.IsOlderThan("1.1"))
+                if (!manifestCheck.Version.IsOlderThan("1.0"))
                 {
-                    JAAPi = Helper.ModRegistry.GetApi<Integrations.IJsonAssetsApi>("spacechase0.JsonAssets");
+                    MoonAPI = Helper.ModRegistry.GetApi<Integrations.ILunarDisturbancesAPI>("KoihimeNakamura.LunarDisturbances");
 
-                    if (JAAPi != null)
+                    if (MoonAPI != null)
                     {
-                        UseJsonAssetsApi = true;
-                        JAAPi.AddedItemsToShop += JAAPi_AddedItemsToShop;
-                        Monitor.Log("JsonAssets Integration enabled", LogLevel.Info);
+                        UseLunarDisturbancesApi = true;
+                        Monitor.Log("Lunar Disturbances Integration enabled", LogLevel.Info);
                     }
                 }
                 else
                 {
-                    Monitor.Log($"JsonAssets detected, but not of a sufficient version. Req:1.1.0. Detected:{manifestCheck.Version.ToString()}. Skipping..");
+                    Monitor.Log($"Lunar Disturbances detected, but not of a sufficient version. Req:1.0 Detected:{manifestCheck.Version.ToString()}. Skipping..");
                 }
             }
             else
             {
-                Monitor.Log("JsonAssets not present. Skipping Integration.");
-            }
-        }
-
-        private void JAAPi_AddedItemsToShop(object sender, EventArgs e)
-        {
-            if (Game1.activeClickableMenu is ShopMenu menu)
-            {
-                if (OurMoon.CurrentPhase == MoonPhase.BloodMoon)
-                {
-                    Monitor.Log("Firing off replacement...");
-                    Helper.Reflection.GetField<float>(menu, "sellPercentage").SetValue(.75f);
-                    var itemPriceAndStock = Helper.Reflection.GetField<Dictionary<Item, int[]>>(menu, "itemPriceAndStock").GetValue();
-                    foreach (KeyValuePair<Item, int[]> kvp in itemPriceAndStock)
-                    {
-                        kvp.Value[0] = (int)Math.Floor(kvp.Value[0] * 1.85);
-                    }
-                }
-                else
-                {
-                    if (Helper.Reflection.GetField<float>(menu, "sellPercentage").GetValue() != 1f)
-                    {
-                        Helper.Reflection.GetField<float>(menu, "sellPercentage").SetValue(1f);
-                    }
-                }
+                Monitor.Log("Lunar Disturbances not present. Skipping Integration.");
             }
         }
 
         private void GameEvents_OneSecondTick(object sender, EventArgs e)
         {
-            if (Context.IsPlayerFree)
+            if (Context.IsPlayerFree && UseLunarDisturbancesApi)
             {
                 if (Game1.game1.IsActive)
                     SecondCount++;
@@ -187,7 +158,7 @@ namespace ClimatesOfFerngillRebuild
                 if (SecondCount == 10)
                 {
                     SecondCount = 0;
-                    if (Game1.currentLocation.isOutdoors && OurMoon.CurrentPhase == MoonPhase.BloodMoon)
+                    if (Game1.currentLocation.isOutdoors && MoonAPI.GetCurrentMoonPhase() == "Blood Moon")
                     {
                         Monitor.Log("Spawning monster....");
                         SDVUtilities.SpawnMonster(Game1.currentLocation);
@@ -195,21 +166,7 @@ namespace ClimatesOfFerngillRebuild
                 }
             }
         }
-
-        private void ForceBloodMoon(string arg1, string[] arg2)
-        {
-            OurMoon.ForceBloodMoon();
-        }
-
-        private void SolarEclipseEvent_CommandFired(string command, string[] args)
-        {
-            IsEclipse = true;
-            Game1.globalOutdoorLighting = .5f; //force lightning change.
-            Game1.currentLocation.switchOutNightTiles();
-            Game1.ambientLight = nightColor;
-            Monitor.Log("Setting the eclipse event to true");
-        }
-
+        
         private void SaveEvents_AfterLoad(object sender, EventArgs e)
         {
             CustomTVMod.changeAction("weather", DisplayWeather);
@@ -217,7 +174,7 @@ namespace ClimatesOfFerngillRebuild
 
         public void DisplayWeather(TV tv, TemporaryAnimatedSprite sprite, StardewValley.Farmer who, string answer)
         {
-            TemporaryAnimatedSprite BackgroundSprite = new TemporaryAnimatedSprite(Game1.mouseCursors, new Rectangle(497, 305, 42, 28), 9999f, 1, 999999, tv.getScreenPosition(), false, false, (float)((double)(tv.boundingBox.Bottom - 1) / 10000.0 + 9.99999974737875E-06), 0.0f, Color.White, tv.getScreenSizeModifier(), 0.0f, 0.0f, 0.0f, false);
+            TemporaryAnimatedSprite BackgroundSprite = new TemporaryAnimatedSprite(Game1.mouseCursors, new Rectangle(497, 305, 42, 28), 9999f, 1, 999999, tv.getScreenPosition(), false, false, (float)((tv.boundingBox.Bottom - 1) / 10000.0 + 9.99999974737875E-06), 0.0f, Color.White, tv.getScreenSizeModifier(), 0.0f, 0.0f, 0.0f, false);
             TemporaryAnimatedSprite WeatherSprite = DescriptionEngine.GetWeatherOverlay(Conditions, tv);
 
             string OnScreenText = "";
@@ -227,31 +184,23 @@ namespace ClimatesOfFerngillRebuild
             if (WeatherSprite is null)
                 Monitor.Log("Weather Sprite is null");
 
-            OnScreenText += DescriptionEngine.GenerateTVForecast(Conditions, OurMoon);
+
+            string MoonPhase = "";
+            if (UseLunarDisturbancesApi)
+                MoonPhase = MoonAPI.GetCurrentMoonPhase();
+
+            OnScreenText += DescriptionEngine.GenerateTVForecast(Conditions, MoonPhase);
 
             CustomTVMod.showProgram(BackgroundSprite, OnScreenText, CustomTVMod.endProgram, WeatherSprite);
         }
 
-        private void DrawOverMenus(object sender, EventArgs e)
-        {
-            bool outro = false;
-            //revised this so it properly draws over the canon moon. :v
-            if (Game1.activeClickableMenu is ShippingMenu ourMenu)
-            {
-                outro = Helper.Reflection.GetField<bool>(ourMenu, "outro").GetValue();
-            }
 
-            if (Game1.showingEndOfNightStuff && !Game1.wasRainingYesterday && !outro && Game1.activeClickableMenu is ShippingMenu currMenu)
-            {
-                Game1.spriteBatch.Draw(OurIcons.MoonSource, new Vector2(Game1.viewport.Width - 65 * Game1.pixelZoom, Game1.pixelZoom), OurIcons.GetNightMoonSprite(SDVMoon.GetLunarPhaseForDay(SDate.Now().AddDays(-1))), Color.LightBlue, 0.0f, Vector2.Zero, Game1.pixelZoom * 1.5f, SpriteEffects.None, 1f);
-            }
-        }
 
         private void DebugWeather(string arg1, string[] arg2)
         {
             //print a complete weather status. 
             string retString = "";
-            retString += $"Weather for {SDate.Now()} is {Conditions.ToString()}. Moon Phase is {OurMoon.ToString()}. {Environment.NewLine} System flags: isRaining {Game1.isRaining} isSnowing {Game1.isSnowing} isDebrisWeather: {Game1.isDebrisWeather} isLightning {Game1.isLightning}, with tommorow's set weather being {Game1.weatherForTomorrow}";
+            retString += $"Weather for {SDate.Now()} is {Conditions.ToString()}. {Environment.NewLine} System flags: isRaining {Game1.isRaining} isSnowing {Game1.isSnowing} isDebrisWeather: {Game1.isDebrisWeather} isLightning {Game1.isLightning}, with tommorow's set weather being {Game1.weatherForTomorrow}";
             Monitor.Log(retString);
         }
 
@@ -271,28 +220,6 @@ namespace ClimatesOfFerngillRebuild
         /// <param name="e">Parameters</param>
         private void LocationEvents_CurrentLocationChanged(object sender, EventArgsCurrentLocationChanged e)
         {
-            if (IsEclipse)
-            {
-                Game1.globalOutdoorLighting = .5f;
-                Game1.currentLocation.switchOutNightTiles();
-                Game1.ambientLight = nightColor;
-
-                if (!Game1.currentLocation.isOutdoors && Game1.currentLocation is DecoratableLocation)
-                {
-                    var loc = Game1.currentLocation as DecoratableLocation;
-                    foreach (Furniture f in loc.furniture)
-                    {
-                        if (f.furniture_type == Furniture.window)
-                            Helper.Reflection.GetMethod(f, "addLights").Invoke(new object[] { Game1.currentLocation });
-                    }
-                }
-            }
-
-            if (OurMoon.CurrentPhase == MoonPhase.BloodMoon)
-            {
-                Game1.currentLocation.waterColor = OurMoon.BloodMoonWater;
-            }
-
             if (Conditions.HasWeather(CurrentWeather.Fog))
             {
                 if (!Game1.currentLocation.isOutdoors && Game1.currentLocation is DecoratableLocation && WeatherOpt.DarkenLightInFog)
@@ -321,29 +248,7 @@ namespace ClimatesOfFerngillRebuild
                 Monitor.Log("GameClimate is null");
             if (e.NewMenu is null)
                 Monitor.Log("e.NewMenu is null");
-            if (!UseJsonAssetsApi)
-            {
-                if (e.NewMenu is ShopMenu menu && menu.portraitPerson != null)
-                {
-                    if (OurMoon.CurrentPhase == MoonPhase.BloodMoon)
-                    {
-                        Helper.Reflection.GetField<float>(menu, "sellPercentage").SetValue(.75f);
-                        var itemPriceAndStock = Helper.Reflection.GetField<Dictionary<Item, int[]>>(menu, "itemPriceAndStock").GetValue();
-                        foreach (KeyValuePair<Item, int[]> kvp in itemPriceAndStock)
-                        {
-                            kvp.Value[0] = (int)Math.Floor(kvp.Value[0] * 1.85);
-                        }
-                    }
-                    else
-                    {
-                        if (Helper.Reflection.GetField<float>(menu, "sellPercentage").GetValue() != 1f)
-                        {
-                            Helper.Reflection.GetField<float>(menu, "sellPercentage").SetValue(1f);
-                        }
-                    }
-                }
-            }
-
+       
             if (e.NewMenu is DialogueBox box)
             {
                 bool stormDialogue = false;
@@ -384,19 +289,6 @@ namespace ClimatesOfFerngillRebuild
         /// <param name="e"></param>
         private void OnEndOfDay(object sender, EventArgs e)
         {
-            //cleanup any spawned monsters
-            foreach(GameLocation l in Game1.locations)
-            {
-                if (l is Farm)
-                    continue;
-
-                for (int index = l.characters.Count - 1; index >= 0; --index)
-                {
-                    if (l.characters[index] is Monster)
-                        l.characters.RemoveAt(index);
-                }
-            }
-
             if (Conditions.HasWeather(CurrentWeather.Frost) && WeatherOpt.AllowCropDeath)
             {
                 Farm f = Game1.getFarm();
@@ -431,12 +323,6 @@ namespace ClimatesOfFerngillRebuild
                     };
                 }
             }
-
-            if (IsEclipse)
-                IsEclipse = false;
-
-            //moon works after frost does
-            OurMoon.HandleMoonAtSleep(Game1.getFarm());
         }
 
         /// <summary>
@@ -445,7 +331,11 @@ namespace ClimatesOfFerngillRebuild
         /// <returns>A string describing the weather</returns>
         public string GetWeatherForecast()
         {
-            return DescriptionEngine.GenerateTVForecast(Conditions, OurMoon);
+            string MoonPhase = "";
+            if (UseLunarDisturbancesApi)
+                MoonPhase = MoonAPI.GetCurrentMoonPhase();
+
+            return DescriptionEngine.GenerateTVForecast(Conditions, MoonPhase);
         }
 
         /// <summary>
@@ -457,14 +347,6 @@ namespace ClimatesOfFerngillRebuild
         {
             if (!Context.IsWorldReady)
                 return;
-
-            if (IsEclipse && ResetTicker > 0)
-            {
-                Game1.globalOutdoorLighting = .5f;
-                Game1.ambientLight = nightColor;
-                Game1.currentLocation.switchOutNightTiles();
-                ResetTicker = 0;
-            }
 
             Conditions.MoveWeathers();           
         }
@@ -480,43 +362,6 @@ namespace ClimatesOfFerngillRebuild
                 return;
 
             Conditions.TenMinuteUpdate();
-
-            if (IsEclipse)
-            {
-                Game1.globalOutdoorLighting = .5f;
-                Game1.ambientLight = nightColor;
-                Game1.currentLocation.switchOutNightTiles();
-                ResetTicker = 1;
-
-                if (!Game1.currentLocation.isOutdoors && Game1.currentLocation is DecoratableLocation)
-                {
-                    var loc = Game1.currentLocation as DecoratableLocation;
-                    foreach (Furniture f in loc.furniture)
-                    {
-                        if (f.furniture_type == Furniture.window)
-                            Helper.Reflection.GetMethod(f, "addLights").Invoke(new object[] { Game1.currentLocation });
-                    }
-                }
-
-                if ((Game1.farmEvent == null && Game1.random.NextDouble() < (0.25 - Game1.dailyLuck / 2.0))
-                    && ((WeatherOpt.SpawnMonsters && Game1.spawnMonstersAtNight) || (WeatherOpt.SpawnMonstersAllFarms)))
-                {
-                    Monitor.Log("Spawning a monster, or attempting to.", LogLevel.Debug);
-                    if (Game1.random.NextDouble() < 0.25)
-                    {
-                        if (this.Equals(Game1.currentLocation))
-                        {
-                            Game1.getFarm().spawnFlyingMonstersOffScreen();
-                            return;
-                        }
-                    }
-                    else
-                    {
-                        Game1.getFarm().spawnGroundMonsterOffScreen();
-                    }
-                }
-
-            }
 
             if (Conditions.HasWeather(CurrentWeather.Fog)) 
             {
@@ -599,9 +444,6 @@ namespace ClimatesOfFerngillRebuild
                 if (cDead)
                     SDVUtilities.ShowMessage(Helper.Translation.Get("hud-text.desc_heatwave_cropdeath"));
             }
-
-            //moon 10-minute
-            OurMoon.TenMinuteUpdate();
         }
 
         /// <summary>
@@ -646,17 +488,17 @@ namespace ClimatesOfFerngillRebuild
             //redraw mouse cursor
             if (Game1.activeClickableMenu == null && Game1.mouseCursor > -1 && (Mouse.GetState().X != 0 || Mouse.GetState().Y != 0) && (Game1.getOldMouseX() != 0 || Game1.getOldMouseY() != 0))
             {
-                if ((double)Game1.mouseCursorTransparency <= 0.0 || !Utility.canGrabSomethingFromHere(Game1.getOldMouseX() + Game1.viewport.X, Game1.getOldMouseY() + Game1.viewport.Y, Game1.player) || Game1.mouseCursor == 3)
+                if (Game1.mouseCursorTransparency <= 0.0 || !Utility.canGrabSomethingFromHere(Game1.getOldMouseX() + Game1.viewport.X, Game1.getOldMouseY() + Game1.viewport.Y, Game1.player) || Game1.mouseCursor == 3)
                 {
                     if (Game1.player.ActiveObject != null && Game1.mouseCursor != 3 && !Game1.eventUp)
                     {
-                        if ((double)Game1.mouseCursorTransparency > 0.0 || Game1.options.showPlacementTileForGamepad)
+                        if (Game1.mouseCursorTransparency > 0.0 || Game1.options.showPlacementTileForGamepad)
                         {
                             Game1.player.ActiveObject.drawPlacementBounds(Game1.spriteBatch, Game1.currentLocation);
-                            if ((double)Game1.mouseCursorTransparency > 0.0)
+                            if (Game1.mouseCursorTransparency > 0.0)
                             {
                                 bool flag = Utility.playerCanPlaceItemHere(Game1.currentLocation, Game1.player.CurrentItem, Game1.getMouseX() + Game1.viewport.X, Game1.getMouseY() + Game1.viewport.Y, Game1.player) || Utility.isThereAnObjectHereWhichAcceptsThisItem(Game1.currentLocation, Game1.player.CurrentItem, Game1.getMouseX() + Game1.viewport.X, Game1.getMouseY() + Game1.viewport.Y) && Utility.withinRadiusOfPlayer(Game1.getMouseX() + Game1.viewport.X, Game1.getMouseY() + Game1.viewport.Y, 1, Game1.player);
-                                Game1.player.CurrentItem.drawInMenu(Game1.spriteBatch, new Vector2((float)(Game1.getMouseX() + Game1.tileSize / 4), (float)(Game1.getMouseY() + Game1.tileSize / 4)), flag ? (float)((double)Game1.dialogueButtonScale / 75.0 + 1.0) : 1f, flag ? 1f : 0.5f, 0.999f);
+                                Game1.player.CurrentItem.drawInMenu(Game1.spriteBatch, new Vector2((Game1.getMouseX() + Game1.tileSize / 4), (Game1.getMouseY() + Game1.tileSize / 4)), flag ? (float)(Game1.dialogueButtonScale / 75.0 + 1.0) : 1f, flag ? 1f : 0.5f, 0.999f);
                             }
                         }
                     }
@@ -664,8 +506,8 @@ namespace ClimatesOfFerngillRebuild
                         Game1.mouseCursor = Game1.isInspectionAtCurrentCursorTile ? 5 : 2;
                 }
                 if (!Game1.options.hardwareCursor)
-                    Game1.spriteBatch.Draw(Game1.mouseCursors, new Vector2((float)Game1.getMouseX(), (float)Game1.getMouseY()), new Microsoft.Xna.Framework.Rectangle?(Game1.getSourceRectForStandardTileSheet(Game1.mouseCursors, Game1.mouseCursor, 16, 16)), Color.White * Game1.mouseCursorTransparency, 0.0f, Vector2.Zero, (float)Game1.pixelZoom + Game1.dialogueButtonScale / 150f, SpriteEffects.None, 1f);
-                Game1.wasMouseVisibleThisFrame = (double)Game1.mouseCursorTransparency > 0.0;
+                    Game1.spriteBatch.Draw(Game1.mouseCursors, new Vector2(Game1.getMouseX(), Game1.getMouseY()), new Microsoft.Xna.Framework.Rectangle?(Game1.getSourceRectForStandardTileSheet(Game1.mouseCursors, Game1.mouseCursor, 16, 16)), Color.White * Game1.mouseCursorTransparency, 0.0f, Vector2.Zero, Game1.pixelZoom + Game1.dialogueButtonScale / 150f, SpriteEffects.None, 1f);
+                Game1.wasMouseVisibleThisFrame = Game1.mouseCursorTransparency > 0.0;
             }
             Game1.mouseCursor = 0;
             if (Game1.isActionAtCurrentCursorTile || Game1.activeClickableMenu != null)
@@ -679,7 +521,6 @@ namespace ClimatesOfFerngillRebuild
             ExpireTime = 0;
             CropList.Clear(); 
             DebugOutput.Clear();
-            OurMoon.Reset();
             SecondCount = 0;
         }
 
@@ -689,20 +530,10 @@ namespace ClimatesOfFerngillRebuild
                 Monitor.Log("CropList is null!");
             if (DebugOutput == null)
                 Monitor.Log("DebugOutput is null!");
-            if (OurMoon == null)
-                Monitor.Log("OurMoon is null");
             if (Conditions == null)
                 Monitor.Log("CurrentWeather is null");
             if (GameClimate is null)
                 Monitor.Log("GameClimate is null");
-
-            if (Dice.NextDouble() < WeatherOpt.EclipseChance && WeatherOpt.EclipseOn && OurMoon.CurrentPhase == MoonPhase.FullMoon &&
-                SDate.Now().DaysSinceStart > 2)
-            {
-                IsEclipse = true;
-                Game1.addHUDMessage(new HUDMessage("It looks like a rare solar eclipse will darken the sky all day!"));
-                Conditions.BlockFog = true;
-            }
 
             SecondCount = 0;
             CropList.Clear(); //clear the crop list
@@ -710,10 +541,9 @@ namespace ClimatesOfFerngillRebuild
             Conditions.OnNewDay();
             UpdateWeatherOnNewDay();
             SetTommorowWeather();
-            OurMoon.OnNewDay();
-            OurMoon.HandleMoonAfterWake();
             ExpireTime = 0;
         }
+
         private void SetTommorowWeather()
         {
             //if tomorrow is a festival or wedding, we need to set the weather and leave.
@@ -1048,7 +878,11 @@ namespace ClimatesOfFerngillRebuild
         /// </summary>
         private void ShowMenu()
         {
-            string MenuText = DescriptionEngine.GenerateMenuPopup(Conditions, OurMoon);
+            string MoonPhase = "";
+            if (UseLunarDisturbancesApi)
+                MoonPhase = MoonAPI.GetCurrentMoonPhase();
+
+            string MenuText = DescriptionEngine.GenerateMenuPopup(Conditions, MoonPhase);
 
             // show menu
             this.PreviousMenu = Game1.activeClickableMenu;

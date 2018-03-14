@@ -1,19 +1,31 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace TwilightShards.LunarDisturbances
+﻿namespace TwilightShards.LunarDisturbances
 {
-    public interface ILunarDisturbances
+    public interface ILunarDisturbancesAPI
     {
         string GetCurrentMoonPhase();
+        bool IsSolarEclipse();
     }
 
-    public class LunarDisturbancesAPI : ILunarDisturbances
+    public class LunarDisturbancesAPI : ILunarDisturbancesAPI
     {
-    
+        private SDVMoon IntMoon;
+        private bool IsEclipse;
+
+        public LunarDisturbancesAPI(SDVMoon OurMoon, bool IsEcl)
+        {
+            IntMoon = OurMoon;
+            IsEclipse = IsEcl;
+        }
+
+        public string GetCurrentMoonPhase()
+        {
+            return IntMoon.DescribeMoonPhase();
+        }
+
+        public bool IsSolarEclipse()
+        {
+            return IsEclipse;
+        }
     }
 }
 
