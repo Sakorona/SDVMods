@@ -57,7 +57,7 @@ namespace ClimatesOfFerngillRebuild
 
         //Integrations
         private bool UseLunarDisturbancesApi = false;
-        private Integrations.ILunarDisturbancesAPI MoonAPI = null;
+        private Integrations.ILunarDisturbancesAPI MoonAPI;
 
         private IClimatesOfFerngillAPI API;
         public override object GetApi()
