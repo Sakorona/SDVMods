@@ -2,10 +2,6 @@
 using StardewModdingAPI.Events;
 using StardewValley;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using TwilightShards.Common;
 using TwilightShards.Stardew.Common;
 
@@ -80,7 +76,7 @@ namespace TwilightShards.WeatherIllnesses
                 weatherStatus = SDVUtilities.GetWeatherName();
 
 
-            Game1.player.stamina += StaminaMngr.TenMinuteTick(Game1.player.hat?.which, weatherStatus, TicksOutside, TicksTotal, Dice);
+                Game1.player.stamina += StaminaMngr.TenMinuteTick(Game1.player.hat?.which, weatherStatus, TicksOutside, TicksTotal, Dice);
 
             if (Game1.player.stamina <= 0)
                 SDVUtilities.FaintPlayer();

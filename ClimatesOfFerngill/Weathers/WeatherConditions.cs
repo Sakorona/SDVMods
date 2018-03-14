@@ -43,8 +43,6 @@ namespace ClimatesOfFerngillRebuild
         /// <summary>The list of custom weathers </summary>
         internal List<ISDVWeather> CurrentWeathers { get; set; }
 
-        private Integrations.ILunarDisturbancesAPI MoonInfo;
-
         //evening fog details
         private bool HasSetEveningFog {get; set;}
         public bool GenerateEveningFog { get; set; }
@@ -59,14 +57,13 @@ namespace ClimatesOfFerngillRebuild
         /// <param name="Dice">pRNG</param>
         /// <param name="monitor">SMAPI log object</param>
         /// <param name="Config">Game configuration</param>
-        public WeatherConditions(Icons Sheets, MersenneTwister Dice, ITranslationHelper Translation, IMonitor monitor, WeatherConfig Config, Integrations.ILunarDisturbancesAPI MoonAccess)
+        public WeatherConditions(Icons Sheets, MersenneTwister Dice, ITranslationHelper Translation, IMonitor monitor, WeatherConfig Config)
         {
-            this.Monitor = monitor;
-            this.ModConfig = Config;
+            Monitor = monitor;
+            ModConfig = Config;
             this.Dice = Dice;
             this.Translation = Translation;
-            this.Weathers = PopulateWeathers();
-            MoonInfo = MoonAccess;
+            Weathers = PopulateWeathers();
 
             CurrentConditionsN = CurrentWeather.Unset;
             CurrentWeathers = new List<ISDVWeather>
@@ -84,9 +81,9 @@ namespace ClimatesOfFerngillRebuild
         {
             get
             {
-                if (MoonInfo != null)
+                if (ClimatesOfFerngill.MoonAPI != null)
                 {
-                    if (MoonInfo.GetCurrentMoonPhase() == "Blood Moon")
+                    if (ClimatesOfFerngill.MoonAPI.GetCurrentMoonPhase() == "Blood Moon")
                         return WeatherIcon.IconBloodMoon;
                 }
 
@@ -101,9 +98,9 @@ namespace ClimatesOfFerngillRebuild
         {
             get
             {
-                if (MoonInfo != null)
+                if (ClimatesOfFerngill.MoonAPI != null)
                 {
-                    if (MoonInfo.GetCurrentMoonPhase() == "Blood Moon")
+                    if (ClimatesOfFerngill.MoonAPI.GetCurrentMoonPhase() == "Blood Moon")
                         return WeatherIcon.IconBloodMoon;
                 }
 
@@ -225,7 +222,7 @@ namespace ClimatesOfFerngillRebuild
                 weather.DrawWeather();
 
             //if it's a blood moon out..
-            if (MoonInfo != null && MoonInfo.GetCurrentMoonPhase() == "Blood Moon")
+            if (ClimatesOfFerngill.MoonAPI != null && ClimatesOfFerngill.MoonAPI.GetCurrentMoonPhase() == "Blood Moon")
             {
                 if (this.GetWeatherMatchingType("Fog").First().IsWeatherVisible)
                 {
@@ -635,7 +632,7 @@ namespace ClimatesOfFerngillRebuild
 
             bool BlockFog = false;
 
-            if (MoonInfo != null && MoonInfo.GetCurrentMoonPhase() == "Blood Moon")
+            if (ClimatesOfFerngill.MoonAPI != null && ClimatesOfFerngill.MoonAPI.GetCurrentMoonPhase() == "Blood Moon")
                 BlockFog = true;
 
             if (BlockFog)

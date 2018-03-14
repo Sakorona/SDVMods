@@ -33,7 +33,7 @@ namespace ClimatesOfFerngillRebuild
         private MersenneTwister Dice;
 
         /// <summary> The current weather conditions </summary>
-        private WeatherConditions Conditions;
+        internal static WeatherConditions Conditions;
 
         /// <summary> The climate for the game </summary>
         private FerngillClimate GameClimate;
@@ -56,8 +56,8 @@ namespace ClimatesOfFerngillRebuild
         public int ResetTicker { get; set; }
 
         //Integrations
-        private bool UseLunarDisturbancesApi = false;
-        private Integrations.ILunarDisturbancesAPI MoonAPI;
+        internal bool UseLunarDisturbancesApi = false;
+        internal static Integrations.ILunarDisturbancesAPI MoonAPI;
 
         private IClimatesOfFerngillAPI API;
         public override object GetApi()
@@ -78,7 +78,7 @@ namespace ClimatesOfFerngillRebuild
             DebugOutput = new StringBuilder();
             OurIcons = new Sprites.Icons(Helper.Content);
             CropList = new List<Vector2>();
-            Conditions = new WeatherConditions(OurIcons, Dice, Helper.Translation, Monitor, WeatherOpt, MoonAPI);
+            Conditions = new WeatherConditions(OurIcons, Dice, Helper.Translation, Monitor, WeatherOpt);
             DescriptionEngine = new Descriptions(Helper.Translation, Dice, WeatherOpt, Monitor);
             queuedMsg = null;
             SecondCount = ExpireTime = 0;

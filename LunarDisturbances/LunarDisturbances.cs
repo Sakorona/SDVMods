@@ -19,15 +19,15 @@ namespace TwilightShards.LunarDisturbances
 {
     public class LunarDisturbances : Mod
     {
-        private SDVMoon OurMoon;
+        internal static SDVMoon OurMoon;
         private MersenneTwister Dice;
         private MoonConfig ModConfig;
         private Sprites.Icons OurIcons { get; set; }
-        public bool IsEclipse { get; set; }
+        internal static bool IsEclipse { get; set; }
         private bool UseJsonAssetsApi = false;
         private Color nightColor = new Color((int)byte.MaxValue, (int)byte.MaxValue, 0);
         private Integrations.IJsonAssetsApi JAAPi;
-        public int ResetTicker { get; set; }
+        internal int ResetTicker { get; set; }
 
         private ILunarDisturbancesAPI API;
 
