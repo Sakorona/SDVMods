@@ -94,8 +94,6 @@ namespace TwilightShards.LunarDisturbances
             if (Game1.showingEndOfNightStuff && !Game1.wasRainingYesterday && !outro && Game1.activeClickableMenu is ShippingMenu currMenu)
             {
                 Game1.spriteBatch.Draw(OurIcons.MoonSource, new Vector2(Game1.viewport.Width - 65 * Game1.pixelZoom, Game1.pixelZoom), OurIcons.GetNightMoonSprite(SDVMoon.GetLunarPhaseForDay(SDate.Now().AddDays(-1))), Color.LightBlue, 0.0f, Vector2.Zero, Game1.pixelZoom * 1.5f, SpriteEffects.None, 1f);
-
-                SDVUtilities.RedrawMouseCursor();
             }
         }
 

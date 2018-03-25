@@ -632,7 +632,7 @@ namespace ClimatesOfFerngillRebuild
 
             bool BlockFog = false;
 
-            if (ClimatesOfFerngill.MoonAPI != null && ClimatesOfFerngill.MoonAPI.GetCurrentMoonPhase() == "Blood Moon")
+            if (ClimatesOfFerngill.MoonAPI != null && ClimatesOfFerngill.MoonAPI.IsSolarEclipse())
                 BlockFog = true;
 
             if (BlockFog)
