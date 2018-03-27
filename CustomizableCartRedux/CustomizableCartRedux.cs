@@ -166,7 +166,7 @@ namespace CustomizableCartRedux
                 string[] strArray = Game1.objectInformation[i].Split('/');
                 dictionary.Add(new SObject(i, 1), new int[2]
                 {
-                    (OurConfig.UseCheaperPricing ? (int)Math.Max(Dice.Next(1,6) * 81,Math.Round(Dice.RollInRange(1.87,5.95) * Convert.ToInt32(strArray[1])))
+                    (OurConfig.UseCheaperPricing ? (int)Math.Max(Dice.Next(1,6) * 81, Math.Round(Dice.RollInRange(1.87,5.95) * Convert.ToInt32(strArray[1])))
                                 : Math.Max(Dice.Next(1, 11) * 100, Convert.ToInt32(strArray[1]) * Dice.Next(3, 6))),
                     Dice.NextDouble() < 0.1 ? 5 : 1
                 });
