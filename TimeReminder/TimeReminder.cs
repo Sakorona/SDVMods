@@ -28,13 +28,13 @@ namespace TimeReminder
         private void GameEvents_OneSecondTick(object sender, EventArgs e)
         {
             if (PrevDate.Add(new TimeSpan(0,Config.NumOfMinutes,0)) < DateTime.Now){
-                Game1.hudMessages.Add(new HUDMessage("The current system time is " + DateTime.Now.ToString("h:mm:ss tt")));
+                Game1.hudMessages.Add(new HUDMessage("The current system time is " + DateTime.Now.ToString("h:mm tt")));
                 PrevDate = DateTime.Now;
             }
 
             if (Config.AlertOnTheHour && DateTime.Now.Minute == 0 && NotTriggered)
             {
-                Game1.hudMessages.Add(new HUDMessage("The current system time is " + DateTime.Now.ToString("h:mm:ss tt")));
+                Game1.hudMessages.Add(new HUDMessage("The current system time is " + DateTime.Now.ToString("h:mm tt")));
                 NotTriggered = false;
             }
 
