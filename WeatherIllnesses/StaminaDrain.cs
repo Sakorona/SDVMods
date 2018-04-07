@@ -4,6 +4,7 @@ using TwilightShards.Stardew.Common;
 using TwilightShards.Common;
 using System;
 using System.Collections.Generic;
+using StardewValley.Locations;
 
 namespace TwilightShards.WeatherIllnesses
 {
@@ -106,8 +107,7 @@ namespace TwilightShards.WeatherIllnesses
                 if (FarmerCanGetSick())
                 {
                     //rewrite time..
-                    if (conditions.Contains("blizzard") || conditions.Contains("lightning") || conditions.Contains("stormy") || conditions.Contains("thundersnow") || (conditions.Contains("frost") && SDVTime.IsNight) ||
-                        (conditions.Contains("heatwave") && !SDVTime.IsNight))
+                    if (conditions.Contains("blizzard") || ((conditions.Contains("lightning") || conditions.Contains("stormy") || conditions.Contains("thundersnow")) && !(Game1.currentLocation is Desert))|| (conditions.Contains("frost") && SDVTime.IsNight) || (conditions.Contains("heatwave") && !SDVTime.IsNight))
                     {
                         if ((conditions.Contains("heatwave") && !SDVTime.IsNight))
                             sickReason = HEATWAVE;
