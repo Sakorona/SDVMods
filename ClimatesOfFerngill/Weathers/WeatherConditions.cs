@@ -8,6 +8,7 @@ using TwilightShards.Common;
 using static ClimatesOfFerngillRebuild.Sprites;
 using System;
 using TwilightShards.Stardew.Common;
+using System.Text;
 
 namespace ClimatesOfFerngillRebuild
 {
@@ -70,7 +71,8 @@ namespace ClimatesOfFerngillRebuild
             {
                 new FerngillFog(Sheets, Config.Verbose, monitor, Dice, Config, SDVTimePeriods.Morning),
                 new FerngillWhiteOut(Dice, Config),
-                new FerngillBlizzard(Dice, Config)
+                new FerngillBlizzard(Dice, Config),
+                new FerngillThunderFrenzy(Dice, Config)
             };
 
             foreach (ISDVWeather weather in CurrentWeathers)
@@ -151,6 +153,18 @@ namespace ClimatesOfFerngillRebuild
             { (int)(CurrentWeather.Rain | CurrentWeather.Fog), new WeatherData(WeatherIcon.IconRainFog, WeatherIcon.IconRain, "rainyfog", Translation.Get("weather_fog", new { condition = Translation.Get("weather_rainy") })) },
 
             { (int)(CurrentWeather.Rain | CurrentWeather.Lightning | CurrentWeather.Fog), new WeatherData(WeatherIcon.IconStorm, WeatherIcon.IconStorm, "stormyfog", Translation.Get("weather_fog", new { condition = Translation.Get("weather_stormy") })) },
+
+             { (int)(CurrentWeather.Rain | CurrentWeather.Lightning | CurrentWeather.ThunderFrenzy), new WeatherData(WeatherIcon.IconStorm, WeatherIcon.IconStorm, "lightfrenzyfog", Translation.Get("weather_frenzy")) },
+
+            { (int)(CurrentWeather.Rain | CurrentWeather.Lightning | CurrentWeather.Frost | CurrentWeather.ThunderFrenzy), new WeatherData(WeatherIcon.IconStorm, WeatherIcon.IconStorm, "lightfrenzyfrost", Translation.Get("weather_frost", new { condition = Translation.Get("weather_frenzy")})) },
+
+            { (int)(CurrentWeather.Rain | CurrentWeather.Lightning | CurrentWeather.Heatwave | CurrentWeather.ThunderFrenzy), new WeatherData(WeatherIcon.IconStorm, WeatherIcon.IconStorm, "lightfrenzyheatwave", Translation.Get("weather_heatwave", new { condition = Translation.Get("weather_frenzy") })) },
+
+            { (int)(CurrentWeather.Rain | CurrentWeather.Lightning | CurrentWeather.Fog | CurrentWeather.ThunderFrenzy), new WeatherData(WeatherIcon.IconStorm, WeatherIcon.IconStorm, "lightfrenzyfog", Translation.Get("weather_fog", new { condition = Translation.Get("weather_frenzy") })) },
+
+            { (int)(CurrentWeather.Rain | CurrentWeather.Lightning | CurrentWeather.Fog | CurrentWeather.Frost | CurrentWeather.ThunderFrenzy), new WeatherData(WeatherIcon.IconStorm, WeatherIcon.IconStorm, "lightfrenzyfogfrost", Translation.Get("weather_frostTwo", new { condition = Translation.Get("weather_frenzy"), condtitionB = Translation.Get("weather_fog_basic") })) },
+
+            { (int)(CurrentWeather.Rain | CurrentWeather.Lightning | CurrentWeather.Fog | CurrentWeather.Heatwave | CurrentWeather.ThunderFrenzy), new WeatherData(WeatherIcon.IconStorm, WeatherIcon.IconStorm, "lightfrenzyfogheatwave", Translation.Get("weather_heatwaveTwo", new { condition = Translation.Get("weather_frenzy"), condtitionB = Translation.Get("weather_fog_basic") })) },
 
             { (int)(CurrentWeather.Rain | CurrentWeather.Fog | CurrentWeather.Frost), new WeatherData(WeatherIcon.IconRainFog, WeatherIcon.IconRain, "rainyfrostfog", Translation.Get("weather_frostTwo", new { condition = Translation.Get("weather_rainy"), condtitionB = Translation.Get("weather_fog_basic") })) },
 
@@ -619,7 +633,7 @@ namespace ClimatesOfFerngillRebuild
             return ret;
         }
         
-        internal bool TestForSpecialWeather(double fogChance)
+        internal bool TestForSpecialWeather(FerngillClimateTimeSpan ClimateForDay)
         {
             bool specialWeatherTriggered = false;
             // Conditions: Blizzard - occurs in weather_snow in "winter"
@@ -627,8 +641,7 @@ namespace ClimatesOfFerngillRebuild
             //             Frost and Heatwave check against the configuration.
             //             Thundersnow  - as Blizzard, but really rare.
             //             Fog - per climate, although night fog in winter is double normal chance
-
-            GenerateEveningFog = (Dice.NextDouble() < (Game1.currentSeason == "winter" ? fogChance * 2 : fogChance)) && !this.GetCurrentConditions().HasFlag(CurrentWeather.Wind);
+            GenerateEveningFog = (Dice.NextDouble() < ClimateForDay.EveningFogChance * ClimateForDay.RetrieveOdds(Dice,"fog",Game1.dayOfMonth)) && !this.GetCurrentConditions().HasFlag(CurrentWeather.Wind);
 
             bool BlockFog = false;
 
@@ -640,12 +653,12 @@ namespace ClimatesOfFerngillRebuild
             
             double fogRoll = Dice.NextDoublePositive();
 
-            if (fogRoll < fogChance && !this.GetCurrentConditions().HasFlag(CurrentWeather.Wind) && !BlockFog)
+            if (fogRoll < ClimateForDay.RetrieveOdds(Dice, "fog", Game1.dayOfMonth) && !this.GetCurrentConditions().HasFlag(CurrentWeather.Wind) && !BlockFog)
             {
                 this.CreateWeather("Fog", true);
 
                 if (ModConfig.Verbose)
-                    Monitor.Log($"{FogDescription(fogRoll, fogChance)}");
+                    Monitor.Log($"{FogDescription(fogRoll, ClimateForDay.RetrieveOdds(Dice, "fog", Game1.dayOfMonth))}");
 
                 specialWeatherTriggered = true;
             }
@@ -723,6 +736,19 @@ namespace ClimatesOfFerngillRebuild
                 specialWeatherTriggered = true;
             }
 
+            //and finally, test for thunder frenzy
+            if (this.HasWeather(CurrentWeather.Lightning) && ModConfig.HazardousWeather)
+            {
+                double oddsRoll = Dice.NextDouble();
+                if (oddsRoll < ModConfig.ThunderFrenzyOdds)
+                {
+                    this.AddWeather(CurrentWeather.ThunderFrenzy);
+                    specialWeatherTriggered = true;
+                    if (ModConfig.Verbose)
+                        Monitor.Log($"With roll {oddsRoll.ToString("N3")} against {ModConfig.ThunderFrenzyOdds}, there will be a thunder frenzy today");
+                    this.CreateWeather("ThunderFrenzy");
+                }
+            }
 
             return specialWeatherTriggered;
         }

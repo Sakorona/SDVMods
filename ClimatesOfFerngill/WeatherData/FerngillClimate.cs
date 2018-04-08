@@ -10,6 +10,7 @@ namespace ClimatesOfFerngillRebuild
         public bool AllowRainInWinter;
         public bool AllowThunderSnow;
         public bool AllowSnowInFall;
+        public List<string> LocationsAffected;
         public List<FerngillClimateTimeSpan> ClimateSequences;
 
         //constructor
@@ -23,7 +24,7 @@ namespace ClimatesOfFerngillRebuild
         {
             ClimateSequences = new List<FerngillClimateTimeSpan>();
             foreach (FerngillClimateTimeSpan CTS in fCTS)
-                this.ClimateSequences.Add(new FerngillClimateTimeSpan(CTS));
+                ClimateSequences.Add(new FerngillClimateTimeSpan(CTS));
         }
 
         //climate access functions
@@ -60,7 +61,12 @@ namespace ClimatesOfFerngillRebuild
 
         public double GetStormOdds(SDate Target, MersenneTwister dice, StringBuilder Debug)
         {
-            return this.GetClimateForDate(Target).RetrieveOdds(dice, "storm", Target.Day, Debug);
+            return GetClimateForDate(Target).RetrieveOdds(dice, "storm", Target.Day, Debug);
+        }
+
+        public double GetEveningFogOdds(SDate Target, MersenneTwister dice, StringBuilder Debug)
+        {
+            return GetClimateForDate(Target).EveningFogChance;
         }
 
     }

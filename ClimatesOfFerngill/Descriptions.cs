@@ -94,6 +94,16 @@ namespace ClimatesOfFerngillRebuild
                 text += Helper.Get("weather-menu.condition.frost") + Environment.NewLine;
             }
 
+            if (Current.ContainsCondition(CurrentWeather.WhiteOut))
+            {
+                text += Helper.Get("weather-menu.condition.whiteOut") + Environment.NewLine;
+            }
+
+            if (Current.ContainsCondition(CurrentWeather.ThunderFrenzy))
+            {
+                text += Helper.Get("weather-menu.condition.thunderFrenzy") + Environment.NewLine;
+            }
+
             if (MoonPhase == "Blood Moon")
             {
                 text += Helper.Get("weather-menu.condition.bloodmoon") + Environment.NewLine;
@@ -271,6 +281,9 @@ namespace ClimatesOfFerngillRebuild
 
             if (Current.ContainsCondition(CurrentWeather.WhiteOut))
                 return Helper.Get($"weather-condition.whiteout.{rNumber}");
+
+            if (Current.ContainsCondition(CurrentWeather.ThunderFrenzy))
+                return Helper.Get($"weather-condition.thunderfrenzy.{rNumber}");
 
             return "";            
         }

@@ -103,6 +103,10 @@
   "weather-condition.whiteout.1": "RWS: A howling blizzard is expected throughout the valley. Do not travel if at all possible. ",
   "weather-condition.whiteout.2": "RWS: Expect near zero visiblity outside as a blizzard passes through. ",
 
+  "weather-condition.thunderfrenzy.0": "RWS: SEVERE THUNDERSTORM WARNING. Seek shelter immediately.",
+  "weather-condition.thunderfrenzy.1": "RWS: SEVERE THUNDERSTORM WARNING. Supercells are moving through the area. ",
+  "weather-condition.thunderfrenzy.2": "RWS: SEVERE THUNDERSTORM WARNING. Be advised of the possiblity of downdrafts along with an immense number of thunder strikes. ",
+
   //this is the night string
   "weather-condition.frost.night": "Forecasters are already seeing the temperatures dip dangerously low, and you should expect frosts outside tonight. ",
   "weather-condition.evenFog": "Fog is predicted this evening from {{startTime}} to {{endTime}}. ",
@@ -274,6 +278,8 @@
   "weather-menu.openingS4D28": "This is Kylie from KZAM Radio, broadcasting on 92.5 out of Point Drake. It is the end of the year, the {{descDay}}, and here is the weather report for Stardew Valley:",
   "weather-menu.condition.frost": "RWS Warning: Frost tonight.",
   "weather-menu.condition.heatwave": "RWS Warning: Heatwave expected through the day.",
+  "weather-menu.condition.whiteOut": "RWS Warning: Extreme blizzards are moving through the valley:",
+  "weather-menu.condition.thunderFrenzy": "RWS Warning: Mesocyclones are moving through the valley:",
   "weather-menu.condition.bloodmoon": "Beware, for the blood moon rises.....",
   "weather-menu.current": "Current Conditions: {{todayCondition}}. High: {{todayHigh}} with Low: {{todayLow}}.{{fogString}}",
   "weather-menu.fog": "Fog present until {{fogTime}}.",
@@ -282,7 +288,7 @@
   "weather-menu.tomorrow": "Tomorrow's Forecast: {{tomorrowCondition}}. High: {{tomorrowHigh}} with Low: {{tomorrowLow}}.",
 
   //basic conditions
-  "weat-bloodmoon":  "Blood Moon",
+  "weat-bloodmoon": "Blood Moon",
   "weather_sunny_daytime": "Sunny",
   "weather_sunny_nighttime": "Clear",
   "weather_sunny": "Sunny",
@@ -292,6 +298,7 @@
   "weather_snow": "Snowy",
   "weather_rainy": "Rainy",
   "weather_festival": "Festival",
+  "weather_frenzy": "Lightning Frenzy",
   "weather_wedding": "Wedding",
   "weather_drylightning": "Dry Lightning",
   "weather_blizzard": "Blizzard",

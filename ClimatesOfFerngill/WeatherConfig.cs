@@ -24,12 +24,7 @@ namespace ClimatesOfFerngillRebuild
         public double CropResistance { get; set; }
         public double DarkFogChance { get; set; }
         public bool Use12HourTime { get; set; }
-        public double BadMoonRising { get; set; }
-        public bool EclipseOn { get; set; }
-        public double EclipseChance { get; set; }
-        public bool SpawnMonsters { get; set; }
-        public bool SpawnMonstersAllFarms { get; set; }
-        public bool HazardousMoonEvents { get; set; }
+        public double ThunderFrenzyOdds { get; set; }
         public bool DarkenLightInFog { get; set; }
 
         public bool Verbose { get; set; }
@@ -57,22 +52,15 @@ namespace ClimatesOfFerngillRebuild
             AllowStormsSpringYear1 = false; //default setting - maintains the fact that starting players may not 
             ShowBothScales = true; //default setting.
             DeadCropPercentage = .1; //default setting
+            ThunderFrenzyOdds = .01; //default setting
             DarkenLightInFog = true; //default setting
             CropResistance = .75; //default settting
             DarkFogChance = .0875; //default setting
             Use12HourTime = false; //default setting
-            BadMoonRising = .004; //default setting
 
             // be able to deal with lightning strikes
             //general mod options
             Verbose = true;
-
-            //eclipse stuff
-            EclipseOn = true;
-            EclipseChance = .015;
-            SpawnMonsters = true;
-            SpawnMonstersAllFarms = false;
-            HazardousMoonEvents = false;
         }
     }
 }

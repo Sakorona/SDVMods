@@ -144,7 +144,6 @@ namespace ClimatesOfFerngillRebuild
                 Monitor.Log("Lunar Disturbances not present. Skipping Integration.");
             }
         }
-
         
         private void SaveEvents_AfterLoad(object sender, EventArgs e)
         {
@@ -643,7 +642,7 @@ namespace ClimatesOfFerngillRebuild
                 return;
             }
                     
-            if (Conditions.TestForSpecialWeather(GameClimate.GetClimateForDate(SDate.Now()).RetrieveOdds(Dice, "fog", SDate.Now().Day, DebugOutput)))
+            if (Conditions.TestForSpecialWeather(GameClimate.GetClimateForDate(SDate.Now())))
             {
                 if (WeatherOpt.Verbose)
                     Monitor.Log("Special weather created!");

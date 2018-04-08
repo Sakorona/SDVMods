@@ -12,6 +12,7 @@ namespace ClimatesOfFerngillRebuild
         public string EndSeason;
         public int BeginDay;
         public int EndDay;
+        public double EveningFogChance;
         public List<WeatherParameters> WeatherChances;
 
         public FerngillClimateTimeSpan()
@@ -55,20 +56,21 @@ namespace ClimatesOfFerngillRebuild
             WeatherChances.Add(new WeatherParameters(wp));
         }
 
-        public double RetrieveOdds(MersenneTwister dice, string weather, int day, StringBuilder Output)
+        public double RetrieveOdds(MersenneTwister dice, string weather, int day, StringBuilder Output = null)
         {
             double Odd = 0;
 
             List<WeatherParameters> wp = this.WeatherChances.Where(w => w.WeatherType == weather).ToList<WeatherParameters>();
 
-            if (wp.Count == 0)
+            if (wp.Count == 0 && !(Output is null))
             {
                 Output.Append($"{weather} weather is not found in this time span.");
                 return 0;
             }
 
-            Output.Append($"Retrieved data for {weather} on {day} with Base Value {wp[0].BaseValue} and Change Rate {wp[0].ChangeRate} " +
-                          $"with the variable bound of ({wp[0].VariableLowerBound} , {wp[0].VariableHigherBound}) {Environment.NewLine}");
+            if (!(Output is null))
+                Output.Append($"Retrieved data for {weather} on {day} with Base Value {wp[0].BaseValue} and Change Rate {wp[0].ChangeRate} " +
+                              $"with the variable bound of ({wp[0].VariableLowerBound} , {wp[0].VariableHigherBound}) {Environment.NewLine}");
 
             Odd = wp[0].BaseValue + (wp[0].ChangeRate * day);
             RangePair range = new RangePair(wp[0].VariableLowerBound, wp[0].VariableHigherBound);

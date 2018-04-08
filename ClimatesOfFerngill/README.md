@@ -1,6 +1,6 @@
 ﻿# Climates of Ferngill (Rebuild) You Can (Not) Have Weather
 
-Current Version (3 March 2018): 1.3.4
+Current Version (8 April 2018): 1.4-beta2
 
 ## What's New
 
@@ -8,6 +8,7 @@ Current Version (3 March 2018): 1.3.4
 - Blizzards, Thundersnow
 - A more customizable weather system
 - More descriptive and varied weather reports
+- Thundersnow!
 
 ## Requirements
 
@@ -20,69 +21,25 @@ Current Version (3 March 2018): 1.3.4
 This mod does the following:
 
 - Alters the weather via a custom method that can read custom files
-- Adds in several custom weathers - Thundersnow! Blizzards! Dry Lightning!
+- Adds in several custom weathers - Thundersnow! Blizzards! Dry Lightning! Fog! Thunder Freeenzy!!!
 - Changes the rain totem to occasionally spawm storms as well.
-- Adds a moon overhead, which will act on the world
 - Adds a weather menu option, which will display information about the weather
 - Changes the text for the TV weather channel
-- Going out in storms, blizzards, frosts and heatwaves is now more perilous, as it drains your stamina. Thankfully, 
-    a 'Muscle Remedy' has been found to cure even the hardiest flu
-
-### Blood Moon
-
-A blood moon is a rare event in Pelican Town. It only appears to happen 1 in 67 times on a full moon, and 1 in 800 times on a waning or waxing gibbeous moon. During this event, you can spot it by the red fog and red water. In addition, shopkeepers are often more anxious and drive harder bargins. Outside, monsters roam.
-
-Thankfully, they don't appear to spawn on wedding and festival days..
-
--- sale prices down 20%
--- buy prices up 85%
--- monsters spawn every 10 real-world seconds if you are outside.
-
-### Stamina System
-
-__Very Important: Read this before you alter StaminaDrain in the config!__
-
-Rather than a fixed penalty for certain conditions, this now calculates a multiplier based on the conditions prevailing.
-
-Every ten minutes, the mod checks to see if you've been outside for a certain percentage of the last 10 minutes. By default, it's set to 65%. (This percentage is calculated by counting the ticks you've been outside and the total number in the span to account for time change mods). Then, it generates a random number and tests it against a chance to get sick. By default, this is 70%. In addition, this must be during certain weather conditions:
-*Temperature: Frost or Heatwave (as defined in the config file, see the readme for more information)
-*Weathers: Lightning
-*Special Weathers: Thundersnow, Blizzard
-(NB: While you incur a stamina penalty for being sick in fog, it deliberately does not trigger this.)
-
-The penalties are **cumulative** - that is, they add up to the final multiplier.
-*Lightning : +100% ( 1)
-*Thundersnow: +100% (1)
-*Thundersnow (nighttime): +50% (.5)
-*Foggy: +50% (.5)
-*Foggy (nightime) +25% (.25)
-*Blizzard: +125% (1.25)
-*Blizzard: **White Out**+225% (2.25)
-*Blizzard (nighttime) +50% (.5)
-*Frost (nightime): +125% (1.25) - this is not during the winter. During winter, the frost penalty is untriggered.
-*Heatwave (daytime): +125% (1.25)
-
-The calculated number is then rounded __down__
-
-For example, therefore, if you're outduring a storm, with the base of 2, you only take a stamina penalty of 2. But if it's also a heatwave, your penatly is now (+1+1.25)=*2.25 or 4.5. So a penalty of 4.
-If you're out in a blizzard during the day, it's *1.25 or 2.5 rounded down to 2. If you're out in that blizzard at night, another .5 (1.25+.5) is added making it 1.75 or 3.5 rounded down to 3.
-
-(This does mean a foggy blizzard at night is (+.5+.25+1.25+.5 or *2.25), and if you somehow get this in fall, would be *3.5. And somehow, if you get a whiteout, it would be *3.25 and *4.5!)
-
-## Known Issues
-
-## To Do
 
 ## Wishlist
 
 ## Acknowledgements
-- eemie for the moon sprites
 - Prismuth for the fog sprite
 - Pathoschild for ideas
 - ChefRude for testing and the night icon sprites (as well as better fog textures)
 
 ## Changelog
-v1.4.0
+v1.4.0-beta2
+- Removed unneeded options, cleaned up the readme
+- Added Thunder Frenzy weather
+- some refactoring
+
+v1.4.0-beta1
 - Mod split into three - moon is now Lunar Disturbances, stamina is now WeatherIllnesses.
 - fix for the weather icon in Climates.
 
@@ -288,17 +245,10 @@ over a certain value.). Valid 0-1, but it's recommended that this is kept low. D
 - `DisplayBothScales` - Default: `false`. This will display both known scales. Set to `true`, if you want to see Farenheit as well.
 
 - `HazardousWeather` - Default: `false`. This turns on hazardous weather. It's normally turned off. Right now, it only turns on the heatwave and frost events
-	IMPORTANT NOTE: This only enables the stamina drain on them, and the dewatering of the heatwave. Frost's crop death will remain disabled, 
+	IMPORTANT NOTE: This only enables dewatering of the heatwave AND the thunder frenzy event. Frost's crop death will remain disabled, 
 	as well not watering the plants in time for a heatwave.
 
 - `AllowCropDeath` - Default: `false`. Normally, hazardous weather won't kill crops, just stop them growing. This reenables crop death.'
-
-- `AffectedOutside` - The percentage outside you need to be within a 10 minute span to be affected by stamina events.
- Defaults to '.65', valid values are between 0 and 1. To turn stamina drains off entirely, set it to 0. 
-
- - `SickMoreThanOnce` - This setting controls whether or not you can get sick once you have cured yourself. Default: `false`. Valid: `true, false`
-
- - `StaminaDrain` - This is an int containing the default stamina drain for hazardous events. See the writeup (soon) for more information. Default is '2'. Valid range is any number between foo and bar.'
 
  - `DeadCropPercentage` - The amount of crops that a heatwave and frost can kill. (Note: Frost will kill more than heatwaves). Default: '.1' Valid range is 0 to 1.
 
@@ -306,18 +256,6 @@ over a certain value.). Valid 0-1, but it's recommended that this is kept low. D
 
  - `DarkFogChance` - This controls the chance of the darker fog appearing. Default is set to '.0875' (or a 1/8th chance if it's foggy it'll be dark fog.) Valid Range is 0 to 1.
 
- - `ChanceOfGettingSick` - Controls the chance you'll get sick when conditions are matched. Default is set to '.7' for (70% chance). Valid Range is 0 to 1.
+ - 'ThunderFrenzyOdds' - This controls the chance of the special weather Thunder Frenzy appearing. It's a double, valid range is 0 to 1
 
  - `Use12HourTime` - Tells it whether or not to use 12hour time or not in displays. Defaults to false. Valid: true, false
-
- - `BadMoonRising` - Chance of a blood moon on a full moon. Default: .004 (.4%). Valid Range is 0 to 1.
-
- - `EclipseOn` - Whether or not the eclipse is enabled. Defaults to true. (NOTE: Will not trigger until at least Spring 2, and must be a full moon.) (valid: true, false)
-
- - `EclipseChance` - The chance of an eclipse every full moon. Defaults to .015 (1.5%) Valid Range is 0 to 1.
-
- - `SpawnMonsters` - Controls if monsters spawn on your wilderness farm. Default: true. Valid: true, false
-
- - `SpawnMonstersAllFarms` - Controls if monsters spawn on all farms. Default: false. Valid: true, false
-
- - `HazardousMoonEvents` - Turns on or off moon events that hinder the player. Default: false. Valid: true, false.
