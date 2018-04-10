@@ -641,7 +641,7 @@ namespace ClimatesOfFerngillRebuild
                 //if (WeatherOpt.Verbose) Monitor.Log(DebugOutput.ToString());
                 return;
             }
-                    
+
             if (Conditions.TestForSpecialWeather(GameClimate.GetClimateForDate(SDate.Now())))
             {
                 if (WeatherOpt.Verbose)

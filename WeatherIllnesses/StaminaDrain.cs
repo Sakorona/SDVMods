@@ -145,8 +145,14 @@ namespace TwilightShards.WeatherIllnesses
 
                 if (this.FarmerSick && conditions.Contains("blizzard") && conditions.Contains("whiteout"))
                 {
-                    totalMulti += 2.25;
+                    totalMulti += 2.45;
                     condList.Add("White Out");
+                }
+
+                if (this.FarmerSick && conditions.Contains("thunderfrenzy"))
+                {
+                    totalMulti += 1.85;
+                    condList.Add("Thunder Frenzy");
                 }
 
                 if (this.FarmerSick && conditions.Contains("frost") && SDVTime.IsNight)

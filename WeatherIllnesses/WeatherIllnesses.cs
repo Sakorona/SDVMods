@@ -42,7 +42,7 @@ namespace TwilightShards.WeatherIllnesses
             IManifest manifestCheck = Helper.ModRegistry.Get("KoihimeNakamura.ClimatesOfFerngill");
             if (manifestCheck != null)
             {
-                if (!manifestCheck.Version.IsOlderThan("1.4"))
+                if (!manifestCheck.Version.IsOlderThan("1.3.8"))
                 {
                     climatesAPI = Helper.ModRegistry.GetApi<Integrations.IClimatesOfFerngillAPI>("KoihimeNakamura.ClimatesOfFerngill");
 
@@ -54,7 +54,7 @@ namespace TwilightShards.WeatherIllnesses
                 }
                 else
                 {
-                    Monitor.Log($"Climates of Ferngill detected, but not of a sufficient version. Req:1.4 Detected:{manifestCheck.Version.ToString()}. Skipping..");
+                    Monitor.Log($"Climates of Ferngill detected, but not of a sufficient version. Req:1.3.8 Detected:{manifestCheck.Version.ToString()}. Skipping..");
                 }
             }
             else

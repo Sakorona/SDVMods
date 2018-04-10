@@ -37,6 +37,7 @@ This mod does the following:
 v1.4.0-beta2
 - Removed unneeded options, cleaned up the readme
 - Added Thunder Frenzy weather
+- Whiteouts will respect hazardous weather flags
 - some refactoring
 
 v1.4.0-beta1

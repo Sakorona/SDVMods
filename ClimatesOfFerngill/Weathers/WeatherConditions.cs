@@ -72,7 +72,7 @@ namespace ClimatesOfFerngillRebuild
                 new FerngillFog(Sheets, Config.Verbose, monitor, Dice, Config, SDVTimePeriods.Morning),
                 new FerngillWhiteOut(Dice, Config),
                 new FerngillBlizzard(Dice, Config),
-                new FerngillThunderFrenzy(Dice, Config)
+                new FerngillThunderFrenzy(monitor, Dice, Config)
             };
 
             foreach (ISDVWeather weather in CurrentWeathers)
@@ -450,6 +450,18 @@ namespace ClimatesOfFerngillRebuild
                 }
             }
 
+            if (e.Weather == "ThunderFrenzy")
+            {
+                if (e.Present)
+                {
+                    CurrentConditionsN = CurrentConditionsN | CurrentWeather.ThunderFrenzy;
+                }
+                else
+                {
+                    CurrentConditionsN = CurrentConditionsN.RemoveFlags(CurrentWeather.ThunderFrenzy);
+                }
+            }
+
             if (e.Weather == "Fog")
             {
                 if (e.Present)
@@ -671,7 +683,7 @@ namespace ClimatesOfFerngillRebuild
                     this.CreateWeather("Blizzard");
                     if (ModConfig.Verbose)
                         Monitor.Log($"With roll {blizRoll.ToString("N3")} against {ModConfig.BlizzardOdds}, there will be blizzards today");
-                    if (Dice.NextDoublePositive() < .05)
+                    if (Dice.NextDoublePositive() < .05 && ModConfig.HazardousWeather)
                     {
                         this.CreateWeather("WhiteOut");
                     }
@@ -737,7 +749,7 @@ namespace ClimatesOfFerngillRebuild
             }
 
             //and finally, test for thunder frenzy
-            if (this.HasWeather(CurrentWeather.Lightning) && ModConfig.HazardousWeather)
+            if (this.HasWeather(CurrentWeather.Lightning) && this.HasWeather(CurrentWeather.Rain) && ModConfig.HazardousWeather)
             {
                 double oddsRoll = Dice.NextDouble();
                 if (oddsRoll < ModConfig.ThunderFrenzyOdds)

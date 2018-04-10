@@ -25,7 +25,8 @@ The penalties are **cumulative** - that is, they add up to the final multiplier.
 *Foggy: +50% (.5)
 *Foggy (nightime) +25% (.25)
 *Blizzard: +125% (1.25)
-*Blizzard: **White Out**+225% (2.25)
+*Blizzard: **White Out**+245% (2.45)
+*Thunder Frenzy: +185% (1.85)
 *Blizzard (nighttime) +50% (.5)
 *Frost (nightime): +125% (1.25) - this is not during the winter. During winter, the frost penalty is untriggered.
 *Heatwave (daytime): +125% (1.25)
