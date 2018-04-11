@@ -173,7 +173,7 @@ namespace ClimatesOfFerngillRebuild
 
                     if (ClimatesOfFerngill.UseSafeLightningApi && !(ClimatesOfFerngill.SafeLightningAPI is null))
                     {
-                        ClimatesOfFerngill.SafeLightningAPI.StrikeLightningSafely(strikeLocation);
+                        ClimatesOfFerngill.SafeLightningAPI.StrikeLightningSafely(keyValuePair.Key);
                     }
                     else
                     {
