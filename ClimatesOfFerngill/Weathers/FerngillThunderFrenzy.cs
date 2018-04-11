@@ -169,27 +169,35 @@ namespace ClimatesOfFerngillRebuild
                 try
                 {
                     KeyValuePair<Vector2, TerrainFeature> keyValuePair = locationFromName.terrainFeatures.ElementAt(Dice.Next(locationFromName.terrainFeatures.Count));
-                    if (!(keyValuePair.Value is FruitTree) && keyValuePair.Value.performToolAction(null, 50, keyValuePair.Key, locationFromName))
+                    Vector2 strikeLocation = keyValuePair.Key * Game1.tileSize + new Vector2(Game1.tileSize / 2, -Game1.tileSize * 2);
+
+                    if (ClimatesOfFerngill.UseSafeLightningApi && !(ClimatesOfFerngill.SafeLightningAPI is null))
                     {
-                        locationFromName.terrainFeatures.Remove(keyValuePair.Key);
-                        if (!Game1.currentLocation.name.Equals("Farm"))
-                            return;
-                        locationFromName.temporarySprites.Add(new TemporaryAnimatedSprite(362, 75f, 6, 1, keyValuePair.Key, false, false));
-                        Vector2 strikeLocation = keyValuePair.Key * Game1.tileSize + new Vector2(Game1.tileSize / 2, -Game1.tileSize * 2);
-                        if (ModConfig.Verbose)
-                            Logger.Log($"Strike Location is {keyValuePair.Key} for object {keyValuePair.Value}");
-                        Utility.drawLightningBolt(strikeLocation, locationFromName);
+                        ClimatesOfFerngill.SafeLightningAPI.StrikeLightningSafely(strikeLocation);
                     }
                     else
                     {
-                        if (!(keyValuePair.Value is FruitTree))
-                            return;
-                        (keyValuePair.Value as FruitTree).struckByLightningCountdown = 4;
-                        (keyValuePair.Value as FruitTree).shake(keyValuePair.Key, true);
-                        Vector2 strikeLocation = keyValuePair.Key * Game1.tileSize + new Vector2(Game1.tileSize / 2, -Game1.tileSize * 2);
-                        if (ModConfig.Verbose)
-                            Logger.Log($"Strike Location is {keyValuePair.Key} for object {keyValuePair.Value}");
-                        Utility.drawLightningBolt(strikeLocation, locationFromName);
+                        if (!(keyValuePair.Value is FruitTree) && keyValuePair.Value.performToolAction(null, 50, keyValuePair.Key, locationFromName))
+                        {
+                            locationFromName.terrainFeatures.Remove(keyValuePair.Key);
+                            if (!Game1.currentLocation.name.Equals("Farm"))
+                                return;
+                            locationFromName.temporarySprites.Add(new TemporaryAnimatedSprite(362, 75f, 6, 1, keyValuePair.Key, false, false));
+                            if (ModConfig.Verbose)
+                                Logger.Log($"Strike Location is {keyValuePair.Key} for object {keyValuePair.Value}");
+                            Utility.drawLightningBolt(strikeLocation, locationFromName);
+                        }
+                        else
+                        {
+                            if (!(keyValuePair.Value is FruitTree))
+                                return;
+                            (keyValuePair.Value as FruitTree).struckByLightningCountdown = 4;
+                            (keyValuePair.Value as FruitTree).shake(keyValuePair.Key, true);
+
+                            if (ModConfig.Verbose)
+                                Logger.Log($"Strike Location is {keyValuePair.Key} for object {keyValuePair.Value}");
+                            Utility.drawLightningBolt(strikeLocation, locationFromName);
+                        }
                     }
                 }
                 catch (Exception ex)

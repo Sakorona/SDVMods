@@ -182,7 +182,7 @@ namespace TwilightShards.LunarDisturbances
                 }
 
                 if (cropsAffected > 0)
-                    Game1.addHUDMessage(new HUDMessage(Translations.Get("moon-text.fullmoon_eff", new { cropsAffected = cropsAffected })));
+                    Game1.addHUDMessage(new HUDMessage(Translations.Get("moon-text.fullmoon_eff", new { cropsAffected })));
             }
 
             if (CurrentPhase == MoonPhase.NewMoon && ModConfig.HazardousMoonEvents)
@@ -203,7 +203,7 @@ namespace TwilightShards.LunarDisturbances
                 }
 
                 if (cropsAffected > 0)
-                    Game1.addHUDMessage(new HUDMessage(Translations.Get("moon-text.newmoon_eff", new { cropsAffected = cropsAffected })));
+                    Game1.addHUDMessage(new HUDMessage(Translations.Get("moon-text.newmoon_eff", new { cropsAffected })));
             }
         }
 

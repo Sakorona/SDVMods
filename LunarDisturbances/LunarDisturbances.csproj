@@ -51,7 +51,7 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="SDVMoon.cs" />
     <Compile Include="Sprites.cs" />
-    <Compile Include="WeatherConfig.cs" />
+    <Compile Include="MoonConfig.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="i18n\default.json">

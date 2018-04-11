@@ -54,8 +54,11 @@ namespace ClimatesOfFerngillRebuild
         public int ResetTicker { get; set; }
 
         //Integrations
-        internal bool UseLunarDisturbancesApi = false;
+        internal static bool UseLunarDisturbancesApi = false;
         internal static Integrations.ILunarDisturbancesAPI MoonAPI;
+
+        internal static bool UseSafeLightningApi = false;
+        internal static Integrations.ISafeLightningAPI SafeLightningAPI;
 
         private IClimatesOfFerngillAPI API;
         public override object GetApi()
@@ -142,6 +145,30 @@ namespace ClimatesOfFerngillRebuild
             else
             {
                 Monitor.Log("Lunar Disturbances not present. Skipping Integration.");
+            }
+
+            //Testing for an unreleased mod.
+            manifestCheck = Helper.ModRegistry.Get("cat.safelightning");
+            if (manifestCheck != null)
+            {
+                if (!manifestCheck.Version.IsOlderThan("1.0"))
+                {
+                    SafeLightningAPI = Helper.ModRegistry.GetApi<Integrations.ISafeLightningAPI>("KoihimeNakamura.LunarDisturbances");
+
+                    if (SafeLightningAPI != null)
+                    {
+                        UseSafeLightningApi = true;
+                        Monitor.Log("Safe Lightning Integration enabled", LogLevel.Info);
+                    }
+                }
+                else
+                {
+                    Monitor.Log($"Safe Lightning detected, but not of a sufficient version. Req:1.0 Detected:{manifestCheck.Version.ToString()}. Skipping..");
+                }
+            }
+            else
+            {
+                Monitor.Log("Safe Lightning not present. Skipping Integration.");
             }
         }
         
