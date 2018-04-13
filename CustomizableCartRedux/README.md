@@ -1,0 +1,44 @@
+﻿## Customizable Traveling Cart Redux
+
+This mod is inspired by yyeahdude, and is largely meant to work with SMAPI 2.0.
+
+It allows you to set the chances of the traveling cart appearing per day (by setting it from 0 to 1, for example, a 25% chance is .25), the items it contains, and how much it is. 
+
+##Install Instructions
+Unzip the archive into the Mods folder
+
+##Changelog
+1.2.2 - Added API for allowing people to add items
+1.2 - Added several config options to more control what inventory appears, improved handling of errors. In addition, it will now add items added via JsonAssets.
+1.1.1 - fixes
+
+##Current Config Options
+- Monday through SundayChance: sets the odds it appears that day of the week
+- AppearOnlyAtStartOfSeason: Will appear only on day 1, regardless of any other settings.
+- AppearOnlyatEndOfSeason: Will appear only on day 28, regardless of any other settings
+- AppearOnlyatStartAndEndOfSeason: Will appear only day 1 and 28, regardless of any other settings
+- AppearOnlyEveryOtherWeek: Will only appear on days 8-14 and 22-28 of the season
+- AmountOfItems: default 12, but can be altered down or up to control how many items appear. Note: The mod will by default set any numbers less than 3 to 3.
+- DisableDuplicates: This will prevent the mod from selecting duplicates.
+- BlacklistedItems - These items will not appear in the cart. Note: This applies over any items added to AllowedItems.
+- AllowedItems - These items will be permitted to appear in the cart. (This is primarily used to override the prohibited categories.)
+- UseCheaperPricing: Uses a less expensive method of determining the value.
+
+##Requires:
+SMAPI 2.5.4+
+
+## API documentation
+
+This mod provides an API if people want to add items to the cart. 
+
+The interface looks like:
+
+    public interface ICustomizableCart
+    {
+        event EventHandler CartProcessingComplete;
+        void AddItem(Item item, int price, int quality);
+    }
+
+The API defaults the last to 1, but it can be passed in if you want a different number. This interface is from 1.2.2+
+
+In order to add items, subscribe to the CartProcessingComplete event, and put your logic for adding items there. 

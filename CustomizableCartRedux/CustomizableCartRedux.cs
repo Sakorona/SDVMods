@@ -15,11 +15,23 @@ namespace CustomizableCartRedux
 {
     public class CustomizableCartRedux : Mod
     {
+        public static Mod instance;
         public CartConfig OurConfig;
         public MersenneTwister Dice;
 
+        private ICustomizableCart API;
+
+        public override object GetApi()
+        {
+            if (API == null)
+                API = new CustomizableCartAPI();
+
+            return API;
+        }
+
         public override void Entry(IModHelper helper)
         {
+            instance = this;
             Dice = new MersenneTwister();
             OurConfig = helper.ReadConfig<CartConfig>();
             TimeEvents.AfterDayStarted += SetCartSpawn;
@@ -126,6 +138,8 @@ namespace CustomizableCartRedux
                 {
                     Utility.clearObjectsInArea(travelingMerchantBound, f);                 
                 }
+
+                ((CustomizableCartAPI)API).InvokeCartProcessingComplete();
             }
             else
             {
@@ -182,7 +196,7 @@ namespace CustomizableCartRedux
             // if it's less than fall, add a rare seed
             if (Utility.getSeasonNumber(Game1.currentSeason) < 2)
             {
-                dictionary.Add((Item)new SObject(347, 1, false, -1, 0), new int[2]
+                dictionary.Add(new SObject(347, 1, false, -1, 0), new int[2]
                 {
                     1000, Dice.NextDouble() < 0.1 ? 5 : 1
                 });
@@ -190,7 +204,7 @@ namespace CustomizableCartRedux
             }
             else if (Dice.NextDouble() < 0.4)
             {
-                dictionary.Add((Item)new SObject(Vector2.Zero, 136, false), new int[2]
+                dictionary.Add(new SObject(Vector2.Zero, 136, false), new int[2]
                 {
                     4000, 1
                 });

@@ -54,8 +54,8 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="i18n\default.json" />
-    <None Include="packages.config" />
     <None Include="manifest.json" />
+    <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup />
   <Import Project="..\TwilightCoreShared\TwilightCoreShared.projitems" Label="Shared" />
