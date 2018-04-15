@@ -1,7 +1,7 @@
 {
    "Name": "Stardew Notification",
    "Author": "monopandora, updated by KNakamura",
-   "Version": "1.7.2",
+   "Version": "1.7.2-kylindraUpdate",
    "Description": "Daily Notification mod for Stardew Valley",
    "UniqueID": "mondopandora.stardewnotification",
    "EntryDll": "StardewNotification.dll"
