@@ -16,6 +16,10 @@ Thankfully, they don't appear to spawn on wedding and festival days..
 -- buy prices up 85%
 -- monsters spawn every 10 real-world seconds if you are outside.
 
+### Changelog
+v1.0.1
+- fixed the moon
+
 ### Config Options
  - `BadMoonRising` - Chance of a blood moon on a full moon. Default: .004 (.4%). Valid Range is 0 to 1.
 

@@ -44,6 +44,7 @@ namespace TwilightShards.LunarDisturbances
             Dice = new MersenneTwister();
             ModConfig = Helper.ReadConfig<MoonConfig>();
             OurMoon = new SDVMoon(ModConfig, Dice, Helper.Translation);
+            OurIcons = new Sprites.Icons(Helper.Content);
 
             GameEvents.FirstUpdateTick += GameEvents_FirstUpdateTick;
             GraphicsEvents.OnPostRenderGuiEvent += DrawOverMenus;

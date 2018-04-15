@@ -133,7 +133,7 @@ namespace ClimatesOfFerngillRebuild
 
                 todayHigh = GetTemperatureString(Current.TodayHigh),
                 todayLow = GetTemperatureString(Current.TodayLow),
-                fogString = fogString               
+                fogString               
             }) + Environment.NewLine;
 
             //Tomorrow weather
