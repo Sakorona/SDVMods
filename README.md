@@ -10,7 +10,7 @@ documentation, licenses, and release notes. May have other related projects that
 _This mod adds a moon, which adds events, such as the Blood Moon, to the world. Also includes a solar eclipse!_
 
 * **WeatherIllnesses**<small>([source](WeatherIllnesses))</small>
-_This adds a stamina system to the game. In hazardous weather, the player will drain stamina per 10 minutes.__
+_This adds a stamina system to the game. In hazardous weather, the player will drain stamina per 10 minutes._
 
 * **USDVP** <small>([source](USDVP))</small>
   _A in progress patch mod for Stardew Valley. On hiatus until after the SDV 1.3 beta ends._
