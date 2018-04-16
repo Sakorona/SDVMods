@@ -17,34 +17,34 @@ _This adds a stamina system to the game. In hazardous weather, the player will d
 
 * **USDVP** <small>([source](USDVP))</small>
 
-  _A in progress patch mod for Stardew Valley. On hiatus until after the SDV 1.3 beta ends._
+_A in progress patch mod for Stardew Valley. On hiatus until after the SDV 1.3 beta ends._
 
 * **ArtifactsInOmniGeodes**<small> ([source](ArtifactsInOmniGeodes))</small>
 
-  _Baby port of a XNB mod that no longer works with SDV 1.2 for personal use._
+_Baby port of a XNB mod that no longer works with SDV 1.2 for personal use._
 
 * **[Climates of Ferngill (Rebuild)](http://www.nexusmods.com/stardewvalley/mods/604)** <small>([source](ClimatesOfFerngill))</small>
 
-  _Creates a different climate system, with custom weather, including fog and thunder frenzy. Also stamina changes. Follow the link for more details._
+_Creates a different climate system, with custom weather, including fog and thunder frenzy. Also stamina changes. Follow the link for more details._
 
 * **[Time Reminder](http://www.nexusmods.com/stardewvalley/mods/1000)** <small>([source](TimeReminder))</small> 
 
-  _Alerts you of system time after a configurable number of minutes._
+_Alerts you of system time after a configurable number of minutes._
   
 ## Depricated Mods
 * **[Solar Eclipse Event](http://www.nexusmods.com/stardewvalley/mods/897)** <small>([source](SolarEclipseEvent))</small>  
 
-  _This adds the possibility of a solar eclipse to your game! Configurable chance. Also will spawn monsters if you have a wilderness farm in line with the same percentages as the base game. Now implemented into Lunar Disturbances, and as of SDV 1.3, no longer maintained.._
+_This adds the possibility of a solar eclipse to your game! Configurable chance. Also will spawn monsters if you have a wilderness farm in line with the same percentages as the base game. Now implemented into Lunar Disturbances, and as of SDV 1.3, no longer maintained.._
   
 ## Patches for SMAPI 2.0
 
 * **[Better Shipping Box](https://community.playstarbound.com/threads/better-shipping-box.126235/#post-3228667)**<small> ([source](BetterShippingBox))</small>
 
-  _This is a SMAPI 2.0 port of Kthio's Better Shipping Box, which gives you a menu. I recommend using [Chests Anywhere](https://www.nexusmods.com/stardewvalley/mods/518) by Pathoschild instead._
+_This is a SMAPI 2.0 port of Kthio's Better Shipping Box, which gives you a menu. I recommend using [Chests Anywhere](https://www.nexusmods.com/stardewvalley/mods/518) by Pathoschild instead._
   
 * **[Tree Overhaul](https://github.com/JohnsonNicholas/SDVMods/releases/download/1.2.0/TreeOverhaul.zip)**<small>([source](TreeOverhaul))</small>
 
-  _This is the source code for the unofficial patch I am maintaining to make it compatibile with 2.0. Original author is Goldenrevolver._
+_This is the source code for the unofficial patch I am maintaining to make it compatibile with 2.0. Original author is Goldenrevolver._
   
 * **[StardewNotification](https://github.com/JohnsonNicholas/SDVMods/releases/download/stardew-notifcation/StardewNotification.1.7.2-kylindraUpdate.zip)**<small>([source](StardewNotification))</small>
 
