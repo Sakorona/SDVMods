@@ -7,19 +7,19 @@ documentation, licenses, and release notes. May have other related projects that
 
  _Lets you customize when the cart appears, and how many items it has. Contains an API for other mods to hook into._
   
-* **LunarDisturbances**<small>([source](LunarDisturbances))</small>
+* **LunarDisturbances**<small> ([source](LunarDisturbances))</small>
 
 _This mod adds a moon, which adds events, such as the Blood Moon, to the world. Also includes a solar eclipse!_
 
-* **WeatherIllnesses**<small>([source](WeatherIllnesses))</small>
+* **WeatherIllnesses**<small> ([source](WeatherIllnesses))</small>
 
 _This adds a stamina system to the game. In hazardous weather, the player will drain stamina per 10 minutes._
 
-* **USDVP** <small>([source](USDVP))</small>
+* **[USDVP](https://github.com/JohnsonNicholas/SDVMods/releases/tag/USDVP-alpha)** <small>([source](USDVP))</small>
 
 _A in progress patch mod for Stardew Valley. On hiatus until after the SDV 1.3 beta ends._
 
-* **ArtifactsInOmniGeodes**<small> ([source](ArtifactsInOmniGeodes))</small>
+* **[ArtifactsInOmniGeodes](https://github.com/JohnsonNicholas/SDVMods/releases/tag/artifacts-in-omniGeods)**<small> ([source](ArtifactsInOmniGeodes))</small>
 
 _Baby port of a XNB mod that no longer works with SDV 1.2 for personal use._
 
@@ -42,11 +42,11 @@ _This adds the possibility of a solar eclipse to your game! Configurable chance.
 
 _This is a SMAPI 2.0 port of Kthio's Better Shipping Box, which gives you a menu. I recommend using [Chests Anywhere](https://www.nexusmods.com/stardewvalley/mods/518) by Pathoschild instead._
   
-* **[Tree Overhaul](https://github.com/JohnsonNicholas/SDVMods/releases/download/1.2.0/TreeOverhaul.zip)**<small>([source](TreeOverhaul))</small>
+* **[Tree Overhaul](https://github.com/JohnsonNicholas/SDVMods/releases/download/1.2.0/TreeOverhaul.zip)** <small>([source](TreeOverhaul))</small>
 
 _This is the source code for the unofficial patch I am maintaining to make it compatibile with 2.0. Original author is Goldenrevolver._
   
-* **[StardewNotification](https://github.com/JohnsonNicholas/SDVMods/releases/download/stardew-notifcation/StardewNotification.1.7.2-kylindraUpdate.zip)**<small>([source](StardewNotification))</small>
+* **[StardewNotification](https://github.com/JohnsonNicholas/SDVMods/releases/download/stardew-notifcation/StardewNotification.1.7.2-kylindraUpdate.zip)** <small>([source](StardewNotification))</small>
 
 _Source code for Stardew Notification, currently maintained by me. MIT License. Original author is monopandora_
 
