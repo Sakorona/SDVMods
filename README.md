@@ -50,6 +50,8 @@ _This is the source code for the unofficial patch I am maintaining to make it co
 
 _Source code for Stardew Notification, currently maintained by me. MIT License. Original author is monopandora_
 
+## Translating My Mods
+
 Here's how to translate one of my mods:
 
 1. Copy `default.json` into a new file with the right name:
