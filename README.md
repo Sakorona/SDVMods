@@ -30,6 +30,10 @@ _Creates a different climate system, with custom weather, including fog and thun
 * **[Time Reminder](http://www.nexusmods.com/stardewvalley/mods/1000)** <small>([source](TimeReminder))</small> 
 
 _Alerts you of system time after a configurable number of minutes._
+
+* **Dynamic Night Time** <small>([source](DynamicNightTime))</small>
+
+_Want a dynamic day/night cycle? Look here!_
   
 ## Depricated Mods
 * **[Solar Eclipse Event](http://www.nexusmods.com/stardewvalley/mods/897)** <small>([source](SolarEclipseEvent))</small>  
