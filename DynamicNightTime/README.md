@@ -11,6 +11,8 @@
 - Unzip the folder into your Mods/ folder after making sure SMAPI is installed
 
 ### Changelog
+1.0.3
+ - Fixed NRE on critter check.
 1.0.2
  - Added update key
 

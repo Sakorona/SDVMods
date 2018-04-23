@@ -73,11 +73,14 @@ namespace DynamicNightTime
             if (who != null && who.currentLocation != null && Game1.isDarkOut())
             {
                 List<Critter> currentCritters = Helper.Reflection.GetField<List<Critter>>(who.currentLocation, "critters").GetValue();
-                for(int i = 0; i < currentCritters.Count; i++)
+                if (currentCritters != null)
                 {
-                    if (currentCritters[i] is Cloud)
-                        currentCritters.Remove(currentCritters[i]);
-                }                                        
+                    for (int i = 0; i < currentCritters.Count; i++)
+                    {
+                        if (currentCritters[i] is Cloud)
+                            currentCritters.Remove(currentCritters[i]);
+                    }
+                }
             }
         }
 
