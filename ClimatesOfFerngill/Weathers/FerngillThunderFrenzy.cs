@@ -73,8 +73,6 @@ namespace ClimatesOfFerngillRebuild
 
         public void CreateWeather()
         {
-            if (ModConfig.Verbose)
-                Logger.Log("[Thunder Frenzy] Creating Weather");
 
             //set the begin and end time
             SDVTime stormStart = new SDVTime(1150 + (Dice.Next(0, 230)));
@@ -89,12 +87,6 @@ namespace ClimatesOfFerngillRebuild
 
         public void UpdateWeather()
         {
-            if (ModConfig.Verbose)
-            {
-                Logger.Log($"Thunder Frenzy Output: {Environment.NewLine}Begin Time: {WeatherBeginTime} and End Time: {WeatherExpirationTime}");
-                Logger.Log($"{Environment.NewLine}WeatherInProgress: {WeatherInProgress}{Environment.NewLine}WeatherVisible: {IsWeatherVisible} ");
-            }
-
             if (WeatherBeginTime is null || WeatherExpirationTime is null)
                 return;
 
