@@ -39,6 +39,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "StardewNotification", "Star
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DynamicNightTime", "DynamicNightTime\DynamicNightTime.csproj", "{59E889CA-E643-4FF9-B9A4-91676BD182F1}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SummitReborn", "SummitReborn\SummitReborn.csproj", "{FE26F6D8-DA0A-4D28-BEA5-510914E445F2}"
+EndProject
 Global
 	GlobalSection(SharedMSBuildProjectFiles) = preSolution
 		TwilightCoreShared\TwilightCoreShared.projitems*{01da90d0-eec8-427b-9409-3168a8089f20}*SharedItemsImports = 13
@@ -102,6 +104,10 @@ Global
 		{59E889CA-E643-4FF9-B9A4-91676BD182F1}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{59E889CA-E643-4FF9-B9A4-91676BD182F1}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{59E889CA-E643-4FF9-B9A4-91676BD182F1}.Release|Any CPU.Build.0 = Release|Any CPU
+		{FE26F6D8-DA0A-4D28-BEA5-510914E445F2}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{FE26F6D8-DA0A-4D28-BEA5-510914E445F2}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{FE26F6D8-DA0A-4D28-BEA5-510914E445F2}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{FE26F6D8-DA0A-4D28-BEA5-510914E445F2}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
