@@ -3,7 +3,7 @@ documentation, licenses, and release notes. May have other related projects that
 
 ## Mods
  
-* **[Customizable Cart Redux](https://rd.nexusmods.com/stardewvalley/mods/1402)**<small> ([source](CustomizableCartRedux))</small>
+* **[Customizable Cart Redux](https://www.nexusmods.com/stardewvalley/mods/1402)**<small> ([source](CustomizableCartRedux))</small>
 
  _Lets you customize when the cart appears, and how many items it has. Contains an API for other mods to hook into._
   
@@ -31,7 +31,7 @@ _Creates a different climate system, with custom weather, including fog and thun
 
 _Alerts you of system time after a configurable number of minutes._
 
-* **Dynamic Night Time** <small>([source](DynamicNightTime))</small>
+* **[Dynamic Night Time](https://www.nexusmods.com/stardewvalley/mods/2072)** <small>([source](DynamicNightTime))</small>
 
 _Want a dynamic day/night cycle? Look here!_
   

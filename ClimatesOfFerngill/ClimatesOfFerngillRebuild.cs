@@ -694,7 +694,8 @@ namespace ClimatesOfFerngillRebuild
                     Conditions.GetWeatherMatchingType("Blizzard").First().EndWeather();
                     Conditions.GetWeatherMatchingType("Fog").First().EndWeather();
                     Conditions.GetWeatherMatchingType("WhiteOut").First().EndWeather();
-                    Game1.isSnowing = Game1.isLightning = Game1.isRaining = Game1.isRaining = false;
+                    Game1.debrisWeather.Clear();
+                    Game1.isSnowing = Game1.isLightning = Game1.isRaining = Game1.isDebrisWeather = false;
                     Monitor.Log(Helper.Translation.Get("console-text.weatherset_sun", LogLevel.Info));
                     break;
                 case "blizzard":

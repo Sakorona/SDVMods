@@ -34,6 +34,12 @@ This mod does the following:
 - ChefRude for testing and the night icon sprites (as well as better fog textures)
 
 ## Changelog
+v1.4.0-beta4
+- fixed console command issues
+
+v1.4.0-beta3
+- fixed some API integrations
+
 v1.4.0-beta2
 - Removed unneeded options, cleaned up the readme
 - Added Thunder Frenzy weather
