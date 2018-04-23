@@ -22,17 +22,8 @@ namespace TwilightShards.Stardew.Common
 
     public class SDVTime
     {
-        public static bool IsNight
-        {
-            get
-            {
-                if (Game1.timeOfDay >= Game1.getTrulyDarkTime())
-                    return true;
-                else
-                    return false;
-            }
-        }
-
+        public static bool IsNight => Game1.isDarkOut();
+        
         public static SDVTimePeriods CurrentTimePeriod
         {
             get

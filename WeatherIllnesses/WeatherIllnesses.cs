@@ -39,27 +39,11 @@ namespace TwilightShards.WeatherIllnesses
 
         private void HandleIntegrations(object sender, EventArgs e)
         {
-            IManifest manifestCheck = Helper.ModRegistry.Get("KoihimeNakamura.ClimatesOfFerngill");
-            if (manifestCheck != null)
-            {
-                if (!manifestCheck.Version.IsOlderThan("1.3.8"))
-                {
-                    climatesAPI = Helper.ModRegistry.GetApi<Integrations.IClimatesOfFerngillAPI>("KoihimeNakamura.ClimatesOfFerngill");
+            climatesAPI = SDVUtilities.GetModApi<Integrations.IClimatesOfFerngillAPI>(Monitor, Helper, "KoihimeNakamura.ClimatesOfFerngill", "1.3.8");
 
-                    if (climatesAPI != null)
-                    {
-                       UseClimates = true;                        
-                       Monitor.Log("Climates of Ferngill integration enabled", LogLevel.Info);
-                    }
-                }
-                else
-                {
-                    Monitor.Log($"Climates of Ferngill detected, but not of a sufficient version. Req:1.3.8 Detected:{manifestCheck.Version.ToString()}. Skipping..");
-                }
-            }
-            else
+            if (climatesAPI != null)
             {
-                Monitor.Log("Climates of Ferngill not present. Skipping Integration.");
+                UseClimates = true;
             }
         }
 

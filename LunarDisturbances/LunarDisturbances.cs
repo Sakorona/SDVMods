@@ -58,28 +58,13 @@ namespace TwilightShards.LunarDisturbances
 
         private void GameEvents_FirstUpdateTick(object sender, EventArgs e)
         {
-            IManifest manifestCheck = Helper.ModRegistry.Get("spacechase0.JsonAssets");
-            if (manifestCheck != null)
-            {
-                if (!manifestCheck.Version.IsOlderThan("1.1"))
-                {
-                    JAAPi = Helper.ModRegistry.GetApi<Integrations.IJsonAssetsApi>("spacechase0.JsonAssets");
+            JAAPi = SDVUtilities.GetModApi<Integrations.IJsonAssetsApi>(Monitor, Helper, "spacechase0.JsonAssets", "1.1");
 
-                    if (JAAPi != null)
-                    {
-                        UseJsonAssetsApi = true;
-                        JAAPi.AddedItemsToShop += JAAPi_AddedItemsToShop;
-                        Monitor.Log("JsonAssets Integration enabled", LogLevel.Info);
-                    }
-                }
-                else
-                {
-                    Monitor.Log($"JsonAssets detected, but not of a sufficient version. Req:1.1.0. Detected:{manifestCheck.Version.ToString()}. Skipping..");
-                }
-            }
-            else
+            if (JAAPi != null)
             {
-                Monitor.Log("JsonAssets not present. Skipping Integration.");
+                UseJsonAssetsApi = true;
+                JAAPi.AddedItemsToShop += JAAPi_AddedItemsToShop;
+                Monitor.Log("JsonAssets Integration enabled", LogLevel.Info);
             }
         }
 

@@ -124,52 +124,14 @@ namespace ClimatesOfFerngillRebuild
         private void GameEvents_FirstUpdateTick(object sender, EventArgs e)
         {
             //testing for ZA MOON, YOUR HIGHNESS.
-            IManifest manifestCheck = Helper.ModRegistry.Get("KoihimeNakamura.LunarDisturbances");
-            if (manifestCheck != null)
-            {
-                if (!manifestCheck.Version.IsOlderThan("1.0"))
-                {
-                    MoonAPI = Helper.ModRegistry.GetApi<Integrations.ILunarDisturbancesAPI>("KoihimeNakamura.LunarDisturbances");
+            MoonAPI = SDVUtilities.GetModApi<Integrations.ILunarDisturbancesAPI>(Monitor, Helper, "KoihimeNakamura.LunarDisturbances", "1.0");
+            SafeLightningAPI = SDVUtilities.GetModApi<Integrations.ISafeLightningAPI>(Monitor, Helper, "cat.safelightning", "1.0");
 
-                    if (MoonAPI != null)
-                    {
-                        UseLunarDisturbancesApi = true;
-                        Monitor.Log("Lunar Disturbances Integration enabled", LogLevel.Info);
-                    }
-                }
-                else
-                {
-                    Monitor.Log($"Lunar Disturbances detected, but not of a sufficient version. Req:1.0 Detected:{manifestCheck.Version.ToString()}. Skipping..");
-                }
-            }
-            else
-            {
-                Monitor.Log("Lunar Disturbances not present. Skipping Integration.");
-            }
-
-            //Testing for an unreleased mod.
-            manifestCheck = Helper.ModRegistry.Get("cat.safelightning");
-            if (manifestCheck != null)
-            {
-                if (!manifestCheck.Version.IsOlderThan("1.0"))
-                {
-                    SafeLightningAPI = Helper.ModRegistry.GetApi<Integrations.ISafeLightningAPI>("KoihimeNakamura.LunarDisturbances");
-
-                    if (SafeLightningAPI != null)
-                    {
-                        UseSafeLightningApi = true;
-                        Monitor.Log("Safe Lightning Integration enabled", LogLevel.Info);
-                    }
-                }
-                else
-                {
-                    Monitor.Log($"Safe Lightning detected, but not of a sufficient version. Req:1.0 Detected:{manifestCheck.Version.ToString()}. Skipping..");
-                }
-            }
-            else
-            {
-                Monitor.Log("Safe Lightning not present. Skipping Integration.");
-            }
+            if (MoonAPI != null)
+                UseLunarDisturbancesApi = true;
+                    
+            if (SafeLightningAPI != null)
+                UseSafeLightningApi = true;
         }
         
         private void SaveEvents_AfterLoad(object sender, EventArgs e)
@@ -471,7 +433,7 @@ namespace ClimatesOfFerngillRebuild
             {
                 if ((int)Conditions.CurrentWeatherIcon != (int)WeatherIcon.IconError)
                 {
-                    RWeatherIcon = new Rectangle(0 + 12 * (int)Conditions.CurrentWeatherIcon, SDVTime.IsNight ? 8 : 0, 12, 8);
+                    RWeatherIcon = new Rectangle(0 + 12 * (int)Conditions.CurrentWeatherIcon, Game1.isDarkOut() ? 8 : 0, 12, 8);
                 }
 
                 if ((int)Conditions.CurrentWeatherIcon == (int)WeatherIcon.IconBloodMoon)

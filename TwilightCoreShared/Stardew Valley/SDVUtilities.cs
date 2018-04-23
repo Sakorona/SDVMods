@@ -11,6 +11,7 @@ using xTile.Dimensions;
 using SObject = StardewValley.Object;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
+using StardewModdingAPI;
 
 namespace TwilightShards.Stardew.Common
 {
@@ -119,6 +120,34 @@ namespace TwilightShards.Stardew.Common
 
             return $"";
 
+        }
+
+        public static T GetModApi<T>(IMonitor Monitor, IModHelper Helper, string name, string minVersion) where T : class
+        {
+            IManifest modManifest = Helper.ModRegistry.Get(name);
+            if (modManifest != null)
+            {
+                if (!modManifest.Version.IsOlderThan(minVersion))
+                {
+                    T api = Helper.ModRegistry.GetApi<T>(name);
+                    if (api == null)
+                    {
+                        Monitor.Log($"{name}'s API returned null.", LogLevel.Info);
+                    }
+
+                    if (api != null)
+                    {
+                        Monitor.Log($"{name} {modManifest.Version} Integration enabled", LogLevel.Info);
+                    }
+                    return api;
+
+                }
+                else
+                    Monitor.Log($"{name} detected, but not of a sufficient version. Req:{minVersion} Detected:{modManifest.Version}. Skipping..", LogLevel.Debug);
+            }
+            else
+                Monitor.Log($"{name} not present. Skipping Integration.", LogLevel.Debug);
+            return null;
         }
 
         public static void ShowMessage(string msg)
@@ -445,5 +474,6 @@ namespace TwilightShards.Stardew.Common
             }
             return CreatedWeeds;
         }
+
     }
 }

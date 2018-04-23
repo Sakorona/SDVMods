@@ -1,13 +1,22 @@
 ﻿using StardewModdingAPI.Utilities;
+using StardewValley;
 using System;
 using TwilightShards.Common;
 using TwilightShards.Stardew.Common;
 
 namespace DynamicNightTime.Patches
 {
-    class GettingDarkPatch
+    class IsDarkOutPatch
     {
-        public static void Postfix(ref int __result)
+        public static void Postfix(ref bool __result)
+        {
+            bool IsBeforeSunrise = Game1.timeOfDay < GetSunrise().ReturnIntTime();
+            bool IsPastSunset = Game1.timeOfDay > Game1.getTrulyDarkTime();
+            
+            __result = ((IsBeforeSunrise) || (IsPastSunset));
+        }
+
+        private static SDVTime GetSunrise()
         {
             var date = SDate.Now();
             int dayOfYear = date.DaysSinceStart % 112;
@@ -18,7 +27,7 @@ namespace DynamicNightTime.Patches
             double hourAngle = (Math.Sin(0.01163611) - Math.Sin(lat) * Math.Sin(solarDeclination)) / (Math.Cos(lat) * Math.Cos(solarDeclination));
             double procHA = Math.Acos(hourAngle);
             double minHA = (procHA / (2 * Math.PI)) * 1440;
-            int astroTwN = (int)Math.Floor(noon + minHA);
+            int astroTwN = (int)Math.Floor(noon - minHA);
 
             //Conv to an SDV compat time, then clamp it.
             int hr = (int)Math.Floor(astroTwN / 60.0);
@@ -26,7 +35,7 @@ namespace DynamicNightTime.Patches
             SDVTime calcTime = new SDVTime(hr, min);
             calcTime.ClampToTenMinutes();
 
-            __result = calcTime.ReturnIntTime();
+            return calcTime;
         }
     }
 }

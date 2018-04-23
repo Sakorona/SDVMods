@@ -32,5 +32,16 @@ namespace TwilightShards.Common
 
             return false;
         }
+
+        public static double DegreeToRadians(double deg) => deg * (Math.PI / 180);
+        public static double RadiansToDegree(double rad) => (rad * 180) / Math.PI;
+
+        public static string ConvMinToHrMin(double val)
+        {
+            int hour = (int)Math.Floor(val / 60.0);
+            double min = val - (hour * 60);
+
+            return $"{hour}h{min.ToString("00")}m";
+        }
     }
 }
