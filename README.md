@@ -25,7 +25,8 @@ _Baby port of a XNB mod that no longer works with SDV 1.2 for personal use._
 
 * **[Climates of Ferngill (Rebuild)](http://www.nexusmods.com/stardewvalley/mods/604)** <small>([source](ClimatesOfFerngill))</small>
 
-_Creates a different climate system, with custom weather, including fog and thunder frenzy. Also stamina changes. Follow the link for more details._
+_Creates a different climate system, with custom weather, including fog and thunder frenzy. 
+NOTE: After 1.4, the stamina parts were folded into Weather Illlnesses (and the moon bits into Lunar Disturbances) Follow the link for more details._
 
 * **[Time Reminder](http://www.nexusmods.com/stardewvalley/mods/1000)** <small>([source](TimeReminder))</small> 
 
