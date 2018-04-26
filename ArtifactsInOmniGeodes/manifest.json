@@ -1,9 +1,0 @@
-﻿{
-  "Name": "Artifacts in Omni Geodes",
-  "Author": "KoihimeNakamura",
-  "Version": "1.0.0",
-  "Description": "A SMAPI port of an more artifacts XNB mod",
-  "UniqueID": "KoihimeNakamura.ArtifactsInOmniGeodes",
-  "EntryDll": "ArtifactsInOmniGeodes.dll",
-  "MinimumApiVersion": "2.3"
-} 
