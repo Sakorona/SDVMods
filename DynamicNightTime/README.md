@@ -13,6 +13,7 @@
 ### Changelog
 1.0.4
  - refactor check
+ - fix in the underlying library for time managment that should properly estimate times
 1.0.3
  - Fixed NRE on critter check.
 1.0.2

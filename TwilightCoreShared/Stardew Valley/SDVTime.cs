@@ -115,32 +115,32 @@ namespace TwilightShards.Stardew.Common
             minute = c.minute;
         }
 
-        public void ClampToTenMinutes()
-        {
-            if (minute % 10 >= 5)
+            public void ClampToTenMinutes()
             {
-                minute = ((minute / 10) + 1) * 10;
-
-                if (minute >= 60)
+                if (minute % 10 >= 5)
                 {
-                    hour++;
-                    minute = minute - 60;
+                    minute = ((minute / 10) + 1) * 10;
+
+                    if (minute >= 60)
+                    {
+                        hour++;
+                        minute = minute - 60;
+                    }
+
+                    if (hour > MAXHOUR)
+                        hour = hour - MAXHOUR;
                 }
-
-                if (hour > MAXHOUR)
-                    hour = hour - MAXHOUR;
-            }
-            if (minute % 10 < 5)
-            {
-                minute = ((minute / 10) - 1) * 10;
-
-                if (minute < 0)
+                if (minute % 10 < 5 && (minute % 10 != 0))
                 {
-                    hour--;
-                    minute = minute + 60;
+                        minute = ((minute / 10) - 1) * 10;
+
+                        if (minute < 0)
+                        {
+                            hour--;
+                            minute = minute + 60;
+                        }
+                    }
                 }
-            }
-        }
 
         public void AddTime(int hour, int minute)
         {

@@ -58,10 +58,10 @@ namespace DynamicNightTime
             harmony.Patch(UpdateGameClock, null, new HarmonyMethod(postfixClock));
 
             //and now events!
-            TimeEvents.TimeOfDayChanged += TimeEvents_TimeOfDayChanged;
+           // TimeEvents.TimeOfDayChanged += TimeEvents_TimeOfDayChanged;
         }
 
-        private void TimeEvents_TimeOfDayChanged(object sender, EventArgsIntChanged e)
+       /* private void TimeEvents_TimeOfDayChanged(object sender, EventArgsIntChanged e)
         {
             SFarmer who = Game1.player;
 
@@ -77,7 +77,7 @@ namespace DynamicNightTime
                     }
                 }
             }
-        }
+        }*/
 
         public static int GetSunriseTime() => GetSunrise().ReturnIntTime();
         public static SDVTime GetMorningAstroTwilight() => GetTimeAtHourAngle(-0.314159265);
