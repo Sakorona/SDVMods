@@ -176,20 +176,6 @@ namespace ClimatesOfFerngillRebuild
                 topOffset += lineHeight;
             }
 
-            /*
-            //draw moon info
-            string weatherString = "";
-            spriteBatch.Draw(IconSheet.MoonSource, new Vector2(x + 15, y + topOffset), 
-                IconSheet.GetMoonSprite(OurMoon.CurrentPhase), Color.White);
-
-            weatherString = OurMoon.GetMenuString();
-
-            Vector2 moonText = spriteBatch.DrawTextBlock(font, 
-                weatherString, new Vector2(x + leftOffset, y + topOffset), wrapWidth);
-            
-
-            topOffset += lineHeight; //stop moon from being cut off.
-            */
             drawMouse(Game1.spriteBatch);
         }
 

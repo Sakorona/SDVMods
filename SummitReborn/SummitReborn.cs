@@ -56,7 +56,7 @@ namespace SummitReborn
                 if (ModConfig.Clouds)
                 {
                     int num2 = -61 * GetPixelZoom();
-                    while (num2 < Game1.viewport.Width + 61 * Game1.pixelZoom)
+                    while (num2 < Game1.viewport.Width + 61 * GetPixelZoom())
                     {
                         Game1.spriteBatch.Draw(Game1.mouseCursors, new Vector2((float)num2 + this.weatherX % (float)(61 * GetPixelZoom()), (float)(-Game1.tileSize / 2)), new Rectangle?(new Rectangle(643, 1142, 61, 53)), Color.DarkSlateGray * 1f, 0.0f, Vector2.Zero, (float)GetPixelZoom(), SpriteEffects.None, 1f);
                         num2 += 61 * GetPixelZoom();

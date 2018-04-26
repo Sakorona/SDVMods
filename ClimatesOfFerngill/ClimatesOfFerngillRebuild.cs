@@ -25,6 +25,9 @@ namespace ClimatesOfFerngillRebuild
 {
     public class ClimatesOfFerngill : Mod
     {
+        private bool AmMainPlayer = true;
+        private bool IsMultiplayer = false;
+
         /// <summary> The options file </summary>
         private WeatherConfig WeatherOpt { get; set; }
 
@@ -39,8 +42,6 @@ namespace ClimatesOfFerngillRebuild
 
         /// <summary> This is used to display icons on the menu </summary>
         private Sprites.Icons OurIcons { get; set; }
-        private StringBuilder DebugOutput;
-
         private List<Vector2> CropList;
         private HUDMessage queuedMsg;
         private int ExpireTime;
@@ -50,16 +51,15 @@ namespace ClimatesOfFerngillRebuild
         private Descriptions DescriptionEngine;
         private Rectangle RWeatherIcon;
         private bool Disabled = false;
-        public bool IsEclipse { get; set; }
         public int ResetTicker { get; set; }
 
         //Integrations
         internal static bool UseLunarDisturbancesApi = false;
         internal static Integrations.ILunarDisturbancesAPI MoonAPI;
-
         internal static bool UseSafeLightningApi = false;
         internal static Integrations.ISafeLightningAPI SafeLightningAPI;
 
+        /// <summary> Provide an API interface </summary>
         private IClimatesOfFerngillAPI API;
         public override object GetApi()
         {
@@ -76,14 +76,12 @@ namespace ClimatesOfFerngillRebuild
             RWeatherIcon = new Rectangle();
             WeatherOpt = helper.ReadConfig<WeatherConfig>();
             Dice = new MersenneTwister();
-            DebugOutput = new StringBuilder();
             OurIcons = new Sprites.Icons(Helper.Content);
             CropList = new List<Vector2>();
             Conditions = new WeatherConditions(OurIcons, Dice, Helper.Translation, Monitor, WeatherOpt);
             DescriptionEngine = new Descriptions(Helper.Translation, Dice, WeatherOpt, Monitor);
             queuedMsg = null;
             ExpireTime = 0;
-            Vector2 snowPos = Vector2.Zero;
 
             if (WeatherOpt.Verbose) Monitor.Log($"Loading climate type: {WeatherOpt.ClimateType} from file", LogLevel.Trace);
 
@@ -151,7 +149,6 @@ namespace ClimatesOfFerngillRebuild
             if (WeatherSprite is null)
                 Monitor.Log("Weather Sprite is null");
 
-
             string MoonPhase = "";
             if (UseLunarDisturbancesApi)
                 MoonPhase = MoonAPI.GetCurrentMoonPhase();
@@ -187,15 +184,19 @@ namespace ClimatesOfFerngillRebuild
         {
             if (Conditions.HasWeather(CurrentWeather.Fog))
             {
+                //TODO On release, see if we can actually require reflection there.
                 if (!Game1.currentLocation.isOutdoors && Game1.currentLocation is DecoratableLocation && WeatherOpt.DarkenLightInFog)
                 {
                     var loc = Game1.currentLocation as DecoratableLocation;
-                    foreach (Furniture f in loc.furniture)
+                    if (loc != null)
                     {
-                        if (f.furniture_type == Furniture.window)
+                        foreach (Furniture f in loc.furniture)
                         {
-                            //if (WeatherOpt.Verbose) Monitor.Log($"Attempting to remove the light for {f.name}");
-                            Helper.Reflection.GetMethod(f, "addLights").Invoke(new object[] { Game1.currentLocation });
+                            if (f.furniture_type == Furniture.window)
+                            {
+                                //if (WeatherOpt.Verbose) Monitor.Log($"Attempting to remove the light for {f.name}");
+                                Helper.Reflection.GetMethod(f, "addLights").Invoke(new object[] { Game1.currentLocation });
+                            }
                         }
                     }
                 }
@@ -217,7 +218,7 @@ namespace ClimatesOfFerngillRebuild
             if (e.NewMenu is DialogueBox box)
             {
                 bool stormDialogue = false;
-                double odds = Dice.NextDoublePositive(), stormOdds = GameClimate.GetStormOdds(SDate.Now().AddDays(1), Dice, DebugOutput);
+                double odds = Dice.NextDoublePositive(), stormOdds = GameClimate.GetStormOdds(SDate.Now().AddDays(1), Dice);
                 List<string> lines = Helper.Reflection.GetField<List<string>>(box, "dialogues").GetValue();
                 if (lines.FirstOrDefault() == Game1.content.LoadString("Strings\\StringsFromCSFiles:Object.cs.12822"))
                 {
@@ -330,7 +331,8 @@ namespace ClimatesOfFerngillRebuild
 
             if (Conditions.HasWeather(CurrentWeather.Fog)) 
             {
-                if (!Game1.currentLocation.isOutdoors && Game1.currentLocation is DecoratableLocation)
+                if (!Game1.currentLocation.isOutdoors && Game1.currentLocation is DecoratableLocation && 
+                    WeatherOpt.DarkenLightInFog)
                 {
                     var loc = Game1.currentLocation as DecoratableLocation;
                     foreach (Furniture f in loc.furniture)
@@ -458,22 +460,18 @@ namespace ClimatesOfFerngillRebuild
             Conditions.Reset();
             ExpireTime = 0;
             CropList.Clear(); 
-            DebugOutput.Clear();
         }
 
         private void HandleNewDay(object sender, EventArgs e)
         {
             if (CropList == null)
                 Monitor.Log("CropList is null!");
-            if (DebugOutput == null)
-                Monitor.Log("DebugOutput is null!");
             if (Conditions == null)
                 Monitor.Log("CurrentWeather is null");
             if (GameClimate is null)
                 Monitor.Log("GameClimate is null");
 
             CropList.Clear(); //clear the crop list
-            DebugOutput.Clear();
             Conditions.OnNewDay();
             UpdateWeatherOnNewDay();
             SetTommorowWeather();
@@ -515,9 +513,9 @@ namespace ClimatesOfFerngillRebuild
             //now set tomorrow's weather
             var OddsForTheDay = GameClimate.GetClimateForDate(SDate.Now().AddDays(1));
 
-            double rainDays = OddsForTheDay.RetrieveOdds(Dice, "rain", SDate.Now().AddDays(1).Day, DebugOutput);
-            double windyDays = OddsForTheDay.RetrieveOdds(Dice, "debris", SDate.Now().AddDays(1).Day, DebugOutput);
-            double stormDays = OddsForTheDay.RetrieveOdds(Dice, "storm", SDate.Now().AddDays(1).Day, DebugOutput);
+            double rainDays = OddsForTheDay.RetrieveOdds(Dice, "rain", SDate.Now().AddDays(1).Day);
+            double windyDays = OddsForTheDay.RetrieveOdds(Dice, "debris", SDate.Now().AddDays(1).Day);
+            double stormDays = OddsForTheDay.RetrieveOdds(Dice, "storm", SDate.Now().AddDays(1).Day);
 
             if (WeatherOpt.Verbose)
             {
@@ -614,9 +612,9 @@ namespace ClimatesOfFerngillRebuild
             Conditions.SetTodayWeather();
 
             if (!Conditions.IsTomorrowTempSet)
-                Conditions.SetTodayTemps(GameClimate.GetTemperatures(SDate.Now(), Dice, DebugOutput));
+                Conditions.SetTodayTemps(GameClimate.GetTemperatures(SDate.Now(), Dice));
 
-            Conditions.SetTomorrowTemps(GameClimate.GetTemperatures(SDate.Now().AddDays(1), Dice, DebugOutput));
+            Conditions.SetTomorrowTemps(GameClimate.GetTemperatures(SDate.Now().AddDays(1), Dice));
 
             if (WeatherOpt.Verbose)
                 Monitor.Log($"Updated the temperature for tommorow and today. Setting weather for today... ", LogLevel.Trace);
@@ -627,7 +625,6 @@ namespace ClimatesOfFerngillRebuild
                 if (WeatherOpt.Verbose)
                     Monitor.Log("It is a wedding or festival today. Not attempting to run special weather or fog.");
 
-                //if (WeatherOpt.Verbose) Monitor.Log(DebugOutput.ToString());
                 return;
             }
 
