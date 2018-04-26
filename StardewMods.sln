@@ -29,8 +29,6 @@ Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "TwilightCoreShared", "Twili
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "USDVP", "USDVP\USDVP.csproj", "{92E332E1-533E-42CA-B3EF-1E5BCFDD857B}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ArtifactsInOmniGeodes", "ArtifactsInOmniGeodes\ArtifactsInOmniGeodes.csproj", "{FC40086C-3D02-4AB3-A46C-691FD4CE57E2}"
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LunarDisturbances", "LunarDisturbances\LunarDisturbances.csproj", "{55F6041A-5800-4287-BEF7-A83F2D9A49A5}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WeatherIllnesses", "WeatherIllnesses\WeatherIllnesses.csproj", "{E89B6A73-1B1F-44FF-AF10-867F0D1425F9}"
@@ -84,10 +82,6 @@ Global
 		{92E332E1-533E-42CA-B3EF-1E5BCFDD857B}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{92E332E1-533E-42CA-B3EF-1E5BCFDD857B}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{92E332E1-533E-42CA-B3EF-1E5BCFDD857B}.Release|Any CPU.Build.0 = Release|Any CPU
-		{FC40086C-3D02-4AB3-A46C-691FD4CE57E2}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{FC40086C-3D02-4AB3-A46C-691FD4CE57E2}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{FC40086C-3D02-4AB3-A46C-691FD4CE57E2}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{FC40086C-3D02-4AB3-A46C-691FD4CE57E2}.Release|Any CPU.Build.0 = Release|Any CPU
 		{55F6041A-5800-4287-BEF7-A83F2D9A49A5}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{55F6041A-5800-4287-BEF7-A83F2D9A49A5}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{55F6041A-5800-4287-BEF7-A83F2D9A49A5}.Release|Any CPU.ActiveCfg = Release|Any CPU
