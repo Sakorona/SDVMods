@@ -33,7 +33,7 @@ namespace TreeOverhaul
         {
             foreach (var location in Game1.locations)
             {
-                foreach (var terrainfeature in location.terrainFeatures)
+                foreach (var terrainfeature in location.terrainFeatures.Pairs)
                 {
                     if (terrainfeature.Value is Tree tree)
                     {
@@ -52,15 +52,15 @@ namespace TreeOverhaul
         {
             if (treeOverhaulConfig.StopShadeSaplingGrowth)
             {
-                if (tree.growthStage == 1)
+                if (tree.growthStage.Value == 1)
                 {
                     Rectangle rectangle = new Rectangle((int)(((double)tileLocation.X - 1.0) * (double)Game1.tileSize), (int)(((double)tileLocation.Y - 1.0) * (double)Game1.tileSize), Game1.tileSize * 3, Game1.tileSize * 3);
 
-                    foreach (KeyValuePair<Vector2, TerrainFeature> keyValuePair in (Dictionary<Vector2, TerrainFeature>)location.terrainFeatures)
+                    foreach (KeyValuePair<Vector2, TerrainFeature> keyValuePair in (Dictionary<Vector2, TerrainFeature>)location.terrainFeatures.Pairs)
                     {
-                        if (keyValuePair.Value is Tree && !keyValuePair.Value.Equals((object)this) && ((Tree)keyValuePair.Value).growthStage >= 5 && keyValuePair.Value.getBoundingBox(keyValuePair.Key).Intersects(rectangle))
+                        if (keyValuePair.Value is Tree && !keyValuePair.Value.Equals((object)this) && ((Tree)keyValuePair.Value).growthStage.Value >= 5 && keyValuePair.Value.getBoundingBox(keyValuePair.Key).Intersects(rectangle))
                         {
-                            tree.growthStage = 0;
+                            tree.growthStage.Value = 0;
                             return;
                         }
                     }
@@ -72,13 +72,13 @@ namespace TreeOverhaul
         {
             if (Game1.currentSeason.Equals("winter"))
             {
-                if (tree.treeType != 6 || location.Name.ToLower().Contains("greenhouse"))
+                if (tree.treeType.Value != 6 || location.Name.ToLower().Contains("greenhouse"))
                 {
-                    if (tree.treeType != 7 && treeOverhaulConfig.NormalTreesGrowInWinter)
+                    if (tree.treeType.Value != 7 && treeOverhaulConfig.NormalTreesGrowInWinter)
                     {
                         GrowTree(tree, location, tileLocation);
                     }
-                    if (tree.treeType == 7 && treeOverhaulConfig.MushroomTreesGrowInWinter)
+                    if (tree.treeType.Value == 7 && treeOverhaulConfig.MushroomTreesGrowInWinter)
                     {
                         FixMushroomStump(tree, location, tileLocation);
                         GrowTree(tree, location, tileLocation);
@@ -91,13 +91,13 @@ namespace TreeOverhaul
 
                 if (Game1.currentSeason.Equals("winter"))
                 {
-                    if (tree.treeType != 6 || location.Name.ToLower().Contains("greenhouse"))
+                    if (tree.treeType.Value != 6 || location.Name.ToLower().Contains("greenhouse"))
                     {
-                        if (tree.treeType != 7 && treeOverhaulConfig.NormalTreesGrowInWinter)
+                        if (tree.treeType.Value != 7 && treeOverhaulConfig.NormalTreesGrowInWinter)
                         {
                             GrowTree(tree, location, tileLocation);
                         }
-                        if (tree.treeType == 7 && treeOverhaulConfig.MushroomTreesGrowInWinter)
+                        if (tree.treeType.Value == 7 && treeOverhaulConfig.MushroomTreesGrowInWinter)
                         {
                             FixMushroomStump(tree, location, tileLocation);
                             GrowTree(tree, location, tileLocation);
@@ -106,13 +106,13 @@ namespace TreeOverhaul
                 }
                 else
                 {
-                    if (tree.treeType != 6 || location.Name.ToLower().Contains("greenhouse"))
+                    if (tree.treeType.Value != 6 || location.Name.ToLower().Contains("greenhouse"))
                     {
-                        if (tree.treeType != 7)
+                        if (tree.treeType.Value != 7)
                         {
                             GrowTree(tree, location, tileLocation);
                         }
-                        if (tree.treeType == 7)
+                        if (tree.treeType.Value == 7)
                         {
                             FixMushroomStump(tree, location, tileLocation);
                             GrowTree(tree, location, tileLocation);
@@ -130,29 +130,27 @@ namespace TreeOverhaul
             {
                 return;
             }
-            if (tree.growthStage == 4)
+
+            if (tree.growthStage.Value == 4)
             {
-                using (Dictionary<Vector2, TerrainFeature>.Enumerator enumerator = location.terrainFeatures.GetEnumerator())
+                foreach (KeyValuePair<Vector2, TerrainFeature> pair in location.terrainFeatures.Pairs)
                 {
-                    while (enumerator.MoveNext())
+                    if (pair.Value is Tree && !pair.Value.Equals(this) && ((Tree)pair.Value).growthStage.Value >= 5 && pair.Value.getBoundingBox(pair.Key).Intersects(value))
                     {
-                        KeyValuePair<Vector2, TerrainFeature> current = enumerator.Current;
-                        if (current.Value is Tree && !current.Value.Equals(this) && ((Tree)current.Value).growthStage >= 5 && current.Value.getBoundingBox(current.Key).Intersects(value))
-                        {
-                            return;
-                        }
-                    }
-                    if (Game1.random.NextDouble() < 0.2)
-                    {
-                        tree.growthStage++;
+                        return;
                     }
                 }
+                if (Game1.random.NextDouble() < 0.2)
+                {
+                    tree.growthStage.Value++;
+                }
             }
-            if (tree.growthStage != 0 || !location.objects.ContainsKey(tileLocation))
+
+            if (tree.growthStage.Value != 0 || !location.objects.ContainsKey(tileLocation))
             {
                 if (Game1.random.NextDouble() < 0.2)
                 {
-                    tree.growthStage++;
+                    tree.growthStage.Value++;
                 }
             }
         }
@@ -161,10 +159,10 @@ namespace TreeOverhaul
         {
             if (Game1.currentSeason.Equals("winter"))
             {
-                if (tree.stump == true)
+                if (tree.stump.Value == true)
                 {
-                    tree.stump = false;
-                    tree.health = 10f;
+                    tree.stump.Value = false;
+                    tree.health.Value = 10f;
                 }
             }
         }
@@ -214,30 +212,30 @@ namespace TreeOverhaul
 
         public void CheckGrowthStage(FruitTree fruittree, GameLocation location, Vector2 tileLocation)
         {
-            if (fruittree.daysUntilMature > 28)
+            if (fruittree.daysUntilMature.Value > 28)
             {
-                fruittree.daysUntilMature = 28;
+                fruittree.daysUntilMature.Value = 28;
             }
 
-            if (fruittree.daysUntilMature <= 0)
+            if (fruittree.daysUntilMature.Value <= 0)
             {
-                fruittree.growthStage = 4;
+                fruittree.growthStage.Value = 4;
             }
-            else if (fruittree.daysUntilMature <= 7)
+            else if (fruittree.daysUntilMature.Value <= 7)
             {
-                fruittree.growthStage = 3;
+                fruittree.growthStage.Value = 3;
             }
-            else if (fruittree.daysUntilMature <= 14)
+            else if (fruittree.daysUntilMature.Value <= 14)
             {
-                fruittree.growthStage = 2;
+                fruittree.growthStage.Value = 2;
             }
-            else if (fruittree.daysUntilMature <= 21)
+            else if (fruittree.daysUntilMature.Value <= 21)
             {
-                fruittree.growthStage = 1;
+                fruittree.growthStage.Value = 1;
             }
             else
             {
-                fruittree.growthStage = 0;
+                fruittree.growthStage.Value = 0;
             }
         }
 
@@ -257,19 +255,19 @@ namespace TreeOverhaul
             }
             if (!flag)
             {
-                if (fruittree.daysUntilMature > 28)
+                if (fruittree.daysUntilMature.Value > 28)
                 {
-                    fruittree.daysUntilMature = 28;
+                    fruittree.daysUntilMature.Value = 28;
                 }
-                if (fruittree.daysUntilMature > 0)
+                if (fruittree.daysUntilMature.Value > 0)
                 {
                     if (change == "minus")
                     {
-                        fruittree.daysUntilMature--;
+                        fruittree.daysUntilMature.Value--;
                     }
                     if (change == "plus")
                     {
-                        fruittree.daysUntilMature++;
+                        fruittree.daysUntilMature.Value++;
                     }
                     CheckGrowthStage(fruittree, location, tileLocation);
                 }           

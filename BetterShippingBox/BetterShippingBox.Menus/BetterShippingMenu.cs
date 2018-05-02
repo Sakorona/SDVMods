@@ -303,7 +303,7 @@ namespace BetterShippingBox.Menus
 				}
 				else
 				{
-					bool flag4 = !this.heldItem.Name.Equals(item.Name) || ((SObject)this.heldItem).quality != ((SObject)item).quality || this.heldItem.getStack() + item.getStack() >= this.heldItem.maximumStackSize();
+					bool flag4 = !this.heldItem.Name.Equals(item.Name) || ((SObject)this.heldItem).Quality != ((SObject)item).Quality || this.heldItem.getStack() + item.getStack() >= this.heldItem.maximumStackSize();
 					if (flag4)
 					{
 						result = false;

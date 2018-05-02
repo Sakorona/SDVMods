@@ -3,7 +3,6 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Text;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Input;
 using StardewValley;
@@ -18,16 +17,13 @@ using TwilightShards.Stardew.Common;
 using TwilightShards.Common;
 using Microsoft.Xna.Framework.Graphics;
 using EnumsNET;
-using PyTK.CustomTV;
+//using PyTK.CustomTV;
 #endregion
 
 namespace ClimatesOfFerngillRebuild
 {
     public class ClimatesOfFerngill : Mod
     {
-        private bool AmMainPlayer = true;
-        private bool IsMultiplayer = false;
-
         /// <summary> The options file </summary>
         private WeatherConfig WeatherOpt { get; set; }
 
@@ -105,7 +101,7 @@ namespace ClimatesOfFerngillRebuild
                 GameEvents.UpdateTick += CheckForChanges;
                 GameEvents.FirstUpdateTick += GameEvents_FirstUpdateTick;
                 SaveEvents.AfterReturnToTitle += ResetMod;
-                SaveEvents.AfterLoad += SaveEvents_AfterLoad;
+                //SaveEvents.AfterLoad += SaveEvents_AfterLoad;
                 GraphicsEvents.OnPreRenderHudEvent += DrawPreHudObjects;
                 GraphicsEvents.OnPostRenderHudEvent += DrawObjects;
                 LocationEvents.CurrentLocationChanged += LocationEvents_CurrentLocationChanged;
@@ -115,8 +111,14 @@ namespace ClimatesOfFerngillRebuild
                 //console commands
                 helper.ConsoleCommands
                       .Add("world_tmrwweather", helper.Translation.Get("console-text.desc_tmrweather"), TomorrowWeatherChangeFromConsole)
-                      .Add("world_setweather", helper.Translation.Get("console-text.desc_setweather"), WeatherChangeFromConsole);
+                      .Add("world_setweather", helper.Translation.Get("console-text.desc_setweather"), WeatherChangeFromConsole)
+                      .Add("debug_clearspecial", "debug command to clear special weathers", ClearSpecial);
             }
+        }
+
+        private void ClearSpecial(string arg1, string[] arg2)
+        {
+            Conditions.ClearAllSpecialWeather();
         }
 
         private void GameEvents_FirstUpdateTick(object sender, EventArgs e)
@@ -132,14 +134,14 @@ namespace ClimatesOfFerngillRebuild
                 UseSafeLightningApi = true;
         }
         
-        private void SaveEvents_AfterLoad(object sender, EventArgs e)
+        /*private void SaveEvents_AfterLoad(object sender, EventArgs e)
         {
             CustomTVMod.changeAction("weather", DisplayWeather);
-        }
-
+        } */
+        /*
         public void DisplayWeather(TV tv, TemporaryAnimatedSprite sprite, StardewValley.Farmer who, string answer)
         {
-            TemporaryAnimatedSprite BackgroundSprite = new TemporaryAnimatedSprite(Game1.mouseCursors, new Rectangle(497, 305, 42, 28), 9999f, 1, 999999, tv.getScreenPosition(), false, false, (float)((tv.boundingBox.Bottom - 1) / 10000.0 + 9.99999974737875E-06), 0.0f, Color.White, tv.getScreenSizeModifier(), 0.0f, 0.0f, 0.0f, false);
+            TemporaryAnimatedSprite BackgroundSprite = new TemporaryAnimatedSprite("LooseSprites\\Cursors", new Rectangle(497, 305, 42, 28), 9999f, 1, 999999, tv.getScreenPosition(), false, false, (float)((tv.boundingBox.Bottom - 1) / 10000.0 + 9.99999974737875E-06), 0.0f, Color.White, tv.getScreenSizeModifier(), 0.0f, 0.0f, 0.0f, false);
             TemporaryAnimatedSprite WeatherSprite = DescriptionEngine.GetWeatherOverlay(Conditions, tv);
 
             string OnScreenText = "";
@@ -156,7 +158,7 @@ namespace ClimatesOfFerngillRebuild
             OnScreenText += DescriptionEngine.GenerateTVForecast(Conditions, MoonPhase);
 
             CustomTVMod.showProgram(BackgroundSprite, OnScreenText, CustomTVMod.endProgram, WeatherSprite);
-        }
+        }*/
 
         private void DebugWeather(string arg1, string[] arg2)
         {
@@ -185,14 +187,13 @@ namespace ClimatesOfFerngillRebuild
             if (Conditions.HasWeather(CurrentWeather.Fog))
             {
                 //TODO On release, see if we can actually require reflection there.
-                if (!Game1.currentLocation.isOutdoors && Game1.currentLocation is DecoratableLocation && WeatherOpt.DarkenLightInFog)
+                if (!Game1.currentLocation.IsOutdoors && Game1.currentLocation is DecoratableLocation && WeatherOpt.DarkenLightInFog)
                 {
-                    var loc = Game1.currentLocation as DecoratableLocation;
-                    if (loc != null)
+                    if (Game1.currentLocation is DecoratableLocation loc)
                     {
                         foreach (Furniture f in loc.furniture)
                         {
-                            if (f.furniture_type == Furniture.window)
+                            if (f.furniture_type.Value == Furniture.window)
                             {
                                 //if (WeatherOpt.Verbose) Monitor.Log($"Attempting to remove the light for {f.name}");
                                 Helper.Reflection.GetMethod(f, "addLights").Invoke(new object[] { Game1.currentLocation });
@@ -260,7 +261,7 @@ namespace ClimatesOfFerngillRebuild
                 Farm f = Game1.getFarm();
                 int count = 0, maxCrops = (int)Math.Floor(SDVUtilities.CropCountInFarm(f) * WeatherOpt.DeadCropPercentage);
 
-                foreach (KeyValuePair<Vector2, TerrainFeature> tf in f.terrainFeatures)
+                foreach (KeyValuePair<Vector2, TerrainFeature> tf in f.terrainFeatures.Pairs)
                 {
                     if (count >= maxCrops)
                         break;
@@ -280,7 +281,7 @@ namespace ClimatesOfFerngillRebuild
                     foreach (Vector2 v in CropList)
                     {
                         HoeDirt hd = (HoeDirt)f.terrainFeatures[v];
-                        hd.crop.dead = true;
+                        hd.crop.dead.Value = true;
                     }
 
                     queuedMsg = new HUDMessage(Helper.Translation.Get("hud-text.desc_frost_killed", new { deadCrops = count }), Color.SeaGreen, 5250f, true)
@@ -331,14 +332,14 @@ namespace ClimatesOfFerngillRebuild
 
             if (Conditions.HasWeather(CurrentWeather.Fog)) 
             {
-                if (!Game1.currentLocation.isOutdoors && Game1.currentLocation is DecoratableLocation && 
+                if (!Game1.currentLocation.IsOutdoors && Game1.currentLocation is DecoratableLocation && 
                     WeatherOpt.DarkenLightInFog)
                 {
                     var loc = Game1.currentLocation as DecoratableLocation;
                     foreach (Furniture f in loc.furniture)
                     {
                         //Yes, *add* lights removes them. No, don't ask me why.
-                        if (f.furniture_type == Furniture.window)
+                        if (f.furniture_type.Value == Furniture.window)
                         {
                             //if (WeatherOpt.Verbose) Monitor.Log($"Attempting to remove the light for {f.name}");
                             Helper.Reflection.GetMethod(f, "addLights").Invoke(new object[] { Game1.currentLocation });
@@ -347,7 +348,7 @@ namespace ClimatesOfFerngillRebuild
                 }
             }
 
-            if (Game1.currentLocation.isOutdoors && Conditions.HasWeather(CurrentWeather.Lightning) && !Conditions.HasWeather(CurrentWeather.Rain) && Game1.timeOfDay < 2400)
+            if (Game1.currentLocation.IsOutdoors && Conditions.HasWeather(CurrentWeather.Lightning) && !Conditions.HasWeather(CurrentWeather.Rain) && Game1.timeOfDay < 2400)
                 Utility.performLightningUpdate();
 
             //queued messages clear
@@ -366,7 +367,7 @@ namespace ClimatesOfFerngillRebuild
                     Farm f = Game1.getFarm();
                     int count = 0, maxCrops = (int)Math.Floor(SDVUtilities.CropCountInFarm(f) * WeatherOpt.DeadCropPercentage);
 
-                    foreach (KeyValuePair<Vector2, TerrainFeature> tf in f.terrainFeatures)
+                    foreach (KeyValuePair<Vector2, TerrainFeature> tf in f.terrainFeatures.Pairs)
                     {
                         if (count >= maxCrops)
                             break;
@@ -376,7 +377,7 @@ namespace ClimatesOfFerngillRebuild
                             if (Dice.NextDouble() <= WeatherOpt.CropResistance)
                             {
                                 CropList.Add(tf.Key);
-                                curr.state = HoeDirt.dry;
+                                curr.state.Value = HoeDirt.dry;
                                 count++;
                             }
                         }
@@ -401,9 +402,9 @@ namespace ClimatesOfFerngillRebuild
                 foreach (Vector2 v in CropList)
                 {
                     HoeDirt hd = (HoeDirt)f.terrainFeatures[v];
-                    if (hd.state == HoeDirt.dry)
+                    if (hd.state.Value == HoeDirt.dry)
                     {
-                        hd.crop.dead = true;
+                        hd.crop.dead.Value = true;
                         cDead = true;
                     }
                 }
@@ -491,7 +492,7 @@ namespace ClimatesOfFerngillRebuild
                 return;
             }
 
-            if (Game1.countdownToWedding == 1)
+            if (Game1.player.spouse != null && Game1.player.isEngaged() && Game1.player.friendshipData[Game1.player.spouse].CountdownToWedding == 1)
             {
                 Game1.weatherForTomorrow = Game1.weather_wedding;
                 if (WeatherOpt.Verbose)

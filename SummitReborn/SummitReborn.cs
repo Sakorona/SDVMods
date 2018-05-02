@@ -14,10 +14,24 @@ namespace SummitReborn
         public bool Clouds = true;
     }
 
-    public class SummitReborn : Mod
+    public class SummitReborn : Mod, IAssetLoader
     {
         private float weatherX;
         private SummitConfig ModConfig;
+
+        public bool CanLoad<T>(IAssetInfo asset)
+        {
+            return asset.AssetNameEquals(@"Maps\Railroad") || asset.AssetNameEquals(@"Maps\Summit");
+        }
+
+        public T Load<T>(IAssetInfo asset)
+        {
+            if (asset.AssetNameEquals(@"Maps\Railroad"))
+                return (T)(object)this.Helper.Content.Load<xTile.Map>(@"Assets\Railroad_alt.tbin");
+            if (asset.AssetNameEquals(@"Maps\Summit"))
+                return (T)(object)this.Helper.Content.Load<xTile.Map>(@"Assets\Summit_alt.tbin");
+            throw new NotSupportedException($"Unexpected asset name: {asset.AssetName}");
+        }
 
         public override void Entry(IModHelper helper)
         {
@@ -36,7 +50,6 @@ namespace SummitReborn
 
         private static int GetPixelZoom()
         {
-            // we need reflection because it's a constant, so SMAPI's references to it are inlined at compile-time
             FieldInfo field = typeof(Game1).GetField(nameof(Game1.pixelZoom), BindingFlags.Public | BindingFlags.Static);
             if (field == null)
                 throw new InvalidOperationException($"The {nameof(Game1)}.{nameof(Game1.pixelZoom)} field could not be found.");

@@ -31,22 +31,6 @@ namespace TwilightShards.Stardew.Common
             return false;
         }
 
-        public static void ShakeScreenOnLowStamina()
-        {
-            Game1.staminaShakeTimer = 1000;
-            for (int i = 0; i < 4; i++)
-            {
-                Game1.screenOverlayTempSprites.Add(new TemporaryAnimatedSprite(Game1.mouseCursors, new Microsoft.Xna.Framework.Rectangle(366, 412, 5, 6), new Vector2((Game1.random.Next(Game1.tileSize / 2) + Game1.viewport.Width - (48 + Game1.tileSize / 8)), (Game1.viewport.Height - 224 - Game1.tileSize / 4 - (int)((Game1.player.MaxStamina - 270) * 0.715))), false, 0.012f, Color.SkyBlue)
-                {
-                    motion = new Vector2(-2f, -10f),
-                    acceleration = new Vector2(0f, 0.5f),
-                    local = true,
-                    scale = (Game1.pixelZoom + Game1.random.Next(-1, 0)),
-                    delayBeforeAnimationStart = i * 30
-                });
-            }
-        }
-
         public static string GetFestivalName() => GetFestivalName(Game1.dayOfMonth, Game1.currentSeason);
         public static string GetTomorrowFestivalName() => GetFestivalName(Game1.dayOfMonth + 1, Game1.currentSeason);
         
@@ -105,6 +89,9 @@ namespace TwilightShards.Stardew.Common
                 case ("winter"):
                     if (dayOfMonth == 8) return "Festival of Ice";
                     if (dayOfMonth == 25) return "Feast of the Winter Star";
+                    if (dayOfMonth == 14) return "Night Festival";
+                    if (dayOfMonth == 15) return "Night Festival";
+                    if (dayOfMonth == 16) return "Night Festival";
                     break;
                 case ("fall"):
                     if (dayOfMonth == 16) return "Stardew Valley Fair";
@@ -179,31 +166,31 @@ namespace TwilightShards.Stardew.Common
                 switch (Game1.random.Next(4))
                 {
                     case 0:
-                        zero.X = (float)Dice.Next(ourFarm.map.Layers[0].LayerWidth);
+                        zero.X = Dice.Next(ourFarm.map.Layers[0].LayerWidth);
                         break;
                     case 1:
-                        zero.X = (float)(ourFarm.map.Layers[0].LayerWidth - 1);
-                        zero.Y = (float)Dice.Next(ourFarm.map.Layers[0].LayerHeight);
+                        zero.X = (ourFarm.map.Layers[0].LayerWidth - 1);
+                        zero.Y = Dice.Next(ourFarm.map.Layers[0].LayerHeight);
                         break;
                     case 2:
-                        zero.Y = (float)(ourFarm.map.Layers[0].LayerHeight - 1);
-                        zero.X = (float)Dice.Next(ourFarm.map.Layers[0].LayerWidth);
+                        zero.Y = (ourFarm.map.Layers[0].LayerHeight - 1);
+                        zero.X = Dice.Next(ourFarm.map.Layers[0].LayerWidth);
                         break;
                     case 3:
-                        zero.Y = (float)Game1.random.Next(ourFarm.map.Layers[0].LayerHeight);
+                        zero.Y = Game1.random.Next(ourFarm.map.Layers[0].LayerHeight);
                         break;
                 }
 
-                if (Utility.isOnScreen(zero * (float)Game1.tileSize, Game1.tileSize))
-                    zero.X -= (float)Game1.viewport.Width;
+                if (Utility.isOnScreen(zero * Game1.tileSize, Game1.tileSize))
+                    zero.X -= Game1.viewport.Width;
 
-                List<NPC> characters = ourFarm.characters;
+                List<NPC> characters = ourFarm.characters.ToList();
                 Ghost ghost = new Ghost(zero * Game1.tileSize)
                 {
                     focusedOnFarmers = true,
                     wildernessFarmMonster = true
                 };
-                ghost.reloadSprite();
+                ghost.reloadSprite(false);
                 characters.Add(ghost);
             }
         }
@@ -248,7 +235,7 @@ namespace TwilightShards.Stardew.Common
                 }
                 else if (Game1.random.NextDouble() < 0.65 && location.isTileLocationTotallyClearAndPlaceable(randomTile))
                 {
-                    RockGolem rockGolem = new RockGolem(randomTile * (float)Game1.tileSize, Game1.player.CombatLevel)
+                    RockGolem rockGolem = new RockGolem(randomTile * Game1.tileSize, Game1.player.CombatLevel)
                     {
                         focusedOnFarmers = true
                     };
@@ -280,57 +267,57 @@ namespace TwilightShards.Stardew.Common
                 return;
 
             //due to how this will be called, we do need to some checking
-            if (!loc.name.Equals("Greenhouse") && (currCrop.dead || !currCrop.seasonsToGrowIn.Contains(Game1.currentSeason)))
+            if (!loc.Name.Equals("Greenhouse") && (currCrop.dead.Value || !currCrop.seasonsToGrowIn.Contains(Game1.currentSeason)))
             {
-                currCrop.dead = true;
+                currCrop.dead.Value = true;
             }
             else
             {
-                if (h.state == HoeDirt.watered)
+                if (h.state.Value == HoeDirt.watered)
                 {
                     //get the day of the current phase - if it's fully grown, we can just leave it here.
-                    if (currCrop.fullyGrown)
-                        currCrop.dayOfCurrentPhase = currCrop.dayOfCurrentPhase - 1;
+                    if (currCrop.fullyGrown.Value)
+                        currCrop.dayOfCurrentPhase.Value = currCrop.dayOfCurrentPhase.Value - 1;
                     else
                     {
                         //check to sere what the count of current days is
 
                         int phaseCount = 0; //get the count of days in the current phase
                         if (currCrop.phaseDays.Count > 0)
-                            phaseCount = currCrop.phaseDays[Math.Min(currCrop.phaseDays.Count - 1, currCrop.currentPhase)];
+                            phaseCount = currCrop.phaseDays[Math.Min(currCrop.phaseDays.Count - 1, currCrop.currentPhase.Value)];
                         else
                             phaseCount = 0;
 
-                        currCrop.dayOfCurrentPhase = Math.Min(currCrop.dayOfCurrentPhase + 1, phaseCount);
+                        currCrop.dayOfCurrentPhase.Value = Math.Min(currCrop.dayOfCurrentPhase.Value + 1, phaseCount);
 
                         //check phases
-                        if (currCrop.dayOfCurrentPhase >= phaseCount && currCrop.currentPhase < currCrop.phaseDays.Count - 1)
+                        if (currCrop.dayOfCurrentPhase.Value >= phaseCount && currCrop.currentPhase.Value < currCrop.phaseDays.Count - 1)
                         {
-                            currCrop.currentPhase++;
-                            currCrop.dayOfCurrentPhase = 0;
+                            currCrop.currentPhase.Value++;
+                            currCrop.dayOfCurrentPhase.Value = 0;
                         }
 
                         //skip negative day or 0 day crops.
-                        while (currCrop.currentPhase < currCrop.phaseDays.Count - 1 && currCrop.phaseDays.Count > 0 && currCrop.phaseDays[currCrop.currentPhase] <= 0)
+                        while (currCrop.currentPhase.Value < currCrop.phaseDays.Count - 1 && currCrop.phaseDays.Count > 0 && currCrop.phaseDays[currCrop.currentPhase.Value] <= 0)
                         {
-                            currCrop.currentPhase++;
+                            currCrop.currentPhase.Value++;
                         }
 
                         //handle wild crops
-                        if (currCrop.isWildSeedCrop() && currCrop.phaseToShow == -1 && currCrop.currentPhase > 0)
-                            currCrop.phaseToShow = Game1.random.Next(1, 7);
+                        if (currCrop.isWildSeedCrop() && currCrop.phaseToShow.Value == -1 && currCrop.currentPhase.Value > 0)
+                            currCrop.phaseToShow.Value = Game1.random.Next(1, 7);
 
                         //and now giant crops
                         double giantChance = new Random((int)Game1.uniqueIDForThisGame + (int)Game1.stats.daysPlayed + xPos * 2000 + yPos).NextDouble();
 
-                        if (loc is Farm && currCrop.currentPhase == currCrop.phaseDays.Count - 1 && IsValidGiantCrop(currCrop.indexOfHarvest) &&
+                        if (loc is Farm && currCrop.currentPhase.Value == currCrop.phaseDays.Count - 1 && IsValidGiantCrop(currCrop.indexOfHarvest.Value) &&
                             giantChance <= 0.01)
                         {
                             for (int i = xPos - 1; i <= xPos + 1; i++)
                             {
                                 for (int j = yPos - 1; j <= yPos + 1; j++)
                                 {
-                                    Vector2 tile = new Vector2((float)i, (float)j);
+                                    Vector2 tile = new Vector2(i, j);
                                     if (!loc.terrainFeatures.ContainsKey(tile) || !(loc.terrainFeatures[tile] is HoeDirt) ||
                                         (loc.terrainFeatures[tile] as HoeDirt).crop?.indexOfHarvest == currCrop.indexOfHarvest)
                                     {
@@ -345,19 +332,19 @@ namespace TwilightShards.Stardew.Common
                             {
                                 for (int j = yPos - 1; j <= yPos + 1; j++)
                                 {
-                                    Vector2 tile = new Vector2((float)i, (float)j);
-                                    (loc.terrainFeatures[tile] as HoeDirt).crop = (Crop)null;
+                                    Vector2 tile = new Vector2(i, j);
+                                    (loc.terrainFeatures[tile] as HoeDirt).crop = null;
                                 }
                             }
 
-                        (loc as Farm).resourceClumps.Add((ResourceClump)new GiantCrop(currCrop.indexOfHarvest, new Vector2((float)(xPos - 1), (float)(yPos - 1))));
+                        (loc as Farm).resourceClumps.Add(new GiantCrop(currCrop.indexOfHarvest.Value, new Vector2(xPos - 1, yPos - 1)));
 
                         }
                     }
                 }
                 //process some edge cases for non watered crops.
-                if (currCrop.fullyGrown && currCrop.dayOfCurrentPhase > 0 ||
-                    currCrop.currentPhase < currCrop.phaseDays.Count - 1 ||
+                if (currCrop.fullyGrown.Value && currCrop.dayOfCurrentPhase.Value > 0 ||
+                    currCrop.currentPhase.Value < currCrop.phaseDays.Count - 1 ||
                     !currCrop.isWildSeedCrop())
 
                     return; //stop processing
@@ -368,7 +355,7 @@ namespace TwilightShards.Stardew.Common
                 loc.objects.Remove(position);
 
                 string season = Game1.currentSeason;
-                switch (currCrop.whichForageCrop)
+                switch (currCrop.whichForageCrop.Value)
                 {
                     case 495:
                         season = "spring";
@@ -383,10 +370,10 @@ namespace TwilightShards.Stardew.Common
                         season = "winter";
                         break;
                 }
-                loc.objects.Add(position, new StardewValley.Object(position, currCrop.getRandomWildCropForSeason(season), 1)
+                loc.objects.Add(position, new SObject(position, currCrop.getRandomWildCropForSeason(season), 1)
                 {
-                    isSpawnedObject = true,
-                    canBeGrabbed = true
+                    IsSpawnedObject = true,
+                    CanBeGrabbed = true
                 });
 
                 //the normal iteration has a safe-call that isn't neded here               

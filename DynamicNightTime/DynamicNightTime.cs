@@ -1,14 +1,9 @@
 ﻿using Harmony;
-using Microsoft.Xna.Framework;
 using StardewModdingAPI;
-using StardewModdingAPI.Events;
 using StardewModdingAPI.Utilities;
 using StardewValley;
-using StardewValley.BellsAndWhistles;
 using System;
-using System.Collections.Generic;
 using System.Linq;
-using SFarmer = StardewValley.Farmer;
 using System.Reflection;
 using TwilightShards.Common;
 using TwilightShards.Stardew.Common;
@@ -18,6 +13,7 @@ namespace DynamicNightTime
     public class DynamicNightConfig
     {
         public double latitude = 38.25;
+        public bool SunsetTimesAreMinusThirty = true;
     }
 
     public class DynamicNightTime : Mod
@@ -57,33 +53,32 @@ namespace DynamicNightTime
             MethodInfo postfixClock = helper.Reflection.GetMethod(typeof(Patches.GameClockPatch), "Postfix").MethodInfo;
             harmony.Patch(UpdateGameClock, null, new HarmonyMethod(postfixClock));
 
+            Helper.ConsoleCommands.Add("debug_cycleinfo", "Outputs the cycle information", OutputInformation);
+            Helper.ConsoleCommands.Add("debug_outdoorlight", "Outputs the outdoor light information", OutputLight);
             //and now events!
-           // TimeEvents.TimeOfDayChanged += TimeEvents_TimeOfDayChanged;
         }
 
-       /* private void TimeEvents_TimeOfDayChanged(object sender, EventArgsIntChanged e)
+        private void OutputLight(string arg1, string[] arg2)
         {
-            SFarmer who = Game1.player;
+            Monitor.Log($"The outdoor light is {Game1.outdoorLight.ToString()}");
+        }
 
-            if (who != null && who.currentLocation != null && Game1.isDarkOut())
-            {
-                List<Critter> currentCritters = Helper.Reflection.GetField<List<Critter>>(who.currentLocation, "critters").GetValue();
-                if (currentCritters != null)
-                {
-                    for (int i = 0; i < currentCritters.Count; i++)
-                    {
-                        if (currentCritters[i] is Cloud)
-                            currentCritters.Remove(currentCritters[i]);
-                    }
-                }
-            }
-        }*/
+        private void OutputInformation(string arg1, string[] arg2)
+        {
+            Monitor.Log($"Sunrise : {DynamicNightTime.GetSunrise().ToString()}, Sunset: {DynamicNightTime.GetSunset().ToString()}");
+            Monitor.Log($"Morning Twilight: {DynamicNightTime.GetMorningAstroTwilight().ToString()}, Evening Twilight: {DynamicNightTime.GetAstroTwilight().ToString()}");
+        }
 
         public static int GetSunriseTime() => GetSunrise().ReturnIntTime();
         public static SDVTime GetMorningAstroTwilight() => GetTimeAtHourAngle(-0.314159265);
         public static SDVTime GetAstroTwilight() => GetTimeAtHourAngle(-0.314159265, false);
         public static SDVTime GetSunrise() => GetTimeAtHourAngle(0.01163611);
-        public static SDVTime GetSunset() => GetTimeAtHourAngle(0.01163611, false);
+        public static SDVTime GetSunset()
+        {
+            SDVTime s =  GetTimeAtHourAngle(0.01163611, false);
+            if (NightConfig.SunsetTimesAreMinusThirty) s.AddTime(-30);
+            return s;
+        }
 
         protected internal static SDVTime GetTimeAtHourAngle(double angle, bool morning = true)
         {

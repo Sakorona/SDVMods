@@ -59,8 +59,7 @@ namespace TwilightShards.WeatherIllnesses
             else
                 weatherStatus = SDVUtilities.GetWeatherName();
 
-
-                Game1.player.stamina += StaminaMngr.TenMinuteTick(Game1.player.hat?.which, weatherStatus, TicksOutside, TicksTotal, Dice);
+            Game1.player.stamina += StaminaMngr.TenMinuteTick(Game1.player.hat.Value?.which.Value, weatherStatus, TicksOutside, TicksTotal, Dice);
 
             if (Game1.player.stamina <= 0)
                 SDVUtilities.FaintPlayer();
@@ -74,23 +73,23 @@ namespace TwilightShards.WeatherIllnesses
             if (!Game1.hasLoadedGame)
                 return;
 
-            if (Game1.isEating != wasEating)
+            if (Game1.player.isEating != wasEating)
             {
-                if (!Game1.isEating)
+                if (!Game1.player.isEating)
                 {
                     // Apparently this happens when the ask to eat dialog opens, but they pressed no.
                     // So make sure something was actually consumed.
                     if (prevToEatStack != -1 && (prevToEatStack - 1 == Game1.player.itemToEat.Stack))
                     {
-                        if (Game1.player.itemToEat.parentSheetIndex == 351)
+                        if (Game1.player.itemToEat.ParentSheetIndex == 351)
                             StaminaMngr.ClearDrain();
                     }
                 }
                 prevToEatStack = (Game1.player.itemToEat != null ? Game1.player.itemToEat.Stack : -1);
             }
-            wasEating = Game1.isEating;
+            wasEating = Game1.player.isEating;
 
-            if (Game1.currentLocation.isOutdoors)
+            if (Game1.currentLocation.IsOutdoors)
             {
                 TicksOutside++;
             }

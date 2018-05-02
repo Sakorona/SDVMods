@@ -47,9 +47,9 @@ namespace StardewNotification
 
                 foreach (var building in f.buildings)
                 {
-                    if (building.indoors is Shed)
+                    if (building.indoors.Value is Shed)
                     {
-                        CheckObjectsInLocation(Trans, building.indoors);
+                        CheckObjectsInLocation(Trans, building.indoors.Value);
                     }
                 }
             }            
@@ -75,9 +75,9 @@ namespace StardewNotification
 		{
 			var counter = new Dictionary<string, Pair<StardewValley.Object, int>>();
 
-			foreach (var pair in location.Objects)
+			foreach (var pair in location.Objects.Pairs)
 			{
-				if (!pair.Value.readyForHarvest) continue;
+				if (!pair.Value.readyForHarvest.Value) continue;
 				if (counter.ContainsKey(pair.Value.Name)) counter[pair.Value.Name].Second++;
 				else counter.Add(pair.Value.Name, new Pair<StardewValley.Object, int>(pair.Value, 1));
 			}

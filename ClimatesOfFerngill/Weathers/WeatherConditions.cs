@@ -230,6 +230,12 @@ namespace ClimatesOfFerngillRebuild
             return CurrentConditionsN;
         }
 
+        public void ClearAllSpecialWeather()
+        {
+            foreach (ISDVWeather weather in CurrentWeathers)
+                weather.EndWeather();
+        }
+
         public void DrawWeathers()
         {
             foreach (ISDVWeather weather in CurrentWeathers)

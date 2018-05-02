@@ -33,24 +33,24 @@ namespace StardewNotification
 		public void CheckFarmCaveHarvests(GameLocation farmcave)
 		{
 			if (!StardewNotification.Config.NotifyFarmCave) return;
-			if (Game1.player.caveChoice == MUSHROOM_CAVE)
+			if (Game1.player.caveChoice.Value == MUSHROOM_CAVE)
 			{
 				var numReadyForHarvest = 0;
-				foreach (var pair in farmcave.Objects)
+				foreach (var pair in farmcave.Objects.Pairs)
 				{
-					if (pair.Value.readyForHarvest) numReadyForHarvest++;
+					if (pair.Value.readyForHarvest.Value) numReadyForHarvest++;
 				}
 				if (numReadyForHarvest > 0)
 					Util.ShowFarmCaveMessage(farmcave, Trans);
 			}
 
-            else if (Game1.player.caveChoice == FRUIT_CAVE && farmcave.Objects.Count > 0)
+            else if (Game1.player.caveChoice.Value == FRUIT_CAVE && farmcave.Objects.Count() > 0)
             {
                 int count = 0;
 
                 foreach (StardewValley.Object o in farmcave.Objects.Values)
                 {
-                    if (!o.bigCraftable)
+                    if (!o.bigCraftable.Value)
                         count++;
                 }
 
@@ -78,7 +78,7 @@ namespace StardewNotification
 				default:
 					break;
 			}
-			if (!ReferenceEquals(seasonal, null))
+			if (!(seasonal is null))
 			{
 				Util.ShowMessage($"{seasonal}");
 			}
@@ -88,7 +88,7 @@ namespace StardewNotification
 		{
 			if (!StardewNotification.Config.NotifyGreenhouseCrops) return;
 			//var counter = new Dictionary<string, Pair<StardewValley.TerrainFeatures.HoeDirt, int>>();
-			foreach (var pair in greenhouse.terrainFeatures)
+			foreach (var pair in greenhouse.terrainFeatures.Pairs)
 			{
                 if (pair.Value is StardewValley.TerrainFeatures.HoeDirt hoeDirt)
                 {

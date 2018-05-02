@@ -172,7 +172,7 @@ namespace ClimatesOfFerngillRebuild
             int nRandom = OurDice.Next(2);
 
             //blood moon checks
-            if (Game1.countdownToWedding == 1 && MoonPhase == "Blood Moon")
+            if ((Game1.player.spouse != null && Game1.player.isEngaged() && Game1.player.friendshipData[Game1.player.spouse].CountdownToWedding == 1) && MoonPhase == "Blood Moon")
             {
                 talkParams["tomrrowWeather"] = Helper.Get($"weat-{Game1.currentSeason}.sunny.{nRandom}");
                 return Helper.Get("weat-wedTomorrow.BM.0", talkParams);
@@ -214,7 +214,7 @@ namespace ClimatesOfFerngillRebuild
             }
 
             //wedding tomrrow
-            else if (Game1.countdownToWedding == 1)
+            else if (Game1.player.spouse != null && Game1.player.isEngaged() && Game1.player.friendshipData[Game1.player.spouse].CountdownToWedding == 1)
             {
                 talkParams["tomrrowWeather"] = Helper.Get($"weat-{Game1.currentSeason}.sunny.{nRandom}");
                 return Helper.Get("weat-wedTomorrow.0", talkParams);
@@ -422,7 +422,7 @@ namespace ClimatesOfFerngillRebuild
                     break;
             }
 
-            return new TemporaryAnimatedSprite(Game1.mouseCursors, placement, 100f, 4, 999999, tv.getScreenPosition() + new Vector2(3f, 3f) * tv.getScreenSizeModifier(), false, false, (float)((double)(tv.boundingBox.Bottom - 1) / 10000.0 + 1.99999994947575E-05), 0.0f, Color.White, tv.getScreenSizeModifier(), 0.0f, 0.0f, 0.0f, false);
+            return new TemporaryAnimatedSprite("LooseSprites\\Cursors", placement, 100f, 4, 999999, tv.getScreenPosition() + new Vector2(3f, 3f) * tv.getScreenSizeModifier(), false, false, (float)((double)(tv.boundingBox.Bottom - 1) / 10000.0 + 1.99999994947575E-05), 0.0f, Color.White, tv.getScreenSizeModifier(), 0.0f, 0.0f, 0.0f, false);
         }
     }
 }

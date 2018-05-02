@@ -24,7 +24,7 @@ namespace CustomizableCartRedux
         public override object GetApi()
         {
             if (API == null)
-                API = new CustomizableCartAPI();
+                API = new CustomizableCartAPI(Helper.Reflection);
 
             return API;
         }
@@ -39,6 +39,9 @@ namespace CustomizableCartRedux
 
          private void SetCartSpawn(object Sender, EventArgs e)
         {
+            if (!Context.IsMainPlayer)
+                return;
+
             Random r = new Random();
             double randChance = r.NextDouble(), dayChance = 0;
             Forest f = Game1.getLocationFromName("Forest") as Forest;
@@ -126,14 +129,10 @@ namespace CustomizableCartRedux
             if (SetCartToOn)
             {
                 f.travelingMerchantDay = true;
-                f.travelingMerchantBounds = new List<Rectangle>
-                {
-                    new Rectangle(23 * Game1.tileSize, 10 * Game1.tileSize, 123 * Game1.pixelZoom, 28 * Game1.pixelZoom),
-                    new Rectangle(23 * Game1.tileSize + 45 * Game1.pixelZoom, 10 * Game1.tileSize + 26 * Game1.pixelZoom, 19 * Game1.pixelZoom, 12 * Game1.pixelZoom),
-                    new Rectangle(23 * Game1.tileSize + 85 * Game1.pixelZoom, 10 * Game1.tileSize + 26 * Game1.pixelZoom, 26 * Game1.pixelZoom, 12 * Game1.pixelZoom)
-                };
-
-                f.travelingMerchantStock = GetTravelingMerchantStock(OurConfig.AmountOfItems);
+                f.travelingMerchantBounds.Add(new Rectangle(1472, 640, 492, 112));
+                f.travelingMerchantBounds.Add(new Rectangle(1652, 744, 76, 48));
+                f.travelingMerchantBounds.Add(new Rectangle(1812, 744, 104, 48));
+                Helper.Reflection.GetField<Dictionary<Item, int[]>>(f, "travelerStock").SetValue(GetTravelingMerchantStock(OurConfig.AmountOfItems));
                 foreach (Rectangle travelingMerchantBound in f.travelingMerchantBounds)
                 {
                     Utility.clearObjectsInArea(travelingMerchantBound, f);                 
@@ -144,16 +143,22 @@ namespace CustomizableCartRedux
             else
             {
                 //clear other values
-                f.travelingMerchantBounds = null;
+                f.travelingMerchantBounds.Clear();
                 f.travelingMerchantDay = false;
-                f.travelingMerchantStock = null;
+                Helper.Reflection.GetField<Dictionary<Item, int[]>>(f, "travelerStock").SetValue(null);                
             }
         }
 
         private Dictionary<Item, int[]> GetTravelingMerchantStock(int numStock)
         {
             Dictionary<Item, int[]> dictionary = new Dictionary<Item, int[]>();
-            int maxItemID = Game1.objectInformation.Keys.Max();
+            int maxItemID = 0;
+
+            if (OurConfig.UseVanillaMax)
+                maxItemID = 803;
+            else
+                maxItemID = Game1.objectInformation.Keys.Max();
+
             numStock = (numStock <= 2 ? 3 : numStock); //Ensure the stock isn't too low.
             var itemsToBeAdded = new List<int>();
 
@@ -290,7 +295,7 @@ namespace CustomizableCartRedux
                 {
                     foreach (Item obj in stock)
                     {
-                        if (obj is Furniture && obj.parentSheetIndex == num)
+                        if (obj is Furniture && obj.ParentSheetIndex == num)
                             num = -1;
                     }
                 }
@@ -298,7 +303,7 @@ namespace CustomizableCartRedux
             while (IsFurnitureOffLimitsForSale(num) || !dictionary.ContainsKey(num));
             Furniture furniture = new Furniture(num, Vector2.Zero);
             int maxValue = int.MaxValue;
-            furniture.stack = maxValue;
+            furniture.Stack = maxValue;
             return furniture;
         }
 

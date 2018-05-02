@@ -1,5 +1,4 @@
 ﻿using System;
-
 using StardewValley;
 using StardewValley.Locations;
 using StardewModdingAPI;
@@ -21,9 +20,9 @@ namespace StardewNotification
         public void DoBirthdayReminder(ITranslationHelper Trans)
         {
             var character = Utility.getTodaysBirthdayNPC(Game1.currentSeason, Game1.dayOfMonth);
-            if (!ReferenceEquals(character, null) && Game1.player.friendships[character.name][3] != 1)
+            if (!(character is null) && Game1.player.friendshipData[character.Name].GiftsToday != 1)
             {
-                Util.ShowMessage(Trans.Get("birthdayReminder", new { charName = character.name }));
+                Util.ShowMessage(Trans.Get("birthdayReminder", new { charName = character.Name }));
             }
         }
 
@@ -32,10 +31,9 @@ namespace StardewNotification
             if (StardewNotification.Config.NotifyBirthdays)
             {
                 var character = Utility.getTodaysBirthdayNPC(Game1.currentSeason, Game1.dayOfMonth);
-                if (ReferenceEquals(character, null)) return;
-                Util.ShowMessage(Trans.Get("birthday", new { charName = character.name }));
+                if (character is null) return;
+                Util.ShowMessage(Trans.Get("birthday", new { charName = character.Name }));
             }
-
         }
 
         private void CheckForTravelingMerchant(ITranslationHelper Trans)
@@ -52,8 +50,8 @@ namespace StardewNotification
         private void CheckForToolUpgrade(ITranslationHelper Trans)
         {
             if (!StardewNotification.Config.NotifyToolUpgrade) return;
-            if (!ReferenceEquals(Game1.player.toolBeingUpgraded, null) && Game1.player.daysLeftForToolUpgrade <= 0)
-                Util.ShowMessage(Trans.Get("toolPickup", new { toolName = Game1.player.toolBeingUpgraded.name }));
+            if (!(Game1.player.toolBeingUpgraded is null) && Game1.player.daysLeftForToolUpgrade <= 0)
+                Util.ShowMessage(Trans.Get("toolPickup", new { toolName = Game1.player.toolBeingUpgraded.Name }));
         }
 
         private void CheckForMaxLuck(ITranslationHelper Trans)
@@ -79,7 +77,7 @@ namespace StardewNotification
 
             if (!festivalName.Equals(Trans.Get("WinterStar"))) return;
             var rng = new Random((int)(Game1.uniqueIDForThisGame / 2UL) - Game1.year);
-            var santa = Utility.getRandomTownNPC(rng, Utility.getFarmerNumberFromFarmer(Game1.player)).name;
+            var santa = Utility.getRandomTownNPC(rng, Utility.getFarmerNumberFromFarmer(Game1.player)).Name;
 
             Util.ShowMessage(Trans.Get("SecretSantaReminder", new { charName = santa }));
         }
@@ -104,6 +102,9 @@ namespace StardewNotification
                     break;
                 case "winter":
                     if (day == 8) return Trans.Get("IceFestival");
+                    if (day == 14) return Trans.Get("NightFestival");
+                    if (day == 15) return Trans.Get("NightFestival");
+                    if (day == 16) return Trans.Get("NightFestival");
                     if (day == 25) return Trans.Get("WinterStar");
                     break;
                 default:

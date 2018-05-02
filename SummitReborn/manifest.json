@@ -1,8 +1,8 @@
 ﻿{
-  "Name": "Summit Rain Fix",
-  "Author": "KoihimeNakamura",
-  "Version": "1.0.3",
-  "Description": "Fixes rain on the summit map, and adds a neat cloud visual",
+  "Name": "Summit Reborn [Combined]",
+  "Author": "KoihimeNakamura and Emissary of Infinity",
+  "Version": "1.0.4",
+  "Description": "Enbales the summit, fixes rain on the summit map, and adds a neat cloud visual",
   "UniqueID": "KoihimeNakamura.summitreborn",
   "EntryDll": "SummitReborn.dll",
   "UpdateKeys": [ "Nexus:2073" ]

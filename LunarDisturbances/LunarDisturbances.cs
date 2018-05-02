@@ -97,6 +97,9 @@ namespace TwilightShards.LunarDisturbances
         /// <param name="e"></param>
         private void OnEndOfDay(object sender, EventArgs e)
         {
+            if (!Context.IsMainPlayer)
+                return;
+
             //cleanup any spawned monsters
             foreach (GameLocation l in Game1.locations)
             {
@@ -130,12 +133,12 @@ namespace TwilightShards.LunarDisturbances
                 Game1.currentLocation.switchOutNightTiles();
                 Game1.ambientLight = nightColor;
 
-                if (!Game1.currentLocation.isOutdoors && Game1.currentLocation is DecoratableLocation)
+                if (!Game1.currentLocation.IsOutdoors && Game1.currentLocation is DecoratableLocation)
                 {
                     var loc = Game1.currentLocation as DecoratableLocation;
                     foreach (Furniture f in loc.furniture)
                     {
-                        if (f.furniture_type == Furniture.window)
+                        if (f.furniture_type.Value == Furniture.window)
                             Helper.Reflection.GetMethod(f, "addLights").Invoke(new object[] { Game1.currentLocation });
                     }
                 }
@@ -143,7 +146,7 @@ namespace TwilightShards.LunarDisturbances
 
             if (OurMoon.CurrentPhase == MoonPhase.BloodMoon)
             {
-                Game1.currentLocation.waterColor = OurMoon.BloodMoonWater;
+                Game1.currentLocation.waterColor.Value = OurMoon.BloodMoonWater;
             }
         }
 
@@ -205,12 +208,12 @@ namespace TwilightShards.LunarDisturbances
                 Game1.currentLocation.switchOutNightTiles();
                 ResetTicker = 1;
 
-                if (!Game1.currentLocation.isOutdoors && Game1.currentLocation is DecoratableLocation)
+                if (!Game1.currentLocation.IsOutdoors && Game1.currentLocation is DecoratableLocation)
                 {
                     var loc = Game1.currentLocation as DecoratableLocation;
                     foreach (Furniture f in loc.furniture)
                     {
-                        if (f.furniture_type == Furniture.window)
+                        if (f.furniture_type.Value == Furniture.window)
                             Helper.Reflection.GetMethod(f, "addLights").Invoke(new object[] { Game1.currentLocation });
                     }
                 }
@@ -270,7 +273,7 @@ namespace TwilightShards.LunarDisturbances
                 if (SecondCount == 10)
                 {
                     SecondCount = 0;
-                    if (Game1.currentLocation.isOutdoors && OurMoon.CurrentPhase == MoonPhase.BloodMoon)
+                    if (Game1.currentLocation.IsOutdoors && OurMoon.CurrentPhase == MoonPhase.BloodMoon)
                     {
                         Monitor.Log("Spawning monster....");
                         SDVUtilities.SpawnMonster(Game1.currentLocation);

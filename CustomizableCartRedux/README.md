@@ -1,18 +1,27 @@
 ﻿##  Customizable Traveling Cart Redux
 
-This mod is inspired by yyeahdude, and is largely meant to work with SMAPI 2.0.
-
-It allows you to set the chances of the traveling cart appearing per day (by setting it from 0 to 1, for example, a 25% chance is .25), the items it contains, and how much it is. 
+This mod is inspired by yyeahdude. It allows you to set the chances of the traveling cart appearing per day (by setting it from 0 to 1, for example, a 25% chance is .25), the items it contains, and how much it is. 
 
 ## Install Instructions
 Unzip the archive into the Mods folder
 
+## Multiplayer Behvaior
+This mod will only work for the main player (i.e the host) in an MP game.
+
 ## Changelog
-1.2.2 - Added API for allowing people to add items
-1.2 - Added several config options to more control what inventory appears, improved handling of errors. In addition, it will now add items added via JsonAssets.
-1.1.1 - fixes
+1.3
+- Updated for SDV 1.3 beta
+- Adds a flag to use the vanilla max instead of modded items
+1.2.2 
+- Added API for allowing people to add items
+1.2
+- Added several config options to more control what inventory appears, improved handling of errors. In addition, it will now add items added via JsonAssets.
+1.1.1
+- fixes
 
 ## Current Config Options
+To configure, open up `config.json` in your mod folder.
+
 - Monday through SundayChance: sets the odds it appears that day of the week
 - AppearOnlyAtStartOfSeason: Will appear only on day 1, regardless of any other settings.
 - AppearOnlyatEndOfSeason: Will appear only on day 28, regardless of any other settings
@@ -25,7 +34,8 @@ Unzip the archive into the Mods folder
 - UseCheaperPricing: Uses a less expensive method of determining the value.
 
 ## Requires:
-SMAPI 2.5.4+
+SMAPI 2.6-beta3+
+SDV 1.3.3+
 
 ## API documentation
 

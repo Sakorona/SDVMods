@@ -24,29 +24,30 @@ namespace StardewNotification
         {
             var item = CopyObject(pair.Value.First);
             item.name = Trans.Get("readyHarvest", new { cropName = pair.Key }); 
-            item.bigCraftable = pair.Value.First.bigCraftable;
+            item.bigCraftable.Value = pair.Value.First.bigCraftable.Value;
             Game1.addHUDMessage(new HUDMessage(pair.Key, pair.Value.Second, true, Color.OrangeRed, item));
         }
 
         public static void ShowFarmCaveMessage(GameLocation location, ITranslationHelper Trans)
         {
-            var e = location.Objects.GetEnumerator();
-            e.MoveNext();
-            var item = CopyObject(e.Current.Value);
-            item.name = Game1.player.caveChoice == MUSHROOM_CAVE ? Trans.Get("CaveMushroom") : Trans.Get("CaveFruit");
-            Game1.addHUDMessage(new HUDMessage(item.type, location.Objects.Count, true, Color.OrangeRed, item));
+            foreach (var e in location.Objects.Pairs)
+            {
+                var item = CopyObject(e.Value);
+                item.name = Game1.player.caveChoice.Value == MUSHROOM_CAVE ? Trans.Get("CaveMushroom") : Trans.Get("CaveFruit");
+                Game1.addHUDMessage(new HUDMessage(item.Type, location.Objects.Count(), true, Color.OrangeRed, item));
+            }
         }
 
         public static Object CopyObject(Object source)
         {
 			Object dst;
-            dst = new Object(source.ParentSheetIndex, source.Stack, false, source.Price, source.quality);
-            if (Game1.player.caveChoice == MUSHROOM_CAVE)
+            dst = new Object(source.ParentSheetIndex, source.Stack, false, source.Price, source.Quality);
+            if (Game1.player.caveChoice.Value == MUSHROOM_CAVE)
             {
-                dst.bigCraftable = source.bigCraftable;
-                dst.tileLocation = source.tileLocation;
+                dst.bigCraftable.Value = source.bigCraftable.Value;
+                dst.TileLocation = source.TileLocation;
             }
-            dst.type = source.Type;
+            dst.Type = source.Type;
             return dst;
         }
     }

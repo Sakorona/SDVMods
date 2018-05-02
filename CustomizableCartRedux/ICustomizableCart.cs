@@ -1,6 +1,8 @@
-﻿using StardewValley;
+﻿using StardewModdingAPI;
+using StardewValley;
 using StardewValley.Locations;
 using System;
+using System.Collections.Generic;
 
 namespace CustomizableCartRedux
 {
@@ -13,6 +15,13 @@ namespace CustomizableCartRedux
     public class CustomizableCartAPI : ICustomizableCart
     {
         public event EventHandler CartProcessingComplete;
+        private IReflectionHelper Reflector;
+
+        public CustomizableCartAPI(IReflectionHelper Ref)
+        {
+            this.Reflector = Ref;
+        }
+
         internal void InvokeCartProcessingComplete()
         {
             Log.trace("Event: CartProcessingComplete");
@@ -27,11 +36,16 @@ namespace CustomizableCartRedux
             bool travelingMerchantDay = f.travelingMerchantDay;
             if (travelingMerchantDay)
             {
-                f.travelingMerchantStock.Add(item, new int[]
+                var travelerStock = Reflector.GetField<Dictionary<Item, int[]>>(f, "travelerStock").GetValue();
+                if (travelerStock != null)
                 {
+
+                  travelerStock.Add(item, new int[]
+                  {
                     price,
                     quantity
-                });
+                  });
+                }
             }
         }
     }

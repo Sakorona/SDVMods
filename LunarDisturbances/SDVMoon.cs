@@ -118,7 +118,7 @@ namespace TwilightShards.LunarDisturbances
             if (CurrentPhase == MoonPhase.FullMoon && Dice.NextDoublePositive() <= ModConfig.BadMoonRising && !Game1.isFestival() && !Game1.weddingToday && ModConfig.HazardousMoonEvents)
             {
                 IsBloodMoon = true;
-                Game1.currentLocation.waterColor = BloodMoonWater;
+                Game1.currentLocation.waterColor.Value = BloodMoonWater;
             }
         }
 
@@ -173,7 +173,7 @@ namespace TwilightShards.LunarDisturbances
             //moon processing
             if (CurrentPhase == MoonPhase.FullMoon)
             {
-                foreach (var TF in f.terrainFeatures)
+                foreach (var TF in f.terrainFeatures.Pairs)
                 {
                     if (TF.Value is HoeDirt curr && curr.crop != null && Dice.NextDouble() < CropGrowthChance)
                     {
@@ -189,14 +189,14 @@ namespace TwilightShards.LunarDisturbances
             {
                 if (f != null)
                 {
-                    foreach (KeyValuePair<Vector2, TerrainFeature> TF in f.terrainFeatures)
+                    foreach (KeyValuePair<Vector2, TerrainFeature> TF in f.terrainFeatures.Pairs)
                     {
                         if (TF.Value is HoeDirt curr && curr.crop != null)
                         {
                             if (Dice.NextDouble() < CropNoGrowthChance)
                             {
                                 cropsAffected++;
-                                curr.state = HoeDirt.dry; 
+                                curr.state.Value = HoeDirt.dry; 
                             }
                         }
                     }
@@ -210,7 +210,7 @@ namespace TwilightShards.LunarDisturbances
         internal void ForceBloodMoon()
         {
             IsBloodMoon = true;
-            Game1.currentLocation.waterColor = Color.PaleVioletRed;
+            Game1.currentLocation.waterColor.Value = Color.PaleVioletRed;
         }
 
         public void TenMinuteUpdate()
@@ -244,7 +244,7 @@ namespace TwilightShards.LunarDisturbances
                 if (Utility.isOnScreen(zero * Game1.tileSize, Game1.tileSize))
                     zero.X -= Game1.viewport.Width;
 
-                List<NPC> characters = f.characters;
+                List<NPC> characters = f.characters.ToList();
                 Ghost ghost = new Ghost(zero * Game1.tileSize)
                 {
                     focusedOnFarmers = true,
@@ -264,9 +264,6 @@ namespace TwilightShards.LunarDisturbances
 
         public void HandleMoonAfterWake()
         {
-            if (Game1.getLocationFromName("Beach") is null)
-                throw new Exception("... Please reinstall your game");
-
             Beach b = Game1.getLocationFromName("Beach") as Beach;
             int itemsChanged = 0;
 
@@ -274,10 +271,10 @@ namespace TwilightShards.LunarDisturbances
                 return;
 
             //new moon processing
-            if (CurrentPhase == MoonPhase.NewMoon && ModConfig.HazardousMoonEvents)
+            if (CurrentPhase == MoonPhase.NewMoon && ModConfig.HazardousMoonEvents && !(b is null))
             {
-                List<KeyValuePair<Vector2, StardewValley.Object>> entries = (from o in b.objects
-                                                                             where beachItems.Contains(o.Value.parentSheetIndex)
+                List<KeyValuePair<Vector2, StardewValley.Object>> entries = (from o in b.objects.Pairs
+                                                                             where beachItems.Contains(o.Value.ParentSheetIndex)
                                                                              select o).ToList();
 
                 foreach (KeyValuePair<Vector2, StardewValley.Object> rem in entries)
@@ -386,7 +383,7 @@ namespace TwilightShards.LunarDisturbances
 
         public bool CheckForGhostSpawn()
         {
-            if (Game1.timeOfDay > Game1.getTrulyDarkTime() && Game1.currentLocation.isOutdoors && Game1.currentLocation is Farm)
+            if (Game1.timeOfDay > Game1.getTrulyDarkTime() && Game1.currentLocation.IsOutdoors && Game1.currentLocation is Farm)
             {
                 if (CurrentPhase is MoonPhase.FullMoon && Dice.NextDouble() < GhostChance && ModConfig.HazardousMoonEvents)
                 {

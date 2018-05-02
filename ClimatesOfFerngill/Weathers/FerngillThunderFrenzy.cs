@@ -130,9 +130,9 @@ namespace ClimatesOfFerngillRebuild
                 }
                 GameLocation locationFromName = Game1.getLocationFromName("Farm");
                 List<Vector2> source = new List<Vector2>();
-                foreach (KeyValuePair<Vector2, SObject> keyValuePair in locationFromName.objects)
+                foreach (KeyValuePair<Vector2, SObject> keyValuePair in locationFromName.objects.Pairs)
                 {
-                    if (keyValuePair.Value.bigCraftable && keyValuePair.Value.ParentSheetIndex == 9)
+                    if (keyValuePair.Value.bigCraftable.Value && keyValuePair.Value.ParentSheetIndex == 9)
                         source.Add(keyValuePair.Key);
                 }
                 if (source.Count > 0)
@@ -140,10 +140,10 @@ namespace ClimatesOfFerngillRebuild
                     for (int index1 = 0; index1 < 2; ++index1)
                     {
                         Vector2 index2 = source.ElementAt(Dice.Next(source.Count));
-                        if (locationFromName.objects[index2].heldObject == null)
+                        if (locationFromName.objects[index2].heldObject.Value == null)
                         {
-                            locationFromName.objects[index2].heldObject = new SObject(787, 1, false, -1, 0);
-                            locationFromName.objects[index2].minutesUntilReady = 3000 - Game1.timeOfDay;
+                            locationFromName.objects[index2].heldObject.Value = new SObject(787, 1, false, -1, 0);
+                            locationFromName.objects[index2].MinutesUntilReady = 3000 - Game1.timeOfDay;
                             locationFromName.objects[index2].shakeTimer = 1000;
                             if (!(Game1.currentLocation is Farm))
                                 return;
@@ -160,7 +160,7 @@ namespace ClimatesOfFerngillRebuild
                     return;
                 try
                 {
-                    KeyValuePair<Vector2, TerrainFeature> keyValuePair = locationFromName.terrainFeatures.ElementAt(Dice.Next(locationFromName.terrainFeatures.Count));
+                    KeyValuePair<Vector2, TerrainFeature> keyValuePair = locationFromName.terrainFeatures.Pairs.ElementAt(Dice.Next(locationFromName.terrainFeatures.Count()));
                     Vector2 strikeLocation = keyValuePair.Key * Game1.tileSize + new Vector2(Game1.tileSize / 2, -Game1.tileSize * 2);
 
                     if (ClimatesOfFerngill.UseSafeLightningApi && !(ClimatesOfFerngill.SafeLightningAPI is null))
@@ -172,7 +172,7 @@ namespace ClimatesOfFerngillRebuild
                         if (!(keyValuePair.Value is FruitTree) && keyValuePair.Value.performToolAction(null, 50, keyValuePair.Key, locationFromName))
                         {
                             locationFromName.terrainFeatures.Remove(keyValuePair.Key);
-                            if (!Game1.currentLocation.name.Equals("Farm"))
+                            if (!Game1.currentLocation.Name.Equals("Farm"))
                                 return;
                             locationFromName.temporarySprites.Add(new TemporaryAnimatedSprite(362, 75f, 6, 1, keyValuePair.Key, false, false));
                             if (ModConfig.Verbose)
@@ -183,7 +183,7 @@ namespace ClimatesOfFerngillRebuild
                         {
                             if (!(keyValuePair.Value is FruitTree))
                                 return;
-                            (keyValuePair.Value as FruitTree).struckByLightningCountdown = 4;
+                            (keyValuePair.Value as FruitTree).struckByLightningCountdown.Value = 4;
                             (keyValuePair.Value as FruitTree).shake(keyValuePair.Key, true);
 
                             if (ModConfig.Verbose)
