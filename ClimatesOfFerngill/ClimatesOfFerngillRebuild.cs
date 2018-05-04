@@ -216,7 +216,7 @@ namespace ClimatesOfFerngillRebuild
                 if (lines.FirstOrDefault() == Game1.content.LoadString("Strings\\StringsFromCSFiles:Object.cs.12822"))
                 {
                     if (WeatherOpt.Verbose)
-                        Monitor.Log($"Rain totem interception firing with roll {odds.ToString("N3")} vs. odds {stormOdds.ToString("N3")}");
+                        Monitor.Log($"Rain totem interception firing with roll {odds:N3} vs. odds {stormOdds:N3}");
 
                     // rain totem used, do your thing
                     if (WeatherOpt.StormTotemChange)
@@ -226,7 +226,7 @@ namespace ClimatesOfFerngillRebuild
                             if (WeatherOpt.Verbose)
                                 Monitor.Log("Replacing rain with storm..");
 
-                            Game1.weatherForTomorrow = Game1.weather_lightning;
+                            Game1.netWorldState.Value.WeatherForTomorrow = Game1.weatherForTomorrow = Game1.weather_lightning;
                             stormDialogue = true;
                         }
                     }
@@ -475,7 +475,7 @@ namespace ClimatesOfFerngillRebuild
             //if tomorrow is a festival or wedding, we need to set the weather and leave.
             if (Utility.isFestivalDay(Game1.dayOfMonth + 1, Game1.currentSeason))
             {
-                Game1.weatherForTomorrow = Game1.weather_festival;
+                Game1.netWorldState.Value.WeatherForTomorrow = Game1.weatherForTomorrow = Game1.weather_festival;
                 if (WeatherOpt.Verbose)
                     Monitor.Log($"Festival tomorrow. Aborting processing.", LogLevel.Trace);
 
@@ -485,7 +485,7 @@ namespace ClimatesOfFerngillRebuild
 
             if (Game1.player.spouse != null && Game1.player.isEngaged() && Game1.player.friendshipData[Game1.player.spouse].CountdownToWedding == 1)
             {
-                Game1.weatherForTomorrow = Game1.weather_wedding;
+                Game1.netWorldState.Value.WeatherForTomorrow = Game1.weatherForTomorrow = Game1.weather_wedding;
                 if (WeatherOpt.Verbose)
                     Monitor.Log($"Wedding tomorrow. Aborting processing.", LogLevel.Trace);
 
@@ -551,42 +551,42 @@ namespace ClimatesOfFerngillRebuild
                         Monitor.Log($"Snow is enabled, with the High for the day being: {Conditions.TodayHigh}" +
                                     $" and the calculated midpoint temperature being {MidPointTemp}");
 
-                    Game1.weatherForTomorrow = Game1.weather_snow;
+                    Game1.netWorldState.Value.WeatherForTomorrow = Game1.weatherForTomorrow = Game1.weather_snow;
                 }
                 else
                 {
-                    Game1.weatherForTomorrow = Game1.weather_rain;
+                    Game1.netWorldState.Value.WeatherForTomorrow = Game1.weatherForTomorrow = Game1.weather_rain;
                 }
 
                 if (!GameClimate.AllowRainInWinter && Game1.currentSeason == "winter" && Game1.weatherForTomorrow == Game1.weather_rain)
                 {
-                    Game1.weatherForTomorrow = Game1.weather_snow;
+                    Game1.netWorldState.Value.WeatherForTomorrow = Game1.weatherForTomorrow = Game1.weather_snow;
                 }
 
                 //apply lightning logic.
                 if (Dice.NextDoublePositive() >= stormDays && Game1.weatherForTomorrow == Game1.weather_rain)
                 {
-                    Game1.weatherForTomorrow = Game1.weather_lightning;
+                    Game1.netWorldState.Value.WeatherForTomorrow = Game1.weatherForTomorrow = Game1.weather_lightning;
                     if (SDate.Now().Year == 1 && SDate.Now().Season == "spring" && !WeatherOpt.AllowStormsSpringYear1)
-                        Game1.weatherForTomorrow = Game1.weather_rain;
+                        Game1.netWorldState.Value.WeatherForTomorrow = Game1.weatherForTomorrow = Game1.weather_rain;
                 }
 
                 //tracking time! - Snow fall on Fall 28, if the flag is set.
                 if (Game1.dayOfMonth == 28 && Game1.currentSeason == "fall" && WeatherOpt.SnowOnFall28)
                 {
                     Conditions.ForceTodayTemps(2, -1);
-                    Game1.weatherForTomorrow = Game1.weather_snow;
+                    Game1.netWorldState.Value.WeatherForTomorrow = Game1.weatherForTomorrow = Game1.weather_snow;
                 }
             }
 
             if (Result == "debris")
             {
-                Game1.weatherForTomorrow = Game1.weather_debris;
+                Game1.netWorldState.Value.WeatherForTomorrow = Game1.weatherForTomorrow = Game1.weather_debris;
             }
 
             if (Result == "sunny")
             {
-                Game1.weatherForTomorrow = Game1.weather_sunny;
+                Game1.netWorldState.Value.WeatherForTomorrow = Game1.weatherForTomorrow = Game1.weather_sunny;
             }
 
             if (WeatherOpt.Verbose)
@@ -723,31 +723,31 @@ namespace ClimatesOfFerngillRebuild
             switch (ChosenWeather)
             {
                 case "rain":
-                    Game1.weatherForTomorrow = Game1.weather_rain;
+                    Game1.netWorldState.Value.WeatherForTomorrow = Game1.weatherForTomorrow = Game1.weather_rain;
                     Monitor.Log(Helper.Translation.Get("console-text.weatherset-tmrwrain"), LogLevel.Info);
                     break;
                 case "storm":
-                    Game1.weatherForTomorrow = Game1.weather_lightning;
+                    Game1.netWorldState.Value.WeatherForTomorrow = Game1.weatherForTomorrow = Game1.weather_lightning;
                     Monitor.Log(Helper.Translation.Get("console-text.weatherset-tmrwstorm"), LogLevel.Info);
                     break;
                 case "snow":
-                    Game1.weatherForTomorrow = Game1.weather_snow;
+                    Game1.netWorldState.Value.WeatherForTomorrow = Game1.weatherForTomorrow = Game1.weather_snow;
                     Monitor.Log(Helper.Translation.Get("console-text.weatherset-tmrwsnow"), LogLevel.Info);
                     break;
                 case "debris":
-                    Game1.weatherForTomorrow = Game1.weather_debris;
+                    Game1.netWorldState.Value.WeatherForTomorrow = Game1.weatherForTomorrow = Game1.weather_debris;
                     Monitor.Log(Helper.Translation.Get("console-text.weatherset-tmrwdebris"), LogLevel.Info);
                     break;
                 case "festival":
-                    Game1.weatherForTomorrow = Game1.weather_festival;
+                    Game1.netWorldState.Value.WeatherForTomorrow = Game1.weatherForTomorrow = Game1.weather_festival;
                     Monitor.Log(Helper.Translation.Get("console-text.weatherset-tmrwfestival"), LogLevel.Info);
                     break;
                 case "sun":
-                    Game1.weatherForTomorrow = Game1.weather_sunny;
+                    Game1.netWorldState.Value.WeatherForTomorrow = Game1.weatherForTomorrow = Game1.weather_sunny;
                     Monitor.Log(Helper.Translation.Get("console-text.weatherset-tmrwsun"), LogLevel.Info);
                     break;
                 case "wedding":
-                    Game1.weatherForTomorrow = Game1.weather_wedding;
+                    Game1.netWorldState.Value.WeatherForTomorrow = Game1.weatherForTomorrow = Game1.weather_wedding;
                     Monitor.Log(Helper.Translation.Get("console-text.weatherset-tmrwwedding"), LogLevel.Info);
                     break;
             }
