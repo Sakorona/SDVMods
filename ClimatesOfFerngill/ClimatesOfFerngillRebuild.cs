@@ -1,5 +1,4 @@
-﻿#region headers
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -18,7 +17,6 @@ using TwilightShards.Common;
 using Microsoft.Xna.Framework.Graphics;
 using EnumsNET;
 //using PyTK.CustomTV;
-#endregion
 
 namespace ClimatesOfFerngillRebuild
 {
@@ -47,7 +45,6 @@ namespace ClimatesOfFerngillRebuild
         private Descriptions DescriptionEngine;
         private Rectangle RWeatherIcon;
         private bool Disabled = false;
-        public int ResetTicker { get; set; }
 
         //Integrations
         internal static bool UseLunarDisturbancesApi = false;
@@ -81,7 +78,7 @@ namespace ClimatesOfFerngillRebuild
 
             if (WeatherOpt.Verbose) Monitor.Log($"Loading climate type: {WeatherOpt.ClimateType} from file", LogLevel.Trace);
 
-            string path = Path.Combine("data", "weather", WeatherOpt.ClimateType + ".json");
+            var path = Path.Combine("data", "weather", WeatherOpt.ClimateType + ".json");
             GameClimate = helper.ReadJsonFile<FerngillClimate>(path); 
             
             if (GameClimate is null)
@@ -91,29 +88,28 @@ namespace ClimatesOfFerngillRebuild
                 this.Disabled = true;
             }
 
-            if (!Disabled)
-            {
-                //subscribe to events
-                TimeEvents.AfterDayStarted += HandleNewDay;
-                SaveEvents.BeforeSave += OnEndOfDay;
-                TimeEvents.TimeOfDayChanged += TenMinuteUpdate;
-                MenuEvents.MenuChanged += MenuEvents_MenuChanged;
-                GameEvents.UpdateTick += CheckForChanges;
-                GameEvents.FirstUpdateTick += GameEvents_FirstUpdateTick;
-                SaveEvents.AfterReturnToTitle += ResetMod;
-                //SaveEvents.AfterLoad += SaveEvents_AfterLoad;
-                GraphicsEvents.OnPreRenderHudEvent += DrawPreHudObjects;
-                GraphicsEvents.OnPostRenderHudEvent += DrawObjects;
-                LocationEvents.CurrentLocationChanged += LocationEvents_CurrentLocationChanged;
-                ControlEvents.KeyPressed += (sender, e) => this.ReceiveKeyPress(e.KeyPressed, this.WeatherOpt.Keyboard);
-                MenuEvents.MenuClosed += (sender, e) => this.ReceiveMenuClosed(e.PriorMenu);
+            if (Disabled) return;
+            
+            //subscribe to events
+            TimeEvents.AfterDayStarted += HandleNewDay;
+            SaveEvents.BeforeSave += OnEndOfDay;
+            TimeEvents.TimeOfDayChanged += TenMinuteUpdate;
+            MenuEvents.MenuChanged += MenuEvents_MenuChanged;
+            GameEvents.UpdateTick += CheckForChanges;
+            GameEvents.FirstUpdateTick += GameEvents_FirstUpdateTick;
+            SaveEvents.AfterReturnToTitle += ResetMod;
+            //SaveEvents.AfterLoad += SaveEvents_AfterLoad;
+            GraphicsEvents.OnPreRenderHudEvent += DrawPreHudObjects;
+            GraphicsEvents.OnPostRenderHudEvent += DrawObjects;
+            LocationEvents.CurrentLocationChanged += LocationEvents_CurrentLocationChanged;
+            ControlEvents.KeyPressed += (sender, e) => this.ReceiveKeyPress(e.KeyPressed, this.WeatherOpt.Keyboard);
+            MenuEvents.MenuClosed += (sender, e) => this.ReceiveMenuClosed(e.PriorMenu);
 
-                //console commands
-                helper.ConsoleCommands
-                      .Add("world_tmrwweather", helper.Translation.Get("console-text.desc_tmrweather"), TomorrowWeatherChangeFromConsole)
-                      .Add("world_setweather", helper.Translation.Get("console-text.desc_setweather"), WeatherChangeFromConsole)
-                      .Add("debug_clearspecial", "debug command to clear special weathers", ClearSpecial);
-            }
+            //console commands
+            helper.ConsoleCommands
+                .Add("world_tmrwweather", helper.Translation.Get("console-text.desc_tmrweather"), TomorrowWeatherChangeFromConsole)
+                .Add("world_setweather", helper.Translation.Get("console-text.desc_setweather"), WeatherChangeFromConsole)
+                .Add("debug_clearspecial", "debug command to clear special weathers", ClearSpecial);
         }
 
         private void ClearSpecial(string arg1, string[] arg2)
@@ -163,8 +159,7 @@ namespace ClimatesOfFerngillRebuild
         private void DebugWeather(string arg1, string[] arg2)
         {
             //print a complete weather status. 
-            string retString = "";
-            retString += $"Weather for {SDate.Now()} is {Conditions.ToString()}. {Environment.NewLine} System flags: isRaining {Game1.isRaining} isSnowing {Game1.isSnowing} isDebrisWeather: {Game1.isDebrisWeather} isLightning {Game1.isLightning}, with tommorow's set weather being {Game1.weatherForTomorrow}";
+            var retString = $"Weather for {SDate.Now()} is {Conditions.ToString()}. {Environment.NewLine} System flags: isRaining {Game1.isRaining} isSnowing {Game1.isSnowing} isDebrisWeather: {Game1.isDebrisWeather} isLightning {Game1.isLightning}, with tommorow's set weather being {Game1.weatherForTomorrow}";
             Monitor.Log(retString);
         }
 
@@ -187,17 +182,14 @@ namespace ClimatesOfFerngillRebuild
             if (Conditions.HasWeather(CurrentWeather.Fog))
             {
                 //TODO On release, see if we can actually require reflection there.
-                if (!Game1.currentLocation.IsOutdoors && Game1.currentLocation is DecoratableLocation && WeatherOpt.DarkenLightInFog)
+                if (!Game1.currentLocation.IsOutdoors && Game1.currentLocation is DecoratableLocation loc && WeatherOpt.DarkenLightInFog)
                 {
-                    if (Game1.currentLocation is DecoratableLocation loc)
+                    foreach (var f in loc.furniture)
                     {
-                        foreach (Furniture f in loc.furniture)
+                        if (f.furniture_type.Value == Furniture.window)
                         {
-                            if (f.furniture_type.Value == Furniture.window)
-                            {
-                                //if (WeatherOpt.Verbose) Monitor.Log($"Attempting to remove the light for {f.name}");
-                                Helper.Reflection.GetMethod(f, "addLights").Invoke(new object[] { Game1.currentLocation });
-                            }
+                            //if (WeatherOpt.Verbose) Monitor.Log($"Attempting to remove the light for {f.name}");
+                            Helper.Reflection.GetMethod(f, "addLights").Invoke(new object[] { Game1.currentLocation });
                         }
                     }
                 }
@@ -241,10 +233,9 @@ namespace ClimatesOfFerngillRebuild
 
                     // change dialogue text
                     lines.Clear();
-                    if (stormDialogue)
-                        lines.Add(Helper.Translation.Get("hud-text.desc_stormtotem"));
-                    else
-                        lines.Add(Game1.content.LoadString("Strings\\StringsFromCSFiles:Object.cs.12822"));
+                    lines.Add(stormDialogue
+                        ? Helper.Translation.Get("hud-text.desc_stormtotem")
+                        : Game1.content.LoadString("Strings\\StringsFromCSFiles:Object.cs.12822"));
                 }
             }
         }
@@ -335,7 +326,7 @@ namespace ClimatesOfFerngillRebuild
                 if (!Game1.currentLocation.IsOutdoors && Game1.currentLocation is DecoratableLocation && 
                     WeatherOpt.DarkenLightInFog)
                 {
-                    var loc = Game1.currentLocation as DecoratableLocation;
+                    var loc = (DecoratableLocation) Game1.currentLocation;
                     foreach (Furniture f in loc.furniture)
                     {
                         //Yes, *add* lights removes them. No, don't ask me why.

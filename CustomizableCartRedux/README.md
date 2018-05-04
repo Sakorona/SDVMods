@@ -10,6 +10,8 @@ This mod will only work for the main player (i.e the host) in an MP game.
 
 ## Changelog
 1.3
+- Now includes 1.3 item conditions
+- Will actually use SellItem extractions
 - Updated for SDV 1.3 beta
 - Adds a flag to use the vanilla max instead of modded items
 1.2.2 

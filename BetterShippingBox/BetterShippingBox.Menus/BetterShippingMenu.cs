@@ -22,10 +22,6 @@ namespace BetterShippingBox.Menus
 
 		private readonly List<TemporaryAnimatedSprite> animations = new List<TemporaryAnimatedSprite>();
 
-		public const int itemsPerPage = 4;
-
-		public const int numberRequiredForExtraItemTrade = 5;
-
 		private InventoryMenu inventory;
 
 		private Item heldItem;
@@ -55,13 +51,13 @@ namespace BetterShippingBox.Menus
 			}
 			Game1.player.forceCanMove();
 			Game1.playSound("dwop");
-			this.inventory = new InventoryMenu(this.xPositionOnScreen + Game1.tileSize / 2 + (Game1.tileSize / 3 + Game1.tileSize / 11), this.yPositionOnScreen + IClickableMenu.spaceToClearTopBorder + IClickableMenu.borderWidth + Game1.tileSize * 5 + Game1.pixelZoom * 10, false, null, new InventoryMenu.highlightThisItem(this.HighlightItemToShip), -1, 3, 0, 0, true)
+			this.inventory = new InventoryMenu(this.xPositionOnScreen + Game1.tileSize / 2 + (Game1.tileSize / 3 + Game1.tileSize / 11), this.yPositionOnScreen + spaceToClearTopBorder + IClickableMenu.borderWidth + Game1.tileSize * 5 + Game1.pixelZoom * 10, false, null, new InventoryMenu.highlightThisItem(this.HighlightItemToShip))
 			{
 				showGrayedOutSlots = true
 			};
-			this.upArrow = new ClickableTextureComponent(new Rectangle(this.xPositionOnScreen + this.width + Game1.tileSize / 4, this.yPositionOnScreen + Game1.tileSize / 4, 11 * Game1.pixelZoom, 12 * Game1.pixelZoom), Game1.mouseCursors, new Rectangle(421, 459, 11, 12), (float)Game1.pixelZoom, false);
-			this.downArrow = new ClickableTextureComponent(new Rectangle(this.xPositionOnScreen + this.width + Game1.tileSize / 4, this.yPositionOnScreen + this.height - Game1.tileSize, 11 * Game1.pixelZoom, 12 * Game1.pixelZoom), Game1.mouseCursors, new Rectangle(421, 472, 11, 12), (float)Game1.pixelZoom, false);
-			this.scrollBar = new ClickableTextureComponent(new Rectangle(this.upArrow.bounds.X + Game1.pixelZoom * 3, this.upArrow.bounds.Y + this.upArrow.bounds.Height + Game1.pixelZoom, 6 * Game1.pixelZoom, 10 * Game1.pixelZoom), Game1.mouseCursors, new Rectangle(435, 463, 6, 10), (float)Game1.pixelZoom, false);
+			this.upArrow = new ClickableTextureComponent(new Rectangle(this.xPositionOnScreen + this.width + Game1.tileSize / 4, this.yPositionOnScreen + Game1.tileSize / 4, 11 * Game1.pixelZoom, 12 * Game1.pixelZoom), Game1.mouseCursors, new Rectangle(421, 459, 11, 12), Game1.pixelZoom);
+			this.downArrow = new ClickableTextureComponent(new Rectangle(this.xPositionOnScreen + this.width + Game1.tileSize / 4, this.yPositionOnScreen + this.height - Game1.tileSize, 11 * Game1.pixelZoom, 12 * Game1.pixelZoom), Game1.mouseCursors, new Rectangle(421, 472, 11, 12), Game1.pixelZoom);
+			this.scrollBar = new ClickableTextureComponent(new Rectangle(this.upArrow.bounds.X + Game1.pixelZoom * 3, this.upArrow.bounds.Y + this.upArrow.bounds.Height + Game1.pixelZoom, 6 * Game1.pixelZoom, 10 * Game1.pixelZoom), Game1.mouseCursors, new Rectangle(435, 463, 6, 10), Game1.pixelZoom);
 			this.scrollBarRunner = new Rectangle(this.scrollBar.bounds.X, this.upArrow.bounds.Y + this.upArrow.bounds.Height + Game1.pixelZoom, this.scrollBar.bounds.Width, this.height - Game1.tileSize - this.upArrow.bounds.Height - Game1.pixelZoom * 7);
 			this.shippingBox = new ClickableComponent(new Rectangle(this.xPositionOnScreen, this.yPositionOnScreen, this.width, this.height - Game1.tileSize * 4 + Game1.tileSize / 2 + Game1.pixelZoom), (Item)null);
 			for (int i = 0; i < 4; i++)
@@ -72,8 +68,7 @@ namespace BetterShippingBox.Menus
 
 		public bool HighlightItemToShip(Item i)
 		{
-			SObject @object = i as SObject;
-			return @object != null && @object.canBeShipped();
+		    return i is SObject @object && @object.canBeShipped();
 		}
 
 		public override void leftClickHeld(int x, int y)
@@ -84,7 +79,7 @@ namespace BetterShippingBox.Menus
 			{
 				int y2 = this.scrollBar.bounds.Y;
 				this.scrollBar.bounds.Y = Math.Min(this.yPositionOnScreen + this.height - Game1.tileSize - Game1.pixelZoom * 3 - this.scrollBar.bounds.Height, Math.Max(y, this.yPositionOnScreen + this.upArrow.bounds.Height + Game1.pixelZoom * 5));
-				this.currentItemIndex = Math.Min(Game1.getFarm().shippingBin.Count - 4, Math.Max(0, (int)((double)Game1.getFarm().shippingBin.Count * (double)((float)(y - this.scrollBarRunner.Y) / (float)this.scrollBarRunner.Height))));
+				this.currentItemIndex = Math.Min(Game1.getFarm().shippingBin.Count - 4, Math.Max(0, (int)(Game1.getFarm().shippingBin.Count * (double)((y - this.scrollBarRunner.Y) / (float)this.scrollBarRunner.Height))));
 				this.SetScrollBarToCurrentIndex();
 				bool flag2 = y2 == this.scrollBar.bounds.Y;
 				if (!flag2)
@@ -156,7 +151,7 @@ namespace BetterShippingBox.Menus
 				bool flag2 = this.upperRightCloseButton.containsPoint(x, y) && this.readyToClose();
 				if (flag2)
 				{
-					base.exitThisMenu(true);
+					base.exitThisMenu();
 				}
 				Vector2 value = this.inventory.snapToClickableComponent(x, y);
 				bool flag3 = this.downArrow.containsPoint(x, y) && this.currentItemIndex < Math.Max(0, Game1.getFarm().shippingBin.Count - 4);
@@ -220,7 +215,7 @@ namespace BetterShippingBox.Menus
 							bool flag12 = this.inventory.getItemAt(x, y) == null;
 							if (flag12)
 							{
-								this.animations.Add(new TemporaryAnimatedSprite(5, value + new Vector2(32f, 32f), Color.White, 8, false, 100f, 0, -1, -1f, -1, 0)
+								this.animations.Add(new TemporaryAnimatedSprite(5, value + new Vector2(32f, 32f), Color.White)
 								{
 									motion = new Vector2(0f, -0.5f)
 								});
@@ -234,7 +229,7 @@ namespace BetterShippingBox.Menus
 				}
 				else
 				{
-					this.heldItem = this.inventory.leftClick(x, y, this.heldItem, true);
+					this.heldItem = this.inventory.leftClick(x, y, this.heldItem);
 				}
 				for (int i = 0; i < this.shippedItemButtons.Count; i++)
 				{
@@ -255,7 +250,7 @@ namespace BetterShippingBox.Menus
 				bool flag15 = !this.readyToClose() || (x >= this.xPositionOnScreen - Game1.tileSize && y >= this.yPositionOnScreen - Game1.tileSize && x <= this.xPositionOnScreen + this.width + Game1.tileSize * 2 && y <= this.yPositionOnScreen + this.height + Game1.tileSize);
 				if (!flag15)
 				{
-					base.exitThisMenu(true);
+					base.exitThisMenu();
 				}
 			}
 		}
@@ -272,7 +267,7 @@ namespace BetterShippingBox.Menus
 			bool flag = this.heldItem == null;
 			if (!flag)
 			{
-				Game1.player.addItemToInventoryBool(this.heldItem, false);
+				Game1.player.addItemToInventoryBool(this.heldItem);
 				Game1.playSound("coin");
 			}
 		}
@@ -286,7 +281,7 @@ namespace BetterShippingBox.Menus
 				bool flag2 = Game1.oldKBState.IsKeyDown(Keys.LeftShift);
 				if (flag2)
 				{
-					result = Game1.player.addItemToInventoryBool(item, false);
+					result = Game1.player.addItemToInventoryBool(item);
 				}
 				else
 				{
@@ -299,7 +294,7 @@ namespace BetterShippingBox.Menus
 				bool flag3 = this.heldItem != null && Game1.oldKBState.IsKeyDown(Keys.LeftShift);
 				if (flag3)
 				{
-					result = Game1.player.addItemToInventoryBool(item, false);
+					result = Game1.player.addItemToInventoryBool(item);
 				}
 				else
 				{
@@ -332,7 +327,7 @@ namespace BetterShippingBox.Menus
 			}
 			else
 			{
-				this.heldItem = this.inventory.rightClick(x, y, this.heldItem, true);
+				this.heldItem = this.inventory.rightClick(x, y, this.heldItem);
 			}
 			for (int i = 0; i < this.shippedItemButtons.Count; i++)
 			{
@@ -358,9 +353,9 @@ namespace BetterShippingBox.Menus
 			this.hoverText = "";
 			this.hoveredItem = null;
 			this.boldTitleText = "";
-			this.upArrow.tryHover(x, y, 0.1f);
-			this.downArrow.tryHover(x, y, 0.1f);
-			this.scrollBar.tryHover(x, y, 0.1f);
+			this.upArrow.tryHover(x, y);
+			this.downArrow.tryHover(x, y);
+			this.scrollBar.tryHover(x, y);
 			bool flag = this.scrolling;
 			if (!flag)
 			{
@@ -413,13 +408,13 @@ namespace BetterShippingBox.Menus
 				this.xPositionOnScreen = Game1.tileSize / 2;
 			}
 			Game1.player.forceCanMove();
-			this.inventory = new InventoryMenu(this.xPositionOnScreen + Game1.tileSize / 2 + (Game1.tileSize / 3 + Game1.tileSize / 11), this.yPositionOnScreen + IClickableMenu.spaceToClearTopBorder + IClickableMenu.borderWidth + Game1.tileSize * 5 + Game1.pixelZoom * 10, false, null, new InventoryMenu.highlightThisItem(this.HighlightItemToShip), -1, 3, 0, 0, true)
+			this.inventory = new InventoryMenu(this.xPositionOnScreen + Game1.tileSize / 2 + (Game1.tileSize / 3 + Game1.tileSize / 11), this.yPositionOnScreen + spaceToClearTopBorder + IClickableMenu.borderWidth + Game1.tileSize * 5 + Game1.pixelZoom * 10, false, null, new InventoryMenu.highlightThisItem(this.HighlightItemToShip))
 			{
 				showGrayedOutSlots = true
 			};
-			this.upArrow = new ClickableTextureComponent(new Rectangle(this.xPositionOnScreen + this.width + Game1.tileSize / 4, this.yPositionOnScreen + Game1.tileSize / 4, 11 * Game1.pixelZoom, 12 * Game1.pixelZoom), Game1.mouseCursors, new Rectangle(421, 459, 11, 12), (float)Game1.pixelZoom, false);
-			this.downArrow = new ClickableTextureComponent(new Rectangle(this.xPositionOnScreen + this.width + Game1.tileSize / 4, this.yPositionOnScreen + this.height - Game1.tileSize, 11 * Game1.pixelZoom, 12 * Game1.pixelZoom), Game1.mouseCursors, new Rectangle(421, 472, 11, 12), (float)Game1.pixelZoom, false);
-			this.scrollBar = new ClickableTextureComponent(new Rectangle(this.upArrow.bounds.X + Game1.pixelZoom * 3, this.upArrow.bounds.Y + this.upArrow.bounds.Height + Game1.pixelZoom, 6 * Game1.pixelZoom, 10 * Game1.pixelZoom), Game1.mouseCursors, new Rectangle(435, 463, 6, 10), (float)Game1.pixelZoom, false);
+			this.upArrow = new ClickableTextureComponent(new Rectangle(this.xPositionOnScreen + this.width + Game1.tileSize / 4, this.yPositionOnScreen + Game1.tileSize / 4, 11 * Game1.pixelZoom, 12 * Game1.pixelZoom), Game1.mouseCursors, new Rectangle(421, 459, 11, 12), Game1.pixelZoom);
+			this.downArrow = new ClickableTextureComponent(new Rectangle(this.xPositionOnScreen + this.width + Game1.tileSize / 4, this.yPositionOnScreen + this.height - Game1.tileSize, 11 * Game1.pixelZoom, 12 * Game1.pixelZoom), Game1.mouseCursors, new Rectangle(421, 472, 11, 12), Game1.pixelZoom);
+			this.scrollBar = new ClickableTextureComponent(new Rectangle(this.upArrow.bounds.X + Game1.pixelZoom * 3, this.upArrow.bounds.Y + this.upArrow.bounds.Height + Game1.pixelZoom, 6 * Game1.pixelZoom, 10 * Game1.pixelZoom), Game1.mouseCursors, new Rectangle(435, 463, 6, 10), Game1.pixelZoom);
 			this.scrollBarRunner = new Rectangle(this.scrollBar.bounds.X, this.upArrow.bounds.Y + this.upArrow.bounds.Height + Game1.pixelZoom, this.scrollBar.bounds.Width, this.height - Game1.tileSize - this.upArrow.bounds.Height - Game1.pixelZoom * 7);
 			this.shippingBox = new ClickableComponent(new Rectangle(this.xPositionOnScreen, this.yPositionOnScreen, this.width, this.height - Game1.tileSize * 4 + Game1.tileSize / 2 + Game1.pixelZoom), (Item)null);
 			this.shippedItemButtons.Clear();
@@ -436,23 +431,23 @@ namespace BetterShippingBox.Menus
 			{
 				b.Draw(Game1.fadeToBlackRect, Game1.graphics.GraphicsDevice.Viewport.Bounds, Color.Black * 0.75f);
 			}
-			IClickableMenu.drawTextureBox(b, Game1.mouseCursors, new Rectangle(384, 373, 18, 18), this.xPositionOnScreen + Game1.tileSize / 2, this.yPositionOnScreen + this.height - Game1.tileSize * 4 + Game1.pixelZoom * 10, this.inventory.width + Game1.pixelZoom * 14, this.height - Game1.tileSize * 7 + Game1.pixelZoom * 5, Color.White, (float)Game1.pixelZoom, true);
-			IClickableMenu.drawTextureBox(b, Game1.mouseCursors, new Rectangle(384, 373, 18, 18), this.xPositionOnScreen, this.yPositionOnScreen, this.width, this.height - Game1.tileSize * 4 + Game1.tileSize / 2 + Game1.pixelZoom, Color.White, (float)Game1.pixelZoom, true);
+			IClickableMenu.drawTextureBox(b, Game1.mouseCursors, new Rectangle(384, 373, 18, 18), this.xPositionOnScreen + Game1.tileSize / 2, this.yPositionOnScreen + this.height - Game1.tileSize * 4 + Game1.pixelZoom * 10, this.inventory.width + Game1.pixelZoom * 14, this.height - Game1.tileSize * 7 + Game1.pixelZoom * 5, Color.White, Game1.pixelZoom);
+			IClickableMenu.drawTextureBox(b, Game1.mouseCursors, new Rectangle(384, 373, 18, 18), this.xPositionOnScreen, this.yPositionOnScreen, this.width, this.height - Game1.tileSize * 4 + Game1.tileSize / 2 + Game1.pixelZoom, Color.White, Game1.pixelZoom);
 			for (int i = 0; i < this.shippedItemButtons.Count; i++)
 			{
 				bool flag2 = this.currentItemIndex + i >= Game1.getFarm().shippingBin.Count || !Game1.getFarm().shippingBin.Any<Item>();
 				if (!flag2)
 				{
-					IClickableMenu.drawTextureBox(b, Game1.mouseCursors, new Rectangle(384, 396, 15, 15), this.shippedItemButtons[i].bounds.X, this.shippedItemButtons[i].bounds.Y, this.shippedItemButtons[i].bounds.Width, this.shippedItemButtons[i].bounds.Height, (!this.shippedItemButtons[i].containsPoint(Game1.getOldMouseX(), Game1.getOldMouseY()) || this.scrolling) ? Color.White : Color.Wheat, (float)Game1.pixelZoom, false);
-					b.Draw(Game1.mouseCursors, new Vector2((float)(this.shippedItemButtons[i].bounds.X + Game1.tileSize / 2 - Game1.pixelZoom * 3), (float)(this.shippedItemButtons[i].bounds.Y + Game1.pixelZoom * 6 - Game1.pixelZoom)), new Rectangle?(new Rectangle(296, 363, 18, 18)), Color.White, 0f, Vector2.Zero, (float)Game1.pixelZoom, SpriteEffects.None, 1f);
-					Game1.getFarm().shippingBin[this.currentItemIndex + i].drawInMenu(b, new Vector2((float)(this.shippedItemButtons[i].bounds.X + Game1.tileSize / 2 - Game1.pixelZoom * 2), (float)(this.shippedItemButtons[i].bounds.Y + Game1.pixelZoom * 6)), 1f);
-					SpriteText.drawString(b, Game1.getFarm().shippingBin[this.currentItemIndex + i].Name, this.shippedItemButtons[i].bounds.X + Game1.tileSize * 3 / 2 + Game1.pixelZoom * 2, this.shippedItemButtons[i].bounds.Y + Game1.pixelZoom * 7, 999999, -1, 999999, 1f, 0.88f, false, -1, "", -1);
+					IClickableMenu.drawTextureBox(b, Game1.mouseCursors, new Rectangle(384, 396, 15, 15), this.shippedItemButtons[i].bounds.X, this.shippedItemButtons[i].bounds.Y, this.shippedItemButtons[i].bounds.Width, this.shippedItemButtons[i].bounds.Height, (!this.shippedItemButtons[i].containsPoint(Game1.getOldMouseX(), Game1.getOldMouseY()) || this.scrolling) ? Color.White : Color.Wheat, Game1.pixelZoom, false);
+					b.Draw(Game1.mouseCursors, new Vector2(this.shippedItemButtons[i].bounds.X + Game1.tileSize / 2 - Game1.pixelZoom * 3, this.shippedItemButtons[i].bounds.Y + Game1.pixelZoom * 6 - Game1.pixelZoom), new Rectangle?(new Rectangle(296, 363, 18, 18)), Color.White, 0f, Vector2.Zero, Game1.pixelZoom, SpriteEffects.None, 1f);
+					Game1.getFarm().shippingBin[this.currentItemIndex + i].drawInMenu(b, new Vector2(this.shippedItemButtons[i].bounds.X + Game1.tileSize / 2 - Game1.pixelZoom * 2, this.shippedItemButtons[i].bounds.Y + Game1.pixelZoom * 6), 1f);
+					SpriteText.drawString(b, Game1.getFarm().shippingBin[this.currentItemIndex + i].Name, this.shippedItemButtons[i].bounds.X + Game1.tileSize * 3 / 2 + Game1.pixelZoom * 2, this.shippedItemButtons[i].bounds.Y + Game1.pixelZoom * 7);
 				}
 			}
 			bool flag3 = Game1.getFarm().shippingBin.Count == 0;
 			if (flag3)
 			{
-				SpriteText.drawString(b, "Empty", this.xPositionOnScreen + this.width / 2 - SpriteText.getWidthOfString("Empty") / 2, this.yPositionOnScreen + this.height / 2 - Game1.tileSize * 2, 999999, -1, 999999, 1f, 0.88f, false, -1, "", -1);
+				SpriteText.drawString(b, "Empty", this.xPositionOnScreen + this.width / 2 - SpriteText.getWidthOfString("Empty") / 2, this.yPositionOnScreen + this.height / 2 - Game1.tileSize * 2);
 			}
 			this.inventory.draw(b);
 			for (int j = this.animations.Count - 1; j >= 0; j--)
@@ -464,7 +459,7 @@ namespace BetterShippingBox.Menus
 				}
 				else
 				{
-					this.animations[j].draw(b, true, 0, 0);
+					this.animations[j].draw(b, true);
 				}
 			}
 			this.upArrow.draw(b);
@@ -472,18 +467,18 @@ namespace BetterShippingBox.Menus
 			bool flag5 = Game1.getFarm().shippingBin.Count > 4;
 			if (flag5)
 			{
-				IClickableMenu.drawTextureBox(b, Game1.mouseCursors, new Rectangle(403, 383, 6, 6), this.scrollBarRunner.X, this.scrollBarRunner.Y, this.scrollBarRunner.Width, this.scrollBarRunner.Height, Color.White, (float)Game1.pixelZoom, true);
+				IClickableMenu.drawTextureBox(b, Game1.mouseCursors, new Rectangle(403, 383, 6, 6), this.scrollBarRunner.X, this.scrollBarRunner.Y, this.scrollBarRunner.Width, this.scrollBarRunner.Height, Color.White, Game1.pixelZoom);
 				this.scrollBar.draw(b);
 			}
 			bool flag6 = !this.hoverText.Equals("");
 			if (flag6)
 			{
-				IClickableMenu.drawToolTip(b, this.hoverText, this.boldTitleText, this.hoveredItem, this.heldItem != null, -1, 0, -1, -1, null, -1);
+				IClickableMenu.drawToolTip(b, this.hoverText, this.boldTitleText, this.hoveredItem, this.heldItem != null);
 			}
 			Item expr_575 = this.heldItem;
 			if (expr_575 != null)
 			{
-				expr_575.drawInMenu(b, new Vector2((float)(Game1.getOldMouseX() + 8), (float)(Game1.getOldMouseY() + 8)), 1f);
+				expr_575.drawInMenu(b, new Vector2(Game1.getOldMouseX() + 8, Game1.getOldMouseY() + 8), 1f);
 			}
 			base.draw(b);
 			base.drawMouse(b);
