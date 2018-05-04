@@ -37,7 +37,7 @@ namespace ClimatesOfFerngillRebuild
                 {
                     if (verbose) mon.Log($"Setting a forced value for tommorow: {Desc.DescribeInGameWeather(entry.Value)} for {entry.Key.Season} {entry.Key.Day}");
                     Game1.weatherForTomorrow = entry.Value;
-                    Game1.netWorldState.Value.weatherForTommorow = entry.Value;
+                    Game1.netWorldState.Value.WeatherForTomorrow = entry.Value;
                     return true;
                 }
             }
