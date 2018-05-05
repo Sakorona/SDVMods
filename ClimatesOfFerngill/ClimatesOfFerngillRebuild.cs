@@ -719,8 +719,8 @@ namespace ClimatesOfFerngillRebuild
             if (arg2.Length < 1)
                 return;
 
-            string ChosenWeather = arg2[0];
-            switch (ChosenWeather)
+            string chosenWeather = arg2[0];
+            switch (chosenWeather)
             {
                 case "rain":
                     Game1.netWorldState.Value.WeatherForTomorrow = Game1.weatherForTomorrow = Game1.weather_rain;

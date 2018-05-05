@@ -73,7 +73,6 @@ namespace TwilightShards.LunarDisturbances
         public MoonPhase GetLunarPhase()
         {
             //divide it by the cycle.
-            int currentCycle = (int)Math.Floor(SDate.Now().DaysSinceStart / (double)cycleLength);
             int currentDay = GetDayOfCycle(SDate.Now());
 
             MoonPhase ret = SDVMoon.GetLunarPhase(currentDay);
@@ -104,10 +103,7 @@ namespace TwilightShards.LunarDisturbances
         /// <returns></returns>
         public static MoonPhase GetLunarPhaseForDay(SDate Today)
         {
-            //divide it by the cycle.
-            int currentCycle = (int)Math.Floor(Today.DaysSinceStart / (double)cycleLength);
             int currentDay = GetDayOfCycle(Today);
-
             return GetLunarPhase(currentDay);
         }
 

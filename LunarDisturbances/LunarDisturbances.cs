@@ -47,9 +47,11 @@ namespace TwilightShards.LunarDisturbances
             OurIcons = new Sprites.Icons(Helper.Content);
 
             GameEvents.FirstUpdateTick += GameEvents_FirstUpdateTick;
+            GameEvents.OneSecondTick += GameEvents_OneSecondTick;
             GraphicsEvents.OnPostRenderGuiEvent += DrawOverMenus;
             LocationEvents.CurrentLocationChanged += LocationEvents_CurrentLocationChanged;
             TimeEvents.TimeOfDayChanged += TenMinuteUpdate;
+            TimeEvents.AfterDayStarted += HandleNewDay;
             MenuEvents.MenuChanged += MenuEvents_MenuChanged;
             SaveEvents.BeforeSave += OnEndOfDay;
             GameEvents.UpdateTick += CheckForChanges;
@@ -219,12 +221,12 @@ namespace TwilightShards.LunarDisturbances
                 }
 
                 if ((Game1.farmEvent == null && Game1.random.NextDouble() < (0.25 - Game1.dailyLuck / 2.0))
-                    && ((ModConfig.SpawnMonsters && Game1.spawnMonstersAtNight) || (ModConfig.SpawnMonstersAllFarms)))
+                    && ((ModConfig.SpawnMonsters && Game1.spawnMonstersAtNight) || (ModConfig.SpawnMonstersAllFarms)) && Context.IsMainPlayer)
                 {
                     Monitor.Log("Spawning a monster, or attempting to.", LogLevel.Debug);
                     if (Game1.random.NextDouble() < 0.25)
                     {
-                        if (this.Equals(Game1.currentLocation))
+                        if (Game1.currentLocation.IsFarm)
                         {
                             Game1.getFarm().spawnFlyingMonstersOffScreen();
                             return;

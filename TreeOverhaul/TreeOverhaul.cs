@@ -31,6 +31,9 @@ namespace TreeOverhaul
 
         public void Events_NewDay(object sender, EventArgs e)
         {
+            if (!Context.IsMainPlayer)
+                return;
+
             foreach (var location in Game1.locations)
             {
                 foreach (var terrainfeature in location.terrainFeatures.Pairs)
