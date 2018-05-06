@@ -5,6 +5,7 @@ using StardewValley;
 using StardewValley.TerrainFeatures;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 
 //tree types (default names)
 //
@@ -32,20 +33,23 @@ namespace TreeOverhaul
         public void Events_NewDay(object sender, EventArgs e)
         {
             if (!Context.IsMainPlayer)
+            {
                 return;
+            }
 
             foreach (var location in Game1.locations)
             {
                 foreach (var terrainfeature in location.terrainFeatures.Pairs)
                 {
-                    if (terrainfeature.Value is Tree tree)
+                    switch (terrainfeature.Value)
                     {
-                        CheckTree(tree, location, terrainfeature.Key);
-                        StopSapling(tree, location, terrainfeature.Key);
-                    }
-                    if (terrainfeature.Value is FruitTree fruittree)
-                    {
-                        CheckFruitTree(fruittree, location, terrainfeature.Key);
+                        case Tree tree:
+                            CheckTree(tree, location, terrainfeature.Key);
+                            StopSapling(tree, location, terrainfeature.Key);
+                            break;
+                        case FruitTree fruittree:
+                            CheckFruitTree(fruittree, location, terrainfeature.Key);
+                            break;
                     }
                 }
             }
@@ -53,20 +57,19 @@ namespace TreeOverhaul
 
         public void StopSapling(Tree tree, GameLocation location, Vector2 tileLocation)
         {
-            if (treeOverhaulConfig.StopShadeSaplingGrowth)
+            if (treeOverhaulConfig.StopShadeSaplingGrowth && tree?.growthStage.Value == 1)
             {
-                if (tree.growthStage.Value == 1)
-                {
-                    Rectangle rectangle = new Rectangle((int)(((double)tileLocation.X - 1.0) * (double)Game1.tileSize), (int)(((double)tileLocation.Y - 1.0) * (double)Game1.tileSize), Game1.tileSize * 3, Game1.tileSize * 3);
+                Rectangle rectangle = new Rectangle((int)(((double)tileLocation.X - 1.0) * (double)Game1.tileSize), (int)(((double)tileLocation.Y - 1.0) * (double)Game1.tileSize), Game1.tileSize * 3, Game1.tileSize * 3);
 
-                    foreach (KeyValuePair<Vector2, TerrainFeature> keyValuePair in (Dictionary<Vector2, TerrainFeature>)location.terrainFeatures.Pairs)
-                    {
-                        if (keyValuePair.Value is Tree && !keyValuePair.Value.Equals((object)this) && ((Tree)keyValuePair.Value).growthStage.Value >= 5 && keyValuePair.Value.getBoundingBox(keyValuePair.Key).Intersects(rectangle))
-                        {
-                            tree.growthStage.Value = 0;
-                            return;
-                        }
-                    }
+                var idk = from keyValuePair in (Dictionary<Vector2, TerrainFeature>)location.terrainFeatures.Pairs
+                    let t = keyValuePair.Value as Tree
+                    where t != null && !t.Equals(tree) && t.growthStage.Value >= 5 && t.getBoundingBox(keyValuePair.Key).Intersects(rectangle)
+                    select t;
+
+                if (idk.Any())
+                {
+                    tree.growthStage.Value = 0;
+                    return;
                 }
             }
         }
@@ -91,7 +94,6 @@ namespace TreeOverhaul
 
             if (treeOverhaulConfig.FasterNormalTreeGrowth)
             {
-
                 if (Game1.currentSeason.Equals("winter"))
                 {
                     if (tree.treeType.Value != 6 || location.Name.ToLower().Contains("greenhouse"))
@@ -136,9 +138,9 @@ namespace TreeOverhaul
 
             if (tree.growthStage.Value == 4)
             {
-                foreach (KeyValuePair<Vector2, TerrainFeature> pair in location.terrainFeatures.Pairs)
+                foreach (var pair in location.terrainFeatures.Pairs)
                 {
-                    if (pair.Value is Tree && !pair.Value.Equals(this) && ((Tree)pair.Value).growthStage.Value >= 5 && pair.Value.getBoundingBox(pair.Key).Intersects(value))
+                    if (pair.Value is Tree tree1 && !tree1.Equals(tree) && tree1.growthStage.Value >= 5 && tree1.getBoundingBox(pair.Key).Intersects(value))
                     {
                         return;
                     }
@@ -249,7 +251,7 @@ namespace TreeOverhaul
             for (int i = 0; i < surroundingTileLocationsArray.Length; i++)
             {
                 Vector2 vector = surroundingTileLocationsArray[i];
-                bool flag2 = location.terrainFeatures.ContainsKey(vector) && location.terrainFeatures[vector] is HoeDirt && (location.terrainFeatures[vector] as HoeDirt).crop == null;
+                bool flag2 = location.terrainFeatures.ContainsKey(vector) && location.terrainFeatures[vector] is HoeDirt && ((HoeDirt) location.terrainFeatures[vector]).crop == null;
                 if (location.isTileOccupied(vector, "") && !flag2)
                 {
                     flag = true;

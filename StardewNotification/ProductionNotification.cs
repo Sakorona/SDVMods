@@ -1,8 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
-
+using System.Linq;
+using Microsoft.Xna.Framework;
 using StardewValley;
 using StardewModdingAPI;
+using StardewValley.Buildings;
+using StardewValley.Objects;
 
 namespace StardewNotification
 {
@@ -20,9 +23,30 @@ namespace StardewNotification
 			CheckShedProductions(Trans);
 			CheckGreenhouseProductions(Trans);
 			CheckCellarProductions(Trans);
+		    CheckBarnProductions(Trans);
 		}
 
-		public void CheckFarmProductions(ITranslationHelper Trans)
+	    public void CheckBarnProductions(ITranslationHelper Trans)
+	    {
+	        if (StardewNotification.Config.NotifyBarn)
+	        {
+	            //get barn(s)
+	            var ags = from loc in Game1.locations
+	                where loc is AnimalHouse
+	                from ag in loc.objects.Pairs
+	                where ag.Value.bigCraftable.Value && ag.Value.ParentSheetIndex == 165
+	                let count = (ag.Value.heldObject.Value as Chest)?.items.Count ?? 0
+	                where count > 0
+	                select ag;
+
+	            foreach (var ag in ags)
+	            {
+	                Game1.addHUDMessage(new HUDMessage(Trans.Get("autoGrabber")));
+	            }
+	        }
+	    }
+
+	    public void CheckFarmProductions(ITranslationHelper Trans)
 		{
             if (StardewNotification.Config.NotifyFarm)
             {

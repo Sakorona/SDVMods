@@ -22,5 +22,6 @@
 		public bool NotifyFarm { get; set; } = true;
 		public bool NotifyGreenhouse { get; set; } = true;
 		public bool NotifyCellar { get; set; } = true;
+        public bool NotifyBarn { get; set; } = true;
     }
 }

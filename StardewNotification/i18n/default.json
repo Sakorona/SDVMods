@@ -31,5 +31,6 @@
   "toolPickup": "{{toolName}} is ready for pickup",
 
   "readyHarvest": "{{cropName}} ready for harvest",
-  "greenhouse_crops": "Greenhouse crops ready for harvest"
+  "greenhouse_crops": "Greenhouse crops ready for harvest",
+  "autoGrabber" :  "The auto grabber has items for harvest" 
 }
