@@ -12,7 +12,7 @@ namespace DynamicNightTime
 {
     public class DynamicNightConfig
     {
-        public double latitude = 38.25;
+        public double Latitude = 38.25;
         public bool SunsetTimesAreMinusThirty = true;
     }
 
@@ -25,10 +25,10 @@ namespace DynamicNightTime
             NightConfig = Helper.ReadConfig<DynamicNightConfig>();
 
             //sanity check lat
-            if (NightConfig.latitude > 64)
-                NightConfig.latitude = 64;
-            if (NightConfig.latitude < -64)
-                NightConfig.latitude = -64;
+            if (NightConfig.Latitude > 64)
+                NightConfig.Latitude = 64;
+            if (NightConfig.Latitude < -64)
+                NightConfig.Latitude = -64;
 
             var harmony = HarmonyInstance.Create("koihimenakamura.dynamicnighttime");
             harmony.PatchAll(Assembly.GetExecutingAssembly());
@@ -84,7 +84,7 @@ namespace DynamicNightTime
         {
             var date = SDate.Now();
             int dayOfYear = date.DaysSinceStart % 112;
-            double lat = GeneralFunctions.DegreeToRadians(NightConfig.latitude);
+            double lat = GeneralFunctions.DegreeToRadians(NightConfig.Latitude);
 
             double solarDeclination = .40927971 * Math.Sin((2 * Math.PI / 112) * (dayOfYear - 1));
             double noon = 720 - 10 * Math.Sin(4 * (Math.PI / 112) * (dayOfYear - 1)) + 8 * Math.Sin(2 * (Math.PI / 112) * dayOfYear);

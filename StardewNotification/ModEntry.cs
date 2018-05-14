@@ -25,7 +25,7 @@ namespace StardewNotification
             SaveEvents.AfterLoad += ReceiveLoadedGame;
             TimeEvents.AfterDayStarted += DailyNotifications;
             TimeEvents.TimeOfDayChanged += ReceiveTimeOfDayChanged;
-            LocationEvents.CurrentLocationChanged += ReceiveCurrentLocationChanged;
+            PlayerEvents.Warped += ReceiveCurrentLocationChanged;
         }
 
         private void ReceiveLoadedGame(object sender, EventArgs e)
@@ -49,7 +49,7 @@ namespace StardewNotification
 				generalNotification.DoBirthdayReminder(Helper.Translation);
         }
 
-        private void ReceiveCurrentLocationChanged(object sender, EventArgsCurrentLocationChanged e)
+        private void ReceiveCurrentLocationChanged(object sender, EventArgsPlayerWarped e)
         {
             if (e.NewLocation is Farm && Game1.timeOfDay < 2400 && Context.IsWorldReady)
             {

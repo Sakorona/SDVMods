@@ -49,7 +49,7 @@ namespace TwilightShards.LunarDisturbances
             GameEvents.FirstUpdateTick += GameEvents_FirstUpdateTick;
             GameEvents.OneSecondTick += GameEvents_OneSecondTick;
             GraphicsEvents.OnPostRenderGuiEvent += DrawOverMenus;
-            LocationEvents.CurrentLocationChanged += LocationEvents_CurrentLocationChanged;
+            PlayerEvents.Warped += LocationEvents_CurrentLocationChanged;
             TimeEvents.TimeOfDayChanged += TenMinuteUpdate;
             TimeEvents.AfterDayStarted += HandleNewDay;
             MenuEvents.MenuChanged += MenuEvents_MenuChanged;
@@ -127,7 +127,7 @@ namespace TwilightShards.LunarDisturbances
         /// </summary>
         /// <param name="sender">The sender</param>
         /// <param name="e">Parameters</param>
-        private void LocationEvents_CurrentLocationChanged(object sender, EventArgsCurrentLocationChanged e)
+        private void LocationEvents_CurrentLocationChanged(object sender, EventArgsPlayerWarped e)
         {
             if (IsEclipse)
             {

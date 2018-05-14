@@ -61,7 +61,7 @@ namespace TreeOverhaul
             {
                 Rectangle rectangle = new Rectangle((int)(((double)tileLocation.X - 1.0) * (double)Game1.tileSize), (int)(((double)tileLocation.Y - 1.0) * (double)Game1.tileSize), Game1.tileSize * 3, Game1.tileSize * 3);
 
-                var idk = from keyValuePair in (Dictionary<Vector2, TerrainFeature>)location.terrainFeatures.Pairs
+                var idk = from keyValuePair in location.terrainFeatures.Pairs
                     let t = keyValuePair.Value as Tree
                     where t != null && !t.Equals(tree) && t.growthStage.Value >= 5 && t.getBoundingBox(keyValuePair.Key).Intersects(rectangle)
                     select t;

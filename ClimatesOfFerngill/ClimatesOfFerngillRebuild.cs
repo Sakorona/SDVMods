@@ -101,7 +101,7 @@ namespace ClimatesOfFerngillRebuild
             //SaveEvents.AfterLoad += SaveEvents_AfterLoad;
             GraphicsEvents.OnPreRenderHudEvent += DrawPreHudObjects;
             GraphicsEvents.OnPostRenderHudEvent += DrawObjects;
-            LocationEvents.CurrentLocationChanged += LocationEvents_CurrentLocationChanged;
+            PlayerEvents.Warped += LocationEvents_CurrentLocationChanged;
             ControlEvents.KeyPressed += (sender, e) => this.ReceiveKeyPress(e.KeyPressed, this.WeatherOpt.Keyboard);
             MenuEvents.MenuClosed += (sender, e) => this.ReceiveMenuClosed(e.PriorMenu);
 
@@ -109,12 +109,37 @@ namespace ClimatesOfFerngillRebuild
             helper.ConsoleCommands
                 .Add("world_tmrwweather", helper.Translation.Get("console-text.desc_tmrweather"), TomorrowWeatherChangeFromConsole)
                 .Add("world_setweather", helper.Translation.Get("console-text.desc_setweather"), WeatherChangeFromConsole)
-                .Add("debug_clearspecial", "debug command to clear special weathers", ClearSpecial);
+                .Add("debug_clearspecial", "debug command to clear special weathers", ClearSpecial)
+                .Add("debug_experiment", "EMBRANCEDANGER", ExperimentalCommand)
+                .Add("debug_weatherstatus","!", OutputWeather);
         }
 
         private void ClearSpecial(string arg1, string[] arg2)
         {
             Conditions.ClearAllSpecialWeather();
+        }
+
+        private void OutputWeather(string arg1, string[] arg2)
+        {
+            var retString = $"Weather for {SDate.Now()} is {Conditions.ToString()}. {Environment.NewLine} System flags: isRaining {Game1.isRaining} isSnowing {Game1.isSnowing} isDebrisWeather: {Game1.isDebrisWeather} isLightning {Game1.isLightning}, with tommorow's set weather being {Game1.weatherForTomorrow}";
+            Monitor.Log(retString);
+        }
+
+        private void ExperimentalCommand(string arg1, string[] arg2)
+        {
+            Game1.isRaining = true;
+            Game1.isDebrisWeather = true;
+            makeCelebrationWeatherDebris();
+        }
+
+        private void makeCelebrationWeatherDebris()
+        {
+            Game1.debrisWeather.Clear();
+            Game1.isDebrisWeather = true;
+            int num1 = Game1.random.Next(80, 100);
+            int num2 = 22;
+            for (int index = 0; index < num1; ++index)
+                Game1.debrisWeather.Add(new WeatherDebris(new Vector2((float)Game1.random.Next(0, Game1.graphics.GraphicsDevice.Viewport.Width), (float)Game1.random.Next(0, Game1.graphics.GraphicsDevice.Viewport.Height)), num2 + Game1.random.Next(2), (float)Game1.random.Next(15) / 500f, (float)Game1.random.Next(-10, 0) / 50f, (float)Game1.random.Next(10) / 50f));
         }
 
         private void GameEvents_FirstUpdateTick(object sender, EventArgs e)
@@ -156,13 +181,6 @@ namespace ClimatesOfFerngillRebuild
             CustomTVMod.showProgram(BackgroundSprite, OnScreenText, CustomTVMod.endProgram, WeatherSprite);
         }*/
 
-        private void DebugWeather(string arg1, string[] arg2)
-        {
-            //print a complete weather status. 
-            var retString = $"Weather for {SDate.Now()} is {Conditions.ToString()}. {Environment.NewLine} System flags: isRaining {Game1.isRaining} isSnowing {Game1.isSnowing} isDebrisWeather: {Game1.isDebrisWeather} isLightning {Game1.isLightning}, with tommorow's set weather being {Game1.weatherForTomorrow}";
-            Monitor.Log(retString);
-        }
-
         private void DrawPreHudObjects(object sender, EventArgs e)
         {
             if (!Context.IsWorldReady)
@@ -177,11 +195,10 @@ namespace ClimatesOfFerngillRebuild
         /// </summary>
         /// <param name="sender">The sender</param>
         /// <param name="e">Parameters</param>
-        private void LocationEvents_CurrentLocationChanged(object sender, EventArgsCurrentLocationChanged e)
+        private void LocationEvents_CurrentLocationChanged(object sender, EventArgsPlayerWarped e)
         {
             if (Conditions.HasWeather(CurrentWeather.Fog))
             {
-                //TODO On release, see if we can actually require reflection there.
                 if (!Game1.currentLocation.IsOutdoors && Game1.currentLocation is DecoratableLocation loc && WeatherOpt.DarkenLightInFog)
                 {
                     foreach (var f in loc.furniture)
@@ -203,11 +220,9 @@ namespace ClimatesOfFerngillRebuild
         /// <param name="e">paramaters</param>
         private void MenuEvents_MenuChanged(object sender, EventArgsClickableMenuChanged e)
         {
-            if (GameClimate is null)
-                Monitor.Log("GameClimate is null");
-            if (e.NewMenu is null)
-                Monitor.Log("e.NewMenu is null");
-       
+            if (!Context.IsMainPlayer)
+                return;
+
             if (e.NewMenu is DialogueBox box)
             {
                 bool stormDialogue = false;
@@ -247,10 +262,12 @@ namespace ClimatesOfFerngillRebuild
         /// <param name="e"></param>
         private void OnEndOfDay(object sender, EventArgs e)
         {
+            if (!Context.IsMainPlayer) return;
             if (Conditions.HasWeather(CurrentWeather.Frost) && WeatherOpt.AllowCropDeath)
             {
                 Farm f = Game1.getFarm();
-                int count = 0, maxCrops = (int)Math.Floor(SDVUtilities.CropCountInFarm(f) * WeatherOpt.DeadCropPercentage);
+                int count = 0,
+                    maxCrops = (int) Math.Floor(SDVUtilities.CropCountInFarm(f) * WeatherOpt.DeadCropPercentage);
 
                 foreach (KeyValuePair<Vector2, TerrainFeature> tf in f.terrainFeatures.Pairs)
                 {
@@ -265,17 +282,19 @@ namespace ClimatesOfFerngillRebuild
                             count++;
                         }
                     }
-                }             
+                }
 
                 if (count > 0)
                 {
                     foreach (Vector2 v in CropList)
                     {
-                        HoeDirt hd = (HoeDirt)f.terrainFeatures[v];
+                        HoeDirt hd = (HoeDirt) f.terrainFeatures[v];
                         hd.crop.dead.Value = true;
                     }
 
-                    queuedMsg = new HUDMessage(Helper.Translation.Get("hud-text.desc_frost_killed", new { deadCrops = count }), Color.SeaGreen, 5250f, true)
+                    queuedMsg = new HUDMessage(
+                        Helper.Translation.Get("hud-text.desc_frost_killed", new {deadCrops = count}),
+                        Color.SeaGreen, 5250f, true)
                     {
                         whatType = 2
                     };
@@ -317,6 +336,9 @@ namespace ClimatesOfFerngillRebuild
         private void TenMinuteUpdate(object sender, EventArgsIntChanged e)
         {
             if (!Game1.hasLoadedGame)
+                return;
+
+            if (!Context.IsMainPlayer)
                 return;
 
             Conditions.TenMinuteUpdate();
@@ -456,15 +478,11 @@ namespace ClimatesOfFerngillRebuild
 
         private void HandleNewDay(object sender, EventArgs e)
         {
-            if (CropList == null)
-                Monitor.Log("CropList is null!");
-            if (Conditions == null)
-                Monitor.Log("CurrentWeather is null");
-            if (GameClimate is null)
-                Monitor.Log("GameClimate is null");
+            Conditions.SetTodayWeather(); //run this automatically
+            Conditions.OnNewDay();
+            if (!Context.IsMainPlayer) return;
 
             CropList.Clear(); //clear the crop list
-            Conditions.OnNewDay();
             UpdateWeatherOnNewDay();
             SetTommorowWeather();
             ExpireTime = 0;
@@ -595,13 +613,17 @@ namespace ClimatesOfFerngillRebuild
 
         private void UpdateWeatherOnNewDay()
         {
+            if (!(Context.IsMainPlayer))
+            {
+                return;
+            }
+
             if (Game1.dayOfMonth == 0) //do not run on day 0.
                 return;
 
             //Set Temperature for today and tommorow. Get today's conditions.
             //   If tomorrow is set, move it to today, and autoregen tomorrow.
             //   *201711 Due to changes in the object, it auto attempts to update today from tomorrow.
-            Conditions.SetTodayWeather();
 
             if (!Conditions.IsTomorrowTempSet)
                 Conditions.SetTodayTemps(GameClimate.GetTemperatures(SDate.Now(), Dice));
@@ -619,6 +641,10 @@ namespace ClimatesOfFerngillRebuild
 
                 return;
             }
+            
+            //TODO: Fix this once SMAPI supports mod broadcast data
+            if (Context.IsMultiplayer)
+                return;
 
             if (Conditions.TestForSpecialWeather(GameClimate.GetClimateForDate(SDate.Now())))
             {
@@ -639,6 +665,8 @@ namespace ClimatesOfFerngillRebuild
         /// <param name="arg2">The console command parameters</param>
         private void WeatherChangeFromConsole(string arg1, string[] arg2)
         {
+            if (!Context.IsMainPlayer) return;
+                
             if (arg2.Length < 1)
                 return;
 
@@ -716,6 +744,8 @@ namespace ClimatesOfFerngillRebuild
         /// <param name="arg2">The console command parameters</param>
         private void TomorrowWeatherChangeFromConsole(string arg1, string[] arg2)
         {
+            if (!Context.IsMainPlayer) return;
+
             if (arg2.Length < 1)
                 return;
 

@@ -21,5 +21,10 @@
             return CurrentConditions.Weathers[(int)CurrentConditions.GetCurrentConditions()].ConditionName;
         }
 
+        public void SetWeather(string weather)
+        {
+            //TODO: Handle processing.
+        }
+
     }
 }
