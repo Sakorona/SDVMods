@@ -16,7 +16,7 @@ using TwilightShards.Stardew.Common;
 using TwilightShards.Common;
 using Microsoft.Xna.Framework.Graphics;
 using EnumsNET;
-//using PyTK.CustomTV;
+using PyTK.CustomTV;
 
 namespace ClimatesOfFerngillRebuild
 {
@@ -98,7 +98,7 @@ namespace ClimatesOfFerngillRebuild
             GameEvents.UpdateTick += CheckForChanges;
             GameEvents.FirstUpdateTick += GameEvents_FirstUpdateTick;
             SaveEvents.AfterReturnToTitle += ResetMod;
-            //SaveEvents.AfterLoad += SaveEvents_AfterLoad;
+            SaveEvents.AfterLoad += SaveEvents_AfterLoad;
             GraphicsEvents.OnPreRenderHudEvent += DrawPreHudObjects;
             GraphicsEvents.OnPostRenderHudEvent += DrawObjects;
             PlayerEvents.Warped += LocationEvents_CurrentLocationChanged;
@@ -110,7 +110,6 @@ namespace ClimatesOfFerngillRebuild
                 .Add("world_tmrwweather", helper.Translation.Get("console-text.desc_tmrweather"), TomorrowWeatherChangeFromConsole)
                 .Add("world_setweather", helper.Translation.Get("console-text.desc_setweather"), WeatherChangeFromConsole)
                 .Add("debug_clearspecial", "debug command to clear special weathers", ClearSpecial)
-                .Add("debug_experiment", "EMBRANCEDANGER", ExperimentalCommand)
                 .Add("debug_weatherstatus","!", OutputWeather);
         }
 
@@ -129,10 +128,10 @@ namespace ClimatesOfFerngillRebuild
         {
             Game1.isRaining = true;
             Game1.isDebrisWeather = true;
-            makeCelebrationWeatherDebris();
+            MakeCelebrationWeatherDebris();
         }
 
-        private void makeCelebrationWeatherDebris()
+        private void MakeCelebrationWeatherDebris()
         {
             Game1.debrisWeather.Clear();
             Game1.isDebrisWeather = true;
@@ -155,12 +154,12 @@ namespace ClimatesOfFerngillRebuild
                 UseSafeLightningApi = true;
         }
         
-        /*private void SaveEvents_AfterLoad(object sender, EventArgs e)
+        private void SaveEvents_AfterLoad(object sender, EventArgs e)
         {
             CustomTVMod.changeAction("weather", DisplayWeather);
-        } */
-        /*
-        public void DisplayWeather(TV tv, TemporaryAnimatedSprite sprite, StardewValley.Farmer who, string answer)
+        } 
+        
+        public void DisplayWeather(TV tv, TemporaryAnimatedSprite sprite, Farmer who, string answer)
         {
             TemporaryAnimatedSprite BackgroundSprite = new TemporaryAnimatedSprite("LooseSprites\\Cursors", new Rectangle(497, 305, 42, 28), 9999f, 1, 999999, tv.getScreenPosition(), false, false, (float)((tv.boundingBox.Bottom - 1) / 10000.0 + 9.99999974737875E-06), 0.0f, Color.White, tv.getScreenSizeModifier(), 0.0f, 0.0f, 0.0f, false);
             TemporaryAnimatedSprite WeatherSprite = DescriptionEngine.GetWeatherOverlay(Conditions, tv);
@@ -179,7 +178,7 @@ namespace ClimatesOfFerngillRebuild
             OnScreenText += DescriptionEngine.GenerateTVForecast(Conditions, MoonPhase);
 
             CustomTVMod.showProgram(BackgroundSprite, OnScreenText, CustomTVMod.endProgram, WeatherSprite);
-        }*/
+        }
 
         private void DrawPreHudObjects(object sender, EventArgs e)
         {
@@ -478,8 +477,8 @@ namespace ClimatesOfFerngillRebuild
 
         private void HandleNewDay(object sender, EventArgs e)
         {
-            Conditions.SetTodayWeather(); //run this automatically
             Conditions.OnNewDay();
+            Conditions.SetTodayWeather(); //run this automatically
             if (!Context.IsMainPlayer) return;
 
             CropList.Clear(); //clear the crop list

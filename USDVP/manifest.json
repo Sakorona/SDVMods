@@ -1,9 +1,0 @@
-﻿{
-  "Name": "USDVP",
-  "Author": "KoihimeNakamura",
-  "Version": "0.0.56",
-  "Description": "Patches various bugs in the game.",
-  "UniqueID": "KoihimeNakamura.USDVP",
-  "EntryDll": "USDVP.dll",
-  "MinimumApiVersion": "2.0"
-}

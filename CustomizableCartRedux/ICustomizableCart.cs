@@ -15,7 +15,7 @@ namespace CustomizableCartRedux
     public class CustomizableCartAPI : ICustomizableCart
     {
         public event EventHandler CartProcessingComplete;
-        private IReflectionHelper Reflector;
+        private readonly IReflectionHelper Reflector;
 
         public CustomizableCartAPI(IReflectionHelper Ref)
         {
@@ -37,15 +37,11 @@ namespace CustomizableCartRedux
             if (travelingMerchantDay)
             {
                 var travelerStock = Reflector.GetField<Dictionary<Item, int[]>>(f, "travelerStock").GetValue();
-                if (travelerStock != null)
+                travelerStock?.Add(item, new int[]
                 {
-
-                  travelerStock.Add(item, new int[]
-                  {
                     price,
                     quantity
-                  });
-                }
+                });
             }
         }
     }

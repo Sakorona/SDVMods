@@ -603,14 +603,8 @@ namespace ClimatesOfFerngillRebuild
         {      
             CurrentConditionsN = CurrentWeather.Unset; //reset the flag.
 
-            Console.WriteLine($"IsDebrisWeather : {Game1.isDebrisWeather}");
-            Console.WriteLine($"IsRainy : {Game1.isRaining}");
-            Console.WriteLine($"IsSnowy : {Game1.isSnowing}");
-            Console.WriteLine($"IsLightning : {Game1.isLightning}");
-
             if (!Game1.isDebrisWeather && !Game1.isRaining && !Game1.isSnowing)
             {
-                Console.WriteLine("Adding Sunny");
                 AddWeather(CurrentWeather.Sunny);
             }
 

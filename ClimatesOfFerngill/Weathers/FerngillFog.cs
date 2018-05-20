@@ -51,10 +51,6 @@ namespace ClimatesOfFerngillRebuild
             {
                 if (BeginTime is null || ExpirTime is null)
                     return false;
-                if (BeginTime is null)
-                    Console.WriteLine("BeginTime is null");
-                if (ExpirTime is null)
-                    Console.WriteLine("ExpirTime is null");
                 if (SDVTime.CurrentTime is null)
                     Console.WriteLine("CURRENT TIME IS NULL.");
                 if (WeatherBeginTime is null)
@@ -181,7 +177,7 @@ namespace ClimatesOfFerngillRebuild
             }
             else
             {
-                BeginTime = new SDVTime(Game1.getStartingToGetDarkTime());
+                BeginTime = new SDVTime(Game1.getModeratelyDarkTime());
                 BeginTime.AddTime(Dice.Next(-15, 90));
 
                 ExpirTime = new SDVTime(BeginTime);

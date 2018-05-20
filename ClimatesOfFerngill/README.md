@@ -1,6 +1,6 @@
 ﻿# Climates of Ferngill (Rebuild) You Can (Not) Have Weather
 
-Current Version (8 April 2018): 1.4-beta2
+Current Version (18 May 2018): 1.4-beta9
 
 ## What's New
 
@@ -10,11 +10,14 @@ Current Version (8 April 2018): 1.4-beta2
 - More descriptive and varied weather reports
 - Thundersnow!
 
+## Multiplayer
+
+Currently doesn't do any custom weathers in MP. Works only for the host player in MP.
+
 ## Requirements
 
-- SMAPI 2.5+
-- Stardew Valley 1.2.33
-- PyTK 0.7.0+
+- SMAPI 2.6-beta.14+
+- Stardew Valley 1.3.11
  
 ## Overview
 
@@ -22,18 +25,26 @@ This mod does the following:
 
 - Alters the weather via a custom method that can read custom files
 - Adds in several custom weathers - Thundersnow! Blizzards! Dry Lightning! Fog! Thunder Freeenzy!!!
-- Changes the rain totem to occasionally spawm storms as well.
+- Changes the rain totem to occasionally spawn storms as well.
 - Adds a weather menu option, which will display information about the weather
-- Changes the text for the TV weather channel
+- Changes the text for the TV weather channel (Currently offline)
 
-## Wishlist
+## Upcoming Features
+
+- Flash floods!!!!! 
 
 ## Acknowledgements
 - Prismuth for the fog sprite
 - Pathoschild for ideas
 - ChefRude for testing and the night icon sprites (as well as better fog textures)
+- The SDV discord #modding channel for discussions
 
 ## Changelog
+v1.4.0-beta9
+- some fixes for MP. Well, a lot of fixes for MP
+- readjusted fog. If you want the old foggy amounts in spring, add "foggy" to enhanced and normal.
+- readjusted night fog calculations.
+
 v1.4.0-beta4
 - fixed console command issues
 

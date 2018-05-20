@@ -18,6 +18,7 @@ namespace CustomizableCartRedux
         public static Mod instance;
         public CartConfig OurConfig;
         public MersenneTwister Dice;
+        private Dictionary<Item, int[]> generatedStock;
 
         private ICustomizableCart API;
 
@@ -35,9 +36,22 @@ namespace CustomizableCartRedux
             Dice = new MersenneTwister();
             OurConfig = helper.ReadConfig<CartConfig>();
             TimeEvents.AfterDayStarted += SetCartSpawn;
+            PlayerEvents.Warped += PlayerEvents_Warped;
         }
 
-         private void SetCartSpawn(object Sender, EventArgs e)
+        private void PlayerEvents_Warped(object sender, EventArgsPlayerWarped e)
+        {
+            if (!Context.IsMainPlayer)
+                return;
+
+            if (e.NewLocation is Forest)
+            {
+                Forest f = e.NewLocation as Forest;
+                Helper.Reflection.GetField<Dictionary<Item, int[]>>(f, "travelerStock").SetValue(generatedStock);
+            }
+        }
+
+        private void SetCartSpawn(object Sender, EventArgs e)
         {
             if (!Context.IsMainPlayer)
                 return;
@@ -47,6 +61,9 @@ namespace CustomizableCartRedux
 
             if (!(Game1.getLocationFromName("Forest") is Forest f))
                 throw new Exception("The Forest is not loaded. Please verify your game is properly installed.");
+            
+            //generate the stock
+            generatedStock = GetTravelingMerchantStock(OurConfig.AmountOfItems);
 
             //get the day
             DayOfWeek day = GetDayOfWeek(SDate.Now());
@@ -130,8 +147,9 @@ namespace CustomizableCartRedux
                 f.travelingMerchantDay = true;
                 f.travelingMerchantBounds.Add(new Rectangle(1472, 640, 492, 112));
                 f.travelingMerchantBounds.Add(new Rectangle(1652, 744, 76, 48));
-                f.travelingMerchantBounds.Add(new Rectangle(1812, 744, 104, 48));
-                Helper.Reflection.GetField<Dictionary<Item, int[]>>(f, "travelerStock").SetValue(GetTravelingMerchantStock(OurConfig.AmountOfItems));
+                f.travelingMerchantBounds.Add(new Rectangle(1812, 744, 104, 48));            
+
+                Helper.Reflection.GetField<Dictionary<Item, int[]>>(f, "travelerStock").SetValue(generatedStock);
                 foreach (Rectangle travelingMerchantBound in f.travelingMerchantBounds)
                 {
                     Utility.clearObjectsInArea(travelingMerchantBound, f);                 
@@ -155,11 +173,11 @@ namespace CustomizableCartRedux
 
             maxItemID = OurConfig.UseVanillaMax ? 803 : Game1.objectInformation.Keys.Max();
 
-            numStock = (numStock <= 2 ? 3 : numStock); //Ensure the stock isn't too low.
+            numStock = (numStock <= 3 ? 4 : numStock); //Ensure the stock isn't too low.
             var itemsToBeAdded = new List<int>();
 
             //get items
-            for (int i = 0; i < (numStock - 2); i++)
+            for (int i = 0; i < (numStock - 3); i++)
             {
                 int index2 = GetItem(maxItemID);
 

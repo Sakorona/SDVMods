@@ -1,15 +1,6 @@
-﻿# Weather Illnesses
-
-## Current Version
-1.0-beta.4 (19 May 2018)
-
-### Requirements
-- SMAPI 2.6-beta.14+
-- Stardew Valley 1.3.11+
-
-### Multiplayer
-
-Works fine, each player needs it.
+﻿### Requirements
+- SMAPI 2.5+
+- Stardew Valley 1.2.33
 
 ### This Mod Does:
 - Going out in storms, blizzards, frosts and heatwaves is now more perilous, as it drains your stamina. Thankfully, 

@@ -1,7 +1,7 @@
 {
-  "AllowRainInWinter": true,
-  "AllowThunderSnow": true,
-  "AllowSnowInFall": true,
+  "AllowRainInWinter": false,
+  "AllowThunderSnow": false,
+  "AllowSnowInFall": false,
   "LocationsAffected": [],
   "ClimateSequences": [
     {
@@ -9,12 +9,12 @@
       "EndSeason": "spring",
       "BeginDay": 1,
       "EndDay": 9,
-      "EveningFogChance": 2.0,
+      "EveningFogChance": 1.4,
       "WeatherChances": [
         {
           "WeatherType": "rain",
-          "BaseValue": 0.69,
-          "ChangeRate": -0.0375,
+          "BaseValue": 0.85,
+          "ChangeRate": -0.04,
           "VariableLowerBound": -0.04,
           "VariableHigherBound": 0.04
         },
@@ -48,7 +48,7 @@
         },
         {
           "WeatherType": "fog",
-          "BaseValue": 0.39,
+          "BaseValue": 0.55,
           "ChangeRate": 0.0,
           "VariableLowerBound": -0.04,
           "VariableHigherBound": 0.04
@@ -60,7 +60,7 @@
       "EndSeason": "spring",
       "BeginDay": 10,
       "EndDay": 19,
-      "EveningFogChance": 2.0,
+      "EveningFogChance": 1.4,
       "WeatherChances": [
         {
           "WeatherType": "rain",
@@ -99,7 +99,7 @@
         },
         {
           "WeatherType": "fog",
-          "BaseValue": 0.29,
+          "BaseValue": 0.35,
           "ChangeRate": 0.0,
           "VariableLowerBound": -0.04,
           "VariableHigherBound": 0.04
@@ -111,7 +111,7 @@
       "EndSeason": "spring",
       "BeginDay": 20,
       "EndDay": 28,
-      "EveningFogChance": 2.0,
+      "EveningFogChance": 1.4,
       "WeatherChances": [
         {
           "WeatherType": "rain",
@@ -150,7 +150,7 @@
         },
         {
           "WeatherType": "fog",
-          "BaseValue": 0.22,
+          "BaseValue": 0.35,
           "ChangeRate": 0.0,
           "VariableLowerBound": -0.04,
           "VariableHigherBound": 0.04
@@ -162,7 +162,7 @@
       "EndSeason": "summer",
       "BeginDay": 1,
       "EndDay": 9,
-      "EveningFogChance": 2.0,
+      "EveningFogChance": 1.4,
       "WeatherChances": [
         {
           "WeatherType": "rain",
@@ -206,7 +206,7 @@
       "EndSeason": "summer",
       "BeginDay": 10,
       "EndDay": 18,
-      "EveningFogChance": 2.0,
+      "EveningFogChance": 1.4,
       "WeatherChances": [
         {
           "WeatherType": "rain",
@@ -250,7 +250,7 @@
       "EndSeason": "summer",
       "BeginDay": 19,
       "EndDay": 28,
-      "EveningFogChance": 2.0,
+      "EveningFogChance": 1.4,
       "WeatherChances": [
         {
           "WeatherType": "rain",
@@ -294,7 +294,7 @@
       "EndSeason": "fall",
       "BeginDay": 1,
       "EndDay": 9,
-      "EveningFogChance": 2.0,
+      "EveningFogChance": 1.4,
       "WeatherChances": [
         {
           "WeatherType": "rain",
@@ -345,7 +345,7 @@
       "EndSeason": "fall",
       "BeginDay": 10,
       "EndDay": 19,
-      "EveningFogChance": 2.0,
+      "EveningFogChance": 1.4,
       "WeatherChances": [
         {
           "WeatherType": "rain",
@@ -370,14 +370,14 @@
         },
         {
           "WeatherType": "lowtemp",
-          "BaseValue": 25.0,
+          "BaseValue": 27.0,
           "ChangeRate": -1.11,
           "VariableLowerBound": -3.0,
           "VariableHigherBound": 3.0
         },
         {
           "WeatherType": "hightemp",
-          "BaseValue": 29.0,
+          "BaseValue": 31.0,
           "ChangeRate": -1.3522,
           "VariableLowerBound": -4.0,
           "VariableHigherBound": 4.0
@@ -396,12 +396,12 @@
       "EndSeason": "fall",
       "BeginDay": 20,
       "EndDay": 28,
-      "EveningFogChance": 2.0,
+      "EveningFogChance": 1.4,
       "WeatherChances": [
         {
           "WeatherType": "rain",
           "BaseValue": -0.494,
-          "ChangeRate": 0.0424,
+          "ChangeRate": 0.0444,
           "VariableLowerBound": -0.07,
           "VariableHigherBound": 0.07
         },
@@ -414,22 +414,22 @@
         },
         {
           "WeatherType": "debris",
-          "BaseValue": 1.4932,
-          "ChangeRate": -0.044,
+          "BaseValue": 2.0222,
+          "ChangeRate": -0.0722,
           "VariableLowerBound": 0.0,
           "VariableHigherBound": 0.1
         },
         {
           "WeatherType": "lowtemp",
-          "BaseValue": 15.75,
-          "ChangeRate": -0.65017,
+          "BaseValue": 29.0,
+          "ChangeRate": -1.11,
           "VariableLowerBound": -3.0,
           "VariableHigherBound": 3.0
         },
         {
           "WeatherType": "hightemp",
-          "BaseValue": 10.0,
-          "ChangeRate": -0.358,
+          "BaseValue": 33.0,
+          "ChangeRate": -1.3522,
           "VariableLowerBound": -4.0,
           "VariableHigherBound": 4.0
         },
@@ -447,28 +447,14 @@
       "EndSeason": "winter",
       "BeginDay": 1,
       "EndDay": 9,
-      "EveningFogChance": 2.0,
+      "EveningFogChance": 1.4,
       "WeatherChances": [
         {
           "WeatherType": "rain",
-          "BaseValue": 0.65,
+          "BaseValue": 0.75,
           "ChangeRate": 0.0,
           "VariableLowerBound": -0.04,
           "VariableHigherBound": 0.04
-        },
-        {
-          "WeatherType": "storm",
-          "BaseValue": 0.1,
-          "ChangeRate": -0.005,
-          "VariableLowerBound": -0.1,
-          "VariableHigherBound": 0.1
-        },
-        {
-          "WeatherType": "debris",
-          "BaseValue": 0.2,
-          "ChangeRate": 0.014,
-          "VariableLowerBound": -0.1,
-          "VariableHigherBound": 0.1
         },
         {
           "WeatherType": "lowtemp",
@@ -482,7 +468,7 @@
           "BaseValue": 0.0,
           "ChangeRate": -0.1579,
           "VariableLowerBound": -4.0,
-          "VariableHigherBound": 3.0
+          "VariableHigherBound": 2.0
         },
         {
           "WeatherType": "fog",
@@ -498,7 +484,7 @@
       "EndSeason": "winter",
       "BeginDay": 10,
       "EndDay": 18,
-      "EveningFogChance": 2.0,
+      "EveningFogChance": 1.4,
       "WeatherChances": [
         {
           "WeatherType": "rain",
@@ -506,20 +492,6 @@
           "ChangeRate": 0.006,
           "VariableLowerBound": -0.07,
           "VariableHigherBound": 0.07
-        },
-        {
-          "WeatherType": "storm",
-          "BaseValue": 0.05,
-          "ChangeRate": 0.0,
-          "VariableLowerBound": -0.1,
-          "VariableHigherBound": 0.1
-        },
-        {
-          "WeatherType": "debris",
-          "BaseValue": 0.44,
-          "ChangeRate": -0.012,
-          "VariableLowerBound": -0.1,
-          "VariableHigherBound": 0.1
         },
         {
           "WeatherType": "lowtemp",
@@ -549,28 +521,14 @@
       "EndSeason": "winter",
       "BeginDay": 19,
       "EndDay": 28,
-      "EveningFogChance": 2.0,
+      "EveningFogChance": 1.4,
       "WeatherChances": [
         {
           "WeatherType": "rain",
-          "BaseValue": 0.52,
-          "ChangeRate": 0.0065,
+          "BaseValue": 0.58,
+          "ChangeRate": 0.006,
           "VariableLowerBound": -0.07,
           "VariableHigherBound": 0.07
-        },
-        {
-          "WeatherType": "storm",
-          "BaseValue": -0.17,
-          "ChangeRate": 0.012,
-          "VariableLowerBound": -0.1,
-          "VariableHigherBound": 0.1
-        },
-        {
-          "WeatherType": "debris",
-          "BaseValue": ".5",
-          "ChangeRate": 0.014,
-          "VariableLowerBound": -0.1,
-          "VariableHigherBound": 0.1
         },
         {
           "WeatherType": "lowtemp",
@@ -584,7 +542,7 @@
           "BaseValue": -2.9,
           "ChangeRate": 0.056,
           "VariableLowerBound": -2.0,
-          "VariableHigherBound": 3.5
+          "VariableHigherBound": 2.5
         },
         {
           "WeatherType": "fog",

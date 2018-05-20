@@ -6,6 +6,6 @@
         public bool SickMoreThanOnce = false;
         public double ChanceOfGettingSick = .7;
         public double PercentageOutside = .65;
-        public bool Verbose = true; 
+        public bool Verbose = false; 
     }
 }

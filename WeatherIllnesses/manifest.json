@@ -1,10 +1,10 @@
 ﻿{
   "Name": "Weather Illnesses",
   "Author": "KoihimeNakamura",
-  "Version": "1.0-beta4",
+  "Version": "1.0-beta.5",
   "Description": "Restores the old Harvest Moon tradition of bad weather making you sick.",
   "UniqueID": "KoihimeNakamura.WeatherIllnesses",
   "EntryDll": "WeatherIllnesses.dll",
-  "MinimumApiVersion": "2.5",
-  "UpdateKeys": [  ]
+  "MinimumApiVersion": "2.6-beta.14",
+  "UpdateKeys": [ "Nexus:2210" ]
 } 

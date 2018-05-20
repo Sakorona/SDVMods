@@ -70,6 +70,7 @@ namespace ClimatesOfFerngillRebuild
             ExpirTime = new SDVTime(2800);
             if (Dice.NextDouble() >= .5 && Dice.NextDouble() < .8)
             {
+                Console.WriteLine($"Truly Dark: {Game1.getTrulyDarkTime()} Moderately: {Game1.getModeratelyDarkTime()} Starting: {Game1.getStartingToGetDarkTime()}");
                 ExpirTime = new SDVTime(Game1.getModeratelyDarkTime());
             }
             if (Dice.NextDouble() >= .8 && Dice.NextDouble() < .95)

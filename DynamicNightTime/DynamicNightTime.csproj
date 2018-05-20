@@ -53,6 +53,7 @@
     <Compile Include="DynamicNightTime.cs" />
     <Compile Include="Patches\GameClockPatch.cs" />
     <Compile Include="Patches\GetFullyDarkPatch.cs" />
+    <Compile Include="Patches\GetModeratelyDarkPatch.cs" />
     <Compile Include="Patches\GettingDarkPatch.cs" />
     <Compile Include="Patches\IsDarkOutPatch.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

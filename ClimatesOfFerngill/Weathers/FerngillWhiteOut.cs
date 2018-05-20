@@ -66,7 +66,7 @@ namespace ClimatesOfFerngillRebuild
         public void CreateWeather()
         {
             BeginTime = new SDVTime(0600);
-            ExpirTime = new SDVTime(2800);
+            ExpirTime = new SDVTime(2600);
             if (Dice.NextDouble() >= .5 && Dice.NextDouble() < .8)
             {
                 ExpirTime = new SDVTime(Game1.getModeratelyDarkTime());

@@ -1,19 +1,29 @@
 ﻿#Dynamic Night Time
 
+Current Version: 1.1rc1
+
 ## Requirements
-- SMAPI 2.6-beta3+
-- Stardew Valley 1.3.3
+- SMAPI 2.6-beta14+
+- Stardew Valley 1.3.11+
 
 ## This Mod Does:
 - Creates a more dynamic night time and sunrise lighting system. Does not alter wakeup time.
 
+## IMPORTANT NOTE
+
+Make sure that if you have problems with other mods that you are running their latest version.  Also, this mod does not alter wake up time. 
+
 ## Multiplayer Compatiblity
-This mod *should* be MP compatible. 
+This mod is MP compatible, and all clients will need it for it to work.
 
 ## Installation Instructions
 - Unzip the folder into your Mods/ folder after making sure SMAPI is installed
 
 ## Changelog
+1.1-rc1
+- Some changes to resync the night progression so it doesn't get dark for hours before turning to 'night'
+- Updated to Harmony 1.1.0
+
 1.0.5
  - sunset starts at -30 minutes now. This avoids some issues, but can be configured to turn off.
  - more agressive progression

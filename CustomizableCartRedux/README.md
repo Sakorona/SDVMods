@@ -6,9 +6,13 @@ This mod is inspired by yyeahdude. It allows you to set the chances of the trave
 Unzip the archive into the Mods folder
 
 ## Multiplayer Behvaior
-This mod will only work for the main player (i.e the host) in an MP game.
+This mod will only work for the main player (i.e the host) in an MP game. 
 
 ## Changelog
+1.3-beta1
+- Updated the manifest
+- small fix for the number of items not adding in the force spawns
+- fix for issue with update preventing mod from updating the list
 1.3
 - Now includes 1.3 item conditions
 - Will actually use SellItem extractions

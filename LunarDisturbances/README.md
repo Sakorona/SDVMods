@@ -1,12 +1,18 @@
 ﻿# Lunar Disturbances
 
-### Requirements
+## Current Version: 
+1.0.3 (Last Update: 19 May 2018)
+
+## Requirements
 - SMAPI 2.6-beta3+
 - Stardew Valley 1.3.3+
 
 ## This Mod Does:
 - Adds a moon overhead, which will act on the world
 - Adds a blood moon!
+
+## Multiplayer
+Works only for the host player.
 
 ## Blood Moon
 
@@ -19,10 +25,13 @@ Thankfully, they don't appear to spawn on wedding and festival days..
 -- monsters spawn every 10 real-world seconds if you are outside.
 
 ## Changelog
-v1.0.2
+1.0.3
+- fix for beta 11 of 1.3
+
+1.0.2
 - sdv 1.3 compatible
 
-v1.0.1
+1.0.1
 - fixed the moon
 
 ## Config Options
@@ -43,4 +52,3 @@ To configure, edit config.json in the mod folder.
 ### Acknowledgements
 - eemie for the moon sprites
 - ChefRude for testing
-

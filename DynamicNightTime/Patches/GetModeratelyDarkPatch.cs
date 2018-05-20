@@ -2,7 +2,7 @@
 
 namespace DynamicNightTime.Patches
 {
-    class GettingDarkPatch
+    class GettingModeratlyDarkPatch
     {
         public static void Postfix(ref int __result)
         {

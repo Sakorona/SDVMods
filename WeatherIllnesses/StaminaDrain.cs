@@ -82,8 +82,13 @@ namespace TwilightShards.WeatherIllnesses
             var condList = new List<string>();
 
             if (IllOptions.Verbose)
-                 Monitor.Log($"Ticks: {ticksOutside}/{ticksTotal} with percentage {amtOutside.ToString("N3")} against" +
-                     $" target {IllOptions.PercentageOutside}"); 
+            {
+                Monitor.Log(
+                    $"Ticks: {ticksOutside}/{ticksTotal} with percentage {amtOutside}:N3 against target {IllOptions.PercentageOutside}");
+                Monitor.Log(
+                    $"Current Condition: {conditions}");
+            }
+
 
             //First, update the sick status
             bool farmerCaughtCold = false;
@@ -107,7 +112,7 @@ namespace TwilightShards.WeatherIllnesses
                 if (FarmerCanGetSick())
                 {
                     //rewrite time..
-                    if (conditions.Contains("blizzard") || ((conditions.Contains("lightning") || conditions.Contains("stormy") || conditions.Contains("thundersnow")) && !(Game1.currentLocation is Desert))|| (conditions.Contains("frost") && SDVTime.IsNight) || (conditions.Contains("heatwave") && !SDVTime.IsNight))
+                    if (conditions.Contains("blizzard") || conditions.Contains("whiteout") || (conditions.Contains("lightning") || conditions.Contains("stormy") || conditions.Contains("thundersnow")) && !(Game1.currentLocation is Desert) || (conditions.Contains("frost") && SDVTime.IsNight) || (conditions.Contains("heatwave") && !SDVTime.IsNight))
                     {
                         if ((conditions.Contains("heatwave") && !SDVTime.IsNight))
                             sickReason = HEATWAVE;
@@ -115,6 +120,7 @@ namespace TwilightShards.WeatherIllnesses
                             sickReason = FROST;
 
                         this.MakeSick(sickReason);
+                        farmerCaughtCold = true;
                     }
                 }
 
