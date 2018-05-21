@@ -51,6 +51,8 @@ namespace ClimatesOfFerngillRebuild
         internal static Integrations.ILunarDisturbancesAPI MoonAPI;
         internal static bool UseSafeLightningApi = false;
         internal static Integrations.ISafeLightningAPI SafeLightningAPI;
+        internal static bool UseDynamicNightApi = false;
+        internal static Integrations.IDynamicNightAPI DynamicNightAPI;
 
         /// <summary> Provide an API interface </summary>
         private IClimatesOfFerngillAPI API;
@@ -124,13 +126,6 @@ namespace ClimatesOfFerngillRebuild
             Monitor.Log(retString);
         }
 
-        private void ExperimentalCommand(string arg1, string[] arg2)
-        {
-            Game1.isRaining = true;
-            Game1.isDebrisWeather = true;
-            MakeCelebrationWeatherDebris();
-        }
-
         private void MakeCelebrationWeatherDebris()
         {
             Game1.debrisWeather.Clear();
@@ -146,12 +141,16 @@ namespace ClimatesOfFerngillRebuild
             //testing for ZA MOON, YOUR HIGHNESS.
             MoonAPI = SDVUtilities.GetModApi<Integrations.ILunarDisturbancesAPI>(Monitor, Helper, "KoihimeNakamura.LunarDisturbances", "1.0");
             SafeLightningAPI = SDVUtilities.GetModApi<Integrations.ISafeLightningAPI>(Monitor, Helper, "cat.safelightning", "1.0");
+            DynamicNightAPI = SDVUtilities.GetModApi<Integrations.IDynamicNightAPI>(Monitor, Helper, "knakamura.dynamicnighttime", "1.1-rc3");
 
             if (MoonAPI != null)
                 UseLunarDisturbancesApi = true;
                     
             if (SafeLightningAPI != null)
                 UseSafeLightningApi = true;
+
+            if (DynamicNightAPI != null)
+                UseDynamicNightApi = true;
         }
         
         private void SaveEvents_AfterLoad(object sender, EventArgs e)
@@ -302,19 +301,6 @@ namespace ClimatesOfFerngillRebuild
         }
 
         /// <summary>
-        /// This function gets the forecast of the weather for the TV. 
-        /// </summary>
-        /// <returns>A string describing the weather</returns>
-        public string GetWeatherForecast()
-        {
-            string MoonPhase = "";
-            if (UseLunarDisturbancesApi)
-                MoonPhase = MoonAPI.GetCurrentMoonPhase();
-
-            return DescriptionEngine.GenerateTVForecast(Conditions, MoonPhase);
-        }
-
-        /// <summary>
         /// This checks for things every second.
         /// </summary>
         /// <param name="sender">Object sending</param>
@@ -398,9 +384,9 @@ namespace ClimatesOfFerngillRebuild
                     if (CropList.Count > 0)
                     {
                         if (WeatherOpt.AllowCropDeath)
-                            SDVUtilities.ShowMessage(Helper.Translation.Get("hud-text.desc_heatwave_kill"));
+                            SDVUtilities.ShowMessage(Helper.Translation.Get("hud-text.desc_heatwave_kill"),3);
                         else
-                            SDVUtilities.ShowMessage(Helper.Translation.Get("hud-text.desc_heatwave_dry"));
+                            SDVUtilities.ShowMessage(Helper.Translation.Get("hud-text.desc_heatwave_dry"),3);
                     }
                 }
             }
@@ -422,7 +408,7 @@ namespace ClimatesOfFerngillRebuild
                 }
 
                 if (cDead)
-                    SDVUtilities.ShowMessage(Helper.Translation.Get("hud-text.desc_heatwave_cropdeath"));
+                    SDVUtilities.ShowMessage(Helper.Translation.Get("hud-text.desc_heatwave_cropdeath"),3);
             }
         }
 
@@ -837,7 +823,17 @@ namespace ClimatesOfFerngillRebuild
             if (UseLunarDisturbancesApi)
                 MoonPhase = MoonAPI.GetCurrentMoonPhase();
 
-            string MenuText = DescriptionEngine.GenerateMenuPopup(Conditions, MoonPhase);
+            string NightTime = "";
+            if (UseDynamicNightApi)
+                NightTime = Helper.Translation.Get("nightTime",
+                    new
+                    {
+                        sunrise = new SDVTime(DynamicNightAPI.GetSunriseTime()),
+                        sunset = new SDVTime(DynamicNightAPI.GetSunsetTime()),
+                        nighttime = new SDVTime(DynamicNightAPI.GetAstroTwilightTime())
+                    });
+
+            string MenuText = DescriptionEngine.GenerateMenuPopup(Conditions, MoonPhase, NightTime);
 
             // show menu
             this.PreviousMenu = Game1.activeClickableMenu;

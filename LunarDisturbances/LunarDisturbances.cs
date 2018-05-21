@@ -11,6 +11,7 @@ using StardewModdingAPI.Utilities;
 using StardewValley.Objects;
 using StardewValley.Locations;
 using StardewValley.Monsters;
+using StardewValley.TerrainFeatures;
 using TwilightShards.Stardew.Common;
 
 namespace TwilightShards.LunarDisturbances
@@ -32,10 +33,7 @@ namespace TwilightShards.LunarDisturbances
 
         public override object GetApi()
         {
-            if (API == null)
-                API = new LunarDisturbancesAPI(OurMoon, IsEclipse);
-
-            return API;
+            return API ?? (API = new LunarDisturbancesAPI(OurMoon, IsEclipse));
         }
         /// <summary> Main mod function. </summary>
         /// <param name="helper">The helper. </param>
@@ -87,6 +85,8 @@ namespace TwilightShards.LunarDisturbances
                     scale = Game1.pixelZoom;
                 if (Game1.viewport.Width < 810)
                     scale = Game1.pixelZoom * .75f;
+                if (Game1.viewport.Width < 700)
+                    scale = Game1.pixelZoom * .4f;
 
                 Game1.spriteBatch.Draw(OurIcons.MoonSource, new Vector2(Game1.viewport.Width - 65 * Game1.pixelZoom, Game1.pixelZoom), OurIcons.GetNightMoonSprite(SDVMoon.GetLunarPhaseForDay(SDate.Now().AddDays(-1))), Color.LightBlue, 0.0f, Vector2.Zero, scale, SpriteEffects.None, 1f);
             }
@@ -105,12 +105,9 @@ namespace TwilightShards.LunarDisturbances
             //cleanup any spawned monsters
             foreach (GameLocation l in Game1.locations)
             {
-                if (l is Farm)
-                    continue;
-
                 for (int index = l.characters.Count - 1; index >= 0; --index)
                 {
-                    if (l.characters[index] is Monster)
+                    if (l.characters[index] is Monster && !(l.characters[index] is GreenSlime))
                         l.characters.RemoveAt(index);
                 }
             }
@@ -252,13 +249,25 @@ namespace TwilightShards.LunarDisturbances
         private void HandleNewDay(object sender, EventArgs e)
         {
             if (OurMoon == null)
+            {
                 Monitor.Log("OurMoon is null");
+                return;
+            }
 
             if (Dice.NextDouble() < ModConfig.EclipseChance && ModConfig.EclipseOn && OurMoon.CurrentPhase == MoonPhase.FullMoon &&
                 SDate.Now().DaysSinceStart > 2)
             {
                 IsEclipse = true;
-                Game1.addHUDMessage(new HUDMessage("It looks like a rare solar eclipse will darken the sky all day!"));
+                var n = new HUDMessage("It looks like a rare solar eclipse will darken the sky all day!")
+                {
+                    color = Color.SeaGreen,
+                    fadeIn = true,
+                    timeLeft = 4000,
+                    noIcon = true
+                };
+                Game1.addHUDMessage(n);
+
+                Monitor.Log("There's a solar eclipse today!", LogLevel.Info);
             }
 
             OurMoon.OnNewDay();

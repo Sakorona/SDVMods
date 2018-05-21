@@ -1,5 +1,5 @@
 ﻿using System.Collections.Generic;
-
+using System.Linq;
 using StardewValley;
 using StardewModdingAPI;
 using Microsoft.Xna.Framework;
@@ -30,12 +30,9 @@ namespace StardewNotification
 
         public static void ShowFarmCaveMessage(GameLocation location, ITranslationHelper Trans)
         {
-            foreach (var e in location.Objects.Pairs)
-            {
-                var item = CopyObject(e.Value);
-                item.name = Game1.player.caveChoice.Value == MUSHROOM_CAVE ? Trans.Get("CaveMushroom") : Trans.Get("CaveFruit");
-                Game1.addHUDMessage(new HUDMessage(item.Type, location.Objects.Count(), true, Color.OrangeRed, item));
-            }
+            var item = CopyObject(location.Objects.Pairs.FirstOrDefault().Value);
+            item.name = Game1.player.caveChoice.Value == MUSHROOM_CAVE ? Trans.Get("CaveMushroom") : Trans.Get("CaveFruit");
+            Game1.addHUDMessage(new HUDMessage(item.Type, location.Objects.Pairs.Count(), true, Color.OrangeRed, item));
         }
 
         public static Object CopyObject(Object source)

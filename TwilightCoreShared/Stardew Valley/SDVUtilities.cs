@@ -137,11 +137,11 @@ namespace TwilightShards.Stardew.Common
             return null;
         }
 
-        public static void ShowMessage(string msg)
+        public static void ShowMessage(string msg, int whatType)
         {
             var hudmsg = new HUDMessage(msg, Color.SeaGreen, 5250f, true)
             {
-                whatType = 2
+                whatType = whatType
             };
             Game1.addHUDMessage(hudmsg);
         }

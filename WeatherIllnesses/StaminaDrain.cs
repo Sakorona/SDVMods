@@ -37,14 +37,14 @@ namespace TwilightShards.WeatherIllnesses
             FarmerHasBeenSick = true;
             if (reason == FROST)
             {
-                SDVUtilities.ShowMessage(Helper.Get("hud-text.desc_freeze"));
+                SDVUtilities.ShowMessage(Helper.Get("hud-text.desc_freeze"),4);
             }
             else if (reason == HEATWAVE)
             {
-                SDVUtilities.ShowMessage(Helper.Get("hud-text.desc_exhaust"));
+                SDVUtilities.ShowMessage(Helper.Get("hud-text.desc_exhaust"),4);
             }
             else
-                SDVUtilities.ShowMessage(Helper.Get("hud-text.desc_sick"));
+                SDVUtilities.ShowMessage(Helper.Get("hud-text.desc_sick"),4);
         }
 
         public void OnNewDay()
@@ -55,7 +55,7 @@ namespace TwilightShards.WeatherIllnesses
         public void ClearDrain()
         {
             FarmerSick = false;
-            SDVUtilities.ShowMessage(Helper.Get("hud-text.desc_cold_removed"));
+            SDVUtilities.ShowMessage(Helper.Get("hud-text.desc_cold_removed"), 4);
         }
 
         public void Reset()

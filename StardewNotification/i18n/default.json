@@ -3,6 +3,7 @@
   "travelingMerchant": "Traveling Merchant has arrived",
   "queenSauce": "Queen of Sauce airs today",
   "luckyDay": "Lucky Day!",
+  "unluckyDay":  "Unlucky Day!", 
 
   // Festivals
   "fMsg": "{{fest}} Today!",

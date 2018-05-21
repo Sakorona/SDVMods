@@ -73,7 +73,7 @@ namespace ClimatesOfFerngillRebuild
             return "error";
         }
 
-        internal string GenerateMenuPopup(WeatherConditions Current, string MoonPhase = "")
+        internal string GenerateMenuPopup(WeatherConditions Current, string MoonPhase = "", string NightTime = "")
         {
             string text = "";
 
@@ -138,11 +138,18 @@ namespace ClimatesOfFerngillRebuild
 
             //Tomorrow weather
             text += Helper.Get("weather-menu.tomorrow", 
-                new {
-                    tomorrowCondition = GetBasicWeather(Game1.weatherForTomorrow, Game1.currentSeason),
-                    tomorrowLow = GetTemperatureString(Current.TomorrowLow),
-                    tomorrowHigh = GetTemperatureString(Current.TomorrowHigh)
-                }) + Environment.NewLine;
+                        new {
+                            tomorrowCondition = GetBasicWeather(Game1.weatherForTomorrow, Game1.currentSeason),
+                            tomorrowLow = GetTemperatureString(Current.TomorrowLow),
+                            tomorrowHigh = GetTemperatureString(Current.TomorrowHigh)
+                        }) + Environment.NewLine;
+
+            //now, night time
+            if (NightTime != "")
+            {
+                text += Environment.NewLine;
+                text += NightTime + Environment.NewLine;
+            }
 
             return text;
         }

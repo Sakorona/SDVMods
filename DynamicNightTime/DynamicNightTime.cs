@@ -20,6 +20,20 @@ namespace DynamicNightTime
     {
         public static DynamicNightConfig NightConfig;
 
+        private static Type GetSDVType(string type)
+        {
+            const string prefix = "StardewValley.";
+
+            return Type.GetType(prefix + type + ", Stardew Valley") ?? Type.GetType(prefix + type + ", StardewValley");
+        }
+
+        /// <summary> Provide an API interface </summary>
+        private IDynamicNightAPI API;
+        public override object GetApi()
+        {
+            return API ?? (API = new DynamicNightAPI());
+        }
+
         public override void Entry(IModHelper helper)
         {
             NightConfig = Helper.ReadConfig<DynamicNightConfig>();
@@ -34,22 +48,22 @@ namespace DynamicNightTime
             harmony.PatchAll(Assembly.GetExecutingAssembly());
 
             //patch getStartingToGetDarkTime
-            MethodInfo setStartingToGetDarkTime = typeof(Game1).GetMethods(BindingFlags.Static | BindingFlags.Public).ToList().Find(m => m.Name == "getStartingToGetDarkTime");
+            MethodInfo setStartingToGetDarkTime = GetSDVType("Game1").GetMethods(BindingFlags.Static | BindingFlags.Public).ToList().Find(m => m.Name == "getStartingToGetDarkTime");
             MethodInfo postfix = typeof(Patches.GettingDarkPatch).GetMethods(BindingFlags.Static | BindingFlags.Public).ToList().Find(m => m.Name == "Postfix");
             harmony.Patch(setStartingToGetDarkTime, null, new HarmonyMethod(postfix));
 
             //patch getTrulyDarkTime
-            MethodInfo setTrulyDarkTime = typeof(Game1).GetMethods(BindingFlags.Static | BindingFlags.Public).ToList().Find(m => m.Name == "getTrulyDarkTime");
+            MethodInfo setTrulyDarkTime = GetSDVType("Game1").GetMethods(BindingFlags.Static | BindingFlags.Public).ToList().Find(m => m.Name == "getTrulyDarkTime");
             MethodInfo postfixDark = typeof(Patches.GetFullyDarkPatch).GetMethods(BindingFlags.Static | BindingFlags.Public).ToList().Find(m => m.Name == "Postfix");
             harmony.Patch(setTrulyDarkTime, null, new HarmonyMethod(postfixDark));
 
             //patch isDarkOutPatch
-            MethodInfo isDarkOut = typeof(Game1).GetMethods(BindingFlags.Static | BindingFlags.Public).ToList().Find(m => m.Name == "isDarkOut");
+            MethodInfo isDarkOut = GetSDVType("Game1").GetMethods(BindingFlags.Static | BindingFlags.Public).ToList().Find(m => m.Name == "isDarkOut");
             MethodInfo postfixIsDarkOut = typeof(Patches.IsDarkOutPatch).GetMethods(BindingFlags.Static | BindingFlags.Public).ToList().Find(m => m.Name == "Postfix");
             harmony.Patch(isDarkOut, null, new HarmonyMethod(postfixIsDarkOut));
 
             //patch UpdateGameClock
-            MethodInfo UpdateGameClock = helper.Reflection.GetMethod(typeof(Game1), "UpdateGameClock").MethodInfo;
+            MethodInfo UpdateGameClock = helper.Reflection.GetMethod(GetSDVType("Game1"), "UpdateGameClock").MethodInfo;
             MethodInfo postfixClock = helper.Reflection.GetMethod(typeof(Patches.GameClockPatch), "Postfix").MethodInfo;
             harmony.Patch(UpdateGameClock, null, new HarmonyMethod(postfixClock));
 
@@ -72,6 +86,10 @@ namespace DynamicNightTime
         public static int GetSunriseTime() => GetSunrise().ReturnIntTime();
         public static SDVTime GetMorningAstroTwilight() => GetTimeAtHourAngle(-0.314159265);
         public static SDVTime GetAstroTwilight() => GetTimeAtHourAngle(-0.314159265, false);
+        public static SDVTime GetMorningNavalTwilight() => GetTimeAtHourAngle(-0.20944);
+        public static SDVTime GetNavalTwilight() => GetTimeAtHourAngle(-0.20944, false);
+        public static SDVTime GetCivilTwilight() => GetTimeAtHourAngle(-0.104719755, false);
+        public static SDVTime GetMorningCivilTwilight() => GetTimeAtHourAngle(-0.104719755);
         public static SDVTime GetSunrise() => GetTimeAtHourAngle(0.01163611);
         public static SDVTime GetSunset()
         {

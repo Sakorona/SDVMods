@@ -56,8 +56,10 @@ namespace StardewNotification
 
         private void CheckForMaxLuck(ITranslationHelper Trans)
         {
-            if (!StardewNotification.Config.NotifyMaxLuck || Game1.dailyLuck < 0.07) return;
-            Util.ShowMessage(Trans.Get("luckyDay"));
+            if (StardewNotification.Config.NotifyMaxLuck && Game1.dailyLuck > 0.07)
+                Util.ShowMessage(Trans.Get("luckyDay"));
+            else if (StardewNotification.Config.NotifyMinLuck && Game1.dailyLuck < -.07)
+                Util.ShowMessage(Trans.Get("unluckyDay"));
         }
 
 

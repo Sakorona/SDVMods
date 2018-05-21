@@ -28,7 +28,7 @@ namespace TwilightShards.Stardew.Common
         {
             get
             {
-                return SDVTime.CurrentTime.TimePeriod;
+                return CurrentTime.TimePeriod;
             }
         }
 
@@ -383,6 +383,14 @@ namespace TwilightShards.Stardew.Common
             return other != null &&
                    hour == other.hour &&
                    minute == other.minute;
+        }
+
+        public static int ConvertIntTimeToMinutes(int time)
+        {
+            int hour = time / 100;
+            int min = time % 100;
+
+            return ((hour * 60) + min);
         }
 
         public override int GetHashCode()

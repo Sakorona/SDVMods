@@ -50,6 +50,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="DynamicNightAPI.cs" />
     <Compile Include="DynamicNightTime.cs" />
     <Compile Include="Patches\GameClockPatch.cs" />
     <Compile Include="Patches\GetFullyDarkPatch.cs" />

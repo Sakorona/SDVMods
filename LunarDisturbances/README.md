@@ -25,6 +25,10 @@ Thankfully, they don't appear to spawn on wedding and festival days..
 -- monsters spawn every 10 real-world seconds if you are outside.
 
 ## Changelog
+1.0.4
+- crash bug since 1.3 removed some farm cleanup code
+- tweak for small screens
+
 1.0.3
 - fix for beta 11 of 1.3
 

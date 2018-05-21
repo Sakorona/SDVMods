@@ -40,6 +40,9 @@ This mod does the following:
 - The SDV discord #modding channel for discussions
 
 ## Changelog
+v1.4.0-beta10
+ - enabled dynamic night time integration
+
 v1.4.0-beta9
 - some fixes for MP. Well, a lot of fixes for MP
 - readjusted fog. If you want the old foggy amounts in spring, add "foggy" to enhanced and normal.
