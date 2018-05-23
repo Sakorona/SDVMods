@@ -14,6 +14,5 @@
   "moon-text.hud_message_new": "It's a new moon! The beaches may have less items than normal...",
   "moon-text.fullmoon_eff": "The powers of the full moon have helped {{cropsAffected}} crops grow..",
   "moon-text.newmoon_eff": "The powers of the new moon have caused {{cropsAffected}} crops to grow more slower...",
-  "moon-desc.desc_moonphase": "Current Moon Phase: {{moonPhase}}",
-  "nighttime" :  "Sunrise will be at {{sunrise}} with sunset at {{sunset}}. It is expected to be fully dark at {{nighttime}}"
+  "moon-desc.desc_moonphase": "Current Moon Phase: {{moonPhase}}"
 }

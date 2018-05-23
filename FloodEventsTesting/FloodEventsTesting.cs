@@ -1,9 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using StardewModdingAPI;
 using StardewModdingAPI.Events;
 using StardewValley;
 using Microsoft.Xna.Framework;
+using StardewValley.Locations;
 
 
 namespace FloodEventsTesting
@@ -55,22 +57,6 @@ namespace FloodEventsTesting
         {
             //do something here, I suppose.
             //TimeEvents.AfterDayStarted += TimeEvents_AfterDayStarted;
-            TimeEvents.TimeOfDayChanged += TimeEvents_TimeOfDayChanged;
-        }
-
-        private void TimeEvents_TimeOfDayChanged(object sender, EventArgsIntChanged e)
-        {
-            if (e.NewInt == 610)
-            {
-                var n = new HUDMessage("It looks like a rare solar eclipse will darken the sky all day!")
-                {
-                    color = Color.SeaGreen,
-                    fadeIn = true,
-                    timeLeft = 4000,
-                    noIcon = true
-                };
-                Game1.addHUDMessage(n);
-            }
         }
 
         private void TimeEvents_AfterDayStarted(object sender, EventArgs e)

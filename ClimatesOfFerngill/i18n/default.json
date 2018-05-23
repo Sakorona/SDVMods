@@ -286,6 +286,7 @@
   "weather-menu.expectedFog": " Evening fog is expected as well.",
   "weather-menu.fogFuture": " Expected fog later at about {{fogTime}} to {{endFog}}.",
   "weather-menu.tomorrow": "Tomorrow's Forecast: {{tomorrowCondition}}. High: {{tomorrowHigh}} with Low: {{tomorrowLow}}.",
+  "nightTime" :  "Sunrise will be at {{sunrise}} with sunset at {{sunset}}. It is expected to be fully dark at {{nighttime}}",
 
   //basic conditions
   "weat-bloodmoon": "Blood Moon",
