@@ -57,7 +57,7 @@ namespace DynamicNightTime
             MethodInfo postfixDark = typeof(Patches.GetFullyDarkPatch).GetMethods(BindingFlags.Static | BindingFlags.Public).ToList().Find(m => m.Name == "Postfix");
             harmony.Patch(setTrulyDarkTime, null, new HarmonyMethod(postfixDark));
 
-            //patch isDarkOutPatch
+            //patch isDarkOut
             MethodInfo isDarkOut = GetSDVType("Game1").GetMethods(BindingFlags.Static | BindingFlags.Public).ToList().Find(m => m.Name == "isDarkOut");
             MethodInfo postfixIsDarkOut = typeof(Patches.IsDarkOutPatch).GetMethods(BindingFlags.Static | BindingFlags.Public).ToList().Find(m => m.Name == "Postfix");
             harmony.Patch(isDarkOut, null, new HarmonyMethod(postfixIsDarkOut));

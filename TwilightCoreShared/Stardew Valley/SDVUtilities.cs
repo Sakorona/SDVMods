@@ -155,7 +155,7 @@ namespace TwilightShards.Stardew.Common
 
         public static int CropCountInFarm(Farm f)
         {
-            return f.terrainFeatures.Values.Where(c => c is HoeDirt curr && curr.crop != null).Count();
+            return f.terrainFeatures.Values.Count(c => c is HoeDirt curr && curr.crop != null);
         }
 
         public static void SpawnGhostOffScreen(MersenneTwister Dice)
@@ -190,7 +190,7 @@ namespace TwilightShards.Stardew.Common
                     focusedOnFarmers = true,
                     wildernessFarmMonster = true
                 };
-                ghost.reloadSprite(false);
+                ghost.reloadSprite();
                 characters.Add(ghost);
             }
         }

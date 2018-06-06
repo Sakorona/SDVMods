@@ -26,5 +26,15 @@
             //TODO: Handle processing.
         }
 
+        public double GetTodaysHigh()
+        {
+            return CurrentConditions.TodayHigh;
+        }
+
+        public double GetTodaysLow()
+        {
+            return CurrentConditions.TodayLow;
+        }
+
     }
 }

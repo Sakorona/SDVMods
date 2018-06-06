@@ -1,9 +1,10 @@
 {
   "Name": "Dynamic Night Time",
   "Author": "knakamura",
-  "Version": "1.1-rc3",
+  "Version": "1.1-rc4",
   "Description": "Dynamic Night Time",
   "UniqueID": "knakamura.dynamicnighttime",
   "EntryDll": "DynamicNightTime.dll",
+  "MinimumApiVersion": "2.6-beta.15",
   "UpdateKeys": [ "Nexus:2072" ]
 }

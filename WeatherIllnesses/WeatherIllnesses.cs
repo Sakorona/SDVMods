@@ -2,6 +2,9 @@
 using StardewModdingAPI.Events;
 using StardewValley;
 using System;
+using StardewValley.Buildings;
+using StardewValley.Locations;
+using StardewValley.Objects;
 using TwilightShards.Common;
 using TwilightShards.Stardew.Common;
 
@@ -15,6 +18,7 @@ namespace TwilightShards.WeatherIllnesses
 
         private int TicksOutside;
         private int TicksTotal;
+        private int TicksInLocation;
         private int prevToEatStack = -1;
         private bool wasEating = false;
 
@@ -39,7 +43,7 @@ namespace TwilightShards.WeatherIllnesses
 
         private void HandleIntegrations(object sender, EventArgs e)
         {
-            climatesAPI = SDVUtilities.GetModApi<Integrations.IClimatesOfFerngillAPI>(Monitor, Helper, "KoihimeNakamura.ClimatesOfFerngill", "1.3.8");
+            climatesAPI = SDVUtilities.GetModApi<Integrations.IClimatesOfFerngillAPI>(Monitor, Helper, "KoihimeNakamura.ClimatesOfFerngill", "1.4-beta.12");
 
             if (climatesAPI != null)
             {
@@ -59,13 +63,17 @@ namespace TwilightShards.WeatherIllnesses
             else
                 weatherStatus = SDVUtilities.GetWeatherName();
 
-            Game1.player.stamina += StaminaMngr.TenMinuteTick(Game1.player.hat.Value?.which.Value, weatherStatus, TicksOutside, TicksTotal, Dice);
+            //handle being inside...
+            double temp = (UseClimates) ? climatesAPI.GetTodaysLow() : 100.0;
+            
+            Game1.player.stamina += StaminaMngr.TenMinuteTick(Game1.player.hat.Value?.which.Value, temp, weatherStatus, TicksInLocation, TicksOutside, TicksTotal, Dice);
 
             if (Game1.player.stamina <= 0)
                 SDVUtilities.FaintPlayer();
 
             TicksTotal = 0;
             TicksOutside = 0;
+            TicksInLocation = 0;
         }
 
         private void HandleChangesPerTick(object sender, EventArgs e)
@@ -94,18 +102,23 @@ namespace TwilightShards.WeatherIllnesses
                 TicksOutside++;
             }
 
+            if (Game1.currentLocation is FarmHouse)
+            {
+                TicksInLocation++;
+            }
+
             TicksTotal++;
         }
 
         private void HandleNewDay(object sender, EventArgs e)
         {
-            TicksOutside = TicksTotal = 0;
+            TicksOutside = TicksTotal = TicksInLocation = 0;
             StaminaMngr.OnNewDay();
         }
 
         private void HandleResetToMenu(object sender, EventArgs e)
         {
-            TicksTotal = TicksOutside = 0;
+            TicksTotal = TicksOutside = TicksInLocation = 0;
             StaminaMngr.Reset();
         }
     }

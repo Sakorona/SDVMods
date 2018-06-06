@@ -16,8 +16,8 @@ Currently doesn't do any custom weathers in MP. Works only for the host player i
 
 ## Requirements
 
-- SMAPI 2.6-beta.14+
-- Stardew Valley 1.3.11
+- SMAPI 2.6-beta.15+
+- Stardew Valley 1.3.16+
  
 ## Overview
 
@@ -40,6 +40,9 @@ This mod does the following:
 - The SDV discord #modding channel for discussions
 
 ## Changelog
+v1.4.0-beta11
+ - updated to be compatible with SDV 1.3.16
+
 v1.4.0-beta10
  - enabled dynamic night time integration
 

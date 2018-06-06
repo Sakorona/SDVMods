@@ -1,10 +1,10 @@
 {
   "Name": "Climates of Ferngill [Rebuild]",
   "Author": "KoihimeNakamura",
-  "Version": "1.4-beta10",
+  "Version": "1.4-beta.12",
   "Description": "Create a unique climate system with custom weathers, a moon and stamina changes, as well as add weather related events and commands.",
   "UniqueID": "KoihimeNakamura.ClimatesOfFerngill",
   "EntryDll": "ClimatesOfFerngill.dll",
-  "MinimumApiVersion": "2.6-beta.14",
+  "MinimumApiVersion": "2.6-beta.15",
   "UpdateKeys": [ "Nexus:604" ]
 } 

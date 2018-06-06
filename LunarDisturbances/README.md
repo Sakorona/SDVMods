@@ -4,8 +4,8 @@
 1.0.3 (Last Update: 19 May 2018)
 
 ## Requirements
-- SMAPI 2.6-beta3+
-- Stardew Valley 1.3.3+
+- SMAPI 2.6-beta15+
+- Stardew Valley 1.3.16+
 
 ## This Mod Does:
 - Adds a moon overhead, which will act on the world
@@ -25,6 +25,9 @@ Thankfully, they don't appear to spawn on wedding and festival days..
 -- monsters spawn every 10 real-world seconds if you are outside.
 
 ## Changelog
+1.0.5
+ - Updated for SDV 1.3.16
+
 1.0.4
 - crash bug since 1.3 removed some farm cleanup code
 - tweak for small screens

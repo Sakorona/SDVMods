@@ -1,10 +1,10 @@
 ﻿#Dynamic Night Time
 
-Current Version: 1.1rc2
+Current Version: 1.1rc4
 
 ## Requirements
-- SMAPI 2.6-beta14+
-- Stardew Valley 1.3.11+
+- SMAPI 2.6-beta15+
+- Stardew Valley 1.3.16+
 
 ## This Mod Does:
 - Creates a more dynamic night time and sunrise lighting system. Does not alter wakeup time.
@@ -19,7 +19,18 @@ This mod is MP compatible, and all clients will need it for it to work.
 ## Installation Instructions
 - Unzip the folder into your Mods/ folder after making sure SMAPI is installed
 
+## Troubleshooting Notes
+
+* This mod dynamically generates your cycle based on latitude, and then clamps it to the nearest 10  hours. This does means that changes that are less than 3 minutes will not be visible. This is largely due to the nature of the 10 minute clock in Stardew Valley.
+
+*This mod uses Harmony, a tool that allows for rewriting of game functions during runtime.
+
+This mod alters three functions in Game1 - isNightOut, GameClock, getStartingToGetDarkTime, getTrulyDarkTime. They will still return the same variables and generally the same intended use.
+
 ## Changelog
+1.1-rc4
+ - updated for SDV 1.3.16
+
 1.1-rc3
  - refined algoryhtmns for calcs
  - set night time to naval twilight

@@ -9,6 +9,8 @@ Unzip the archive into the Mods folder
 This mod will only work for the main player (i.e the host) in an MP game. 
 
 ## Changelog
+1.3-beta2
+- Updated for SDV 1.3.16
 1.3-beta1
 - Updated the manifest
 - small fix for the number of items not adding in the force spawns
@@ -40,8 +42,8 @@ To configure, open up `config.json` in your mod folder.
 - UseCheaperPricing: Uses a less expensive method of determining the value.
 
 ## Requires:
-SMAPI 2.6-beta3+
-SDV 1.3.3+
+SMAPI 2.6-beta15+
+SDV 1.3.16+
 
 ## API documentation
 

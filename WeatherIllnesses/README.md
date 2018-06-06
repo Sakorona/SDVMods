@@ -1,11 +1,11 @@
 ﻿# Weather Illnesses
 
 ## Current Version
-1.0-beta.4 (19 May 2018)
+1.0-beta.6 (5 June 2018)
 
 ### Requirements
-- SMAPI 2.6-beta.14+
-- Stardew Valley 1.3.11+
+- SMAPI 2.6-beta.15+
+- Stardew Valley 1.3.16+
 
 ### Multiplayer
 
@@ -14,6 +14,7 @@ Works fine, each player needs it.
 ### This Mod Does:
 - Going out in storms, blizzards, frosts and heatwaves is now more perilous, as it drains your stamina. Thankfully, 
     a 'Muscle Remedy' has been found to cure even the hardiest flu
+- If it's too cold outside, you'll get sick in your farmhouse without. Better use that fireplace!!
 
 ### Stamina System
 
@@ -37,7 +38,7 @@ The penalties are **cumulative** - that is, they add up to the final multiplier.
 *Blizzard: **White Out**+245% (2.45)
 *Thunder Frenzy: +185% (1.85)
 *Blizzard (nighttime) +50% (.5)
-*Frost (nightime): +125% (1.25) - this is not during the winter. During winter, the frost penalty is untriggered.
+*Frost (nightime): +125% (1.25) - this is not during the winter. [During winter, the frost penalty is untriggered, but inside, you will get a generic (100%) sickness drain]
 *Heatwave (daytime): +125% (1.25)
 
 The calculated number is then rounded __down__
@@ -57,3 +58,15 @@ If you're out in a blizzard during the day, it's *1.25 or 2.5 rounded down to 2.
  - `StaminaDrain` - This is an int containing the default stamina drain for hazardous events. See the writeup (soon) for more information. Default is '2'. Valid range is any number between foo and bar.'
 
   - `ChanceOfGettingSick` - Controls the chance you'll get sick when conditions are matched. Default is set to '.7' for (70% chance). Valid Range is 0 to 1.
+
+  -`TooColdInside` - Double specifying the max temperature threshold to be too cold inside. Default is `8.4` (C). Valid Range is -100 to 100, really.
+
+  ### Changelog
+
+  1.0-beta.6
+  - Added in a more descriptive system that will give you different text for different reasons
+  - Now, if it's cold outside, and you have no heat inside, you might get sick
+
+  1.0-beta.5
+
+   - Updated for Stardew Valley 1.3.16

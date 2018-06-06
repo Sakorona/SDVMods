@@ -35,6 +35,10 @@ _Alerts you of system time after a configurable number of minutes._
 * **[Dynamic Night Time](https://www.nexusmods.com/stardewvalley/mods/2072)** <small>([source](DynamicNightTime))</small>
 
 _Want a dynamic day/night cycle? Look here!_
+
+* **[CustomizableClock]
+
+_This mod was written for someone on Discord, and as such has no intended release at this time. Fork of the 24h clock available on Nexus._
   
 ## Depricated Mods
 * **[Solar Eclipse Event](http://www.nexusmods.com/stardewvalley/mods/897)** <small>([source](SolarEclipseEvent))</small>  

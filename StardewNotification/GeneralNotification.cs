@@ -78,10 +78,10 @@ namespace StardewNotification
             Util.ShowMessage(Trans.Get("fMsg", new { fest = festivalName }));
 
             if (!festivalName.Equals(Trans.Get("WinterStar"))) return;
-            var rng = new Random((int)(Game1.uniqueIDForThisGame / 2UL) - Game1.year);
-            var santa = Utility.getRandomTownNPC(rng, Utility.getFarmerNumberFromFarmer(Game1.player)).Name;
+            Random r = new Random((int)(Game1.uniqueIDForThisGame / 2uL) ^ Game1.year ^ (int)Game1.player.UniqueMultiplayerID);
+            var santa = Utility.getRandomTownNPC(r).displayName;
 
-            Util.ShowMessage(Trans.Get("SecretSantaReminder", new { charName = santa }));
+            Util.ShowMessage(Trans.Get("SecretSantaReminder", new { charName = santa })); 
         }
 
         private string GetFestivalName(ITranslationHelper Trans)
