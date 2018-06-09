@@ -74,7 +74,7 @@ namespace KN.CustomizableClock
             if (!ModConfig.Is24hClock && hr > 9)
                 textPosition = TimeBox.position + new Vector2(-46, -9);
             else if (!ModConfig.Is24hClock && hr < 10)
-                textPosition = TimeBox.position + new Vector2(-32, -9);
+                textPosition = TimeBox.position + new Vector2(-36, -9);
             
             Vector2 backgroundPosition = TimeBox.position + new Vector2(108, 115);
             Vector2 textSize = Game1.dialogueFont.MeasureString(Game1.timeOfDay.ToString());

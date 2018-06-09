@@ -273,7 +273,7 @@ namespace ClimatesOfFerngillRebuild
             return desc;
         }
 
-        public void CreateWeather(string Type, bool IsMorningFog = false)
+        public void CreateWeather(string Type)
         {
             foreach (ISDVWeather weather in CurrentWeathers)
             {
@@ -671,7 +671,7 @@ namespace ClimatesOfFerngillRebuild
 
             if (fogRoll < ClimateForDay.RetrieveOdds(Dice, "fog", Game1.dayOfMonth) && !this.GetCurrentConditions().HasFlag(CurrentWeather.Wind) && !blockFog)
             {
-                this.CreateWeather("Fog", true);
+                this.CreateWeather("Fog");
 
                 if (ModConfig.Verbose)
                     Monitor.Log($"{FogDescription(fogRoll, ClimateForDay.RetrieveOdds(Dice, "fog", Game1.dayOfMonth))}");
