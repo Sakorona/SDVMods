@@ -181,16 +181,16 @@ namespace CustomizableCartRedux
             {
                 int index2 = GetItem(maxItemID);
 
+                while (!CanSellItem(index2))
+                    index2 = GetItem(maxItemID);
+
                 if (OurConfig.DisableDuplicates)
                 {
-                    while (itemsToBeAdded.Contains(index2) && !CanSellItem(index2))
+                    while (itemsToBeAdded.Contains(index2) || !CanSellItem(index2))
                     {
                         index2 = GetItem(maxItemID);
                     }
                 }
-
-                while (!CanSellItem(index2))
-                    index2 = GetItem(maxItemID);
 
                 itemsToBeAdded.Add(index2);
             }

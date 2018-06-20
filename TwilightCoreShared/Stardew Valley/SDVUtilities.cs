@@ -146,13 +146,6 @@ namespace TwilightShards.Stardew.Common
             Game1.addHUDMessage(hudmsg);
         }
 
-        public static void FaintPlayer()
-        {
-            Game1.player.Stamina = 0;
-            Game1.player.doEmote(36);
-            Game1.farmerShouldPassOut = true;
-        }
-
         public static int CropCountInFarm(Farm f)
         {
             return f.terrainFeatures.Values.Count(c => c is HoeDirt curr && curr.crop != null);

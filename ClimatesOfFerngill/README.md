@@ -1,6 +1,6 @@
 ﻿# Climates of Ferngill (Rebuild) You Can (Not) Have Weather
 
-Current Version (18 May 2018): 1.4-beta9
+Current Version (13 June 2018): 1.4-beta12
 
 ## What's New
 
@@ -16,8 +16,8 @@ Currently doesn't do any custom weathers in MP. Works only for the host player i
 
 ## Requirements
 
-- SMAPI 2.6-beta.15+
-- Stardew Valley 1.3.16+
+- SMAPI 2.6-beta.16+
+- Stardew Valley 1.3.18+
  
 ## Overview
 
@@ -40,6 +40,10 @@ This mod does the following:
 - The SDV discord #modding channel for discussions
 
 ## Changelog
+v1.4.0-beta12
+ - API expansion
+ - Fix for thundersnow + fog with no frost
+
 v1.4.0-beta11
  - updated to be compatible with SDV 1.3.16
 

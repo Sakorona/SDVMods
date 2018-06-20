@@ -6,6 +6,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using StardewValley.Locations;
+using StardewValley.Objects;
 
 namespace TwilightShards.WeatherIllnesses
 {
@@ -26,15 +27,21 @@ namespace TwilightShards.WeatherIllnesses
         private IllnessConfig IllOptions;
         private ITranslationHelper Helper;
         private bool FarmerSick;
+        private bool turnTheHeatOn;
         private IllCauses ReasonSick ;
         public bool FarmerHasBeenSick;
+        public bool IssuedInHouseWarning;
         private IMonitor Monitor;
+
+        public static readonly int MedicineClear = 1;
+        public static readonly int BathHouseClear = 2;
 
         public StaminaDrain(IllnessConfig Options, ITranslationHelper SHelper, IMonitor mon)
         {
             IllOptions = Options;
             Helper = SHelper;
             Monitor = mon;
+            IssuedInHouseWarning = false;
         }
 
         public bool IsSick()
@@ -80,17 +87,28 @@ namespace TwilightShards.WeatherIllnesses
         {
             FarmerSick = false;
             ReasonSick = IllCauses.None;
+            IssuedInHouseWarning = false;
+            turnTheHeatOn = false;
         }
 
-        public void ClearDrain()
+        public void ClearDrain(int reason = 1)
         {
             FarmerSick = false;
-            SDVUtilities.ShowMessage(Helper.Get("hud-text.desc_cold_removed"), 4);
+            if (reason == StaminaDrain.MedicineClear)
+            {
+                SDVUtilities.ShowMessage(Helper.Get("hud-text.desc_cold_removed"), 4);
+            }
+            else if (reason == StaminaDrain.BathHouseClear)
+            {
+                SDVUtilities.ShowMessage(Helper.Get("hud-text.desc_bathHouse"),4);
+            }
         }
 
         public void Reset()
         {
             FarmerSick = false;
+            IssuedInHouseWarning = false;
+            turnTheHeatOn = false;
         }
 
         public bool FarmerCanGetSick()
@@ -139,11 +157,31 @@ namespace TwilightShards.WeatherIllnesses
             foreach (var v in fh.objects.Pairs)
             {
                 if (v.Value.Name.Contains("Heater"))
+                {
+                    if (IllOptions.Verbose) Monitor.Log("Heater detected");
                     isHeaterHere = true;
+                }
             }
 
-            bool turnTheHeatOn = (amtInHouse >= IllOptions.PercentageOutside && farmerCaughtCold &&
-                                  temp < IllOptions.TooColdInside && !fh.fireplaceOn.Value && !isHeaterHere);
+            foreach (var v in fh.furniture)
+            {
+                if (v.furniture_type.Value == Furniture.fireplace && v.IsOn)
+                {
+                    if (IllOptions.Verbose) Monitor.Log("fireplace detected");
+                    isHeaterHere = true;
+                }
+            }
+            
+            turnTheHeatOn = (turnTheHeatOn || (amtInHouse >= IllOptions.PercentageOutside && farmerCaughtCold &&
+                                               temp < IllOptions.TooColdInside && !isHeaterHere && IssuedInHouseWarning && 
+                                               (Game1.timeOfDay < 1000 || Game1.timeOfDay > 1650)));
+                              
+            if (!IssuedInHouseWarning && amtInHouse >= IllOptions.PercentageOutside && temp < IllOptions.TooColdInside
+                && (Game1.timeOfDay < 1000 || Game1.timeOfDay > 1650) && !Game1.currentLocation.IsOutdoors && !isHeaterHere)
+            {
+                SDVUtilities.ShowMessage(Helper.Get("hud-text.desc_HeatOn"),4);
+                IssuedInHouseWarning = true;
+            }
 
             if (amtOutside >= IllOptions.PercentageOutside && farmerCaughtCold || this.FarmerSick || turnTheHeatOn)
             {
@@ -213,6 +251,12 @@ namespace TwilightShards.WeatherIllnesses
                 {
                     totalMulti += 1.25;
                     condList.Add("Night Frost");
+                }
+
+                if (this.FarmerSick && turnTheHeatOn)
+                {
+                    totalMulti += 1;
+                    condList.Add("Cold House");
                 }
 
                 if (this.FarmerSick && conditions.Contains("thundersnow") && SDVTime.IsNight)

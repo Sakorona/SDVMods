@@ -5,6 +5,9 @@ using StardewValley;
 using System;
 using System.Linq;
 using System.Reflection;
+using Microsoft.Xna.Framework;
+using StardewModdingAPI.Events;
+using StardewValley.Locations;
 using TwilightShards.Common;
 using TwilightShards.Stardew.Common;
 
@@ -19,6 +22,8 @@ namespace DynamicNightTime
     public class DynamicNightTime : Mod
     {
         public static DynamicNightConfig NightConfig;
+        public static IMonitor Logger;
+        private bool ResetOnWakeup;
 
         private static Type GetSDVType(string type)
         {
@@ -36,7 +41,9 @@ namespace DynamicNightTime
 
         public override void Entry(IModHelper helper)
         {
+            Logger = Monitor;
             NightConfig = Helper.ReadConfig<DynamicNightConfig>();
+            ResetOnWakeup = false;
 
             //sanity check lat
             if (NightConfig.Latitude > 64)
@@ -67,9 +74,47 @@ namespace DynamicNightTime
             MethodInfo postfixClock = helper.Reflection.GetMethod(typeof(Patches.GameClockPatch), "Postfix").MethodInfo;
             harmony.Patch(UpdateGameClock, null, new HarmonyMethod(postfixClock));
 
+            TimeEvents.AfterDayStarted += HandleNewDay;
+            SaveEvents.AfterReturnToTitle += HandleReturn;
+            TimeEvents.TimeOfDayChanged += HandleTimeChanges;
+
             Helper.ConsoleCommands.Add("debug_cycleinfo", "Outputs the cycle information", OutputInformation);
             Helper.ConsoleCommands.Add("debug_outdoorlight", "Outputs the outdoor light information", OutputLight);
             //and now events!
+        }
+
+        private void HandleReturn(object sender, EventArgs e)
+        {
+            ResetOnWakeup = false;
+        }
+
+        private void HandleNewDay(object sender, EventArgs e)
+        {
+            if (Game1.isDarkOut() && !Game1.currentLocation.IsOutdoors && Game1.currentLocation is DecoratableLocation loc && !ResetOnWakeup)
+            {
+                //we need to handle the spouse's room
+                if (loc is FarmHouse)
+                {
+                    if (Game1.timeOfDay < GetSunriseTime())
+                        Game1.currentLocation.switchOutNightTiles();
+                }
+            }
+            ResetOnWakeup = false;
+        }
+
+        private void HandleTimeChanges(object sender, EventArgsIntChanged e)
+        {
+            //handle ambient light changes.
+            if (!Game1.currentLocation.IsOutdoors && Game1.currentLocation is DecoratableLocation locB)
+            {
+                Game1.ambientLight = Game1.isDarkOut() || locB.LightLevel > 0.0 ? new Color(180, 180, 0) : Color.White;
+            }
+
+            //handle the game being bad at night->day :|
+            if (Game1.timeOfDay < GetSunriseTime())
+                Game1.currentLocation.switchOutNightTiles();
+            else
+                Game1.currentLocation.addLightGlows();
         }
 
         private void OutputLight(string arg1, string[] arg2)

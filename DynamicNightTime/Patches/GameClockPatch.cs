@@ -19,7 +19,7 @@ namespace DynamicNightTime.Patches
             else if (Game1.timeOfDay < sunriseTime)
             {
                 float v = ((float)(SDVTime.ConvertIntTimeToMinutes(Game1.timeOfDay) - SDVTime.ConvertIntTimeToMinutes(astronTime)) / (SDVTime.ConvertIntTimeToMinutes(sunriseTime) - SDVTime.ConvertIntTimeToMinutes(astronTime)));
-                float num = Math.Max(0.001f, (1f - v));
+                float num = Math.Max(0.001f, .93f - (.6f * v));
                 Game1.outdoorLight = (Game1.isRaining ? Game1.ambientLight : Game1.eveningColor) * num;
             }
             else if (Game1.timeOfDay >= sunriseTime && Game1.timeOfDay <= Game1.getStartingToGetDarkTime())

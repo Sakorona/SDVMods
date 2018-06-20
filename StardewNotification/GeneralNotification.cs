@@ -50,7 +50,7 @@ namespace StardewNotification
         private void CheckForToolUpgrade(ITranslationHelper Trans)
         {
             if (!StardewNotification.Config.NotifyToolUpgrade) return;
-            if (!(Game1.player.toolBeingUpgraded is null) && Game1.player.daysLeftForToolUpgrade.Value <= 0)
+            if (!(Game1.player.toolBeingUpgraded.Value is null) && Game1.player.daysLeftForToolUpgrade.Value <= 0)
                 Util.ShowMessage(Trans.Get("toolPickup", new { toolName = Game1.player.toolBeingUpgraded.Value.Name }));
         }
 

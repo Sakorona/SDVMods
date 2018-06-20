@@ -5,6 +5,7 @@ using Microsoft.Xna.Framework;
 
 using StardewValley;
 using StardewModdingAPI;
+using Object = System.Object;
 
 namespace StardewNotification
 {
@@ -51,7 +52,7 @@ namespace StardewNotification
 
                 foreach (StardewValley.Object o in farmcave.Objects.Values)
                 {
-                    if (!o.bigCraftable.Value)
+                    if (!o.bigCraftable.Value && o.Category != StardewValley.Object.FishCategory)
                         count++;
                 }
 

@@ -21,6 +21,7 @@ namespace TwilightShards.WeatherIllnesses
         private int TicksInLocation;
         private int prevToEatStack = -1;
         private bool wasEating = false;
+        private int TimeInBathHouse = 0;
 
         private bool UseClimates = false;
         private Integrations.IClimatesOfFerngillAPI climatesAPI;
@@ -56,6 +57,18 @@ namespace TwilightShards.WeatherIllnesses
             if (!Game1.hasLoadedGame)
                 return;
 
+            if (Game1.currentLocation is BathHousePool bh && Game1.player.swimming.Value)
+            {
+                TimeInBathHouse += 10;
+                Monitor.Log($"In the BathHouse Pool for {TimeInBathHouse}");
+            }
+
+            if (TimeInBathHouse > 30)
+            {
+                StaminaMngr.ClearDrain(StaminaDrain.BathHouseClear);
+                TimeInBathHouse = 0;
+            }
+
             string weatherStatus = "";
             //get current weather string
             if (UseClimates)
@@ -69,7 +82,10 @@ namespace TwilightShards.WeatherIllnesses
             Game1.player.stamina += StaminaMngr.TenMinuteTick(Game1.player.hat.Value?.which.Value, temp, weatherStatus, TicksInLocation, TicksOutside, TicksTotal, Dice);
 
             if (Game1.player.stamina <= 0)
-                SDVUtilities.FaintPlayer();
+            {
+                Game1.player.exhausted = true;
+                Game1.player.stamina = -20;
+            }
 
             TicksTotal = 0;
             TicksOutside = 0;
@@ -114,12 +130,14 @@ namespace TwilightShards.WeatherIllnesses
         {
             TicksOutside = TicksTotal = TicksInLocation = 0;
             StaminaMngr.OnNewDay();
+            TimeInBathHouse = 0;
         }
 
         private void HandleResetToMenu(object sender, EventArgs e)
         {
             TicksTotal = TicksOutside = TicksInLocation = 0;
             StaminaMngr.Reset();
+            TimeInBathHouse = 0;
         }
     }
 }

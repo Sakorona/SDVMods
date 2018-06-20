@@ -9,6 +9,8 @@ Unzip the archive into the Mods folder
 This mod will only work for the main player (i.e the host) in an MP game. 
 
 ## Changelog
+1.3-beta.3
+ - Fixed a duplicate bug
 1.3-beta2
 - Updated for SDV 1.3.16
 1.3-beta1
