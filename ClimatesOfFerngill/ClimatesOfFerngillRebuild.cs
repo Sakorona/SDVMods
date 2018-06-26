@@ -99,6 +99,7 @@ namespace ClimatesOfFerngillRebuild
             MenuEvents.MenuChanged += MenuEvents_MenuChanged;
             GameEvents.UpdateTick += CheckForChanges;
             GameEvents.FirstUpdateTick += GameEvents_FirstUpdateTick;
+            GameEvents.OneSecondTick += GameEvents_OneSecondTick;
             SaveEvents.AfterReturnToTitle += ResetMod;
             SaveEvents.AfterLoad += SaveEvents_AfterLoad;
             GraphicsEvents.OnPreRenderHudEvent += DrawPreHudObjects;
@@ -115,6 +116,11 @@ namespace ClimatesOfFerngillRebuild
                 .Add("debug_weatherstatus","!", OutputWeather);
         }
 
+        private void GameEvents_OneSecondTick(object sender, EventArgs e)
+        {
+            Conditions.SecondUpdate();
+        }
+
         private void ClearSpecial(string arg1, string[] arg2)
         {
             Conditions.ClearAllSpecialWeather();
@@ -126,17 +132,7 @@ namespace ClimatesOfFerngillRebuild
             Monitor.Log(retString);
         }
 
-        private void MakeCelebrationWeatherDebris()
-        {
-            Game1.debrisWeather.Clear();
-            Game1.isDebrisWeather = true;
-            int num1 = Game1.random.Next(80, 100);
-            int num2 = 22;
-            for (int index = 0; index < num1; ++index)
-                Game1.debrisWeather.Add(new WeatherDebris(new Vector2((float)Game1.random.Next(0, Game1.graphics.GraphicsDevice.Viewport.Width), (float)Game1.random.Next(0, Game1.graphics.GraphicsDevice.Viewport.Height)), num2 + Game1.random.Next(2), (float)Game1.random.Next(15) / 500f, (float)Game1.random.Next(-10, 0) / 50f, (float)Game1.random.Next(10) / 50f));
-        }
-
-        private void GameEvents_FirstUpdateTick(object sender, EventArgs e)
+ private void GameEvents_FirstUpdateTick(object sender, EventArgs e)
         {
             //testing for ZA MOON, YOUR HIGHNESS.
             MoonAPI = SDVUtilities.GetModApi<Integrations.ILunarDisturbancesAPI>(Monitor, Helper, "KoihimeNakamura.LunarDisturbances", "1.0");
@@ -301,7 +297,7 @@ namespace ClimatesOfFerngillRebuild
         }
 
         /// <summary>
-        /// This checks for things every second.
+        /// This checks for things every tick.
         /// </summary>
         /// <param name="sender">Object sending</param>
         /// <param name="e">event params</param>
@@ -519,7 +515,9 @@ namespace ClimatesOfFerngillRebuild
 
             ProbabilityDistribution<string> WeatherDist = new ProbabilityDistribution<string>("sunny");
             WeatherDist.AddNewEndPoint(rainDays, "rain");
-            WeatherDist.AddNewCappedEndPoint(windyDays, "debris");
+            
+            if (WeatherOpt.DisableHighRainWind)
+                WeatherDist.AddNewCappedEndPoint(windyDays, "debris");
 
             double distOdd = Dice.NextDoublePositive();
 

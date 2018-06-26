@@ -26,6 +26,7 @@ namespace ClimatesOfFerngillRebuild
         public bool Use12HourTime { get; set; }
         public double ThunderFrenzyOdds { get; set; }
         public bool DarkenLightInFog { get; set; }
+        public bool DisableHighRainWind { get; set; }
 
         public bool Verbose { get; set; }
         
@@ -57,6 +58,7 @@ namespace ClimatesOfFerngillRebuild
             CropResistance = .75; //default settting
             DarkFogChance = .0875; //default setting
             Use12HourTime = false; //default setting
+            DisableHighRainWind = false; //default setting
 
             // be able to deal with lightning strikes
             //general mod options

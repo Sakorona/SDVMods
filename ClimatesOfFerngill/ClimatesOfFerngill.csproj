@@ -61,6 +61,7 @@
     <Compile Include="Integrations\ILunarDisturbancesAPI.cs" />
     <Compile Include="Integrations\ISafeLightningAPI.cs" />
     <Compile Include="WeatherData\WeatherData.cs" />
+    <Compile Include="Weathers\FerngillCustomRain.cs" />
     <Compile Include="Weathers\FerngillThunderFrenzy.cs" />
     <Compile Include="Weathers\FerngillWhiteOut.cs" />
     <Compile Include="Weathers\ForceDays.cs" />
@@ -85,6 +86,7 @@
     <Compile Include="Weathers\FogType.cs" />
     <Compile Include="Weathers\WeatherIcon.cs" />
     <Compile Include="Weathers\WeatherNotificationArgs.cs" />
+    <Compile Include="Weathers\WeatherTypes.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="data\weather\arid.json">

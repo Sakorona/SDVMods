@@ -71,6 +71,10 @@ namespace ClimatesOfFerngillRebuild
         {
         }
 
+        public void SecondUpdate()
+        {
+        }
+
         public void CreateWeather()
         {
 

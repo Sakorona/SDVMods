@@ -273,16 +273,16 @@ namespace TwilightShards.LunarDisturbances
             if (CurrentPhase == MoonPhase.NewMoon && ModConfig.HazardousMoonEvents && !(b is null))
             {
                 List<KeyValuePair<Vector2, StardewValley.Object>> entries = (from o in b.objects.Pairs
-                                                                             where beachItems.Contains(o.Value.ParentSheetIndex)
-                                                                             select o).ToList();
+                    where beachItems.Contains(o.Value.ParentSheetIndex)
+                    select o).ToList();
 
                 foreach (KeyValuePair<Vector2, StardewValley.Object> rem in entries)
                 {
-                        if (Dice.NextDouble() < BeachRemovalChance)
-                        {
-                            itemsChanged++;
-                            b.objects.Remove(rem.Key);
-                        }
+                    if (Dice.NextDouble() < BeachRemovalChance)
+                    {
+                        itemsChanged++;
+                        b.objects.Remove(rem.Key);
+                    }
                 }
 
                 if (itemsChanged > 0)
@@ -292,35 +292,33 @@ namespace TwilightShards.LunarDisturbances
             //full moon processing
             if (CurrentPhase == MoonPhase.FullMoon)
             {
+                Rectangle rectangle = new Rectangle(65, 11, 25, 12);
+                for (int index = 0; index < 5; ++index)
+                {
 
-                    int parentSheetIndex = 0;
-                    Rectangle rectangle = new Rectangle(65, 11, 25, 12);
-                    for (int index = 0; index < 5; ++index)
+                    //get the item ID to spawn
+                    var parentSheetIndex = moonBeachItems.GetRandomItem(Dice);
+                    if (Dice.NextDouble() <= .0001)
+                        parentSheetIndex = 392; //rare chance for a Nautlius Shell.
+
+                    else if (Dice.NextDouble() > .0001 && Dice.NextDouble() <= .45)
+                        parentSheetIndex = 589;
+
+                    else if (Dice.NextDouble() > .45 && Dice.NextDouble() <= .62)
+                        parentSheetIndex = 60;
+
+
+                    if (Dice.NextDouble() < BeachSpawnChance)
                     {
-
-                        //get the item ID to spawn
-                        parentSheetIndex = moonBeachItems.GetRandomItem(Dice);
-                        if (Dice.NextDouble() <= .0001)
-                            parentSheetIndex = 392; //rare chance for a Nautlius Shell.
-
-                        else if (Dice.NextDouble() > .0001 && Dice.NextDouble() <= .45)
-                            parentSheetIndex = 589;
-
-                        else if (Dice.NextDouble() > .45 && Dice.NextDouble() <= .62)
-                            parentSheetIndex = 60;
-
-
-                        if (Dice.NextDouble() < BeachSpawnChance)
-                        {
-                            Vector2 v = new Vector2((float)Game1.random.Next(rectangle.X, rectangle.Right), (float)Game1.random.Next(rectangle.Y, rectangle.Bottom));
-                            itemsChanged++;
-                            if (b.isTileLocationTotallyClearAndPlaceable(v))
-                                b.dropObject(new StardewValley.Object(parentSheetIndex, 1, false, -1, 0), v * (float)Game1.tileSize, Game1.viewport, true, null);
-                        }
+                        Vector2 v = new Vector2((float)Game1.random.Next(rectangle.X, rectangle.Right), (float)Game1.random.Next(rectangle.Y, rectangle.Bottom));
+                        itemsChanged++;
+                        if (b.isTileLocationTotallyClearAndPlaceable(v))
+                            b.dropObject(new StardewValley.Object(parentSheetIndex, 1, false, -1, 0), v * (float)Game1.tileSize, Game1.viewport, true, null);
                     }
+                }
 
-                    if (itemsChanged > 0)
-                        Game1.addHUDMessage(new HUDMessage(Translations.Get("moon-text.hud_message_full")));
+                if (itemsChanged > 0)
+                    Game1.addHUDMessage(new HUDMessage(Translations.Get("moon-text.hud_message_full")));
             }
         }
 

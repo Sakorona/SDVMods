@@ -7,11 +7,11 @@ documentation, licenses, and release notes. May have other related projects that
 
  _Lets you customize when the cart appears, and how many items it has. Contains an API for other mods to hook into._
   
-* **LunarDisturbances**<small> ([source](LunarDisturbances))</small>
+* **[LunarDisturbances](https://www.nexusmods.com/stardewvalley/mods/2208)**<small> ([source](LunarDisturbances))</small>
 
 _This mod adds a moon, which adds events, such as the Blood Moon, to the world. Also includes a solar eclipse!_
 
-* **WeatherIllnesses**<small> ([source](WeatherIllnesses))</small>
+* **[WeatherIllnesses](https://www.nexusmods.com/stardewvalley/mods/2210)**<small> ([source](WeatherIllnesses))</small>
 
 _This adds a stamina system to the game. In hazardous weather, the player will drain stamina per 10 minutes._
 
@@ -36,7 +36,7 @@ _Alerts you of system time after a configurable number of minutes._
 
 _Want a dynamic day/night cycle? Look here!_
 
-* **[CustomizableClock]
+* **CustomizableClock(<small>[source](CustomizableClock)</small>)
 
 _This mod was written for someone on Discord, and as such has no intended release at this time. Fork of the 24h clock available on Nexus._
   
@@ -45,7 +45,7 @@ _This mod was written for someone on Discord, and as such has no intended releas
 
 _This adds the possibility of a solar eclipse to your game! Configurable chance. Also will spawn monsters if you have a wilderness farm in line with the same percentages as the base game. Now implemented into Lunar Disturbances, and as of SDV 1.3, no longer maintained.._
   
-## Patches for SMAPI 2.0
+## Patches for SMAPI 2.0/SDV 1.3
 
 * **[Better Shipping Box](https://community.playstarbound.com/threads/better-shipping-box.126235/#post-3228667)**<small> ([source](BetterShippingBox))</small>
 

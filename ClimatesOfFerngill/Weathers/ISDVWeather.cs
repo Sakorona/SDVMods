@@ -90,9 +90,14 @@ namespace ClimatesOfFerngillRebuild
        void CreateWeather();
 
        /// <summary>
-       /// This function controls how they are moved (used during the draw loop)
+       /// This function controls how they are moved (used during the draw loop). Also runs once a tick.
        /// </summary>
        void MoveWeather();
+
+       /// <summary>
+       /// This function is designed for any updates that may occur once a second.
+       /// </summary>
+       void SecondUpdate();
 
        /// <summary>
        /// This function controls how they are ended

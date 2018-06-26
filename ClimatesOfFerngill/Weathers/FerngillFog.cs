@@ -127,6 +127,10 @@ namespace ClimatesOfFerngillRebuild
             }
         }
 
+        public void SecondUpdate()
+        {
+        }
+
         /// <summary>This function creates the fog </summary>
         public void CreateWeather()
         {

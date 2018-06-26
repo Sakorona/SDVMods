@@ -1,7 +1,7 @@
 ﻿# Lunar Disturbances
 
 ## Current Version: 
-1.0.3 (Last Update: 19 May 2018)
+1.0.6 (Last Update: 22 June 2018)
 
 ## Requirements
 - SMAPI 2.6-beta15+
@@ -25,6 +25,9 @@ Thankfully, they don't appear to spawn on wedding and festival days..
 -- monsters spawn every 10 real-world seconds if you are outside.
 
 ## Changelog
+1.0.6
+ - Updated for SDV 1.3.20
+
 1.0.5
  - Updated for SDV 1.3.16
 

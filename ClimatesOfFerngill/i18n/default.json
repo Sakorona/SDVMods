@@ -289,7 +289,8 @@
   "nightTime" :  "Sunrise will be at {{sunrise}} with sunset at {{sunset}}. It is expected to be fully dark at {{nighttime}}",
 
   //basic conditions
-  "weat-bloodmoon": "Blood Moon",
+  "weather_bloodmoon": "Blood Moon",
+  "weather_hurricanerain" :  "Torrential Downpours",
   "weather_sunny_daytime": "Sunny",
   "weather_sunny_nighttime": "Clear",
   "weather_sunny": "Sunny",

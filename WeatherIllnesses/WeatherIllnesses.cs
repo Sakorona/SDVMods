@@ -83,7 +83,7 @@ namespace TwilightShards.WeatherIllnesses
 
             if (Game1.player.stamina <= 0)
             {
-                Game1.player.exhausted = true;
+                Game1.player.exhausted.Value = true;
                 Game1.player.stamina = -20;
             }
 

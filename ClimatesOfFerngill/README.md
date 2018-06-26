@@ -1,6 +1,6 @@
 ﻿# Climates of Ferngill (Rebuild) You Can (Not) Have Weather
 
-Current Version (13 June 2018): 1.4-beta12
+Current Version (20 June 2018): 1.4-beta.12
 
 ## What's New
 
@@ -16,8 +16,8 @@ Currently doesn't do any custom weathers in MP. Works only for the host player i
 
 ## Requirements
 
-- SMAPI 2.6-beta.16+
-- Stardew Valley 1.3.18+
+- SMAPI 2.6-beta.17+
+- Stardew Valley 1.3.20+
  
 ## Overview
 
@@ -32,6 +32,7 @@ This mod does the following:
 ## Upcoming Features
 
 - Flash floods!!!!! 
+- heavy rains?
 
 ## Acknowledgements
 - Prismuth for the fog sprite
@@ -40,9 +41,18 @@ This mod does the following:
 - The SDV discord #modding channel for discussions
 
 ## Changelog
+v1.4.0-beta13
+ - refactor of weather options
+ - new config option to disable high rains and wind 
+ - hurricane rains
+ - dynamic rainfall
+ - blood weather during a blood moon
+ - fixed a bug blocking many icons from being properly seen. Fixed now
+
 v1.4.0-beta12
  - API expansion
  - Fix for thundersnow + fog with no frost
+ - updated to be coompatible with SDV 1.3.20+
 
 v1.4.0-beta11
  - updated to be compatible with SDV 1.3.16
@@ -287,3 +297,7 @@ over a certain value.). Valid 0-1, but it's recommended that this is kept low. D
  - 'ThunderFrenzyOdds' - This controls the chance of the special weather Thunder Frenzy appearing. It's a double, valid range is 0 to 1
 
  - `Use12HourTime` - Tells it whether or not to use 12hour time or not in displays. Defaults to false. Valid: true, false
+
+ - `DynamicRain` - Allows for the mod to dynamically control rain during the day. Defaults to true. Valid: true, false
+
+ - `DisableHighRainWind` - If your computer has issues with high rain or wind, set this to true. Defaults to false.

@@ -1,11 +1,11 @@
 ﻿# Weather Illnesses
 
 ## Current Version
-1.0-beta.6 (5 June 2018)
+1.0-beta.7 (22 June 2018)
 
 ### Requirements
-- SMAPI 2.6-beta.15+
-- Stardew Valley 1.3.16+
+- SMAPI 2.6-beta.17+
+- Stardew Valley 1.3.21+
 
 ### Multiplayer
 
@@ -43,7 +43,7 @@ The penalties are **cumulative** - that is, they add up to the final multiplier.
 
 The calculated number is then rounded __down__
 
-For example, therefore, if you're outduring a storm, with the base of 2, you only take a stamina penalty of 2. But if it's also a heatwave, your penatly is now (+1+1.25)=*2.25 or 4.5. So a penalty of 4.
+For example, therefore, if you're out during a storm, with the base of 2, you only take a stamina penalty of 2. But if it's also a heatwave, your penatly is now (+1+1.25)=*2.25 or 4.5. So a penalty of 4.
 If you're out in a blizzard during the day, it's *1.25 or 2.5 rounded down to 2. If you're out in that blizzard at night, another .5 (1.25+.5) is added making it 1.75 or 3.5 rounded down to 3.
 
 (This does mean a foggy blizzard at night is (+.5+.25+1.25+.5 or *2.25), and if you somehow get this in fall, would be *3.5. And somehow, if you get a whiteout, it would be *3.25 and *4.5!)
@@ -63,6 +63,7 @@ If you're out in a blizzard during the day, it's *1.25 or 2.5 rounded down to 2.
 
   ### Changelog
   1.0-beta.7
+  - Updated for 1.3.20. .. and 1.3.21. 
   - Added in bath house method of clearing
   - Fixed a drain issue.. >_>
   - You now get in game warning your house is too cold (also limited to before 10am and after 5:30pm)
