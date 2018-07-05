@@ -176,6 +176,10 @@
   "weat-summer.drythunder.0": "there will be thunder and lightning today, but no rain",
   "weat-summer.drythunder.1": "due to the lack of moisture, the lightning today will not include rain. Areas are expected to watch for wildfires.",
   "weat-summer.drythunder.2": "expect lightning and thunder but no rain",
+  
+      "weat-summer.drylightning.0": "there will be thunder and lightning today, but no rain",
+  "weat-summer.drylightning.1": "due to the lack of moisture, the lightning today will not include rain. Areas are expected to watch for wildfires.",
+  "weat-summer.drylightning.2": "expect lightning and thunder but no rain",
 
   "weat-summer.thundersnow.0": "a rare and out of season thunder snow will be in the valley",
   "weat-summer.thundersnow.1": "a rare and out of season thunder snow will be in the valley",
