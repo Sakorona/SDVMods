@@ -132,16 +132,6 @@ namespace FloodEventsTesting
                 }
             }
 
-            Monitor.Log("Printing lists..");
-            foreach (var kvp in FloodedTiles)
-            {
-                Monitor.Log($"For {kvp.Key}, these squares:");
-                foreach (var kvpB in kvp.Value)
-                {
-                    Monitor.Log($"Depth {kvpB.Key} has squares {PrintPointList(kvpB.Value)}");
-                }
-            }
-
             Monitor.Log("Flooding maps");
             //flood the maps
             foreach (var floodTiles in FloodedTiles)
