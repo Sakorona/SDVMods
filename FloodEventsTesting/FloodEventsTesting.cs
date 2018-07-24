@@ -84,22 +84,7 @@ namespace FloodEventsTesting
 
             //recede the water, spawn junk
             List<int> junkItems = new List<int>(){168,169,170,171,172,167,388,390,372,393};
-            foreach (var floodTiles in FloodedTiles)
-            {
-                GameLocation f = floodTiles.Key;
-                for (int i = 0; i < f.waterTiles.GetLength(0); i++)
-                {
-                    for (int j = 0; j < f.waterTiles.GetLength(1); j++)
-                    {
-                        foreach (var tileDepths in floodTiles.Value)
-                        {
-                           
-                        }
-                    }
-                }
-            }
 
-            CurrentFloodDepth--;
 
         }
 
@@ -134,37 +119,11 @@ namespace FloodEventsTesting
 
             Monitor.Log("Flooding maps");
             //flood the maps
-            foreach (var floodTiles in FloodedTiles)
-            {
-                GameLocation f = floodTiles.Key;
-                for (int i = 0; i < f.waterTiles.GetLength(0); i++)
-                {
-                    for (int j = 0; j < f.waterTiles.GetLength(1); j++)
-                    {
-                        foreach (var tileDepths in floodTiles.Value)
-                        {
-                            Vector2 currTile = new Vector2(i,j);
-                            if (tileDepths.Key == TotalFloodDepth && tileDepths.Key > 0 && tileDepths.Value.Contains(new Point(i, j)))
-                            {
-                                f.waterTiles[i, j] = true;
-                                //destroy terrain features
-                                if (f.terrainFeatures.ContainsKey(currTile) && (f.terrainFeatures[currTile] is HoeDirt || f.terrainFeatures[currTile] is Grass || (f.terrainFeatures[currTile] is Tree t && (t.growthStage.Value <= 3 || t.health.Value <= 18f)) ||(f.terrainFeatures[currTile] is FruitTree tf && (tf.growthStage.Value <= 3 || tf.health.Value <= 18f))))
-                                {
-                                    f.terrainFeatures.Remove(currTile);
-                                }
 
-                                //now onto objects!!!
-                                if (f.objects.ContainsKey(currTile) &&
-                                    f.objects[currTile] is StardewValley.Object fObj && (fObj.bigCraftable.Value || fObj.IsSpawnedObject) && !(fObj.canBePlacedInWater()) && !(fObj is Fence ff && (ff.whichType.Value != 2 || ff.whichType.Value != 5)))
-                                {
-                                    f.objects.Remove(currTile);
-                                }
-                            }
-                        }
-                    }
-                }
+            foreach (var kvp in FloodedTiles)
+            {
+
             }
-            Monitor.Log("Flooding complete");
         }
     }
 }
