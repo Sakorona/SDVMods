@@ -1,11 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.Remoting.Messaging;
 using StardewModdingAPI;
 using StardewModdingAPI.Events;
 using StardewValley;
 using Microsoft.Xna.Framework;
 using StardewValley.TerrainFeatures;
+using SObject = StardewValley.Object;
 
 namespace FloodEventsTesting
 {
@@ -41,8 +43,11 @@ namespace FloodEventsTesting
             // Populate map
             for (int x = 0; x < mx; x++)
             for (int y = 0; y < my; y++)
+            {
                 if (location.waterTiles[x, y])
                     PopulateFromOrigin(x, y, 0);
+            }
+
             // copy flooded tiles
             var output = new List<Point>();
             for (int x = 0; x < mx; x++)
@@ -73,56 +78,146 @@ namespace FloodEventsTesting
             FloodedTiles = new Dictionary<GameLocation, Dictionary<int, List<Point>>>();
             CurrentFloodDepth = TotalFloodDepth;
             //do something here, I suppose.
-            SaveEvents.AfterLoad += SaveEvents_AfterLoad;
+            GameEvents.FourthUpdateTick += GameEvents_FourthUpdateTick;
             TimeEvents.TimeOfDayChanged += TimeEvents_TimeOfDayChanged;
+            InputEvents.ButtonPressed += InputEvents_ButtonPressed;
         }
 
-        private void TimeEvents_TimeOfDayChanged(object sender, EventArgsIntChanged e)
+        private void GameEvents_FourthUpdateTick(object sender, EventArgs e)
         {
-            if (CurrentFloodDepth <= 0)
+            if (!Context.IsWorldReady)
                 return;
 
-            //recede the water, spawn junk
-            List<int> junkItems = new List<int>(){168,169,170,171,172,167,388,390,372,393};
-
-
+            CreateFlood();
         }
 
-        private string PrintPointList(List<Point> b)
-        {
-            string s = "";
-            foreach (var v in b)
-            {
-                s += $"({v.X} , {v.Y})";
+        private void InputEvents_ButtonPressed(object sender, EventArgsInput e) {
+
+            if (e.Button == SButton.MouseMiddle) {
+                Game1.getFarm().waterTiles[Game1.player.getTileX(), Game1.player.getTileY()] = true;
             }
-
-            return s;
         }
 
-        private void SaveEvents_AfterLoad(object sender, EventArgs e)
+        private void CreateFlood()
         {
             Monitor.Log("Initiating flood calculations");
             foreach (GameLocation loc in Game1.locations)
             {
                 if (loc is Farm)
                 {
-                    FloodedTiles.Add(loc, new Dictionary<int, List<Point>>()
+                    if (!(loc.waterTiles is null))
                     {
-                        {4,GenerateFloodMap(loc,4,StopTheWater) },
-                        {3,GenerateFloodMap(loc,3,StopTheWater) },
-                        {2,GenerateFloodMap(loc,2,StopTheWater) },
-                        {1,GenerateFloodMap(loc,1,StopTheWater) },
-
-                    });
+                        FloodedTiles.Add(loc, new Dictionary<int, List<Point>>()
+                        {
+                            {1, GenerateFloodMap(loc, 1, StopTheWater)},
+                            {2, GenerateFloodMap(loc, 2, StopTheWater)},
+                            {3, GenerateFloodMap(loc, 3, StopTheWater)},
+                            {4, GenerateFloodMap(loc, 4, StopTheWater)},
+                            {0, new List<Point>()}
+                        });
+                    }
                 }
             }
+
+            foreach (var kvp in FloodedTiles)
+            {
+                foreach (var k in kvp.Value)
+                {
+                    Console.Write($"{k.Key} list:");
+                    for (int i = 0; i < k.Value.Count; i++)
+                    {
+                        Console.Write($" ({k.Value[i].X},{k.Value[i].Y})");
+                    }
+                    Console.WriteLine();
+                }
+            }
+
+            CurrentFloodDepth = 4;
 
             Monitor.Log("Flooding maps");
             //flood the maps
 
             foreach (var kvp in FloodedTiles)
             {
+                GameLocation loc = kvp.Key;
+                var fPoints = kvp.Value[CurrentFloodDepth];
+                
+                for (int i = 0; i <  loc.waterTiles.GetLength(0); i++)
+                {
+                    for (int j = 0; j <  loc.waterTiles.GetLength(1); j++)
+                    {
+                        if (fPoints.Contains(new Point(i, j)))
+                        {
+                            Console.WriteLine($"Flipping tile [{i},{j}] to true");
+                            loc.waterTiles[i, j] = true;
+                            loc.map.GetLayer("Back").Tiles[i, j].Properties.Add("Water", "T");
+                            
+                            Vector2 currTile = new Vector2(i*16, j*16);
 
+                            if (loc.terrainFeatures.ContainsKey(currTile) && (loc.terrainFeatures[currTile] is HoeDirt ||
+                                                                              loc.terrainFeatures[currTile] is Grass ||
+                                                                              (loc.terrainFeatures[currTile] is Tree t &&
+                                                                               (t.growthStage.Value <= 3 ||
+                                                                                t.health.Value <= 18f)) ||
+                                                                              (loc.terrainFeatures[
+                                                                                   currTile] is FruitTree tf &&
+                                                                               (tf.growthStage.Value <= 3 ||
+                                                                                tf.health.Value <= 18f))))
+                            {
+                                loc.terrainFeatures.Remove(currTile);
+                            }
+
+                            //now onto objects!!!
+                            if (loc.objects.ContainsKey(currTile) &&
+                                loc.objects[currTile] is StardewValley.Object fObj &&
+                                (fObj.bigCraftable.Value || fObj.IsSpawnedObject) && !(fObj.canBePlacedInWater()) &&
+                                !(fObj is Fence ff && (ff.whichType.Value != 2 || ff.whichType.Value != 5)))
+                            {
+                                loc.objects.Remove(currTile);
+                            }
+                        }
+
+                    }
+                }
+            }
+        }
+
+        private void TimeEvents_TimeOfDayChanged(object sender, EventArgsIntChanged e)
+        {
+            Console.WriteLine($"Current Flood Depth is {CurrentFloodDepth}");
+            if (CurrentFloodDepth <= 0)
+                return;
+
+            Random r = new Random();
+            //recede the water, spawn junk
+            List<int> junkItems = new List<int>(){168,169,170,171,172,167,388,390,372,393};
+            CurrentFloodDepth -= 1;
+            foreach (var kvp in FloodedTiles)
+            {
+                GameLocation loc = kvp.Key;
+                var rPoints = kvp.Value[CurrentFloodDepth+1];
+                var fPoints = kvp.Value[CurrentFloodDepth];
+                
+                for (int i = 0; i <  loc.waterTiles.GetLength(0); i++)
+                {
+                    for (int j = 0; j <  loc.waterTiles.GetLength(1); j++)
+                    {
+                        if (rPoints.Contains(new Point(i, j)) && !fPoints.Contains(new Point(i, j)))
+                        {
+                            Console.WriteLine($"Flipping tile [{i},{j}] to false");
+                            loc.waterTiles[i, j] = false;
+                            loc.map.GetLayer("Back").Tiles[i, j].Properties.Remove("Water");
+                            if (!loc.objects.ContainsKey(new Vector2(i,j)))
+                                loc.objects.Add(new Vector2(i,j),new SObject(Vector2.Zero, junkItems[r.Next(0, junkItems.Count)],false));
+                        }
+
+                        if (fPoints.Contains(new Point(i, j)))
+                        {
+                            Console.WriteLine($"Flipping tile [{i},{j}] to true");
+                            loc.waterTiles[i, j] = true;
+                        }
+                    }
+                }
             }
         }
     }
