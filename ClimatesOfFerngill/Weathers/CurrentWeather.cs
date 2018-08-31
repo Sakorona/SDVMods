@@ -10,7 +10,7 @@ namespace ClimatesOfFerngillRebuild
     {
         Unset = 0,
         Sunny = 2,
-        Rain = 4,
+        NormalRain = 4,
         Snow = 8,
         Wind = 16,
         Festival = 32,
@@ -23,6 +23,9 @@ namespace ClimatesOfFerngillRebuild
         WhiteOut = 4096,
         ThunderFrenzy = 8192,
         HurricaneRain = 16384,
-        BloodMoon = 32768
+        BloodMoon = 32768,
+        LightRain = 65536,
+        HeavyRain = 131072,
+        Flooding = 262144
     }
 }

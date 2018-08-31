@@ -39,6 +39,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FloodEventsTesting", "Flood
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CustomizableClock", "CustomizableClock\CustomizableClock.csproj", "{CA0570BB-53A4-45DC-9E49-18AD7A419582}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ClimatesOfFerngillV3", "TwilightShards.ClimatesOfFerngill.TheBattleOfFiveStudios\ClimatesOfFerngillV3.csproj", "{E15D28F3-426D-45C0-9440-D5DEB1833E08}"
+EndProject
 Global
 	GlobalSection(SharedMSBuildProjectFiles) = preSolution
 		TwilightCoreShared\TwilightCoreShared.projitems*{01da90d0-eec8-427b-9409-3168a8089f20}*SharedItemsImports = 13
@@ -47,6 +49,7 @@ Global
 		TwilightCoreShared\TwilightCoreShared.projitems*{55f6041a-5800-4287-bef7-a83f2d9a49a5}*SharedItemsImports = 4
 		TwilightCoreShared\TwilightCoreShared.projitems*{59e889ca-e643-4ff9-b9a4-91676bd182f1}*SharedItemsImports = 4
 		TwilightCoreShared\TwilightCoreShared.projitems*{cbd63b01-6841-4fdf-ad30-41869372a7ac}*SharedItemsImports = 4
+		TwilightCoreShared\TwilightCoreShared.projitems*{e15d28f3-426d-45c0-9440-d5deb1833e08}*SharedItemsImports = 4
 		TwilightCoreShared\TwilightCoreShared.projitems*{e89b6a73-1b1f-44ff-af10-867f0d1425f9}*SharedItemsImports = 4
 	EndGlobalSection
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -102,6 +105,10 @@ Global
 		{CA0570BB-53A4-45DC-9E49-18AD7A419582}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{CA0570BB-53A4-45DC-9E49-18AD7A419582}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{CA0570BB-53A4-45DC-9E49-18AD7A419582}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E15D28F3-426D-45C0-9440-D5DEB1833E08}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E15D28F3-426D-45C0-9440-D5DEB1833E08}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E15D28F3-426D-45C0-9440-D5DEB1833E08}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E15D28F3-426D-45C0-9440-D5DEB1833E08}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
