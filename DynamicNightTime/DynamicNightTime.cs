@@ -23,7 +23,8 @@ namespace DynamicNightTime
     {
         public static DynamicNightConfig NightConfig;
         public static IMonitor Logger;
-        private bool ResetOnWakeup;
+        private bool resetOnWakeup;
+        private bool isNightOut;
 
         private static Type GetSDVType(string type)
         {
@@ -41,9 +42,10 @@ namespace DynamicNightTime
 
         public override void Entry(IModHelper helper)
         {
+            isNightOut = false;
             Logger = Monitor;
             NightConfig = Helper.ReadConfig<DynamicNightConfig>();
-            ResetOnWakeup = false;
+            resetOnWakeup = false;
 
             //sanity check lat
             if (NightConfig.Latitude > 64)
@@ -85,12 +87,12 @@ namespace DynamicNightTime
 
         private void HandleReturn(object sender, EventArgs e)
         {
-            ResetOnWakeup = false;
+            resetOnWakeup = false;
         }
 
         private void HandleNewDay(object sender, EventArgs e)
         {
-            if (Game1.isDarkOut() && !Game1.currentLocation.IsOutdoors && Game1.currentLocation is DecoratableLocation loc && !ResetOnWakeup)
+            if (Game1.isDarkOut() && !Game1.currentLocation.IsOutdoors && Game1.currentLocation is DecoratableLocation loc && !resetOnWakeup)
             {
                 //we need to handle the spouse's room
                 if (loc is FarmHouse)
@@ -99,7 +101,7 @@ namespace DynamicNightTime
                         Game1.currentLocation.switchOutNightTiles();
                 }
             }
-            ResetOnWakeup = false;
+            resetOnWakeup = false;
         }
 
         private void HandleTimeChanges(object sender, EventArgsIntChanged e)
@@ -109,17 +111,24 @@ namespace DynamicNightTime
             {
                 Game1.ambientLight = Game1.isDarkOut() || locB.LightLevel > 0.0 ? new Color(180, 180, 0) : Color.White;
             }
-
+            
             //handle the game being bad at night->day :|
             if (Game1.timeOfDay < GetSunriseTime())
+            {
                 Game1.currentLocation.switchOutNightTiles();
-            else
+                isNightOut = true;
+            }
+
+            if (Game1.timeOfDay >= GetSunriseTime() && isNightOut)
+            {
                 Game1.currentLocation.addLightGlows();
+                isNightOut = false;
+            }
         }
 
         private void OutputLight(string arg1, string[] arg2)
         {
-            Monitor.Log($"The outdoor light is {Game1.outdoorLight.ToString()}");
+            Monitor.Log($"The outdoor light is {Game1.outdoorLight.ToString()}. The ambient light is {Game1.ambientLight.ToString()}");
         }
 
         private void OutputInformation(string arg1, string[] arg2)

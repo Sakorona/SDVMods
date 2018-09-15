@@ -13,6 +13,11 @@ namespace TwilightShards.ClimatesOfFerngill.Components
     public class RainTracker
     {
         /// <summary>
+        /// This value tracks how much rain the land can absorb in a day. And a day of normal light rain should be fine. Not that it's super relevant, but it's stored in mm.
+        /// </summary>
+        private readonly double rainAbsorb = 132;
+
+        /// <summary>
         /// This is the current amount of rain being tracked
         /// </summary>
         protected double RainAmt;
@@ -36,7 +41,7 @@ namespace TwilightShards.ClimatesOfFerngill.Components
         /// </summary>
         public void ResetForNewDay()
         {
-            //so, after looking into it, the farm shouldn't really support flash-flooding. This makes this easier
+            //so, after looking into it, the farm shouldn't really support flash-flooding. This makes this easier.
             NumDaysSinceLastRain++;
             if (NumDaysSinceLastRain > 7)
             {
@@ -45,27 +50,13 @@ namespace TwilightShards.ClimatesOfFerngill.Components
         }
 
         /// <summary>
-        /// This function determines the effective rain
+        /// This function adds rain to the ongoing total.
         /// </summary>
-        /// <param name="dice"></param>
-        /// <returns></returns>
-        public double GetRainForFlooding(MersenneTwister dice)
+        /// <param name="rainTotal">Amt of rain being added.</param>
+        public void UpdateForRainFallTotals(double rainTotal)
         {
-            double calcAmt = RainAmt;
-
-            //if there's no rain stored, don't even bother doing this logic
-            if (calcAmt <= 0.0)
-                return 0;
-
-            //So, essentially, every day removes 4.5 units of rain +/- a random amt, which is why we just don't purge it
-            for (int i = NumDaysSinceLastRain; i > 0; i--)
-            {
-                calcAmt -= 3.75 + dice.RollInRange(0, 1.5);
-            }
-
-            if (calcAmt <= 0) 
-                return 0;
-            return calcAmt;
+            NumDaysSinceLastRain = 0; //it rained whenever this was called.
+            RainAmt += rainTotal;
         }
     }
 }

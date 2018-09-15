@@ -3,26 +3,19 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using TwilightShards.Common;
 
 namespace TwilightShards.ClimatesOfFerngill.Components
 {
     public class CurrentWeather
     {
-        private double highTemp;
-        private double lowTemp;
+        public double HighTemp { private set; get; }
+        public double LowTemp { private set; get; }
         public BaseWeathers CurrentCondtions;
-        public bool IsFoggy { get; private set; }
-        public RainLevel CurrentRainLevel { get; private set; }
+        public bool IsFoggy { private set; get; }
+        public RainLevel CurrentRainLevel { private set; get; }
 
-        public void UpdateCurrentRainLevel(int rainAmt)
-        {
-            //default rain amount in vanilla is 70, which is considered normal
-            if (rainAmt <= 0)
-                CurrentRainLevel = RainLevel.None;
-            
-
-
-        }
+        
 
     }
 }
