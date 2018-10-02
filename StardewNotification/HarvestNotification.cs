@@ -37,27 +37,35 @@ namespace StardewNotification
             if (!StardewNotification.Config.NotifyFarmCave) return;
             if (Game1.player.caveChoice.Value == MUSHROOM_CAVE)
             {
-                var numReadyForHarvest = 0;
-                foreach (var pair in farmcave.Objects.Pairs)
-                {
-                    if (pair.Value.readyForHarvest.Value) numReadyForHarvest++;
-                }
+                var numReadyForHarvest = farmcave.Objects.Values.Where(c => c.readyForHarvest.Value).Count();
+
                 if (numReadyForHarvest > 0)
-                    Util.ShowFarmCaveMessage(farmcave, Trans);
+                {
+                    var sampleObj = farmcave.Objects.Values.Where(c => c.readyForHarvest.Value).FirstOrDefault();
+                    if (sampleObj != null) { 
+                        StardewValley.Object sObj = new StardewValley.Object(sampleObj.ParentSheetIndex, sampleObj.Stack, false, sampleObj.Price, sampleObj.Quality);
+                        sObj.bigCraftable.Value = sampleObj.bigCraftable.Value;
+                        sObj.TileLocation = sampleObj.TileLocation;
+                        sObj.Type = sampleObj.Type;
+                        sObj.name = Game1.player.caveChoice.Value == MUSHROOM_CAVE ? Trans.Get("CaveMushroom") : Trans.Get("CaveFruit");
+                        Game1.addHUDMessage(new HUDMessage(sObj.Type, numReadyForHarvest, true, Color.OrangeRed, sObj));
+                    }
+                }
             }
 
             else if (Game1.player.caveChoice.Value == FRUIT_CAVE && farmcave.Objects.Any())
             {
-                int count = 0;
+                var objList = farmcave.Objects.Values.Where(c => c.Category == 100 || c.Category == 80).ToArray();
+                int iCount = objList.Count();
 
-                foreach (StardewValley.Object o in farmcave.Objects.Values)
+                if (iCount > 1)
                 {
-                    if (!o.bigCraftable.Value && o.Category != StardewValley.Object.FishCategory)
-                        count++;
-                }
+                    StardewValley.Object sObj = new StardewValley.Object(objList[1].ParentSheetIndex, objList[1].Stack, false, objList[1].Price, objList[1].Quality);
+                    sObj.Type = objList[1].Type;
+                    sObj.name = Game1.player.caveChoice.Value == MUSHROOM_CAVE ? Trans.Get("CaveMushroom") : Trans.Get("CaveFruit");
+                    Game1.addHUDMessage(new HUDMessage(sObj.Type, iCount, true, Color.OrangeRed, sObj));
 
-                if (count > 0)
-                    Util.ShowFarmCaveMessage(farmcave, Trans);
+                }            
             }
         }
 

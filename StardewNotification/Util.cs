@@ -3,6 +3,7 @@ using System.Linq;
 using StardewValley;
 using StardewModdingAPI;
 using Microsoft.Xna.Framework;
+using Console = System.Console;
 
 namespace StardewNotification
 {
@@ -27,19 +28,7 @@ namespace StardewNotification
             item.bigCraftable.Value = pair.Value.First.bigCraftable.Value;
             Game1.addHUDMessage(new HUDMessage(pair.Key, pair.Value.Second, true, Color.OrangeRed, item));
         }
-
-        public static void ShowFarmCaveMessage(GameLocation location, ITranslationHelper Trans)
-        {
-            int i = 0;
-            var item = CopyObject(location.Objects.Pairs.ElementAt(i).Value);
-            while (item.Category == StardewValley.Object.FishCategory || item.bigCraftable.Value && i < (location.Objects.Pairs.Count() - 1))
-            {
-                i++;
-                item = CopyObject(location.Objects.Pairs.ElementAt(i).Value);
-            }
-            item.name = Game1.player.caveChoice.Value == MUSHROOM_CAVE ? Trans.Get("CaveMushroom") : Trans.Get("CaveFruit");
-            Game1.addHUDMessage(new HUDMessage(item.Type, location.Objects.Pairs.Count(), true, Color.OrangeRed, item));
-        }
+              
 
         public static Object CopyObject(Object source)
         {
