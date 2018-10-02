@@ -1,4 +1,7 @@
-﻿1.8-beta.1
+﻿1.8-beta.2
+Updated for some issues in SDV 1.3.28
+
+1.8-beta.1
 Updated for changes in how Secret Santa is handled.
 
 1.7-unofficial.2
