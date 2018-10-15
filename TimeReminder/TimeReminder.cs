@@ -15,6 +15,9 @@ namespace TimeReminder
     {
         public TimeConfig Config { get; set; }
         private DateTime PrevDate { get; set; }
+        private int OneTimeReminder = 0;
+        private int RecurringReminder = 0;
+
         private bool NotTriggered = true;
 
         public override void Entry(IModHelper helper)
@@ -23,6 +26,54 @@ namespace TimeReminder
             PrevDate = DateTime.Now;
 
             GameEvents.OneSecondTick += GameEvents_OneSecondTick;
+            TimeEvents.TimeOfDayChanged += TimeEvents_TimeOfDayChanged;
+
+            Helper.ConsoleCommands.Add("SetReminder","This sets a one time reminder", SetReminder);
+            Helper.ConsoleCommands.Add("ClearAllReminders", "This clears all reminders", ClearAllReminder);
+            Helper.ConsoleCommands.Add("SetRReminder", "This sets a recurring reminder", SetRecurringReminder);
+        }
+
+        private void TimeEvents_TimeOfDayChanged(object sender, EventArgsIntChanged e)
+        {
+            if (e.NewInt == OneTimeReminder || e.NewInt == RecurringReminder) { 
+                Game1.addHUDMessage(new HUDMessage($"Reminder: it is {e.NewInt}"));
+                OneTimeReminder = 0;
+            }
+        }
+
+        private void ClearAllReminder(string arg1, string[] arg2)
+        {
+            OneTimeReminder = 0;
+            RecurringReminder= 0;
+        }
+
+        private void SetRecurringReminder(string arg1, string[] arg2)
+        {
+            //this sets a onetime.
+            if (Int32.TryParse(arg2[0], out int val))
+            {
+                if (val < 2600 || val > 0600)
+                {
+                    RecurringReminder = val;
+                    return;
+                }
+                Game1.addHUDMessage(new HUDMessage("You attempted to set an invalid time - 0600 to 2600 only. Please remember that only 10 minute intervals are checked."));
+            }
+            Game1.addHUDMessage(new HUDMessage("Invalid input detected! You need to use 0600-2600 to set the time. Please remember that only 10 minute intervals are checked"));
+        }
+
+        private void SetReminder(string arg1, string[] arg2)
+        {
+            //this sets a onetime.
+            if (Int32.TryParse(arg2[0], out int val))
+            {
+                if (val < 2600 || val > 0600) { 
+                    OneTimeReminder = val;
+                    return;
+                }
+                Game1.addHUDMessage(new HUDMessage("You attempted to set an invalid time - 0600 to 2600 only. Please remember that only 10 minute intervals are checked."));
+            }
+            Game1.addHUDMessage(new HUDMessage("Invalid input detected! You need to use 0600-2600 to set the time. Please remember that only 10 minute intervals are checked"));
         }
 
         private void GameEvents_OneSecondTick(object sender, EventArgs e)

@@ -6,6 +6,9 @@ namespace DynamicNightTime
     {
         int GetSunriseTime();
         int GetSunsetTime();
+        int GetSolarNoon();
+        int GetLateAfternoon();
+        int GetEarlyMorning();
         int GetAstroTwilightTime();
         int GetMorningAstroTwilightTime();
         int GetCivilTwilightTime();
@@ -24,5 +27,8 @@ namespace DynamicNightTime
         public int GetMorningCivilTwilightTime() => DynamicNightTime.GetMorningCivilTwilight().ReturnIntTime();
         public int GetNavalTwilightTime() => DynamicNightTime.GetNavalTwilight().ReturnIntTime();
         public int GetMorningNavalTwilightTime() => DynamicNightTime.GetMorningNavalTwilight().ReturnIntTime();
+        public int GetSolarNoon() => DynamicNightTime.GetSolarNoon().ReturnIntTime();
+        public int GetLateAfternoon() => DynamicNightTime.GetBeginningOfLateAfternoon().ReturnIntTime();
+        public int GetEarlyMorning() => DynamicNightTime.GetEndOfEarlyMorning().ReturnIntTime();
     }
 }

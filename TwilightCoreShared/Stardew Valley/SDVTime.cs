@@ -332,6 +332,18 @@ namespace TwilightShards.Stardew.Common
             return false;
         }
 
+        public int GetNumberOfMinutesFromMidnight()
+        {
+           if (hour > 24)
+           {
+                return (((hour - 24) * 60) + minute);
+           }
+           else
+           {
+                return (hour * 60) + minute;
+           }
+        }
+
         //description and return functions
         public int ReturnIntTime()
         {

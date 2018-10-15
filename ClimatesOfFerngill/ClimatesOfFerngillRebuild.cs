@@ -132,7 +132,7 @@ namespace ClimatesOfFerngillRebuild
             Monitor.Log(retString);
         }
 
- private void GameEvents_FirstUpdateTick(object sender, EventArgs e)
+        private void GameEvents_FirstUpdateTick(object sender, EventArgs e)
         {
             //testing for ZA MOON, YOUR HIGHNESS.
             MoonAPI = SDVUtilities.GetModApi<Integrations.ILunarDisturbancesAPI>(Monitor, Helper, "KoihimeNakamura.LunarDisturbances", "1.0");
