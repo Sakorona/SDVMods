@@ -1,4 +1,5 @@
-﻿using StardewModdingAPI;
+﻿using Microsoft.Xna.Framework;
+using StardewModdingAPI;
 using StardewModdingAPI.Events;
 using StardewValley;
 using System;
@@ -36,7 +37,7 @@ namespace TimeReminder
         private void TimeEvents_TimeOfDayChanged(object sender, EventArgsIntChanged e)
         {
             if (e.NewInt == OneTimeReminder || e.NewInt == RecurringReminder) { 
-                Game1.addHUDMessage(new HUDMessage($"Reminder: it is {e.NewInt}"));
+                Game1.addHUDMessage(new HUDMessage($"Reminder: it is {e.NewInt}",Color.OrangeRed,8450f));
                 OneTimeReminder = 0;
             }
         }
@@ -79,13 +80,13 @@ namespace TimeReminder
         private void GameEvents_OneSecondTick(object sender, EventArgs e)
         {
             if (PrevDate.Add(new TimeSpan(0,Config.NumOfMinutes,0)) < DateTime.Now){
-                Game1.hudMessages.Add(new HUDMessage("The current system time is " + DateTime.Now.ToString("h:mm tt")));
+                Game1.hudMessages.Add(new HUDMessage("The current system time is " + DateTime.Now.ToString("h:mm tt"),Color.OrangeRed, 8450f));
                 PrevDate = DateTime.Now;
             }
 
             if (Config.AlertOnTheHour && DateTime.Now.Minute == 0 && NotTriggered)
             {
-                Game1.hudMessages.Add(new HUDMessage("The current system time is " + DateTime.Now.ToString("h:mm tt")));
+                Game1.hudMessages.Add(new HUDMessage("The current system time is " + DateTime.Now.ToString("h:mm tt"), Color.OrangeRed, 8450f));
                 NotTriggered = false;
             }
 

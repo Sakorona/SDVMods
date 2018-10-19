@@ -42,7 +42,6 @@ namespace DynamicNightTime
 
         public override void Entry(IModHelper helper)
         {
-            BREAKME;
             isNightOut = false;
             Logger = Monitor;
             NightConfig = Helper.ReadConfig<DynamicNightConfig>();
@@ -213,7 +212,6 @@ namespace DynamicNightTime
             if (NightConfig.SunsetTimesAreMinusThirty) s.AddTime(-30);
             return s;
         }
-
 
         protected internal static SDVTime GetSolarNoon()
         {

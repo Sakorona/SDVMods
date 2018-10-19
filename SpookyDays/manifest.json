@@ -1,0 +1,10 @@
+﻿{
+  "Name": "Trick or Treat",
+  "Author": "knakamura",
+  "Version": "1.0.0",
+  "Description": "A micheavous spirit is acting on the world. Will it be a trick.. or a treat?",
+  "UniqueID": "knakamura.trickortreet",
+  "EntryDll": "SpookyDays.dll",
+  "MinimumApiVersion": "2.7",
+  "UpdateKeys": [ "Nexus:Fake" ]
+}

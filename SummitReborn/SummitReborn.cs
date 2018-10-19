@@ -35,6 +35,7 @@ namespace SummitReborn
 
         public override void Entry(IModHelper helper)
         {
+            BREAKME;
             ModConfig = Helper.ReadConfig<SummitConfig>();
             GameEvents.UpdateTick += GameEvents_UpdateTick;
             GraphicsEvents.OnPreRenderHudEvent += GraphicsEvents_OnPreRenderHudEvent;

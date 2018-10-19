@@ -1,7 +1,7 @@
 ﻿{
   "Name": "Time Reminder",
   "Author": "KoihimeNakamura",
-  "Version": "1.2.1",
+  "Version": "1.2.2",
   "Description": "Reminds you of the time a few times. Also contains features to set in-game reminders",
   "UpdateKeys": [ "Nexus:1000" ],
   "UniqueID": "KoihimeNakamura.TimeReminder",
