@@ -77,7 +77,6 @@ namespace FloodEventsTesting
         {
             FloodedTiles = new Dictionary<GameLocation, Dictionary<int, List<Point>>>();
             CurrentFloodDepth = TotalFloodDepth;
-            BREAKME
             //do something here, I suppose.
             GameEvents.FourthUpdateTick += GameEvents_FourthUpdateTick;
             TimeEvents.TimeOfDayChanged += TimeEvents_TimeOfDayChanged;

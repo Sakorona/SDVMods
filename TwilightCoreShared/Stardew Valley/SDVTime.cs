@@ -109,6 +109,17 @@ namespace TwilightShards.Stardew.Common
                 throw new ArgumentOutOfRangeException("There are only 60 minutes in an hour.");
         }
 
+        /// <summary>
+        /// This function takes two integer times and returns minutes between. Note: this returns an absolute value.
+        /// </summary>
+        /// <param name="t1">The first int time.</param>
+        /// <param name="t2">The second int time</param>
+        /// <returns>Amount of minutes between the two times</returns>
+        public static int MinutesBetweenTwoIntTimes(int t1, int t2)
+        {
+            return Math.Abs(SDVTime.ConvertIntTimeToMinutes(t1) - SDVTime.ConvertIntTimeToMinutes(t2));
+        }
+
         public SDVTime(SDVTime c)
         {
             hour = c.hour;

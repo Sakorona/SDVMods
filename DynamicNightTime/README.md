@@ -1,19 +1,21 @@
 ﻿#Dynamic Night Time
 
-Current Version: 1.2-beta.1
+Current Version: 1.2
 
 ## Requirements
-- SMAPI 2.6-beta15+
-- Stardew Valley 1.3.20+
+- SMAPI 2.7+
+- Stardew Valley 1.3.28+
 
 ## This Mod Does:
 - Creates a more dynamic night time and sunrise lighting system. Does not alter wakeup time.
+
 
 ## IMPORTANT NOTE
 
 Make sure that if you have problems with other mods that you are running their latest version.  Also, this mod does not alter wake up time. 
 
 NOTE: DNT does some assumption work lighting after sunset is consistent. This also may not match your tick timing if you use time speed mods.
+NOTE2: This mod is incomaptible with Deep Woods prior to 
 
 ## Multiplayer Compatibility
 This mod is MP compatible, and all clients will need it for it to work.
@@ -30,6 +32,10 @@ This mod is MP compatible, and all clients will need it for it to work.
 This mod alters three functions in Game1 - isNightOut, GameClock, getStartingToGetDarkTime, getTrulyDarkTime. They will still return the same variables and generally the same intended use.
 
 ## Changelog
+1.2 
+ - restructured the change so it flows better in morning and night
+ - fixed the flash issues
+
 1.2-beta.1
  - updated morning darkness to be more obvious
  - the spouse's room now properly responds to morning darkness
