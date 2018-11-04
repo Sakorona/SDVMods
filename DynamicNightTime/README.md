@@ -13,6 +13,8 @@ Current Version: 1.2-beta.1
 
 Make sure that if you have problems with other mods that you are running their latest version.  Also, this mod does not alter wake up time. 
 
+NOTE: DNT does some assumption work lighting after sunset is consistent. This also may not match your tick timing if you use time speed mods.
+
 ## Multiplayer Compatibility
 This mod is MP compatible, and all clients will need it for it to work.
 

@@ -43,8 +43,6 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ClimatesOfFerngillV3", "Twi
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HarmonyTester", "..\HarmonyTester\HarmonyTester\HarmonyTester.csproj", "{7B286CFF-210F-4710-9E5A-D7EB1D12ECA7}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SpookyDays", "SpookyDays\SpookyDays.csproj", "{7147F734-F7BF-4AFE-A48B-DF058AF45F04}"
-EndProject
 Global
 	GlobalSection(SharedMSBuildProjectFiles) = preSolution
 		TwilightCoreShared\TwilightCoreShared.projitems*{01da90d0-eec8-427b-9409-3168a8089f20}*SharedItemsImports = 13
@@ -52,7 +50,6 @@ Global
 		TwilightCoreShared\TwilightCoreShared.projitems*{288636be-8ae8-4c50-a07d-18223377bf98}*SharedItemsImports = 4
 		TwilightCoreShared\TwilightCoreShared.projitems*{55f6041a-5800-4287-bef7-a83f2d9a49a5}*SharedItemsImports = 4
 		TwilightCoreShared\TwilightCoreShared.projitems*{59e889ca-e643-4ff9-b9a4-91676bd182f1}*SharedItemsImports = 4
-		TwilightCoreShared\TwilightCoreShared.projitems*{7147f734-f7bf-4afe-a48b-df058af45f04}*SharedItemsImports = 4
 		TwilightCoreShared\TwilightCoreShared.projitems*{cbd63b01-6841-4fdf-ad30-41869372a7ac}*SharedItemsImports = 4
 		TwilightCoreShared\TwilightCoreShared.projitems*{e15d28f3-426d-45c0-9440-d5deb1833e08}*SharedItemsImports = 4
 		TwilightCoreShared\TwilightCoreShared.projitems*{e89b6a73-1b1f-44ff-af10-867f0d1425f9}*SharedItemsImports = 4
@@ -118,10 +115,6 @@ Global
 		{7B286CFF-210F-4710-9E5A-D7EB1D12ECA7}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{7B286CFF-210F-4710-9E5A-D7EB1D12ECA7}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{7B286CFF-210F-4710-9E5A-D7EB1D12ECA7}.Release|Any CPU.Build.0 = Release|Any CPU
-		{7147F734-F7BF-4AFE-A48B-DF058AF45F04}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{7147F734-F7BF-4AFE-A48B-DF058AF45F04}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{7147F734-F7BF-4AFE-A48B-DF058AF45F04}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{7147F734-F7BF-4AFE-A48B-DF058AF45F04}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

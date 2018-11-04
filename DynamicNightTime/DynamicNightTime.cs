@@ -196,6 +196,7 @@ namespace DynamicNightTime
             Monitor.Log($"Sunrise : {GetSunrise().ToString()}, Sunset: {GetSunset().ToString()}. Solar Noon {GetSolarNoon().ToString()}");
             Monitor.Log($"Early Morning ends at {GetEndOfEarlyMorning().ToString()}, Late Afternoon begins at {GetBeginningOfLateAfternoon().ToString()}");
             Monitor.Log($"Morning Twilight: {GetMorningAstroTwilight().ToString()}, Evening Twilight: {GetAstroTwilight().ToString()}");
+            Monitor.Log($"Game Interval Time is {Game1.gameTimeInterval}");
         }
 
         public static int GetSunriseTime() => GetSunrise().ReturnIntTime();
