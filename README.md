@@ -19,10 +19,6 @@ _This adds a stamina system to the game. In hazardous weather, the player will d
 
 _A in progress patch mod for Stardew Valley. On hiatus until after the SDV 1.3 beta ends._
 
-* **[ArtifactsInOmniGeodes](https://github.com/JohnsonNicholas/SDVMods/releases/tag/artifacts-in-omniGeods)**<small> ([source](ArtifactsInOmniGeodes))</small>
-
-_Baby port of a XNB mod that no longer works with SDV 1.2 for personal use._
-
 * **[Climates of Ferngill (Rebuild)](http://www.nexusmods.com/stardewvalley/mods/604)** <small>([source](ClimatesOfFerngill))</small>
 
 _Creates a different climate system, with custom weather, including fog and thunder frenzy. 
