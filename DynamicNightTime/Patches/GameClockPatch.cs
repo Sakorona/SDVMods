@@ -22,8 +22,12 @@ namespace DynamicNightTime.Patches
             else if (Game1.timeOfDay < sunriseTime)
             {
                 float minEff = SDVTime.MinutesBetweenTwoIntTimes(astronTime, Game1.timeOfDay) + (float)Math.Min(10.0, Game1.gameTimeInterval / 700);
-                float lightMulti = Math.Max(0.001f, 1f - (.83f * (minEff / SDVTime.MinutesBetweenTwoIntTimes(sunriseTime, astronTime))));
-                Game1.outdoorLight = (Game1.isRaining ? Game1.ambientLight : Game1.eveningColor) * lightMulti;
+                float percentage = (minEff / SDVTime.MinutesBetweenTwoIntTimes(sunriseTime, astronTime));
+                Color destColor = new Color(255,159,70);
+                
+
+
+                //Game1.outdoorLight = (Game1.isRaining ? Game1.ambientLight : Game1.eveningColor) * lightMulti;
             }
             else if (Game1.timeOfDay >= sunriseTime && Game1.timeOfDay <= Game1.getStartingToGetDarkTime())
             {

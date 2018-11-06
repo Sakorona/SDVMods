@@ -21,6 +21,11 @@ namespace DynamicNightTime
 
     public class DynamicNightTime : Mod
     {
+        public static double SunriseTemp = 2500;
+        public static double SunsetTemp = 2700;
+        public static double NoonTemp = 6300;
+        public static double LateAfternoonTemp = 4250;
+        public static double EarlyMorningTemp = 4250;
         public static DynamicNightConfig NightConfig;
         public static IMonitor Logger;
         private bool resetOnWakeup;
@@ -104,7 +109,7 @@ namespace DynamicNightTime
             resetOnWakeup = false;
         }
 
-        private Color GetRGBFromTemp(double temp)
+        public static Color GetRGBFromTemp(double temp)
         {
             float r,g,b = 0.0f;
             float effTemp = (float)Math.Min(Math.Max(temp, 1000), 40000);
