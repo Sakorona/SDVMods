@@ -57,38 +57,51 @@ namespace DynamicNightTime
                 NightConfig.Latitude = 64;
             if (NightConfig.Latitude < -64)
                 NightConfig.Latitude = -64;
-
+    
             var harmony = HarmonyInstance.Create("koihimenakamura.dynamicnighttime");
             harmony.PatchAll(Assembly.GetExecutingAssembly());
 
             //patch getStartingToGetDarkTime
             MethodInfo setStartingToGetDarkTime = GetSDVType("Game1").GetMethods(BindingFlags.Static | BindingFlags.Public).ToList().Find(m => m.Name == "getStartingToGetDarkTime");
             MethodInfo postfix = typeof(Patches.GettingDarkPatch).GetMethods(BindingFlags.Static | BindingFlags.Public).ToList().Find(m => m.Name == "Postfix");
+            Monitor.Log($"Postfixing {setStartingToGetDarkTime} with {postfix}", LogLevel.Trace);
             harmony.Patch(setStartingToGetDarkTime, null, new HarmonyMethod(postfix));
 
             //patch getTrulyDarkTime
             MethodInfo setTrulyDarkTime = GetSDVType("Game1").GetMethods(BindingFlags.Static | BindingFlags.Public).ToList().Find(m => m.Name == "getTrulyDarkTime");
             MethodInfo postfixDark = typeof(Patches.GetFullyDarkPatch).GetMethods(BindingFlags.Static | BindingFlags.Public).ToList().Find(m => m.Name == "Postfix");
+            Monitor.Log($"Postfixing {setTrulyDarkTime} with {postfixDark}", LogLevel.Trace);
             harmony.Patch(setTrulyDarkTime, null, new HarmonyMethod(postfixDark));
 
             //patch isDarkOut
             MethodInfo isDarkOut = GetSDVType("Game1").GetMethods(BindingFlags.Static | BindingFlags.Public).ToList().Find(m => m.Name == "isDarkOut");
             MethodInfo postfixIsDarkOut = typeof(Patches.IsDarkOutPatch).GetMethods(BindingFlags.Static | BindingFlags.Public).ToList().Find(m => m.Name == "Postfix");
+            Monitor.Log($"Postfixing {isDarkOut} with {postfixIsDarkOut}", LogLevel.Trace);
             harmony.Patch(isDarkOut, null, new HarmonyMethod(postfixIsDarkOut));
 
             //patch UpdateGameClock
             MethodInfo UpdateGameClock = helper.Reflection.GetMethod(GetSDVType("Game1"), "UpdateGameClock").MethodInfo;
             MethodInfo postfixClock = helper.Reflection.GetMethod(typeof(Patches.GameClockPatch), "Postfix").MethodInfo;
+            Monitor.Log($"Postfixing {UpdateGameClock} with {postfixClock}", LogLevel.Trace);
             harmony.Patch(UpdateGameClock, null, new HarmonyMethod(postfixClock));
 
             TimeEvents.AfterDayStarted += HandleNewDay;
             SaveEvents.AfterReturnToTitle += HandleReturn;
             TimeEvents.TimeOfDayChanged += HandleTimeChanges;
-
+            /*
             Helper.ConsoleCommands.Add("debug_cycleinfo", "Outputs the cycle information", OutputInformation);
             Helper.ConsoleCommands.Add("debug_outdoorlight", "Outputs the outdoor light information", OutputLight);
+            Helper.ConsoleCommands.Add("debug_setlatitude", "Sets Latitude", SetLatitude);
+            */
         }
 
+        private void SetLatitude(string arg1, string[] arg2)
+        {
+           if (arg2.Length > 0)
+            {
+                NightConfig.Latitude = Convert.ToDouble(arg2[0]);
+            }
+        }
 
         private void HandleReturn(object sender, EventArgs e)
         {
@@ -107,66 +120,6 @@ namespace DynamicNightTime
                 }
             }
             resetOnWakeup = false;
-        }
-
-        public static Color GetRGBFromTemp(double temp)
-        {
-            float r,g,b = 0.0f;
-            float effTemp = (float)Math.Min(Math.Max(temp, 1000), 40000);
-            effTemp = effTemp / 100;
-
-            //calc red
-            if (effTemp <= 66)
-                r = 255f;
-            else
-            { 
-              float x = effTemp -55f;   
-              r = 351.97690566805693f + (0.114206453784165f*x) - (40.25366309332127f * (float)Math.Log(x));
-            }
-
-            //clamp red
-            r = (float)Math.Min(Math.Max(r, 0), 255);
-
-            //calc green
-            if (effTemp <= 66)
-            {
-                float x = effTemp - 2f;
-                g = -155.25485562709179f - (.44596950469579133f * x) + (104.49216199393888f * (float)Math.Log(x));
-            }
-            else
-            {
-                float x = effTemp - 50f;
-                g = 325.4494125711974f + (.07943456536662342f * x) - (28.0852963507957f * (float)Math.Log(x));
-            }
-
-            //clamp green
-            g = (float)Math.Min(Math.Max(g,0), 255);
-
-            //calc blue
-            if (effTemp <= 19) 
-                b = 0;
-            else if (effTemp >= 66)
-                b = 255;
-            else
-            {
-                float x = effTemp - 10f;
-                b = -254.76935184120902f + (.8274096064007395f * x) + (115.67994401066147f * (float)Math.Log(x));
-            }
-                    
-
-            //clamp blue
-            b = (float)Math.Min(Math.Max(b, 0), 255);
-            Color ourColor = new Color((uint)r, (uint)g, (uint)b);
-            ourColor.R = (byte)r;
-            ourColor.G = (byte)g;
-            ourColor.B = (byte)b;
-            return ourColor;
-
-        }
-
-        private static Color CalculateMaskFromColor(Color target)
-        {
-           return new Color(255 - target.R, 255 - target.G, 255 - target.B);
         }
 
         private void HandleTimeChanges(object sender, EventArgsIntChanged e)

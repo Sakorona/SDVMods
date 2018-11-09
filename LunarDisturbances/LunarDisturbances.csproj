@@ -52,6 +52,7 @@
     <Compile Include="LunarDisturbances.cs" />
     <Compile Include="LunarDisturbancesAPI.cs" />
     <Compile Include="MoonPhase.cs" />
+    <Compile Include="Patches\ShippingMenuPatches.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="SDVMoon.cs" />
     <Compile Include="Sprites.cs" />
@@ -73,6 +74,9 @@
   <Import Project="..\TwilightCoreShared\TwilightCoreShared.projitems" Label="Shared" />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <ItemGroup>
+    <PackageReference Include="Lib.Harmony">
+      <Version>1.2.0.1</Version>
+    </PackageReference>
     <PackageReference Include="Pathoschild.Stardew.ModBuildConfig" Version="2.2.0" />
   </ItemGroup>
 </Project>

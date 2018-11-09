@@ -137,6 +137,7 @@ namespace ClimatesOfFerngillRebuild
                 snowPos.X = snowPos.X % (16 * Game1.pixelZoom);
                 Vector2 position = new Vector2();
                 float num1 = -16 * Game1.pixelZoom + snowPos.X % (16 * Game1.pixelZoom);
+                Color snowColor = IsBloodMoon ? Color.Red * Game1.options.snowTransparency : Color.White * Game1.options.snowTransparency;
                 while ((double)num1 < Game1.viewport.Width)
                 {
                     float num2 = -16 * Game1.pixelZoom + snowPos.Y % (16 * Game1.pixelZoom);
@@ -147,7 +148,7 @@ namespace ClimatesOfFerngillRebuild
                         Game1.spriteBatch.Draw(Game1.mouseCursors, position, new Microsoft.Xna.Framework.Rectangle?
                             (new Microsoft.Xna.Framework.Rectangle
                                 (368 + (int)((Game1.currentGameTime.TotalGameTime.TotalMilliseconds + 150) % 1200.0) / 75 * 16, 192, 16, 16)),
-                            Color.White * Game1.options.snowTransparency, 0.0f, Vector2.Zero,
+                            snowColor, 0.0f, Vector2.Zero,
                             Game1.pixelZoom + 1f / 1000f, SpriteEffects.None, 1f);
                         num2 += 16 * Game1.pixelZoom;
                     }

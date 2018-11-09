@@ -265,6 +265,13 @@ namespace ClimatesOfFerngillRebuild
                     FerngillFog ourFog = (FerngillFog)this.GetWeatherMatchingType("Fog").First();
                     ourFog.BloodMoon = true;
                 }
+
+                if (this.GetWeatherMatchingType("Blizzard").First().IsWeatherVisible)
+                {
+                    //Get Blizzard instance
+                    FerngillBlizzard blizzard = (FerngillBlizzard)this.GetWeatherMatchingType("Blizzard").First();
+                    blizzard.IsBloodMoon = true;
+                }
             }
         }
 
@@ -692,7 +699,7 @@ namespace ClimatesOfFerngillRebuild
                 GenerateEveningFog = false;
             
             double fogRoll = Dice.NextDoublePositive();
-
+           
             if (fogRoll < ClimateForDay.RetrieveOdds(Dice, "fog", Game1.dayOfMonth) && !this.GetCurrentConditions().HasFlag(CurrentWeather.Wind) && !blockFog)
             {
                 this.CreateWeather("Fog");

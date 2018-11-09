@@ -17,6 +17,9 @@ using TwilightShards.Common;
 using Microsoft.Xna.Framework.Graphics;
 using EnumsNET;
 using PyTK.CustomTV;
+using Harmony;
+using System.Reflection;
+using ClimatesOfFerngillRebuild.Patches;
 
 namespace ClimatesOfFerngillRebuild
 {
@@ -45,6 +48,7 @@ namespace ClimatesOfFerngillRebuild
         private Descriptions DescriptionEngine;
         private Rectangle RWeatherIcon;
         private bool Disabled = false;
+        private static bool IsBloodMoon = false;
 
         //Integrations
         internal static bool UseLunarDisturbancesApi = false;
@@ -91,7 +95,25 @@ namespace ClimatesOfFerngillRebuild
             }
 
             if (Disabled) return;
-            
+
+            //Harmony patcher
+            HarmonyInstance.DEBUG = true;
+            var harmony = HarmonyInstance.Create("koihimenakamura.climatesofferngill");
+            harmony.PatchAll(Assembly.GetExecutingAssembly());
+
+            //patch SGame::DarkImpl
+            //patch GameLocation::drawAboveAlwaysFrontLayer
+            MethodInfo GameLocationDAAFL = AccessTools.Method(typeof(StardewValley.GameLocation), "drawAboveAlwaysFrontLayer");
+            HarmonyMethod DAAFLTranspiler = new HarmonyMethod(AccessTools.Method(typeof(GameLocationPatches), "Transpiler"));
+            Monitor.Log($"Patching {GameLocationDAAFL} with Transpiler: {DAAFLTranspiler}", LogLevel.Trace); ;
+            harmony.Patch(GameLocationDAAFL, transpiler: DAAFLTranspiler);
+
+            Type t = AccessTools.TypeByName("StardewModdingAPI.Framework.SGame");
+            MethodInfo SGameDrawImpl = AccessTools.Method(t, "DrawImpl");
+            HarmonyMethod DrawTrans = new HarmonyMethod(AccessTools.Method(typeof(SGamePatches), "Transpiler"));
+            Monitor.Log($"Patching {SGameDrawImpl} with Transpiler: {DrawTrans}", LogLevel.Trace);
+            harmony.Patch(SGameDrawImpl,transpiler: DrawTrans);
+
             //subscribe to events
             TimeEvents.AfterDayStarted += HandleNewDay;
             SaveEvents.BeforeSave += OnEndOfDay;
@@ -306,7 +328,17 @@ namespace ClimatesOfFerngillRebuild
             if (!Context.IsWorldReady)
                 return;
 
-            Conditions.MoveWeathers();           
+            Conditions.MoveWeathers();  
+            
+            if (UseLunarDisturbancesApi)
+            {
+                if (MoonAPI.GetCurrentMoonPhase() == "Blood Moon") 
+                { 
+                    IsBloodMoon = true;
+                }
+            }
+
+            
         }
 
         /// <summary>
@@ -425,34 +457,38 @@ namespace ClimatesOfFerngillRebuild
                 return;
             // abort abort abort (maybe another mod replaced it?)
 
-            //determine icon offset  
-            if (!Game1.eventUp)
-            {
-                if ((int)Conditions.CurrentWeatherIcon != (int)WeatherIcon.IconError)
+            if (WeatherOpt.EnableCustomWeatherIcon) 
+            { 
+                //determine icon offset  
+                if (!Game1.eventUp)
                 {
-                    RWeatherIcon = new Rectangle(0 + 12 * (int)Conditions.CurrentWeatherIcon, Game1.isDarkOut() ? 8 : 0, 12, 8);
+                    if ((int)Conditions.CurrentWeatherIcon != (int)WeatherIcon.IconError)
+                    {
+                        RWeatherIcon = new Rectangle(0 + 12 * (int)Conditions.CurrentWeatherIcon, Game1.isDarkOut() ? 8 : 0, 12, 8);
+                    }
+
+                    if ((int)Conditions.CurrentWeatherIcon == (int)WeatherIcon.IconBloodMoon)
+                    {
+                        RWeatherIcon = new Rectangle(144, 8, 12, 8);
+                    }
+
+                    if ((int)Conditions.CurrentWeatherIcon == (int)WeatherIcon.IconError)
+                    {
+                        RWeatherIcon = new Rectangle(144, 0, 12, 8);
+                    }
+
+                    Game1.spriteBatch.Draw(OurIcons.WeatherSource, weatherMenu.position + new Vector2(116f, 68f), RWeatherIcon, Color.White, 0.0f, Vector2.Zero, 4f, SpriteEffects.None, .1f);
                 }
 
-                if ((int)Conditions.CurrentWeatherIcon == (int)WeatherIcon.IconBloodMoon)
-                {
-                    RWeatherIcon = new Rectangle(144, 8, 12, 8);
-                }
-
-                if ((int)Conditions.CurrentWeatherIcon == (int)WeatherIcon.IconError)
-                {
-                    RWeatherIcon = new Rectangle(144, 0, 12, 8);
-                }
-
-                Game1.spriteBatch.Draw(OurIcons.WeatherSource, weatherMenu.position + new Vector2(116f, 68f), RWeatherIcon, Color.White, 0.0f, Vector2.Zero, 4f, SpriteEffects.None, .1f);
+                //redraw mouse cursor
+                SDVUtilities.RedrawMouseCursor();
             }
-
-            //redraw mouse cursor
-            SDVUtilities.RedrawMouseCursor();
         }    
 
         private void ResetMod(object sender, EventArgs e)
         {
             Conditions.Reset();
+            IsBloodMoon = false;
             ExpireTime = 0;
             CropList.Clear(); 
         }
@@ -460,6 +496,7 @@ namespace ClimatesOfFerngillRebuild
         private void HandleNewDay(object sender, EventArgs e)
         {
             Conditions.OnNewDay();
+            IsBloodMoon = false;
             Conditions.SetTodayWeather(); //run this automatically
             if (!Context.IsMainPlayer) return;
 
@@ -766,13 +803,35 @@ namespace ClimatesOfFerngillRebuild
             }
         }
 
-        #region Menu
-        /// <summary>
-        /// This checks the keys being pressed if one of them is the weather menu, toggles it.
-        /// </summary>
-        /// <param name="key">The key being pressed</param>
-        /// <param name="config">The keys we're listening to.</param>
-        private void ReceiveKeyPress(Keys key, Keys config)
+        public static Color GetRainColor()
+        {
+            if (ClimatesOfFerngill.IsBloodMoon)
+                return Color.Red;
+            else
+               return Color.White;
+        }
+
+        public static Color GetRainBackColor()
+        {
+            return Color.Blue;
+        }
+
+
+        public static Color GetSnowColor()
+        {
+            if (ClimatesOfFerngill.IsBloodMoon)
+                return Color.Red;
+            else
+                return Color.White;
+        }
+
+    #region Menu
+    /// <summary>
+    /// This checks the keys being pressed if one of them is the weather menu, toggles it.
+    /// </summary>
+    /// <param name="key">The key being pressed</param>
+    /// <param name="config">The keys we're listening to.</param>
+    private void ReceiveKeyPress(Keys key, Keys config)
         {
             if (config != key)  //sanity force this to exit!
                 return;

@@ -39,7 +39,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FloodEventsTesting", "Flood
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CustomizableClock", "CustomizableClock\CustomizableClock.csproj", "{CA0570BB-53A4-45DC-9E49-18AD7A419582}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HarmonyTester", "..\HarmonyTester\HarmonyTester.csproj", "{7B286CFF-210F-4710-9E5A-D7EB1D12ECA7}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HarmonyTester", "HarmonyTester\HarmonyTester.csproj", "{7B286CFF-210F-4710-9E5A-D7EB1D12ECA7}"
 EndProject
 Global
 	GlobalSection(SharedMSBuildProjectFiles) = preSolution

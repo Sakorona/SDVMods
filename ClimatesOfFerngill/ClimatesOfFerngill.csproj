@@ -60,6 +60,8 @@
     <Compile Include="Integrations\IDynamicNightAPI.cs" />
     <Compile Include="Integrations\ILunarDisturbancesAPI.cs" />
     <Compile Include="Integrations\ISafeLightningAPI.cs" />
+    <Compile Include="Patches\GameLocationPatches.cs" />
+    <Compile Include="Patches\SGamePatches.cs" />
     <Compile Include="WeatherData\WeatherData.cs" />
     <Compile Include="Weathers\FerngillCustomRain.cs" />
     <Compile Include="Weathers\FerngillThunderFrenzy.cs" />
@@ -127,6 +129,9 @@
   <Import Project="..\TwilightCoreShared\TwilightCoreShared.projitems" Label="Shared" />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <ItemGroup>
+    <PackageReference Include="Lib.Harmony">
+      <Version>1.2.0.1</Version>
+    </PackageReference>
     <PackageReference Include="Pathoschild.Stardew.ModBuildConfig" Version="2.2.0" />
   </ItemGroup>
 </Project>

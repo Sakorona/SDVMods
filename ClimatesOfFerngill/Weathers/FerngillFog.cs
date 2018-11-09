@@ -118,8 +118,6 @@ namespace ClimatesOfFerngillRebuild
                     return "None";
                 case FogType.Blinding:
                     return "Blinding";
-                case FogType.Dark:
-                    return "Dark";
                 case FogType.Normal:
                     return "Normal";
                 default:
@@ -137,12 +135,15 @@ namespace ClimatesOfFerngillRebuild
             this.FogAlpha = 1f;
             //First, let's determine the type.
             //... I am a dumb foxgirl. A really dumb one. 
-            if (Dice.NextDoublePositive() < ModConfig.DarkFogChance && SDate.Now().Day != 1 && SDate.Now().Year != 1 && SDate.Now().Season != "spring")
-                CurrentFogType = FogType.Dark;
-            else if (Dice.NextDoublePositive() <= .001)
+            if (Dice.NextDoublePositive() <= .001)
                 CurrentFogType = FogType.Blinding;
             else
                 CurrentFogType = FogType.Normal;
+
+            if (ModConfig.ShowLighterFog)
+            {
+                this.FogAlpha = .6f;
+            }
 
             //now determine the fog expiration time
             double FogChance = Dice.NextDoublePositive();

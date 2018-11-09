@@ -13,6 +13,9 @@ using StardewValley.Locations;
 using StardewValley.Monsters;
 using StardewValley.TerrainFeatures;
 using TwilightShards.Stardew.Common;
+using Harmony;
+using System.Reflection;
+using LunarDisturbances.Patches;
 
 namespace TwilightShards.LunarDisturbances
 {
@@ -21,7 +24,7 @@ namespace TwilightShards.LunarDisturbances
         internal static SDVMoon OurMoon;
         private MersenneTwister Dice;
         private MoonConfig ModConfig;
-        private Sprites.Icons OurIcons { get; set; }
+        public static Sprites.Icons OurIcons { get; set; }
         internal static bool IsEclipse { get; set; }
         private bool UseJsonAssetsApi = false;
         private Color nightColor = new Color((int)byte.MaxValue, (int)byte.MaxValue, 0);
@@ -43,6 +46,16 @@ namespace TwilightShards.LunarDisturbances
             ModConfig = Helper.ReadConfig<MoonConfig>();
             OurMoon = new SDVMoon(ModConfig, Dice, Helper.Translation);
             OurIcons = new Sprites.Icons(Helper.Content);
+
+            /*
+            HarmonyInstance.DEBUG = true;
+            var harmony = HarmonyInstance.Create("koihimenakamura.lunardisturbances");
+            harmony.PatchAll(Assembly.GetExecutingAssembly());
+
+            //patch ShippingMenu::draw
+            MethodInfo ShippingMenuDraw = AccessTools.Method(typeof(StardewValley.Menus.ShippingMenu), "draw");
+            HarmonyMethod MenuTranspiler = new HarmonyMethod(AccessTools.Method(typeof(ShippingMenuPatches), "Transpiler"));
+            harmony.Patch(ShippingMenuDraw, transpiler: MenuTranspiler); */
 
             GameEvents.FirstUpdateTick += GameEvents_FirstUpdateTick;
             GameEvents.OneSecondTick += GameEvents_OneSecondTick;
@@ -79,14 +92,14 @@ namespace TwilightShards.LunarDisturbances
 
             if (Game1.showingEndOfNightStuff && !Game1.wasRainingYesterday && !outro && Game1.activeClickableMenu is ShippingMenu currMenu)
             {
-                float scale = Game1.pixelZoom * 1.5f;
+                float scale = Game1.pixelZoom * 1.25f;
 
                 if (Game1.viewport.Width < 1024)
-                    scale = Game1.pixelZoom;
+                    scale = Game1.pixelZoom *.8f;
                 if (Game1.viewport.Width < 810)
-                    scale = Game1.pixelZoom * .75f;
+                    scale = Game1.pixelZoom * .6f;
                 if (Game1.viewport.Width < 700)
-                    scale = Game1.pixelZoom * .4f;
+                    scale = Game1.pixelZoom * .35f;
 
                 Game1.spriteBatch.Draw(OurIcons.MoonSource, new Vector2(Game1.viewport.Width - 65 * Game1.pixelZoom, Game1.pixelZoom), OurIcons.GetNightMoonSprite(SDVMoon.GetLunarPhaseForDay(SDate.Now().AddDays(-1))), Color.LightBlue, 0.0f, Vector2.Zero, scale, SpriteEffects.None, 1f);
             }
@@ -186,6 +199,7 @@ namespace TwilightShards.LunarDisturbances
         {
             if (IsEclipse && ResetTicker > 0)
             {
+                Monitor.Log("Eclipse code firing");
                 Game1.globalOutdoorLighting = .5f;
                 Game1.ambientLight = nightColor;
                 Game1.currentLocation.switchOutNightTiles();
