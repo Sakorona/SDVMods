@@ -1,6 +1,6 @@
 ﻿# Climates of Ferngill (Rebuild) You Can (Not) Have Weather
 
-Current Version (10 November 2018): 1.4
+Current Version (11 November 2018): 1.4
 
 ## What's New
 
@@ -18,6 +18,7 @@ Currently doesn't do any custom weathers in MP. Works only for the host player i
 
 - SMAPI 2.7+
 - Stardew Valley 1.3.28+
+- PyTK: latest
  
 ## Overview
 
@@ -45,6 +46,7 @@ This mod uses harmony to patch functions to allow it to draw custom rain and sno
 - FoggyWizard for the sandstorm sprite
 - The SDV discord #modding channel for discussions and encouragement.
 
+
 ## Changelog
 v1.4
  - lighter fog implemented
@@ -53,10 +55,6 @@ v1.4
  - Now uses harmony for some various features
 
 v1.4.0-beta13
- - refactor of weather options
- - new config option to disable high rains and wind 
- - hurricane rains
- - dynamic rainfall
  - blood weather during a blood moon
  - fixed a bug blocking many icons from being properly seen. Fixed now
 

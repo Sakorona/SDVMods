@@ -35,6 +35,7 @@ This mod alters three functions in Game1 - isNightOut, GameClock, getStartingToG
 1.2 
  - restructured the change so it flows better in morning and night
  - fixed the flash issues
+ - has a full day cycle
 
 1.2-beta.1
  - updated morning darkness to be more obvious

@@ -32,7 +32,7 @@ _Alerts you of system time after a configurable number of minutes._
 
 _Want a dynamic day/night cycle? Look here!_
 
-* **CustomizableClock(<small>[source](CustomizableClock)</small>)
+* **CustomizableClock**(<small>[source](CustomizableClock)</small>)
 
 _This mod was written for someone on Discord, and as such has no intended release at this time. Fork of the 24h clock available on Nexus._
   
