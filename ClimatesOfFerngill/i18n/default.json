@@ -62,7 +62,7 @@
   "weat-evening.2": "{{condString}}{{eveningFog}}Tomorrow, anticipate {{tomorrowWeather}} with high: {{tomorrowHigh}} and low: {{tomorrowLow}}",
 
   //Weather - Night
-  "weat-night.0": "{{condString}}{{eveningFog}Tomorrow, expect {{tomorrowWeather}} with a high of {{tomorrowHigh}} and low of {{tomorrowLow}}.",
+  "weat-night.0": "{{condString}}{{eveningFog}}Tomorrow, expect {{tomorrowWeather}} with a high of {{tomorrowHigh}} and low of {{tomorrowLow}}.",
   "weat-night.1": "{{condString}}{{eveningFog}}Tomorrow, it should be {{tomorrowWeather}} with high: {{tomorrowHigh}} and low: {{tomorrowLow}}",
   "weat-night.2": "{{condString}}{{eveningFog}}For tomorrow, expect {{tomorrowWeather}} with high: {{tomorrowHigh}} and low: {{tomorrowLow}}",
 
@@ -110,6 +110,7 @@
   //this is the night string
   "weather-condition.frost.night": "Forecasters are already seeing the temperatures dip dangerously low, and you should expect frosts outside tonight. ",
   "weather-condition.evenFog": "Fog is predicted this evening from {{startTime}} to {{endTime}}. ",
+  "weather-condition.eveningFogNoTime": "Fog is predicted this evening.",
 
   //Weather Descriptions - Spring
   "weat-spring.sunny_daytime.0": "a beautiful sunny day",

@@ -51,6 +51,23 @@ namespace ClimatesOfFerngillRebuild
             return "ERROR";
         }
 
+        private string GetNextSeason(string season)
+        {
+            switch (season)
+            {
+                case "spring":
+                    return "summer";
+                case "summer":
+                    return "fall";
+                case "fall":
+                    return "winter";
+                case "winter":
+                    return "spring";
+                default:
+                    return "error";
+            }
+        }
+
         private string GetTemperatureString(double temp)
         {
             if (ModConfig.ShowBothScales)
@@ -160,13 +177,13 @@ namespace ClimatesOfFerngillRebuild
             var talkParams = new Dictionary<string, string>
             {
                 { "location", GetRandomLocation() },
-                { "descWeather", GetWeather(Current, Game1.currentSeason) },
+                { "descWeather", GetWeather(Current, Game1.dayOfMonth, Game1.currentSeason) },
                 { "festival", SDVUtilities.GetFestivalName(SDate.Now()) },
                 { "festivalTomorrow", SDVUtilities.GetFestivalName(SDate.Now().AddDays(1)) },
                 { "fogTime", Current.GetFogTime().ToString() },
                 { "todayHigh", GetTemperatureString(Current.TodayHigh) },
                 { "todayLow", GetTemperatureString(Current.TodayLow) },
-                { "tomorrowWeather", GetWeather(Game1.weatherForTomorrow, Game1.currentSeason, true) },
+                { "tomorrowWeather", GetWeather(Game1.weatherForTomorrow, Game1.dayOfMonth, Game1.currentSeason, true) },
                 { "tomorrowHigh", GetTemperatureString(Current.TomorrowHigh) },
                 { "tomorrowLow", GetTemperatureString(Current.TomorrowLow) },
                 { "condWarning", GetCondWarning(Current) },
@@ -262,10 +279,12 @@ namespace ClimatesOfFerngillRebuild
                     {
                         if (Current.GetWeatherMatchingType("Fog").First().IsWeatherVisible && (SDVTime.CurrentTime > new SDVTime(1200)))
                             return Helper.Get("weather-condition.fog", new { fogTime = fWeat.WeatherExpirationTime.ToString() });
-                        else
+                        else 
                         {
-                            if (fWeat.WeatherBeginTime != fWeat.WeatherExpirationTime)
+                            if (fWeat.WeatherBeginTime != fWeat.WeatherExpirationTime && fWeat.WeatherBeginTime > new SDVTime(1500))
                                 return Helper.Get("weather-condition.evenFog", new { startTime = fWeat.WeatherBeginTime.ToString(), endTime = fWeat.WeatherExpirationTime.ToString() });
+                            else if (fWeat.WeatherBeginTime != fWeat.WeatherExpirationTime)
+                                return Helper.Get("weather-condition.eveningFogNoTime");
                             else
                                 return "";
                         }
@@ -295,9 +314,12 @@ namespace ClimatesOfFerngillRebuild
             return "";            
         }
 
-        private string GetWeather(int weather, string season, bool TomorrowWeather = false)
+        private string GetWeather(int weather, int day, string season, bool TomorrowWeather = false)
         {
             int rNumber = OurDice.Next(2);
+
+            if (day == 28)
+                season = GetNextSeason(season);
 
             if (weather == Game1.weather_debris)
                 return Helper.Get($"weat-{season}.debris.{rNumber}");
@@ -364,8 +386,11 @@ namespace ClimatesOfFerngillRebuild
             return "ERROR";
         }
 
-        private string GetWeather(WeatherConditions Weather, string season)
+        private string GetWeather(WeatherConditions Weather, int day, string season)
         {
+            if (day == 28)
+                season = GetNextSeason(season);
+
             int rNumber = OurDice.Next(2);
 
             if (Weather.CurrentWeatherIconBasic == WeatherIcon.IconBlizzard || Weather.CurrentWeatherIconBasic == WeatherIcon.IconWhiteOut)

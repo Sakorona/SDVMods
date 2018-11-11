@@ -1,6 +1,6 @@
 ﻿# Climates of Ferngill (Rebuild) You Can (Not) Have Weather
 
-Current Version (20 June 2018): 1.4
+Current Version (10 November 2018): 1.4
 
 ## What's New
 
@@ -29,6 +29,10 @@ This mod does the following:
 - Adds a weather menu option, which will display information about the weather
 - Changes the text for the TV weather channel (Currently offline)
 
+## Notices
+
+This mod uses harmony to patch functions to allow it to draw custom rain colors.
+
 ## Upcoming Features
 
 - Flash floods!!!!! 
@@ -45,6 +49,7 @@ v1.4
  - lighter fog implemented
  - option to disable the weather icon
  - red snow!
+ - Now uses harmony for some various features
 
 v1.4.0-beta13
  - refactor of weather options
@@ -248,6 +253,10 @@ v1.1.12 beta
 - heatwaves and frosts are back in, and now it triggers during certain times.
 
 ## Config Options
+
+- `ShowLighterFog` - Changes the fog opacity to be lower. Default is `false`. Valid values: `false, true`
+
+- 'EnableCustomWeatherIcon' - This enables the custom weather icons. Default is `true`. Valid values are `false` and `true`
 
 - `ClimateType` - set to weather that has a corresponding file in `data\weather\`. Packaged with the mod is
 `normal`, `extended`, `arid`, `dry`, `wet`, `monsoon`. Default: `normal`.

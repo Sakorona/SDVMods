@@ -24,12 +24,14 @@ namespace ClimatesOfFerngillRebuild
         {
             public Texture2D WeatherSource;
             public Texture2D FogTexture;
+            public Texture2D DarudeTexture;
             public static Texture2D source2;
 
             public Icons(IContentHelper helper)
             {
-                WeatherSource = helper.Load<Texture2D>(Path.Combine("Assets","WeatherIcons2.png"));
+                WeatherSource = helper.Load<Texture2D>(Path.Combine("Assets","WeatherIcons.png"));
                 FogTexture = helper.Load<Texture2D>(Path.Combine("Assets", "ThickerFog.png"));
+                DarudeTexture = helper.Load<Texture2D>(Path.Combine("Assets", "Sandstorm.png"));
                 source2 = Game1.mouseCursors;
             }
 

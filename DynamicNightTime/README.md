@@ -15,7 +15,7 @@ Current Version: 1.2
 Make sure that if you have problems with other mods that you are running their latest version.  Also, this mod does not alter wake up time. 
 
 NOTE: DNT does some assumption work lighting after sunset is consistent. This also may not match your tick timing if you use time speed mods.
-NOTE2: This mod is incomaptible with Deep Woods prior to 
+NOTE2: This mod is incomaptible with Deep Woods prior to 1.2-beta.18 / 1.3-beta.15
 
 ## Multiplayer Compatibility
 This mod is MP compatible, and all clients will need it for it to work.
