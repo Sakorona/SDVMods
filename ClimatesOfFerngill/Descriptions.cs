@@ -16,7 +16,7 @@ namespace ClimatesOfFerngillRebuild
         private ITranslationHelper Helper;
         private MersenneTwister OurDice;
         private WeatherConfig ModConfig;
-        private IMonitor Output;
+        private readonly IMonitor Output;
 
         public Descriptions(ITranslationHelper Translaton, MersenneTwister mDice, WeatherConfig wc, IMonitor log)
         {

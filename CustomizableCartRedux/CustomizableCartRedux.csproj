@@ -60,9 +60,11 @@
     <None Include="packages.config" />
     <None Include="README.md" />
   </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="Pathoschild.Stardew.ModBuildConfig">
+      <Version>2.2.0</Version>
+    </PackageReference>
+  </ItemGroup>
   <Import Project="..\TwilightCoreShared\TwilightCoreShared.projitems" Label="Shared" />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
-  <ItemGroup>
-    <PackageReference Include="Pathoschild.Stardew.ModBuildConfig" Version="2.2.0" />
-  </ItemGroup>
 </Project>

@@ -111,7 +111,7 @@ namespace TwilightShards.Stardew.Common
 
         public static T GetModApi<T>(IMonitor Monitor, IModHelper Helper, string name, string minVersion) where T : class
         {
-            IManifest modManifest = Helper.ModRegistry.Get(name);
+            var modManifest = Helper.ModRegistry.Get(name);
             if (modManifest != null)
             {
                 if (!modManifest.Version.IsOlderThan(minVersion))

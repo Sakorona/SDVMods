@@ -67,6 +67,8 @@
     <PackageReference Include="Lib.Harmony">
       <Version>1.2.0.1</Version>
     </PackageReference>
-    <PackageReference Include="Pathoschild.Stardew.ModBuildConfig" Version="2.2.0" />
+    <PackageReference Include="Pathoschild.Stardew.ModBuildConfig">
+      <Version>2.2.0</Version>
+    </PackageReference>
   </ItemGroup>
 </Project>
