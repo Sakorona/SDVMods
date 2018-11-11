@@ -12,7 +12,7 @@ Current Version (10 November 2018): 1.4
 
 ## Multiplayer
 
-Currently doesn't do any custom weathers in MP. Works only for the host player in MP.
+Currently doesn't do any custom weathers in MP. Works only for the host player in MP. Will be changing shortly with the new MP API.
 
 ## Requirements
 
@@ -27,22 +27,23 @@ This mod does the following:
 - Adds in several custom weathers - Thundersnow! Blizzards! Dry Lightning! Fog! Thunder Freeenzy!!!
 - Changes the rain totem to occasionally spawn storms as well.
 - Adds a weather menu option, which will display information about the weather
-- Changes the text for the TV weather channel (Currently offline)
+- Changes the text for the TV weather channel 
 
 ## Notices
 
-This mod uses harmony to patch functions to allow it to draw custom rain colors.
+This mod uses harmony to patch functions to allow it to draw custom rain and snow colors.
 
 ## Upcoming Features
 
-- Flash floods!!!!! 
-- heavy rains?
+- Sandstorms
+- Variable rain
 
 ## Acknowledgements
 - Prismuth for the fog sprite
 - Pathoschild for ideas
 - ChefRude for testing and the night icon sprites (as well as better fog textures)
-- The SDV discord #modding channel for discussions
+- FoggyWizard for the sandstorm sprite
+- The SDV discord #modding channel for discussions and encouragement.
 
 ## Changelog
 v1.4
