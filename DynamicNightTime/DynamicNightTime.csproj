@@ -37,6 +37,12 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+<<<<<<< HEAD
+=======
+    <Reference Include="0Harmony">
+      <HintPath>.\0Harmony.dll</HintPath>
+    </Reference>
+>>>>>>> master
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Xml.Linq" />
@@ -47,12 +53,18 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+<<<<<<< HEAD
     <Compile Include="DynamicNightAPI.cs" />
     <Compile Include="DynamicNightTime.cs" />
     <Compile Include="Integrations\ILunarDisturbancesAPI.cs" />
     <Compile Include="Patches\GameClockPatch.cs" />
     <Compile Include="Patches\GetFullyDarkPatch.cs" />
     <Compile Include="Patches\GetModeratelyDarkPatch.cs" />
+=======
+    <Compile Include="DynamicNightTime.cs" />
+    <Compile Include="Patches\GameClockPatch.cs" />
+    <Compile Include="Patches\GetFullyDarkPatch.cs" />
+>>>>>>> master
     <Compile Include="Patches\GettingDarkPatch.cs" />
     <Compile Include="Patches\IsDarkOutPatch.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -64,6 +76,7 @@
   </ItemGroup>
   <Import Project="..\TwilightCoreShared\TwilightCoreShared.projitems" Label="Shared" />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+<<<<<<< HEAD
   <ItemGroup>
     <PackageReference Include="Lib.Harmony">
       <Version>1.2.0.1</Version>
@@ -72,4 +85,13 @@
       <Version>2.2.0</Version>
     </PackageReference>
   </ItemGroup>
+=======
+  <Import Project="..\packages\Pathoschild.Stardew.ModBuildConfig.2.0.2\build\Pathoschild.Stardew.ModBuildConfig.targets" Condition="Exists('..\packages\Pathoschild.Stardew.ModBuildConfig.2.0.2\build\Pathoschild.Stardew.ModBuildConfig.targets')" />
+  <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
+    <PropertyGroup>
+      <ErrorText>This project references NuGet package(s) that are missing on this computer. Use NuGet Package Restore to download them.  For more information, see http://go.microsoft.com/fwlink/?LinkID=322105. The missing file is {0}.</ErrorText>
+    </PropertyGroup>
+    <Error Condition="!Exists('..\packages\Pathoschild.Stardew.ModBuildConfig.2.0.2\build\Pathoschild.Stardew.ModBuildConfig.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\Pathoschild.Stardew.ModBuildConfig.2.0.2\build\Pathoschild.Stardew.ModBuildConfig.targets'))" />
+  </Target>
+>>>>>>> master
 </Project>

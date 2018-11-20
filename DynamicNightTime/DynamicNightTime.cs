@@ -1,4 +1,5 @@
 ﻿using Harmony;
+<<<<<<< HEAD
 using StardewModdingAPI;
 using StardewModdingAPI.Utilities;
 using StardewValley;
@@ -11,17 +12,37 @@ using StardewValley.Locations;
 using TwilightShards.Common;
 using TwilightShards.Stardew.Common;
 using DynamicNightTime.Integrations;
+=======
+using Microsoft.Xna.Framework;
+using StardewModdingAPI;
+using StardewModdingAPI.Events;
+using StardewModdingAPI.Utilities;
+using StardewValley;
+using StardewValley.BellsAndWhistles;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using SFarmer = StardewValley.Farmer;
+using System.Reflection;
+using TwilightShards.Common;
+using TwilightShards.Stardew.Common;
+>>>>>>> master
 
 namespace DynamicNightTime
 {
     public class DynamicNightConfig
     {
+<<<<<<< HEAD
         public double Latitude = 38.25;
         public bool SunsetTimesAreMinusThirty = true;
+=======
+        public double latitude = 38.25;
+>>>>>>> master
     }
 
     public class DynamicNightTime : Mod
     {
+<<<<<<< HEAD
         public static double SunriseTemp = 2500;
         public static double SunsetTemp = 2700;
         public static double NoonTemp = 6300;
@@ -61,10 +82,25 @@ namespace DynamicNightTime
             if (NightConfig.Latitude < -64)
                 NightConfig.Latitude = -64;
     
+=======
+        public static DynamicNightConfig NightConfig;
+
+        public override void Entry(IModHelper helper)
+        {
+            NightConfig = Helper.ReadConfig<DynamicNightConfig>();
+
+            //sanity check lat
+            if (NightConfig.latitude > 64)
+                NightConfig.latitude = 64;
+            if (NightConfig.latitude < -64)
+                NightConfig.latitude = -64;
+
+>>>>>>> master
             var harmony = HarmonyInstance.Create("koihimenakamura.dynamicnighttime");
             harmony.PatchAll(Assembly.GetExecutingAssembly());
 
             //patch getStartingToGetDarkTime
+<<<<<<< HEAD
             MethodInfo setStartingToGetDarkTime = GetSDVType("Game1").GetMethods(BindingFlags.Static | BindingFlags.Public).ToList().Find(m => m.Name == "getStartingToGetDarkTime");
             MethodInfo postfix = typeof(Patches.GettingDarkPatch).GetMethods(BindingFlags.Static | BindingFlags.Public).ToList().Find(m => m.Name == "Postfix");
             Monitor.Log($"Postfixing {setStartingToGetDarkTime} with {postfix}", LogLevel.Trace);
@@ -193,11 +229,53 @@ namespace DynamicNightTime
                 default:
                     return new Color(0,0,0);
           }
+=======
+            MethodInfo setStartingToGetDarkTime = typeof(Game1).GetMethods(BindingFlags.Static | BindingFlags.Public).ToList().Find(m => m.Name == "getStartingToGetDarkTime");
+            MethodInfo postfix = typeof(Patches.GettingDarkPatch).GetMethods(BindingFlags.Static | BindingFlags.Public).ToList().Find(m => m.Name == "Postfix");
+            harmony.Patch(setStartingToGetDarkTime, null, new HarmonyMethod(postfix));
+
+            //patch getTrulyDarkTime
+            MethodInfo setTrulyDarkTime = typeof(Game1).GetMethods(BindingFlags.Static | BindingFlags.Public).ToList().Find(m => m.Name == "getTrulyDarkTime");
+            MethodInfo postfixDark = typeof(Patches.GetFullyDarkPatch).GetMethods(BindingFlags.Static | BindingFlags.Public).ToList().Find(m => m.Name == "Postfix");
+            harmony.Patch(setTrulyDarkTime, null, new HarmonyMethod(postfixDark));
+
+            //patch isDarkOutPatch
+            MethodInfo isDarkOut = typeof(Game1).GetMethods(BindingFlags.Static | BindingFlags.Public).ToList().Find(m => m.Name == "isDarkOut");
+            MethodInfo postfixIsDarkOut = typeof(Patches.IsDarkOutPatch).GetMethods(BindingFlags.Static | BindingFlags.Public).ToList().Find(m => m.Name == "Postfix");
+            harmony.Patch(isDarkOut, null, new HarmonyMethod(postfixIsDarkOut));
+
+            //patch UpdateGameClock
+            MethodInfo UpdateGameClock = helper.Reflection.GetMethod(typeof(Game1), "UpdateGameClock").MethodInfo;
+            MethodInfo postfixClock = helper.Reflection.GetMethod(typeof(Patches.GameClockPatch), "Postfix").MethodInfo;
+            harmony.Patch(UpdateGameClock, null, new HarmonyMethod(postfixClock));
+
+            //and now events!
+            TimeEvents.TimeOfDayChanged += TimeEvents_TimeOfDayChanged;
+        }
+
+        private void TimeEvents_TimeOfDayChanged(object sender, EventArgsIntChanged e)
+        {
+            SFarmer who = Game1.player;
+
+            if (who != null && who.currentLocation != null && Game1.isDarkOut())
+            {
+                List<Critter> currentCritters = Helper.Reflection.GetField<List<Critter>>(who.currentLocation, "critters").GetValue();
+                if (currentCritters != null)
+                {
+                    for (int i = 0; i < currentCritters.Count; i++)
+                    {
+                        if (currentCritters[i] is Cloud)
+                            currentCritters.Remove(currentCritters[i]);
+                    }
+                }
+            }
+>>>>>>> master
         }
 
         public static int GetSunriseTime() => GetSunrise().ReturnIntTime();
         public static SDVTime GetMorningAstroTwilight() => GetTimeAtHourAngle(-0.314159265);
         public static SDVTime GetAstroTwilight() => GetTimeAtHourAngle(-0.314159265, false);
+<<<<<<< HEAD
         public static SDVTime GetMorningNavalTwilight() => GetTimeAtHourAngle(-0.20944);
         public static SDVTime GetNavalTwilight() => GetTimeAtHourAngle(-0.20944, false);
         public static SDVTime GetCivilTwilight() => GetTimeAtHourAngle(-0.104719755, false);
@@ -255,12 +333,20 @@ namespace DynamicNightTime
 
             return LateAfternoon;
         }
+=======
+        public static SDVTime GetSunrise() => GetTimeAtHourAngle(0.01163611);
+        public static SDVTime GetSunset() => GetTimeAtHourAngle(0.01163611, false);
+>>>>>>> master
 
         protected internal static SDVTime GetTimeAtHourAngle(double angle, bool morning = true)
         {
             var date = SDate.Now();
             int dayOfYear = date.DaysSinceStart % 112;
+<<<<<<< HEAD
             double lat = GeneralFunctions.DegreeToRadians(NightConfig.Latitude);
+=======
+            double lat = GeneralFunctions.DegreeToRadians(NightConfig.latitude);
+>>>>>>> master
 
             double solarDeclination = .40927971 * Math.Sin((2 * Math.PI / 112) * (dayOfYear - 1));
             double noon = 720 - 10 * Math.Sin(4 * (Math.PI / 112) * (dayOfYear - 1)) + 8 * Math.Sin(2 * (Math.PI / 112) * dayOfYear);
