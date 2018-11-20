@@ -10,6 +10,7 @@ using StardewModdingAPI.Events;
 using StardewValley.Locations;
 using TwilightShards.Common;
 using TwilightShards.Stardew.Common;
+using DynamicNightTime.Integrations;
 
 namespace DynamicNightTime
 {
@@ -28,6 +29,8 @@ namespace DynamicNightTime
         public static double EarlyMorningTemp = 4250;
         public static DynamicNightConfig NightConfig;
         public static IMonitor Logger;
+        public static bool LunarDisturbancesLoaded;
+        public static ILunarDisturbancesAPI MoonAPI;
         private bool resetOnWakeup;
         private bool isNightOut;
 
@@ -85,14 +88,24 @@ namespace DynamicNightTime
             Monitor.Log($"Postfixing {UpdateGameClock} with {postfixClock}", LogLevel.Trace);
             harmony.Patch(UpdateGameClock, null, new HarmonyMethod(postfixClock));
 
+            GameEvents.FirstUpdateTick += GameEvents_FirstUpdateTick;
             TimeEvents.AfterDayStarted += HandleNewDay;
             SaveEvents.AfterReturnToTitle += HandleReturn;
             TimeEvents.TimeOfDayChanged += HandleTimeChanges;
-            /*
+            
             Helper.ConsoleCommands.Add("debug_cycleinfo", "Outputs the cycle information", OutputInformation);
             Helper.ConsoleCommands.Add("debug_outdoorlight", "Outputs the outdoor light information", OutputLight);
             Helper.ConsoleCommands.Add("debug_setlatitude", "Sets Latitude", SetLatitude);
-            */
+            
+        }
+
+        private void GameEvents_FirstUpdateTick(object sender, EventArgs e)
+        {
+            //testing for ZA MOON, YOUR HIGHNESS.
+            MoonAPI = SDVUtilities.GetModApi<ILunarDisturbancesAPI>(Monitor, Helper, "KoihimeNakamura.LunarDisturbances", "1.0.7");
+
+            if (MoonAPI != null)
+                LunarDisturbancesLoaded = true;
         }
 
         private void SetLatitude(string arg1, string[] arg2)
@@ -155,6 +168,31 @@ namespace DynamicNightTime
             Monitor.Log($"Early Morning ends at {GetEndOfEarlyMorning().ToString()}, Late Afternoon begins at {GetBeginningOfLateAfternoon().ToString()}");
             Monitor.Log($"Morning Twilight: {GetMorningAstroTwilight().ToString()}, Evening Twilight: {GetAstroTwilight().ToString()}");
             Monitor.Log($"Game Interval Time is {Game1.gameTimeInterval}");
+        }
+
+        public static Color GetLunarLightDifference(int timeOfDay)
+        {
+          //full moon +22
+          //first/third quarter + 11
+          //gibbeous + 17
+          //crescent +5
+
+          switch (MoonAPI.GetCurrentMoonPhase())
+          {
+                case "Third Quarter":
+                case "First Quarter":
+                    return new Color(11,11,0);
+                case "Full Moon":
+                    return new Color(22,22,0);
+                case "Waning Gibbeous":
+                case "Waxing Gibbeous":
+                    return new Color(17,17,0);
+                case "Waning Crescent":
+                case "Waxing Crescent":
+                    return new Color(5,5,0);
+                default:
+                    return new Color(0,0,0);
+          }
         }
 
         public static int GetSunriseTime() => GetSunrise().ReturnIntTime();

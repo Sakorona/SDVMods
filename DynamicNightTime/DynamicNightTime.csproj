@@ -49,6 +49,7 @@
   <ItemGroup>
     <Compile Include="DynamicNightAPI.cs" />
     <Compile Include="DynamicNightTime.cs" />
+    <Compile Include="Integrations\ILunarDisturbancesAPI.cs" />
     <Compile Include="Patches\GameClockPatch.cs" />
     <Compile Include="Patches\GetFullyDarkPatch.cs" />
     <Compile Include="Patches\GetModeratelyDarkPatch.cs" />

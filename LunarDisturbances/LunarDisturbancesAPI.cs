@@ -4,17 +4,18 @@
     {
         string GetCurrentMoonPhase();
         bool IsSolarEclipse();
+        int GetMoonRise();
+        int GetMoonSet();
+        bool IsMoonUp(int time);
     }
 
     public class LunarDisturbancesAPI : ILunarDisturbancesAPI
     {
         private SDVMoon IntMoon;
-        private bool IsEclipse;
 
-        public LunarDisturbancesAPI(SDVMoon OurMoon, bool IsEcl)
+        public LunarDisturbancesAPI(SDVMoon OurMoon)
         {
             IntMoon = OurMoon;
-            IsEclipse = IsEcl;
         }
 
         public string GetCurrentMoonPhase()
@@ -24,7 +25,22 @@
 
         public bool IsSolarEclipse()
         {
-            return IsEclipse;
+          return LunarDisturbances.IsEclipse;
+        }
+
+        public int GetMoonRise()
+        {
+             return IntMoon.GetMoonRiseTime();
+        }
+
+        public int GetMoonSet()
+        {
+            return IntMoon.GetMoonSetTime();
+        }
+
+        public bool IsMoonUp(int time)
+        {
+            return IntMoon.IsMoonUp(time);
         }
     }
 }

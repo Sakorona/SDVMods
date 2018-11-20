@@ -10,6 +10,9 @@
   "moon-text.phase-new": "New Moon",
   "moon-text.error": "Error",
 
+  "moon-text.moonrise": "The moon rises! Today's phase is {{moonPhase}}.",
+  "moon-text.moonriseBefore6": "The moon rises! Today's phase is {{moonPhase}}. The moon rose at {{riseTime}}",
+  "moon-text.moonset": "The moon sets! Today's phase is {{moonPhase}}",
   "moon-text.hud_message_full": "It's a full moon! The beaches may have more items, but the ghosts may be about.",
   "moon-text.hud_message_new": "It's a new moon! The beaches may have less items than normal...",
   "moon-text.fullmoon_eff": "The powers of the full moon have helped {{cropsAffected}} crops grow..",

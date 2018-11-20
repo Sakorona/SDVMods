@@ -11,11 +11,7 @@ using StardewModdingAPI.Utilities;
 using StardewValley.Objects;
 using StardewValley.Locations;
 using StardewValley.Monsters;
-using StardewValley.TerrainFeatures;
 using TwilightShards.Stardew.Common;
-using Harmony;
-using System.Reflection;
-using LunarDisturbances.Patches;
 
 namespace TwilightShards.LunarDisturbances
 {
@@ -36,7 +32,7 @@ namespace TwilightShards.LunarDisturbances
 
         public override object GetApi()
         {
-            return API ?? (API = new LunarDisturbancesAPI(OurMoon, IsEclipse));
+            return API ?? (API = new LunarDisturbancesAPI(OurMoon));
         }
         /// <summary> Main mod function. </summary>
         /// <param name="helper">The helper. </param>
@@ -46,16 +42,6 @@ namespace TwilightShards.LunarDisturbances
             ModConfig = Helper.ReadConfig<MoonConfig>();
             OurMoon = new SDVMoon(ModConfig, Dice, Helper.Translation);
             OurIcons = new Sprites.Icons(Helper.Content);
-
-            /*
-            HarmonyInstance.DEBUG = true;
-            var harmony = HarmonyInstance.Create("koihimenakamura.lunardisturbances");
-            harmony.PatchAll(Assembly.GetExecutingAssembly());
-
-            //patch ShippingMenu::draw
-            MethodInfo ShippingMenuDraw = AccessTools.Method(typeof(StardewValley.Menus.ShippingMenu), "draw");
-            HarmonyMethod MenuTranspiler = new HarmonyMethod(AccessTools.Method(typeof(ShippingMenuPatches), "Transpiler"));
-            harmony.Patch(ShippingMenuDraw, transpiler: MenuTranspiler); */
 
             GameEvents.FirstUpdateTick += GameEvents_FirstUpdateTick;
             GameEvents.OneSecondTick += GameEvents_OneSecondTick;
@@ -67,6 +53,11 @@ namespace TwilightShards.LunarDisturbances
             SaveEvents.BeforeSave += OnEndOfDay;
             GameEvents.UpdateTick += CheckForChanges;
             SaveEvents.AfterReturnToTitle += ResetMod;
+        }
+
+        private void OutputLight(string arg1, string[] arg2)
+        {
+            Monitor.Log($"The outdoor light is {Game1.outdoorLight.ToString()}. The ambient light is {Game1.ambientLight.ToString()}");
         }
 
         private void GameEvents_FirstUpdateTick(object sender, EventArgs e)
@@ -214,6 +205,13 @@ namespace TwilightShards.LunarDisturbances
         /// <param name="e">Parameters</param>
         private void TenMinuteUpdate(object sender, EventArgsIntChanged e)
         {
+            if (Game1.timeOfDay == OurMoon.GetMoonRiseTime() && ModConfig.ShowMoonPhase)
+                Game1.addHUDMessage(new HUDMessage(Helper.Translation.Get("moon-text.moonrise", new { moonPhase = OurMoon.GetLunarPhase().ToString()})));
+
+            if (Game1.timeOfDay == OurMoon.GetMoonSetTime() && ModConfig.ShowMoonPhase)
+                Game1.addHUDMessage(new HUDMessage(Helper.Translation.Get("moon-text.moonset", new { moonPhase = OurMoon.GetLunarPhase().ToString() })));
+
+
             if (IsEclipse)
             {
                 Game1.globalOutdoorLighting = .5f;
@@ -262,6 +260,9 @@ namespace TwilightShards.LunarDisturbances
 
         private void HandleNewDay(object sender, EventArgs e)
         {
+            if (OurMoon.GetMoonRiseTime() <= 0600 || OurMoon.GetMoonRiseTime() >= 2600 && ModConfig.ShowMoonPhase)
+                Game1.addHUDMessage(new HUDMessage(Helper.Translation.Get("moon-text.moonriseBefore6", new { moonPhase = OurMoon.GetLunarPhase().ToString(), riseTime = OurMoon.GetMoonRiseTime() })));
+
             if (OurMoon == null)
             {
                 Monitor.Log("OurMoon is null");

@@ -1,10 +1,10 @@
 ﻿#Dynamic Night Time
 
-Current Version: 1.2
+Current Version: 1.2.1
 
 ## Requirements
-- SMAPI 2.7+
-- Stardew Valley 1.3.28+
+- SMAPI 2.8+
+- Stardew Valley 1.3.32+
 
 ## This Mod Does:
 - Creates a more dynamic night time and sunrise lighting system. Does not alter wakeup time.
@@ -32,6 +32,11 @@ This mod is MP compatible, and all clients will need it for it to work.
 This mod alters three functions in Game1 - isNightOut, GameClock, getStartingToGetDarkTime, getTrulyDarkTime. They will still return the same variables and generally the same intended use.
 
 ## Changelog
+1.2.1
+ - Added in a lunar light
+ - Updated for the newest lunar disturbances and stardew valley
+ - fixed an edge case
+
 1.2 
  - restructured the change so it flows better in morning and night
  - fixed the flash issues

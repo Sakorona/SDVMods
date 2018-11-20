@@ -25,6 +25,11 @@ Thankfully, they don't appear to spawn on wedding and festival days..
 -- monsters spawn every 10 real-world seconds if you are outside.
 
 ## Changelog
+1.0.7
+- Updated for SDV 1.3.32
+- API updated for moon rise and set times
+- Notification feature added for moon rise and set
+
 1.0.6
  - Updated for SDV 1.3.20
 

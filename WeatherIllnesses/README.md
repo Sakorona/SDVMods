@@ -1,7 +1,7 @@
 ﻿# Weather Illnesses
 
 ## Current Version
-1.0-beta.7 (22 June 2018)
+1.0.8 (20 November 2018)
 
 ### Requirements
 - SMAPI 2.6-beta.17+

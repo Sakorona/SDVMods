@@ -214,7 +214,8 @@ namespace TwilightShards.LunarDisturbances
 
         public void TenMinuteUpdate()
         {
-            if (SDVTime.CurrentIntTime == (Game1.getStartingToGetDarkTime() - 100))
+
+            if (SDVTime.CurrentIntTime == GetMoonRiseTime())
             {
                 UpdateForBloodMoon();
             }
@@ -377,6 +378,71 @@ namespace TwilightShards.LunarDisturbances
                     return "Text Error";
             }
         }
+
+        public int GetMoonRiseTime()
+        {
+            //Blood Moons are treated as if they are full moons
+            switch (this.CurrentPhase)
+            {
+                case MoonPhase.BloodMoon:
+                case MoonPhase.FullMoon:
+                    return 1650;
+                case MoonPhase.WaningGibbeous:
+                    return 2000;
+                case MoonPhase.ThirdQuarter:
+                    return 2320;
+                case MoonPhase.WaningCrescent:
+                    return 2630;
+                case MoonPhase.NewMoon:
+                    return 0640;
+                case MoonPhase.WaxingCrescent:
+                    return 1040;
+                case MoonPhase.FirstQuarter:
+                    return 1330;
+                case MoonPhase.WaxingGibbeous:
+                    return 1510;
+                case MoonPhase.ErrorPhase:
+                default:
+                    return 2700;
+            }
+        }
+
+        public bool IsMoonUp(int time)
+        {
+            if (time >= GetMoonRiseTime() && time <= GetMoonSetTime())
+                return true;
+
+            return false;
+        }
+
+        public int GetMoonSetTime()
+        {
+            //Blood Moons are treated as if they are full moons
+            switch (this.CurrentPhase)
+            {
+                case MoonPhase.BloodMoon:
+                case MoonPhase.FullMoon:
+                    return 0620;
+                case MoonPhase.WaningGibbeous:
+                    return 1030;
+                case MoonPhase.ThirdQuarter:
+                    return 1300;
+                case MoonPhase.WaningCrescent:
+                    return 1540;
+                case MoonPhase.NewMoon:
+                    return 1800;
+                case MoonPhase.WaxingCrescent:
+                    return 2100;
+                case MoonPhase.FirstQuarter:
+                    return 2430;
+                case MoonPhase.WaxingGibbeous:
+                    return 2720;
+                case MoonPhase.ErrorPhase:
+                default:
+                    return 0700;
+            }
+        }
+    
 
         public bool CheckForGhostSpawn()
         {

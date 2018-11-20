@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Input;
 using StardewValley;
 using StardewValley.Locations;
 using StardewValley.Menus;
@@ -85,7 +84,7 @@ namespace ClimatesOfFerngillRebuild
             if (WeatherOpt.Verbose) Monitor.Log($"Loading climate type: {WeatherOpt.ClimateType} from file", LogLevel.Trace);
 
             var path = Path.Combine("data", "weather", WeatherOpt.ClimateType + ".json");
-            GameClimate = helper.ReadJsonFile<FerngillClimate>(path); 
+            GameClimate = helper.Data.ReadJsonFile<FerngillClimate>(path); 
             
             if (GameClimate is null)
             {
@@ -127,7 +126,7 @@ namespace ClimatesOfFerngillRebuild
             GraphicsEvents.OnPreRenderHudEvent += DrawPreHudObjects;
             GraphicsEvents.OnPostRenderHudEvent += DrawObjects;
             PlayerEvents.Warped += LocationEvents_CurrentLocationChanged;
-            ControlEvents.KeyPressed += (sender, e) => this.ReceiveKeyPress(e.KeyPressed, this.WeatherOpt.Keyboard);
+            InputEvents.ButtonPressed += InputEvents_ButtonPressed;
             MenuEvents.MenuClosed += (sender, e) => this.ReceiveMenuClosed(e.PriorMenu);
 
             //console commands
@@ -825,15 +824,15 @@ namespace ClimatesOfFerngillRebuild
                 return Color.White;
         }
 
-    #region Menu
-    /// <summary>
-    /// This checks the keys being pressed if one of them is the weather menu, toggles it.
-    /// </summary>
-    /// <param name="key">The key being pressed</param>
-    /// <param name="config">The keys we're listening to.</param>
-    private void ReceiveKeyPress(Keys key, Keys config)
+        #region Menu
+        /// <summary>
+        /// This event handles incoming button presses
+        /// </summary>
+        /// <param name="sender">Sending object</param>
+        /// <param name="e">event params</param>
+        private void InputEvents_ButtonPressed(object sender, EventArgsInput e)
         {
-            if (config != key)  //sanity force this to exit!
+            if (WeatherOpt.WeatherMenuToggle != e.Button)  //sanity force this to exit!
                 return;
 
             if (!Game1.hasLoadedGame)

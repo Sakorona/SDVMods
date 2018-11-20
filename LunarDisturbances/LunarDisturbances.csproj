@@ -52,7 +52,6 @@
     <Compile Include="LunarDisturbances.cs" />
     <Compile Include="LunarDisturbancesAPI.cs" />
     <Compile Include="MoonPhase.cs" />
-    <Compile Include="Patches\ShippingMenuPatches.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="SDVMoon.cs" />
     <Compile Include="Sprites.cs" />

@@ -1,6 +1,6 @@
 ﻿# Climates of Ferngill (Rebuild) You Can (Not) Have Weather
 
-Current Version (11 November 2018): 1.4
+Current Version (19 November 2018): 1.4.1
 
 ## What's New
 
@@ -16,8 +16,8 @@ Currently doesn't do any custom weathers in MP. Works only for the host player i
 
 ## Requirements
 
-- SMAPI 2.7+
-- Stardew Valley 1.3.28+
+- SMAPI 2.8+
+- Stardew Valley 1.3.32+
 - PyTK: latest
  
 ## Overview
@@ -48,6 +48,10 @@ This mod uses harmony to patch functions to allow it to draw custom rain and sno
 
 
 ## Changelog
+v1.4.1
+ - Updated for SDV 1.3.32
+ - Updated for newest LunarDisturbances API
+
 v1.4
  - lighter fog implemented
  - option to disable the weather icon

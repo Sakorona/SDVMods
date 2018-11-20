@@ -1,12 +1,12 @@
 ﻿using Microsoft.Xna.Framework.Input;
+using StardewModdingAPI;
 
 namespace ClimatesOfFerngillRebuild
 {
     public class WeatherConfig
     {
         //required options
-        public Keys Keyboard { get; set; } = Keys.Z;
-        public Buttons Controller { get; set; }
+        public SButton WeatherMenuToggle { get; set; } = SButton.Z;
         public string ClimateType { get; set; } = "normal";
         public double ThundersnowOdds { get; set; } = .001; //.1%
         public double BlizzardOdds { get; set; } = .08; // 8%

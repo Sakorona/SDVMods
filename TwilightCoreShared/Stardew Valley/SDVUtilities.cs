@@ -114,7 +114,7 @@ namespace TwilightShards.Stardew.Common
             var modManifest = Helper.ModRegistry.Get(name);
             if (modManifest != null)
             {
-                if (!modManifest.Version.IsOlderThan(minVersion))
+                if (!modManifest.Manifest.Version.IsOlderThan(minVersion))
                 {
                     T api = Helper.ModRegistry.GetApi<T>(name);
                     if (api == null)
@@ -124,13 +124,13 @@ namespace TwilightShards.Stardew.Common
 
                     if (api != null)
                     {
-                        Monitor.Log($"{name} {modManifest.Version} Integration enabled", LogLevel.Info);
+                        Monitor.Log($"{name} {modManifest.Manifest.Version} Integration enabled", LogLevel.Info);
                     }
                     return api;
 
                 }
                 else
-                    Monitor.Log($"{name} detected, but not of a sufficient version. Req:{minVersion} Detected:{modManifest.Version}. Skipping..", LogLevel.Debug);
+                    Monitor.Log($"{name} detected, but not of a sufficient version. Req:{minVersion} Detected:{modManifest.Manifest.Version}. Skipping..", LogLevel.Debug);
             }
             else
                 Monitor.Log($"{name} not present. Skipping Integration.", LogLevel.Debug);
@@ -149,6 +149,19 @@ namespace TwilightShards.Stardew.Common
         public static int CropCountInFarm(Farm f)
         {
             return f.terrainFeatures.Values.Count(c => c is HoeDirt curr && curr.crop != null);
+        }
+
+        public static Color SubtractTwoColors(Color one, Color two)
+        {
+            Color three = new Color(0, 0, 0)
+            {
+                R = (byte)(one.R - two.R),
+                B = (byte)(one.B - two.B),
+                G = (byte)(one.G - two.G),
+                A = (byte)(one.A - two.A)
+            };
+
+            return three;
         }
 
         public static void SpawnGhostOffScreen(MersenneTwister Dice)

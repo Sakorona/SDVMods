@@ -1,4 +1,4 @@
-﻿namespace ClimatesOfFerngillRebuild.Integrations
+﻿namespace DynamicNightTime.Integrations
 {
     public interface ILunarDisturbancesAPI
     {
