@@ -5,10 +5,7 @@ using StardewModdingAPI.Events;
 using StardewValley;
 using StardewValley.Locations;
 using System;
-<<<<<<< HEAD
 using System.Reflection;
-=======
->>>>>>> master
 
 namespace SummitReborn
 {
@@ -17,16 +14,11 @@ namespace SummitReborn
         public bool Clouds = true;
     }
 
-<<<<<<< HEAD
     public class SummitReborn : Mod, IAssetLoader
-=======
-    public class SummitReborn : Mod
->>>>>>> master
     {
         private float weatherX;
         private SummitConfig ModConfig;
 
-<<<<<<< HEAD
         public bool CanLoad<T>(IAssetInfo asset)
         {
             return asset.AssetNameEquals(@"Maps\Railroad") || asset.AssetNameEquals(@"Maps\Summit");
@@ -41,8 +33,6 @@ namespace SummitReborn
             throw new NotSupportedException($"Unexpected asset name: {asset.AssetName}");
         }
 
-=======
->>>>>>> master
         public override void Entry(IModHelper helper)
         {
             ModConfig = Helper.ReadConfig<SummitConfig>();
@@ -58,7 +48,6 @@ namespace SummitReborn
             }            
         }
 
-<<<<<<< HEAD
         private static int GetPixelZoom()
         {
             FieldInfo field = typeof(Game1).GetField(nameof(Game1.pixelZoom), BindingFlags.Public | BindingFlags.Static);
@@ -67,8 +56,6 @@ namespace SummitReborn
             return (int)field.GetValue(null);
         }
 
-=======
->>>>>>> master
         private void GraphicsEvents_OnPreRenderHudEvent(object sender, EventArgs e)
         {
             //draw weather in the summit map
@@ -81,19 +68,11 @@ namespace SummitReborn
 
                 if (ModConfig.Clouds)
                 {
-<<<<<<< HEAD
                     int num2 = -61 * GetPixelZoom();
                     while (num2 < Game1.viewport.Width + 61 * GetPixelZoom())
                     {
                         Game1.spriteBatch.Draw(Game1.mouseCursors, new Vector2((float)num2 + this.weatherX % (float)(61 * GetPixelZoom()), (float)(-Game1.tileSize / 2)), new Rectangle?(new Rectangle(643, 1142, 61, 53)), Color.DarkSlateGray * 1f, 0.0f, Vector2.Zero, (float)GetPixelZoom(), SpriteEffects.None, 1f);
                         num2 += 61 * GetPixelZoom();
-=======
-                    int num2 = -61 * Game1.pixelZoom;
-                    while (num2 < Game1.viewport.Width + 61 * Game1.pixelZoom)
-                    {
-                        Game1.spriteBatch.Draw(Game1.mouseCursors, new Vector2((float)num2 + this.weatherX % (float)(61 * Game1.pixelZoom), (float)(-Game1.tileSize / 2)), new Rectangle?(new Rectangle(643, 1142, 61, 53)), Color.DarkSlateGray * 1f, 0.0f, Vector2.Zero, (float)Game1.pixelZoom, SpriteEffects.None, 1f);
-                        num2 += 61 * Game1.pixelZoom;
->>>>>>> master
                     }
                 }
             }

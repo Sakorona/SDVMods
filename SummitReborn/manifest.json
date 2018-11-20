@@ -1,5 +1,4 @@
 ﻿{
-<<<<<<< HEAD
   "Name": "Summit Reborn [Combined]",
   "Author": "KoihimeNakamura and Emissary of Infinity",
   "Version": "1.0.4",
@@ -8,13 +7,3 @@
   "EntryDll": "SummitReborn.dll",
   "UpdateKeys": [ "Nexus:2073" ]
 }
-=======
-  "Name": "Summit Reborn",
-  "Author": "EmissaryOfInfinity, with SMAPI bits by KoihimeNakamura",
-  "Version": "1.0.1",
-  "Description": "Restores the cut summit map, and edits the railway to allow access. Also pretties the whole area up while we're at it!",
-  "UniqueID": "KoihimeNakamura.summitreborn",
-  "EntryDll": "SummitReborn.dll",
-  "UpdateKeys": [ "Nexus:2073" ]
-}
->>>>>>> master
