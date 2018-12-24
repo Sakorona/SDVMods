@@ -177,22 +177,57 @@ namespace DynamicNightTime
           //gibbeous + 17
           //crescent +5
 
+          //light added is only going to be visible in certain times, determined by the code.
+          //Full light is when it's angle is between.. 30 and 150 degrees. For us, that should be the middle of 70% of the time.
+
+          int timeRise = MoonAPI.GetMoonRise();
+          int timeSet = MoonAPI.GetMoonSet();
+          int timeElapsed = SDVTime.MinutesBetweenTwoIntTimes(Game1.timeOfDay, timeRise);
+          int totalMinutes = SDVTime.MinutesBetweenTwoIntTimes(timeRise, timeSet);
+
+          if (timeRise > Game1.timeOfDay)
+                return new Color(0,0,0);
+          if (Game1.timeOfDay > timeSet)
+                return new Color(0,0,0);
+
+          float multiply = (float)timeElapsed/totalMinutes;
+          if (multiply >= .15 && multiply <= .85)
+                multiply = 1;
+          else
+          {
+
+          }
+
+
+          byte colorValR, colorValG, colorValB, val;
+
           switch (MoonAPI.GetCurrentMoonPhase())
           {
                 case "Third Quarter":
                 case "First Quarter":
-                    return new Color(11,11,0);
+                    val = (byte)(Math.Floor(11 * multiply));
+                    colorValB = colorValG = colorValR = val;
+                    break;
                 case "Full Moon":
-                    return new Color(22,22,0);
+                    val = (byte)(Math.Floor(22 * multiply));
+                    colorValB = colorValG = colorValR = val;
+                    break;
                 case "Waning Gibbeous":
                 case "Waxing Gibbeous":
-                    return new Color(17,17,0);
+                    val = (byte)(Math.Floor(17 * multiply));
+                    colorValB = colorValG = colorValR = val;
+                    break;
                 case "Waning Crescent":
                 case "Waxing Crescent":
-                    return new Color(5,5,0);
+                    val = (byte)(Math.Floor(5 * multiply));
+                    colorValB = colorValG = colorValR = val;
+                    break;
                 default:
-                    return new Color(0,0,0);
+                    colorValR = colorValG = colorValB = 0;
+                    break;
           }
+
+            return new Color(colorValR, colorValG, colorValB);
         }
 
         public static int GetSunriseTime() => GetSunrise().ReturnIntTime();
