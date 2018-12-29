@@ -110,7 +110,6 @@ namespace DynamicNightTime.Patches
                         float percentage = (minEff / SDVTime.MinutesBetweenTwoIntTimes(sunset, astroTwilight));
                         Color destColor = new Color(r: (byte)(0 + (227*percentage)), g: (byte)(98 + (111 * percentage)), b: (byte)(193 - (193 * percentage)), a:(byte)(255 - (17 * percentage)));
 
-                        DynamicNightTime.Logger.Log($"Destination color is {destColor}", StardewModdingAPI.LogLevel.Info);
                         //[222,222,15]
                         
                         if (DynamicNightTime.LunarDisturbancesLoaded && DynamicNightTime.MoonAPI.IsMoonUp(Game1.timeOfDay))
@@ -134,17 +133,33 @@ namespace DynamicNightTime.Patches
                             destColor.B = B;
                         }
 
-                        DynamicNightTime.Logger.Log($"Destination color is {destColor}", StardewModdingAPI.LogLevel.Info);
-                        DynamicNightTime.Logger.Log($"Outdoor color is {Game1.outdoorLight}", StardewModdingAPI.LogLevel.Info);
                         Game1.outdoorLight = destColor;
-                        DynamicNightTime.Logger.Log($"Outdoor color is {Game1.outdoorLight}", StardewModdingAPI.LogLevel.Info);
                     }
 
                     //astro
-                    if (Game1.timeOfDay >= astroTwilight) { 
-                        Game1.outdoorLight = (Game1.eveningColor * .93f);
-                        if ((DynamicNightTime.LunarDisturbancesLoaded && DynamicNightTime.MoonAPI.IsMoonUp(Game1.timeOfDay))) { 
-                            Game1.outdoorLight = SDVUtilities.SubtractTwoColors(Game1.outdoorLight, moonLight);
+                    if (Game1.timeOfDay >= astroTwilight){
+
+                        Color destColor = Game1.eveningColor * .93f;
+
+                        if ((DynamicNightTime.LunarDisturbancesLoaded && DynamicNightTime.MoonAPI.IsMoonUp(Game1.timeOfDay))) {
+                            int rRaw = (int)(destColor.R - moonLight.R);
+                            int gRaw = (int)(Game1.outdoorLight.G - moonLight.G);
+                            int bRaw = (int)(Game1.outdoorLight.B - moonLight.B);
+
+                            byte R = 0, G = 0, B = 0;
+
+                            R = DynamicNightTime.ClampByteValue(rRaw);
+                            G = DynamicNightTime.ClampByteValue(gRaw);
+                            B = DynamicNightTime.ClampByteValue(bRaw);
+                            destColor = new Color
+                            {
+                                R = R,
+                                G = G,
+                                B = B,
+                                A = Game1.outdoorLight.A
+                            };
+
+                            Game1.outdoorLight = destColor;
                         }
                     }
                 }
