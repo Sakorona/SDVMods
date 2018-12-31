@@ -15,8 +15,21 @@ namespace StardewNotification
             CheckForQueenOfSauce(Trans);
             CheckForToolUpgrade(Trans);
             CheckForTravelingMerchant(Trans);
+            CheckForHayLevel(Trans);
         }
 
+        public void CheckForHayLevel(ITranslationHelper Trans)
+        {
+            if (!StardewNotification.Config.NotifyHay)
+                return;
+
+            int hayAmt = Game1.getFarm().piecesOfHay.Value;
+            if (hayAmt > 0)
+                Util.ShowMessage(Trans.Get("hayMessage", new { hayAmt = Game1.getFarm().piecesOfHay.Value}));
+            else if (StardewNotification.Config.ShowEmptyhay)
+                Util.ShowMessage(Trans.Get("noHayMessage"));
+        }
+        
         public void DoBirthdayReminder(ITranslationHelper Trans)
         {
             var character = Utility.getTodaysBirthdayNPC(Game1.currentSeason, Game1.dayOfMonth);

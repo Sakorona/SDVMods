@@ -1,11 +1,11 @@
 ﻿# Lunar Disturbances
 
 ## Current Version: 
-1.0.6 (Last Update: 22 June 2018)
+1.0.8 (Last Update: 1 Jan 2019)
 
 ## Requirements
-- SMAPI 2.6-beta15+
-- Stardew Valley 1.3.16+
+- SMAPI 2.10+
+- Stardew Valley 1.3.33+
 
 ## This Mod Does:
 - Adds a moon overhead, which will act on the world
@@ -27,10 +27,12 @@ Thankfully, they don't appear to spawn on wedding and festival days..
 ## Changelog
 1.0.8
 - Feature to turn off moon display added
-- Updates for SMAPI 3.0 started.
+- Updated for SMAPI 3.0
 - Moon no longer watches you break down your financial report.
 - Some debug lines removed
 - Updated the integration logger text
+- i18n fixes for solar eclipse and phase names
+- Blood Moon notification added
 
 1.0.7
 - Updated for SDV 1.3.32
