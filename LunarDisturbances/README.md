@@ -5,7 +5,7 @@
 
 ## Requirements
 - SMAPI 2.10+
-- Stardew Valley 1.3.33+
+- Stardew Valley 1.3.32+
 
 ## This Mod Does:
 - Adds a moon overhead, which will act on the world
@@ -33,6 +33,7 @@ Thankfully, they don't appear to spawn on wedding and festival days..
 - Updated the integration logger text
 - i18n fixes for solar eclipse and phase names
 - Blood Moon notification added
+- Chinese translation added thanks to FarAways!
 
 1.0.7
 - Updated for SDV 1.3.32
