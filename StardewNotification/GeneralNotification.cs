@@ -36,7 +36,7 @@ namespace StardewNotification
             var character = Utility.getTodaysBirthdayNPC(Game1.currentSeason, Game1.dayOfMonth);
             if (!(character is null) && Game1.player.friendshipData[character.Name].GiftsToday != 1)
             {
-                Util.ShowMessage(Trans.Get("birthdayReminder", new { charName = character.Name }));
+                Util.ShowMessage(Trans.Get("birthdayReminder", new { charName = character.displayName }));
             }
         }
 
@@ -46,7 +46,7 @@ namespace StardewNotification
             {
                 var character = Utility.getTodaysBirthdayNPC(Game1.currentSeason, Game1.dayOfMonth);
                 if (character is null) return;
-                Util.ShowMessage(Trans.Get("birthday", new { charName = character.Name }));
+                Util.ShowMessage(Trans.Get("birthday", new { charName = character.displayName }));
             }
         }
 

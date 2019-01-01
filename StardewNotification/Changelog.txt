@@ -2,6 +2,7 @@
 - No longer beta
 - Adds in hay notification feature, contingent on there being a silo present
 - Updated for the upcoming SMAPI 3.0
+- Fixed to display the display name to ensure compability with custom NPCs
 
 1.8-beta.2
 Updated for some issues in SDV 1.3.28
