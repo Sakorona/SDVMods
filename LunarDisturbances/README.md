@@ -74,6 +74,10 @@ To configure, edit config.json in the mod folder.
 
   - `HazardousMoonEvents` - Turns on or off moon events that hinder the player. Default: false. Valid: true, false.
 
+  -`ShowMoonPhase` - Provide HUD messages about the moon rising and setting. Default: true. Valid: true, false
+
+  -`ShowMoonInEndOfNight` - Shows the moon in the end of night menus. Default: true. Valid: true, false
+
 ### Acknowledgements
 - eemie for the moon sprites
 - ChefRude for testing

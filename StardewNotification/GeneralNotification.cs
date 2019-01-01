@@ -2,6 +2,7 @@
 using StardewValley;
 using StardewValley.Locations;
 using StardewModdingAPI;
+using System.Linq;
 
 namespace StardewNotification
 {
@@ -20,7 +21,7 @@ namespace StardewNotification
 
         public void CheckForHayLevel(ITranslationHelper Trans)
         {
-            if (!StardewNotification.Config.NotifyHay)
+            if (!StardewNotification.Config.NotifyHay || Game1.getFarm().buildings.Count(b => b.buildingType.Value == "Silo") == 0)
                 return;
 
             int hayAmt = Game1.getFarm().piecesOfHay.Value;
