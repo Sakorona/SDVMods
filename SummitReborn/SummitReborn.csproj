@@ -2,11 +2,6 @@
 <Project ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
   <PropertyGroup>
-    <DeployModFolderName>$(MSBuildProjectName)</DeployModFolderName>
-    <DeployModZipTo>$(SolutionDir)\_releases</DeployModZipTo>
-    <EnableModDeploy>False</EnableModDeploy>
-  </PropertyGroup>
-  <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <ProjectGuid>{FE26F6D8-DA0A-4D28-BEA5-510914E445F2}</ProjectGuid>
@@ -63,4 +58,5 @@
     <None Include="manifest.json" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <Import Project="$(SolutionDir)\deploy-mod.targets" />
 </Project>

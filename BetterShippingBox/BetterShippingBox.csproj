@@ -9,11 +9,6 @@
     <TargetFrameworkVersion>v4.5.2</TargetFrameworkVersion>
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
-  <PropertyGroup>
-    <DeployModFolderName>$(MSBuildProjectName)</DeployModFolderName>
-    <DeployModZipTo>$(SolutionDir)\_releases</DeployModZipTo>
-    <EnableModDeploy>False</EnableModDeploy>
-  </PropertyGroup>
   <PropertyGroup Condition=" '$(Platform)' == 'AnyCPU' ">
     <PlatformTarget>AnyCPU</PlatformTarget>
   </PropertyGroup>
@@ -51,4 +46,5 @@
     <None Include="README.md" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <Import Project="$(SolutionDir)\deploy-mod.targets" />
 </Project>
