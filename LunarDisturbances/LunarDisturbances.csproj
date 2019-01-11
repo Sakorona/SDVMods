@@ -59,9 +59,7 @@
     <Compile Include="MoonConfig.cs" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="i18n\default.json">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
+    <None Include="i18n\default.json" />
     <None Include="manifest.json" />
     <None Include="README.md" />
   </ItemGroup>

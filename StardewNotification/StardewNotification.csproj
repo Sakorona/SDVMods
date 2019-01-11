@@ -51,9 +51,7 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="Changelog.txt" />
-    <None Include="i18n\default.json">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
+    <None Include="i18n\default.json" />
     <None Include="manifest.json" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
