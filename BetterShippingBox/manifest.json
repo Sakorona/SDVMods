@@ -6,5 +6,5 @@
   "UniqueID": "Kithio.BetterShippingBox",
   "EntryDll": "BetterShippingBox.dll",
   "MinimumApiVersion": "2.10.1",
-  "UpdateKeys": [ ]
+  "UpdateKeys": [ "Chucklefish:4302" ]
 }
