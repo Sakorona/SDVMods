@@ -32,6 +32,9 @@ This mod is MP compatible, and all clients will need it for it to work.
 This mod alters three functions in Game1 - isNightOut, GameClock, getStartingToGetDarkTime, getTrulyDarkTime. They will still return the same variables and generally the same intended use.
 
 ## Changelog
+1.2.5
+ - fixes to the transition at night
+
 1.2.1
  - Added in a lunar light
  - Updated for the newest lunar disturbances and stardew valley
