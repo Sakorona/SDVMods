@@ -1,5 +1,5 @@
 ﻿#Dynamic Night Time
-Version: 1.2.6
+Version: 1.2.7
 
 ## Requirements
 - SMAPI 2.10.1+
@@ -31,6 +31,10 @@ This mod is MP compatible, and all clients will need it for it to work.
 This mod alters three functions in Game1 - isNightOut, GameClock, getStartingToGetDarkTime, getTrulyDarkTime. They will still return the same variables and generally the same intended use.
 
 ## Changelog
+1.2.7
+  - refined the night curve
+  - added darker night option
+
 1.2.6
  - further changes
  

@@ -18,6 +18,7 @@ namespace DynamicNightTime
     {
         public double Latitude = 38.25;
         public bool SunsetTimesAreMinusThirty = true;
+        public bool DarkerNights = false;
     }
 
     public class DynamicNightTime : Mod

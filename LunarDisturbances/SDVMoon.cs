@@ -79,11 +79,8 @@ namespace TwilightShards.LunarDisturbances
 
             MoonPhase ret = SDVMoon.GetLunarPhase(currentDay);
 
-            if (ret == MoonPhase.FullMoon)
-            {
-                if (Dice.NextDoublePositive() <= ModConfig.BadMoonRising)
-                    return MoonPhase.BloodMoon;
-            }
+            if (IsBloodMoon) //restructuring.
+                return MoonPhase.BloodMoon;
 
             return ret;
         }

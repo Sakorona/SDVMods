@@ -113,6 +113,17 @@ namespace ClimatesOfFerngillRebuild.Weathers
         HurricaneRainFrost = Rainy | CurrentWeather.HurricaneRain | CurrentWeather.Frost,
         HurricaneRainFogFrost = HurricaneRain | CurrentWeather.Fog | CurrentWeather.Frost,
         HurricaneThunderFrost = HurricaneRain | ThunderFrenzy | CurrentWeather.Frost,
-        HurricaneThunderFogFrost = HurricaneThunder | CurrentWeather.Fog | CurrentWeather.Frost
+        HurricaneThunderFogFrost = HurricaneThunder | CurrentWeather.Fog | CurrentWeather.Frost,
+        Overcast = CurrentWeather.Overcast,
+        OverCastFog = Overcast | Fog,
+        OverCastHW = Overcast | CurrentWeather.Heatwave,
+        OverCastFogHW = CurrentWeather.Heatwave | OverCastFog,
+        OverCastFrost = Overcast | CurrentWeather.Frost,
+        OverCastFogFrost = OverCastFrost | Fog,
+        Sandstorm = CurrentWeather.Sandstorm,
+        
+
+
+          
     }
 }

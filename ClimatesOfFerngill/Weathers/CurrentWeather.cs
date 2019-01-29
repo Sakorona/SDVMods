@@ -23,6 +23,8 @@ namespace ClimatesOfFerngillRebuild
         WhiteOut = 4096,
         ThunderFrenzy = 8192,
         HurricaneRain = 16384,
-        BloodMoon = 32768
+        BloodMoon = 32768,
+        Sandstorm = 65536,
+        Overcast = 131072
     }
 }

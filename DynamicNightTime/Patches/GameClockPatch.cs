@@ -33,7 +33,7 @@ namespace DynamicNightTime.Patches
                 Game1.outdoorLight = oldLight;
             }
 
-            else if (Game1.timeOfDay < sunriseTime && Game1.timeOfDay >= astronTime)
+            else if (Game1.timeOfDay >= astronTime && Game1.timeOfDay < sunriseTime)
             {
                 if (Game1.isRaining) { 
                     float minEff = SDVTime.MinutesBetweenTwoIntTimes(astronTime, Game1.timeOfDay) + (float)Math.Min(10.0, Game1.gameTimeInterval / 700);
@@ -102,14 +102,23 @@ namespace DynamicNightTime.Patches
                     }
                 }
                 else
-                { 
+                {
                     //civil
-                    if (Game1.timeOfDay > sunset && Game1.timeOfDay < astroTwilight)
+                    //if (Game1.timeOfDay > sunset && Game1.timeOfDay < astroTwilight)
+                    if (Game1.timeOfDay > sunset)
                     {
                         float minEff = SDVTime.MinutesBetweenTwoIntTimes(Game1.timeOfDay, sunset) + (float)Math.Min(10.0, Game1.gameTimeInterval / 700);
                         float percentage = (minEff / SDVTime.MinutesBetweenTwoIntTimes(sunset, astroTwilight));
-                        Color destColor = new Color(r: (byte)(0 + (227 * percentage)), g: (byte)(98 + (111 * percentage)), b: (byte)(193 - (193 * percentage)), a: (byte)(255 - (17 * percentage)));
+                        //clamp percentage. :|
+                        if (percentage < 0) percentage = 0;
+                        if (percentage > 1) percentage = 1;
 
+                        Color destColor = Color.White;
+                        if (DynamicNightTime.NightConfig.DarkerNights)
+                           destColor = new Color(r: (byte)(0 + (252 * percentage)), g: (byte)(98 + (151 * percentage)), b: (byte)(193 - (193 * percentage)), a: (byte)(255 - (77 * percentage)));
+                        else
+                            destColor = new Color(r: (byte)(0 + (227 * percentage)), g: (byte)(98 + (111 * percentage)), b: (byte)(193 - (193 * percentage)), a: (byte)(255 - (17 * percentage)));
+                        
                         //[222,222,15]
 
                         if (DynamicNightTime.LunarDisturbancesLoaded && DynamicNightTime.MoonAPI.IsMoonUp(Game1.timeOfDay))
@@ -117,7 +126,11 @@ namespace DynamicNightTime.Patches
                             //start adding the moon in naval light
                             minEff = SDVTime.MinutesBetweenTwoIntTimes(Game1.timeOfDay, sunset) + (float)Math.Min(10.0, Game1.gameTimeInterval / 700);
                             percentage = (minEff  / SDVTime.MinutesBetweenTwoIntTimes(sunset, astroTwilight));
-                            
+                            //clamp percentage. :|
+                            if (percentage < 0) percentage = 0;
+                            if (percentage > 1) percentage = 1;
+
+
                             int rRaw = (int)(destColor.R - (moonLight.R * percentage));
                             int gRaw = (int)(destColor.G - (moonLight.G * percentage));
                             int bRaw = (int)(destColor.B - (moonLight.B * percentage));
@@ -132,7 +145,7 @@ namespace DynamicNightTime.Patches
                             destColor.G = G;
                             destColor.B = B;
                         }
-
+                        //Console.WriteLine($"Setting outdoor light from {Game1.outdoorLight} to {destColor} at {Game1.timeOfDay}");
                         Game1.outdoorLight = destColor;
                     }
 

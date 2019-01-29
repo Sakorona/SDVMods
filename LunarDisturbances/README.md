@@ -1,7 +1,7 @@
 ﻿# Lunar Disturbances
 
 ## Current Version: 
-1.0.8 (Last Update: 1 Jan 2019)
+1.0.8 (Last Update: 19 Jan 2019)
 
 ## Requirements
 - SMAPI 2.10+
@@ -25,6 +25,9 @@ Thankfully, they don't appear to spawn on wedding and festival days..
 -- monsters spawn every 10 real-world seconds if you are outside.
 
 ## Changelog
+1.0.9
+ - I think I fixed the moon thing... I hope. I hope. Cleans up some issues with resetting
+
 1.0.8
 - Times after midnight are properly formatted
 - Feature to turn off moon display added
@@ -34,6 +37,7 @@ Thankfully, they don't appear to spawn on wedding and festival days..
 - Updated the integration logger text
 - i18n fixes for solar eclipse and phase names
 - Blood Moon notification added
+- Blood Moon fix
 - Chinese translation added thanks to FarAways!
 
 1.0.7
