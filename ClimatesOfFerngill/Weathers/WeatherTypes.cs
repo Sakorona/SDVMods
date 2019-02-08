@@ -120,10 +120,6 @@ namespace ClimatesOfFerngillRebuild.Weathers
         OverCastFogHW = CurrentWeather.Heatwave | OverCastFog,
         OverCastFrost = Overcast | CurrentWeather.Frost,
         OverCastFogFrost = OverCastFrost | Fog,
-        Sandstorm = CurrentWeather.Sandstorm,
-        
-
-
-          
+        Sandstorm = CurrentWeather.Sandstorm         
     }
 }

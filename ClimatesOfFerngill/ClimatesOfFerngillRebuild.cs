@@ -509,6 +509,7 @@ namespace ClimatesOfFerngillRebuild
         {
             Conditions.OnNewDay();
             IsBloodMoon = false;
+
             Conditions.SetTodayWeather(); //run this automatically
             if (!Context.IsMainPlayer) return;
 
