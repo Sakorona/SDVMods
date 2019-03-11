@@ -50,12 +50,13 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="ClimatesOfFerngillApi.cs" />
+    <Compile Include="ConsoleCommands.cs" />
     <Compile Include="Integrations\IDynamicNightAPI.cs" />
     <Compile Include="Integrations\ILunarDisturbancesAPI.cs" />
     <Compile Include="Integrations\ISafeLightningAPI.cs" />
     <Compile Include="Patches\GameLocationPatches.cs" />
     <Compile Include="Patches\SGamePatches.cs" />
-    <Compile Include="TestClimate.cs" />
+    <Compile Include="TempCalc.cs" />
     <Compile Include="WeatherData\WeatherData.cs" />
     <Compile Include="Weathers\FerngillCustomRain.cs" />
     <Compile Include="Weathers\FerngillThunderFrenzy.cs" />

@@ -42,6 +42,7 @@ This mod uses harmony to patch functions to allow it to draw custom rain and sno
 ## Acknowledgements
 - Prismuth for the fog sprite
 - Pathoschild for ideas
+- Sky for the Korean translation
 - ChefRude for testing and the night icon sprites (as well as better fog textures)
 - FoggyWizard for the sandstorm sprite
 - The SDV discord #modding channel for discussions and encouragement.

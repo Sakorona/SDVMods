@@ -86,3 +86,4 @@ To configure, edit config.json in the mod folder.
 ### Acknowledgements
 - eemie for the moon sprites
 - ChefRude for testing
+- Sky for the Korean translation

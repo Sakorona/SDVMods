@@ -3,6 +3,7 @@ using Microsoft.Xna.Framework.Graphics;
 using StardewModdingAPI;
 using StardewModdingAPI.Utilities;
 using StardewValley;
+using StardewValley.Locations;
 using System;
 using System.Diagnostics;
 using TwilightShards.Common;
@@ -256,7 +257,7 @@ namespace ClimatesOfFerngillRebuild
         {
             if (IsWeatherVisible)
             {
-                if (CurrentFogType != FogType.Blinding)
+                if (CurrentFogType != FogType.Blinding && !(Game1.currentLocation is Desert))
                 {
                     //Game1.outdoorLight = fogLight;
                     Texture2D fogTexture = null;

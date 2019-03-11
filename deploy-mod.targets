@@ -1,6 +1,6 @@
 <Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
-    <DeployModZipTo>$(SolutionDir)\_releases</DeployModZipTo>
+    <ModZipPath>$(SolutionDir)\_releases</ModZipPath>
 
     <!-- don't deploy old/unreleased mods -->
     <EnableModDeploy Condition="'$(MSBuildProjectName)' == 'BetterShippingBox' OR '$(MSBuildProjectName)' == 'CustomizableClock' OR '$(MSBuildProjectName)' == 'FloodEventsTesting' OR '$(MSBuildProjectName)' == 'SummitReborn'">False</EnableModDeploy>

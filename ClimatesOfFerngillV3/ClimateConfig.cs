@@ -1,13 +1,17 @@
-﻿using Microsoft.Xna.Framework.Input;
-using StardewModdingAPI;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
 
-namespace ClimatesOfFerngillRebuild
+namespace ClimatesOfFerngillV3
 {
-    public class WeatherConfig
+    internal class ClimateConfig
     {
+        public string ClimateType { get; set; } = "enhanced";
+        /*
         //required options
-        public SButton WeatherMenuToggle { get; set; } = SButton.Z;
-        public string ClimateType { get; set; } = "normal";
+        public SButton WeatherMenuToggle { get; set; } = SButton.Z;        
         public double ThundersnowOdds { get; set; } = .001; //.1%
         public double BlizzardOdds { get; set; } = .08; // 8%
         public double DryLightning { get; set; } = .1; // 10%
@@ -29,11 +33,11 @@ namespace ClimatesOfFerngillRebuild
         public bool DarkenLightInFog { get; set; } = true; //default setting
         public bool DisableHighRainWind { get; set; } = false; //default setting
         public bool ShowLighterFog { get; set; } = false; //default setting
-        public bool RedrawCursor { get; set; } = true; //default setting
+        */
 
-        public bool Verbose { get; set; } = true; 
-        
-        public WeatherConfig()
+        public bool Verbose { get; set; } = true;
+
+        public ClimateConfig()
         {
         }
     }

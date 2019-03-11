@@ -7,6 +7,9 @@
 - SMAPI 2.6-beta.17+
 - Stardew Valley 1.3.21+
 
+## Acknowledgements
+- Sky for the Korean translation
+
 ### Multiplayer
 
 Works fine, each player needs it.

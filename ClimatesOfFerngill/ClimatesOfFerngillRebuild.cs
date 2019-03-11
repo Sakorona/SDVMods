@@ -33,6 +33,10 @@ namespace ClimatesOfFerngillRebuild
         /// <summary> The current weather conditions </summary>
         internal static WeatherConditions Conditions;
 
+        //provide common interfaces for logging
+        internal static IMonitor Logger;
+        internal static ITranslationHelper Translator;
+
         /// <summary> The climate for the game </summary>
         private FerngillClimate GameClimate;
 
@@ -73,6 +77,8 @@ namespace ClimatesOfFerngillRebuild
         {
             RWeatherIcon = new Rectangle();
             WeatherOpt = helper.ReadConfig<WeatherConfig>();
+            Logger = Monitor;
+            Translator = Helper.Translation;
             Dice = new MersenneTwister();
             OurIcons = new Sprites.Icons(Helper.Content);
             CropList = new List<Vector2>();
@@ -97,6 +103,9 @@ namespace ClimatesOfFerngillRebuild
 
             var harmony = HarmonyInstance.Create("koihimenakamura.climatesofferngill");
             harmony.PatchAll(Assembly.GetExecutingAssembly());
+
+
+            ConsoleCommands.Init();
 
             //patch SGame::DarkImpl
             //patch GameLocation::drawAboveAlwaysFrontLayer
@@ -129,10 +138,10 @@ namespace ClimatesOfFerngillRebuild
 
             //console commands
             helper.ConsoleCommands
-                .Add("world_tmrwweather", helper.Translation.Get("console-text.desc_tmrweather"), TomorrowWeatherChangeFromConsole)
-                .Add("world_setweather", helper.Translation.Get("console-text.desc_setweather"), WeatherChangeFromConsole)
-                .Add("debug_clearspecial", "debug command to clear special weathers", ClearSpecial)
-                .Add("debug_weatherstatus","!", OutputWeather);
+                .Add("world_tmrwweather", helper.Translation.Get("console-text.desc_tmrweather"), ConsoleCommands.TomorrowWeatherChangeFromConsole)
+                .Add("world_setweather", helper.Translation.Get("console-text.desc_setweather"), ConsoleCommands.WeatherChangeFromConsole)
+                .Add("debug_clearspecial", "debug command to clear special weathers", ConsoleCommands.ClearSpecial)
+                .Add("debug_weatherstatus","!", ConsoleCommands.OutputWeather);
         }
 
         /// <summary>Raised once per second after the game state is updated.</summary>
@@ -141,17 +150,6 @@ namespace ClimatesOfFerngillRebuild
         private void OnOneSecondUpdateTicked(object sender, OneSecondUpdateTickedEventArgs e)
         {
             Conditions.SecondUpdate();
-        }
-
-        private void ClearSpecial(string arg1, string[] arg2)
-        {
-            Conditions.ClearAllSpecialWeather();
-        }
-
-        private void OutputWeather(string arg1, string[] arg2)
-        {
-            var retString = $"Weather for {SDate.Now()} is {Conditions.ToString()}. {Environment.NewLine} System flags: isRaining {Game1.isRaining} isSnowing {Game1.isSnowing} isDebrisWeather: {Game1.isDebrisWeather} isLightning {Game1.isLightning}, with tommorow's set weather being {Game1.weatherForTomorrow}";
-            Monitor.Log(retString);
         }
 
         /// <summary>Raised after the game is launched, right before the first update tick. This happens once per game session (unrelated to loading saves). All mods are loaded and initialised at this point, so this is a good time to set up mod integrations.</summary>
@@ -347,7 +345,6 @@ namespace ClimatesOfFerngillRebuild
                     IsBloodMoon = true;
                 }
             }
-
             
         }
 
@@ -487,7 +484,8 @@ namespace ClimatesOfFerngillRebuild
                 }
 
                 //redraw mouse cursor
-                SDVUtilities.RedrawMouseCursor();
+                if (WeatherOpt.RedrawCursor)
+                    SDVUtilities.RedrawMouseCursor();
             }
         }
 
@@ -518,6 +516,7 @@ namespace ClimatesOfFerngillRebuild
             SetTommorowWeather();
             ExpireTime = 0;
         }
+
 
         private void SetTommorowWeather()
         {
@@ -686,135 +685,11 @@ namespace ClimatesOfFerngillRebuild
             }
         }
 
-        /* **************************************************************
-         * console commands
-         * **************************************************************
-         */
-
-        /// <summary>
-        /// This function changes the weather (Console Command)
-        /// </summary>
-        /// <param name="arg1">The command used</param>
-        /// <param name="arg2">The console command parameters</param>
-        private void WeatherChangeFromConsole(string arg1, string[] arg2)
+        public static bool ShouldPrecipInLocation()
         {
-            if (!Context.IsMainPlayer) return;
-                
-            if (arg2.Length < 1)
-                return;
-
-            string ChosenWeather = arg2[0];
-
-            switch (ChosenWeather)
-            {
-                case "rain":
-                    Game1.isSnowing = Game1.isLightning = Game1.isDebrisWeather = false;
-                    Game1.isRaining = true;
-                    Game1.debrisWeather.Clear();
-                    Conditions.GetWeatherMatchingType("Blizzard").First().EndWeather();
-                    Conditions.GetWeatherMatchingType("WhiteOut").First().EndWeather();
-                    Monitor.Log(Helper.Translation.Get("console-text.weatherset_rain"), LogLevel.Info);
-                    break;
-                case "storm":
-                    Game1.isSnowing = Game1.isDebrisWeather = false;
-                    Game1.isLightning = Game1.isRaining = true;
-                    Game1.debrisWeather.Clear();
-                    Conditions.GetWeatherMatchingType("Blizzard").First().EndWeather();
-                    Conditions.GetWeatherMatchingType("WhiteOut").First().EndWeather();
-                    Monitor.Log(Helper.Translation.Get("console-text.weatherset_storm"), LogLevel.Info);
-                    break;
-                case "snow":
-                    Game1.isRaining = Game1.isLightning = Game1.isDebrisWeather = false;
-                    Game1.isSnowing = true;
-                    Game1.debrisWeather.Clear();
-                    Conditions.GetWeatherMatchingType("Blizzard").First().EndWeather();
-                    Conditions.GetWeatherMatchingType("WhiteOut").First().EndWeather();
-                    Monitor.Log(Helper.Translation.Get("console-text.weatherset_snow"), LogLevel.Info);
-                    break;
-                case "debris":
-                    Game1.isSnowing = Game1.isLightning = Game1.isRaining = false;
-                    Conditions.GetWeatherMatchingType("Blizzard").First().EndWeather();
-                    Conditions.GetWeatherMatchingType("Fog").First().EndWeather();
-                    Conditions.GetWeatherMatchingType("WhiteOut").First().EndWeather();
-                    Game1.isDebrisWeather = true;
-                    Game1.populateDebrisWeatherArray();
-                    Monitor.Log(Helper.Translation.Get("console-text.weatherset_debris", LogLevel.Info));
-                    break;
-                case "sunny":
-                    Conditions.GetWeatherMatchingType("Blizzard").First().EndWeather();
-                    Conditions.GetWeatherMatchingType("Fog").First().EndWeather();
-                    Conditions.GetWeatherMatchingType("WhiteOut").First().EndWeather();
-                    Game1.debrisWeather.Clear();
-                    Game1.isSnowing = Game1.isLightning = Game1.isRaining = Game1.isDebrisWeather = false;
-                    Monitor.Log(Helper.Translation.Get("console-text.weatherset_sun", LogLevel.Info));
-                    break;
-                case "blizzard":
-                    Game1.isRaining = Game1.isLightning = Game1.isDebrisWeather = false;
-                    Game1.isSnowing = true;
-                    Game1.debrisWeather.Clear();
-                    Conditions.GetWeatherMatchingType("Blizzard").First().CreateWeather();
-                    Conditions.GetWeatherMatchingType("WhiteOut").First().EndWeather();
-                    Monitor.Log(Helper.Translation.Get("console-text.weatherset_snow"), LogLevel.Info);
-                    break;
-                case "whiteout":
-                    Game1.isRaining = Game1.isLightning = Game1.isDebrisWeather = false;
-                    Game1.isSnowing = true;
-                    Game1.debrisWeather.Clear();
-                    Conditions.GetWeatherMatchingType("Blizzard").First().CreateWeather();
-                    Conditions.GetWeatherMatchingType("WhiteOut").First().CreateWeather();
-                    Monitor.Log(Helper.Translation.Get("console-text.weatherset_snow"), LogLevel.Info);
-                    break;
-            }
-
-            Game1.updateWeatherIcon();
-            Conditions.SetTodayWeather();
+            return true;
         }
 
-        /// <summary>
-        /// This function changes the weather for tomorrow (Console Command)
-        /// </summary>
-        /// <param name="arg1">The command used</param>
-        /// <param name="arg2">The console command parameters</param>
-        private void TomorrowWeatherChangeFromConsole(string arg1, string[] arg2)
-        {
-            if (!Context.IsMainPlayer) return;
-
-            if (arg2.Length < 1)
-                return;
-
-            string chosenWeather = arg2[0];
-            switch (chosenWeather)
-            {
-                case "rain":
-                    Game1.netWorldState.Value.WeatherForTomorrow = Game1.weatherForTomorrow = Game1.weather_rain;
-                    Monitor.Log(Helper.Translation.Get("console-text.weatherset-tmrwrain"), LogLevel.Info);
-                    break;
-                case "storm":
-                    Game1.netWorldState.Value.WeatherForTomorrow = Game1.weatherForTomorrow = Game1.weather_lightning;
-                    Monitor.Log(Helper.Translation.Get("console-text.weatherset-tmrwstorm"), LogLevel.Info);
-                    break;
-                case "snow":
-                    Game1.netWorldState.Value.WeatherForTomorrow = Game1.weatherForTomorrow = Game1.weather_snow;
-                    Monitor.Log(Helper.Translation.Get("console-text.weatherset-tmrwsnow"), LogLevel.Info);
-                    break;
-                case "debris":
-                    Game1.netWorldState.Value.WeatherForTomorrow = Game1.weatherForTomorrow = Game1.weather_debris;
-                    Monitor.Log(Helper.Translation.Get("console-text.weatherset-tmrwdebris"), LogLevel.Info);
-                    break;
-                case "festival":
-                    Game1.netWorldState.Value.WeatherForTomorrow = Game1.weatherForTomorrow = Game1.weather_festival;
-                    Monitor.Log(Helper.Translation.Get("console-text.weatherset-tmrwfestival"), LogLevel.Info);
-                    break;
-                case "sun":
-                    Game1.netWorldState.Value.WeatherForTomorrow = Game1.weatherForTomorrow = Game1.weather_sunny;
-                    Monitor.Log(Helper.Translation.Get("console-text.weatherset-tmrwsun"), LogLevel.Info);
-                    break;
-                case "wedding":
-                    Game1.netWorldState.Value.WeatherForTomorrow = Game1.weatherForTomorrow = Game1.weather_wedding;
-                    Monitor.Log(Helper.Translation.Get("console-text.weatherset-tmrwwedding"), LogLevel.Info);
-                    break;
-            }
-        }
 
         public static Color GetRainColor()
         {

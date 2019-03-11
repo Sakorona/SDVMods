@@ -6,15 +6,7 @@ using System.Threading.Tasks;
 
 namespace ClimatesOfFerngillRebuild
 {
-    class TestClimate
+    class TempCalc
     {
-        List<string> ZonesAffected;
-        
-    }
-
-    class TestWeather
-    {
-        string StartDate;
-        string EndDate;
     }
 }
