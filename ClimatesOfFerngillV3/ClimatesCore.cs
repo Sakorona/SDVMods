@@ -123,7 +123,11 @@ namespace ClimatesOfFerngillV3
            //Read from the model, verify data isn't insane.
            if (Game1.IsMasterGame)
            {
+                //Check the weather next day is set able
+                //Set it if true
+                //Look into today's current weather
 
+                //send message setting all of this information
            }
            else
            {

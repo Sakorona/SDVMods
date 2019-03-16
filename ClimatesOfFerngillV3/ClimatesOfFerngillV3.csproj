@@ -80,9 +80,6 @@
     <None Include="Assets\weather\normalfoggy.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Include="Assets\weather\sample.json">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
     <None Include="Assets\weather\wet.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
