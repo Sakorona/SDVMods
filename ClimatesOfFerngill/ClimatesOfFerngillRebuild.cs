@@ -135,6 +135,7 @@ namespace ClimatesOfFerngillRebuild
             events.Display.RenderedHud += OnRenderedHud;
             events.Player.Warped += OnWarped;
             events.Input.ButtonPressed += OnButtonPressed;
+            events.Multiplayer.Multiplayer.ModMessageReceived += OnModMessageRecieved;
 
             //console commands
             helper.ConsoleCommands
@@ -488,6 +489,15 @@ namespace ClimatesOfFerngillRebuild
                     SDVUtilities.RedrawMouseCursor();
             }
         }
+        
+        public void OnModMessageReceived(object sender, ModMessageReceivedEventArgs e)
+        {
+            if (e.FromModID == "KoihimeNakamura.ClimatesOfFerngill" && e.Type == "WeatherSync")
+            {
+                WeatherSync message = e.ReadAs<WeatherSync>();
+                // handle message fields here
+            }
+        }
 
         /// <summary>Raised after the game returns to the title screen.</summary>
         /// <param name="sender">The event sender.</param>
@@ -674,14 +684,13 @@ namespace ClimatesOfFerngillRebuild
                 return;
             }
             
-            //TODO: Fix this once SMAPI supports mod broadcast data
-            if (Context.IsMultiplayer)
-                return;
-
             if (Conditions.TestForSpecialWeather(GameClimate.GetClimateForDate(SDate.Now())))
             {
+                WeatherSync message = Conditions.GenerateWeatherSync();
+                this.Helper.Multiplayer.SendMessage(message, "WeatherSync", modIDs: new[] { this.ModManifest.UniqueID });
+                
                 if (WeatherOpt.Verbose)
-                    Monitor.Log("Special weather created!");
+                    Monitor.Log("Special weather created! Message sent.");
             }
         }
 
