@@ -495,7 +495,7 @@ namespace ClimatesOfFerngillRebuild
             if (e.FromModID == "KoihimeNakamura.ClimatesOfFerngill" && e.Type == "WeatherSync")
             {
                 WeatherSync message = e.ReadAs<WeatherSync>();
-                // handle message fields here
+                Conditions.SetSync(message);
             }
         }
 
