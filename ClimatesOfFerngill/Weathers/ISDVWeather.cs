@@ -83,7 +83,12 @@ namespace ClimatesOfFerngillRebuild
        /// This function is called every 10 in-game minutes
        /// </summary>
        void UpdateWeather();
-
+        
+       /// <summary>
+       /// This function syncs the weather details to the master game
+       /// </summary>
+       void SyncWeather();
+          
        /// <summary>
        /// This function controls how they are created.
        /// </summary>
