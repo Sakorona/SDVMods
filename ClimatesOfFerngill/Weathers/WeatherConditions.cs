@@ -9,6 +9,7 @@ using static ClimatesOfFerngillRebuild.Sprites;
 using System;
 using ClimatesOfFerngillRebuild.Weathers;
 using TwilightShards.Stardew.Common;
+using StardewModdingAPI.Events;
 
 namespace ClimatesOfFerngillRebuild
 {
@@ -44,6 +45,8 @@ namespace ClimatesOfFerngillRebuild
         /// <summary>The list of custom weathers </summary>
         internal List<ISDVWeather> CurrentWeathers { get; set; }
 
+        private readonly IMultiplayerEvents Multiplayer;
+
         //evening fog details
         private bool HasSetEveningFog {get; set;}
         public bool GenerateEveningFog { get; set; }
@@ -58,9 +61,10 @@ namespace ClimatesOfFerngillRebuild
         /// <param name="Dice">pRNG</param>
         /// <param name="monitor">SMAPI log object</param>
         /// <param name="Config">Game configuration</param>
-        public WeatherConditions(Icons Sheets, MersenneTwister Dice, ITranslationHelper Translation, IMonitor monitor, WeatherConfig Config)
+        public WeatherConditions(Icons Sheets, MersenneTwister Dice, ITranslationHelper Translation, IMonitor monitor, WeatherConfig Config, IMultiplayerEvents Helper)
         {
             Monitor = monitor;
+            this.Multiplayer = Helper;
             ModConfig = Config;
             this.Dice = Dice;
             this.Translation = Translation;
@@ -479,10 +483,12 @@ namespace ClimatesOfFerngillRebuild
                 if (e.Present)
                 {
                     CurrentConditionsN = CurrentConditionsN | CurrentWeather.WhiteOut;
+                    this.GenerateWeatherSync();
                 }
                 else
                 {
                     CurrentConditionsN = CurrentConditionsN.RemoveFlags(CurrentWeather.WhiteOut);
+                    this.GenerateWeatherSync();
                 }
             }
 
@@ -491,10 +497,12 @@ namespace ClimatesOfFerngillRebuild
                 if (e.Present)
                 {
                     CurrentConditionsN = CurrentConditionsN | CurrentWeather.ThunderFrenzy;
+                    this.GenerateWeatherSync();
                 }
                 else
                 {
                     CurrentConditionsN = CurrentConditionsN.RemoveFlags(CurrentWeather.ThunderFrenzy);
+                    this.GenerateWeatherSync();
                 }
             }
 
@@ -503,20 +511,27 @@ namespace ClimatesOfFerngillRebuild
                 if (e.Present)
                 {
                     CurrentConditionsN = CurrentConditionsN | CurrentWeather.Fog;
+                    this.GenerateWeatherSync();
                 }
                 else
                 {
                     CurrentConditionsN = CurrentConditionsN.RemoveFlags(CurrentWeather.Fog);
+                    this.GenerateWeatherSync();
                 }
             }
 
             if (e.Weather == "Blizzard")
             {
   
-                if (e.Present)
+                if (e.Present) { 
                     CurrentConditionsN = CurrentConditionsN | CurrentWeather.Blizzard;
-                else
+                    this.GenerateWeatherSync();
+                }
+
+                else { 
                     CurrentConditionsN = CurrentConditionsN.RemoveFlags(CurrentWeather.Blizzard);
+                    this.GenerateWeatherSync();
+                }
             }
         }
 

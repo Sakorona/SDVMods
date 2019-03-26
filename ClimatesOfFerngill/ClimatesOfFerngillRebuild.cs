@@ -82,7 +82,7 @@ namespace ClimatesOfFerngillRebuild
             Dice = new MersenneTwister();
             OurIcons = new Sprites.Icons(Helper.Content);
             CropList = new List<Vector2>();
-            Conditions = new WeatherConditions(OurIcons, Dice, Helper.Translation, Monitor, WeatherOpt);
+            Conditions = new WeatherConditions(OurIcons, Dice, Helper.Translation, Monitor, WeatherOpt, helper.Events.Multiplayer);
             DescriptionEngine = new Descriptions(Helper.Translation, Dice, WeatherOpt, Monitor);
             queuedMsg = null;
             ExpireTime = 0;
@@ -135,7 +135,7 @@ namespace ClimatesOfFerngillRebuild
             events.Display.RenderedHud += OnRenderedHud;
             events.Player.Warped += OnWarped;
             events.Input.ButtonPressed += OnButtonPressed;
-            events.Multiplayer.Multiplayer.ModMessageReceived += OnModMessageRecieved;
+            events.Multiplayer.ModMessageReceived += OnModMessageRecieved;
 
             //console commands
             helper.ConsoleCommands
@@ -144,6 +144,8 @@ namespace ClimatesOfFerngillRebuild
                 .Add("debug_clearspecial", "debug command to clear special weathers", ConsoleCommands.ClearSpecial)
                 .Add("debug_weatherstatus","!", ConsoleCommands.OutputWeather);
         }
+
+
 
         /// <summary>Raised once per second after the game state is updated.</summary>
         /// <param name="sender">The event sender.</param>
@@ -488,9 +490,9 @@ namespace ClimatesOfFerngillRebuild
                 if (WeatherOpt.RedrawCursor)
                     SDVUtilities.RedrawMouseCursor();
             }
-        }
+        }       
         
-        public void OnModMessageReceived(object sender, ModMessageReceivedEventArgs e)
+        private void OnModMessageRecieved(object sender, ModMessageReceivedEventArgs e)
         {
             if (e.FromModID == "KoihimeNakamura.ClimatesOfFerngill" && e.Type == "WeatherSync")
             {
