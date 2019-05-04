@@ -1,6 +1,6 @@
 ﻿# Climates of Ferngill (Rebuild) You Can (Not) Have Weather
 
-Current Version (19 November 2018): 1.4.1
+Current Version (April 2019): 1.5-beta.1
 
 ## What's New
 
@@ -12,12 +12,13 @@ Current Version (19 November 2018): 1.4.1
 
 ## Multiplayer
 
-Currently doesn't do any custom weathers in MP. Works only for the host player in MP. Will be changing shortly with the new MP API.
+Supports MP, with most features locked out to main player
+
 
 ## Requirements
 
-- SMAPI 2.8+
-- Stardew Valley 1.3.32+
+- SMAPI 2.11+
+- Stardew Valley 1.3.36+
 - PyTK: latest
  
 ## Overview
@@ -36,21 +37,31 @@ This mod uses harmony to patch functions to allow it to draw custom rain and sno
 
 ## Upcoming Features
 
-- Sandstorms
 - Variable rain
+- Debris sprites
 
 ## Acknowledgements
 - Prismuth for the fog sprite
 - Pathoschild for ideas
 - Sky for the Korean translation
 - ChefRude for testing and the night icon sprites (as well as better fog textures)
+- Pan for the new base debris sprites
 - FoggyWizard for the sandstorm sprite
+- FarAways for the Chinese translation
 - The SDV discord #modding channel for discussions and encouragement.
+
+If I have left you out of acknowledgements, please contact me so I can get you added to the acknowledgement list
 
 
 ## Changelog
 v1.5
- - is coming
+ - MP sync added in. 
+ - Custom sprites added, adding in summer wind to the game (21%(-8,+6), (19%(-8,+6), 23%(-4%+8%))
+ - Thunder Frenzy weather improperly not clearing out on day reset causing issues with weather display has been fixed.
+ - Variable Rain! Overcast weather and variable rain fall has been added.
+ - Sandstorms now spawn in windy weather when it hasn't rained for a while
+ - New config option for Farenheit: "SetScaletoF"
+ - New config option to control cursor redrawing: "RedrawCursor"
 
 v1.4.2
  - removed extra Harmony debug line
@@ -327,3 +338,19 @@ over a certain value.). Valid 0-1, but it's recommended that this is kept low. D
  - `DynamicRain` - Allows for the mod to dynamically control rain during the day. Defaults to true. Valid: true, false
 
  - `DisableHighRainWind` - If your computer has issues with high rain or wind, set this to true. Defaults to false.
+
+ - `SetDefaultScaleToF` - This sets the default scale used to Farenheit. NOTE: DisplayBothScales will override this. Defaults to false. This setting will also invalidate DisplayCelsisuInsteadOfKraggs
+ 
+ - `DisplayCelsiusInsteadOfKraggs` - Will display Celsius/C instead of Kraggs. NOTE: SetDefaultScaleToF will override this setting.
+
+ - 'VariableRainChance' - The chance the rain will be variable instead of constant. Default is 27.5% (.275). Valid range is 0 to 1.
+
+ - 'OvercastChance' - The chance the rain will be overcast instead of variable. Default is 5%. (.05). Valid range is 0 to 1. NOTE: This triggers off it being variable. (So the default is .01735) (1.735%)
+
+ - 'VRChangeChance' - The chance that the rain amount will change on the 30 minute step. 
+
+ - 'VRStepPercent' - The step percentage it applies (may be up or down)
+  
+ - 'VRMassiveStepChance' - The chance of a massive change (category of rain)
+
+ - 'SandstormsInDesertOnly' - As it says on the tin.

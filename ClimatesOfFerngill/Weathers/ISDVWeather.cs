@@ -83,12 +83,7 @@ namespace ClimatesOfFerngillRebuild
        /// This function is called every 10 in-game minutes
        /// </summary>
        void UpdateWeather();
-        
-       /// <summary>
-       /// This function syncs the weather details to the master game
-       /// </summary>
-       void SyncWeather();
-          
+                
        /// <summary>
        /// This function controls how they are created.
        /// </summary>
@@ -108,5 +103,14 @@ namespace ClimatesOfFerngillRebuild
        /// This function controls how they are ended
        /// </summary>
        void EndWeather();
+
+        /// <summary>
+        /// This function forces the weather to start
+        /// </summary>
+       void ForceWeatherStart();
+
+       /// <summary>
+       /// This function outputs the weather for debug purposes</summary> 
+       string DebugWeatherOutput();
     }
 }

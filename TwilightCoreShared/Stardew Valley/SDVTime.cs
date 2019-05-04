@@ -81,19 +81,29 @@ namespace TwilightShards.Stardew.Common
         {
             hour = t / 100;
 
-            if (hour > MAXHOUR)
-                throw new ArgumentOutOfRangeException("Invalid Time passed to the constructor.");
+            if (hour > MAXHOUR) { 
+                hour = MAXHOUR;
+                minute = 0;
+            }
+            else { 
 
-            t = t - (hour * 100);
+                t = t - (hour * 100);
 
-            if (t < MINPERHR)
-                minute = t;
-            else
-            {
-                hour++;
-                if (hour > MAXHOUR)
-                    throw new ArgumentOutOfRangeException("Invalid Time passed to the constructor");
-                minute = t - MINPERHR;
+                if (t < MINPERHR)
+                    minute = t;
+                else
+                {
+                    hour++;
+                    if (hour > MAXHOUR)
+                    {
+                        hour = MAXHOUR;
+                        minute = 0;
+                    }
+                    else
+                    { 
+                       minute = t - MINPERHR;
+                    }
+                }
             }
         }
 

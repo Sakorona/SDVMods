@@ -50,15 +50,18 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="ClimatesOfFerngillApi.cs" />
+    <Compile Include="ClimateTracker.cs" />
     <Compile Include="ConsoleCommands.cs" />
     <Compile Include="Integrations\IDynamicNightAPI.cs" />
     <Compile Include="Integrations\ILunarDisturbancesAPI.cs" />
     <Compile Include="Integrations\ISafeLightningAPI.cs" />
     <Compile Include="Patches\GameLocationPatches.cs" />
     <Compile Include="Patches\SGamePatches.cs" />
-    <Compile Include="TempCalc.cs" />
+    <Compile Include="Patches\WeatherDebrisPatches.cs" />
     <Compile Include="WeatherData\WeatherData.cs" />
+    <Compile Include="WeatherSync.cs" />
     <Compile Include="Weathers\FerngillCustomRain.cs" />
+    <Compile Include="Weathers\FerngillSandstorm.cs" />
     <Compile Include="Weathers\FerngillThunderFrenzy.cs" />
     <Compile Include="Weathers\FerngillWhiteOut.cs" />
     <Compile Include="Weathers\ForceDays.cs" />
@@ -84,6 +87,7 @@
     <Compile Include="Weathers\WeatherIcon.cs" />
     <Compile Include="Weathers\WeatherNotificationArgs.cs" />
     <Compile Include="Weathers\WeatherTypes.cs" />
+    <Compile Include="WeatherUtilities.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="data\weather\arid.json">
@@ -105,11 +109,32 @@
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <None Include="i18n\default.json" />
+    <None Include="i18n\ko.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="i18n\zh.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
     <None Include="manifest.json" />
     <None Include="README.md" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="Assets\AcornTest2.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Assets\Acorn_Test.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Assets\DebrisSprites.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Assets\LeavesAttempt.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
     <Content Include="Assets\Sandstorm.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Assets\SpringPetalSheets.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <Content Include="Assets\ThickerFog.png">

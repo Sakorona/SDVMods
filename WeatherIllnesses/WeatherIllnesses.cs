@@ -44,7 +44,7 @@ namespace TwilightShards.WeatherIllnesses
         /// <param name="e">The event arguments.</param>
         private void OnGameLaunched(object sender, GameLaunchedEventArgs e)
         {
-            climatesAPI = SDVUtilities.GetModApi<Integrations.IClimatesOfFerngillAPI>(Monitor, Helper, "KoihimeNakamura.ClimatesOfFerngill", "1.4-beta.12");
+            climatesAPI = SDVUtilities.GetModApi<Integrations.IClimatesOfFerngillAPI>(Monitor, Helper, "KoihimeNakamura.ClimatesOfFerngill", "1.5-beta.3");
 
             if (climatesAPI != null)
             {
@@ -80,7 +80,7 @@ namespace TwilightShards.WeatherIllnesses
                 weatherStatus = SDVUtilities.GetWeatherName();
 
             //handle being inside...
-            double temp = (UseClimates) ? climatesAPI.GetTodaysLow() : 100.0;
+            double? temp = (UseClimates) ? climatesAPI.GetTodaysLow() : 100.0;
             
             Game1.player.stamina += StaminaMngr.TenMinuteTick(Game1.player.hat.Value?.which.Value, temp, weatherStatus, TicksInLocation, TicksOutside, TicksTotal, Dice);
 

@@ -95,6 +95,18 @@ namespace ClimatesOfFerngillRebuild.Weathers
             IsWeatherVisible = true;
         }
 
+        public void ForceWeatherStart()
+        {
+            IsWeatherVisible  = true;
+        }
+
+        //TODO: FIX ME
+        public string DebugWeatherOutput()
+        {
+            string s = "";
+            s += $"Weather {WeatherType} is {IsWeatherVisible}, Progress: {WeatherInProgress}, Begin Time {WeatherBeginTime} to End Time {WeatherExpirationTime}.";
+            return s;
+        }
         public void SetWeatherTime(SDVTime begin, SDVTime end)
         {
             SetWeatherBeginTime(begin);

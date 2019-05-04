@@ -21,11 +21,17 @@ namespace ClimatesOfFerngillRebuild
         private SDVTime BeginTime;
 
         private MersenneTwister Dice;
-        private WeatherConfig ModConfig;
+        private readonly WeatherConfig ModConfig;
 
         public string WeatherType => "Blizzard";
-        public void SetWeatherExpirationTime(SDVTime t) => ExpirTime = t;
-        public void SetWeatherBeginTime(SDVTime t) => BeginTime = t;
+        public void SetWeatherExpirationTime(SDVTime t){
+            Console.WriteLine($"Weather end time is being set to {t}");
+            ExpirTime = new SDVTime(t);
+        }
+        public void SetWeatherBeginTime(SDVTime t){
+            Console.WriteLine($"Weather begin time is being set to {t}");
+            BeginTime = new SDVTime(t);
+        }
 
         public SDVTime WeatherExpirationTime => (ExpirTime ?? new SDVTime(0600));
         public SDVTime WeatherBeginTime => (BeginTime ?? new SDVTime(0600));
@@ -33,7 +39,7 @@ namespace ClimatesOfFerngillRebuild
 
         public FerngillBlizzard(MersenneTwister Dice, WeatherConfig config)
         {
-            ExpirTime = new SDVTime(2600);
+            ExpirTime = new SDVTime(0600);
             BeginTime = new SDVTime(0600);
             this.Dice = Dice;
             this.ModConfig = config;
@@ -46,6 +52,12 @@ namespace ClimatesOfFerngillRebuild
 
             WeatherNotificationArgs args = new WeatherNotificationArgs(weather, status);
             OnUpdateStatus(this, args);
+        }
+
+        public void ForceWeatherStart()
+        {
+            IsBlizzard = true;
+            ExpirTime = new SDVTime(2600);
         }
 
         public void OnNewDay()
@@ -62,6 +74,18 @@ namespace ClimatesOfFerngillRebuild
         {
             BeginTime = new SDVTime(begin);
             ExpirTime = new SDVTime(end);
+        }
+
+        public void SyncWeather()
+        {
+
+        }
+
+        public string DebugWeatherOutput()
+        {
+            string s = "";
+            s += $"Weather {WeatherType} is {IsWeatherVisible}, Progress: {WeatherInProgress}, Begin Time {BeginTime} to End Time {ExpirTime}";
+            return s;
         }
 
         public void SecondUpdate()

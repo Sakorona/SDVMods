@@ -26,12 +26,14 @@ namespace ClimatesOfFerngillRebuild
             public Texture2D FogTexture;
             public Texture2D DarudeTexture;
             public static Texture2D source2;
+            public Texture2D LeafSprites;
 
             public Icons(IContentHelper helper)
             {
                 WeatherSource = helper.Load<Texture2D>(Path.Combine("Assets","WeatherIcons.png"));
                 FogTexture = helper.Load<Texture2D>(Path.Combine("Assets", "ThickerFog.png"));
                 DarudeTexture = helper.Load<Texture2D>(Path.Combine("Assets", "Sandstorm.png"));
+                LeafSprites = helper.Load<Texture2D>(Path.Combine("Assets","DebrisSpritesFull.png"));
                 source2 = Game1.mouseCursors;
             }
 
@@ -39,6 +41,9 @@ namespace ClimatesOfFerngillRebuild
             {
                 if (condition.HasFlag(CurrentWeather.Blizzard))
                     return Icons.WeatherBlizzard;
+
+                if (condition.HasFlag(CurrentWeather.Sandstorm))
+                    return Icons.WeatherSandstorm;
 
                 if (condition.HasFlag(CurrentWeather.Wind))
                     return Icons.WeatherWindy;
@@ -77,7 +82,8 @@ namespace ClimatesOfFerngillRebuild
             public static readonly Rectangle WeatherFestival = new Rectangle(235, 32, 47, 45);
             public static readonly Rectangle WeatherBlizzard = new Rectangle(281, 32, 40, 42);
             public static readonly Rectangle WeatherDryLightning = new Rectangle(321,32,33,39);
-            public static readonly Rectangle WeatherThundersnow = new Rectangle(355,31,39,40);            
+            public static readonly Rectangle WeatherThundersnow = new Rectangle(355,31,39,40);
+            public static readonly Rectangle WeatherSandstorm = new Rectangle(395,37,39,37);
         }
 
         public static Texture2D Pixel => LazyPixel.Value;

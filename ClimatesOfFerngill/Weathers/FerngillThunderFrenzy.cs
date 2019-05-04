@@ -23,18 +23,22 @@ namespace ClimatesOfFerngillRebuild
         public event EventHandler<WeatherNotificationArgs> OnUpdateStatus;
         public SDVTime WeatherExpirationTime => (ExpirTime ?? new SDVTime(0600));
         public SDVTime WeatherBeginTime => (BeginTime ?? new SDVTime(0600));
-        public void SetWeatherExpirationTime(SDVTime t) => ExpirTime = t;
-        public void SetWeatherBeginTime(SDVTime t) => BeginTime = t;
+        public void SetWeatherExpirationTime(SDVTime t)
+        {
+            ExpirTime = new SDVTime(t);
+        }
+        public void SetWeatherBeginTime(SDVTime t)
+        {
+            BeginTime = new SDVTime(t);
+        }
         public bool WeatherInProgress => (SDVTime.CurrentTime >= WeatherBeginTime && SDVTime.CurrentTime <= WeatherExpirationTime);
         public bool IsWeatherVisible => IsThorAngry;
         private MersenneTwister Dice;
         private WeatherConfig ModConfig;
-        private IMonitor Logger;
 
         /// <summary> Default constructor. </summary>
-        internal FerngillThunderFrenzy(IMonitor monitor, MersenneTwister Dice, WeatherConfig config)
+        internal FerngillThunderFrenzy(MersenneTwister Dice, WeatherConfig config)
         {
-            this.Logger = monitor;
             this.Dice = Dice;
             this.ModConfig = config;
         }
@@ -48,11 +52,22 @@ namespace ClimatesOfFerngillRebuild
         public void OnNewDay()
         {
             IsThorAngry = false;
+            BeginTime = new SDVTime(0600);
+            ExpirTime = new SDVTime(0600);
+        }
+
+        public void ForceWeatherStart()
+        {
+            IsThorAngry = true;
+            BeginTime = new SDVTime(0600);
+            ExpirTime = new SDVTime(2600);
         }
 
         public void Reset()
         {
             IsThorAngry = false;
+            BeginTime = new SDVTime(0600);
+            ExpirTime = new SDVTime(0600);
         }
 
         public void UpdateStatus(string weather, bool status)
@@ -61,6 +76,14 @@ namespace ClimatesOfFerngillRebuild
 
             WeatherNotificationArgs args = new WeatherNotificationArgs(weather, status);
             OnUpdateStatus(this, args);
+        }
+
+        public string DebugWeatherOutput()
+        {
+            string s = "";
+            s += $"Weather {WeatherType} is {IsWeatherVisible}, Progress: {WeatherInProgress}, Begin Time {BeginTime} to End Time {ExpirTime}.";
+
+            return s;
         }
 
         public void MoveWeather()
@@ -77,7 +100,6 @@ namespace ClimatesOfFerngillRebuild
 
         public void CreateWeather()
         {
-
             //set the begin and end time
             SDVTime stormStart = new SDVTime(1150 + (Dice.Next(0, 230)));
             stormStart.ClampToTenMinutes();
@@ -109,10 +131,10 @@ namespace ClimatesOfFerngillRebuild
             if (IsWeatherVisible)
             {
                if (ModConfig.Verbose)
-                    Logger.Log("Performing Lightning Strikes");
+                    ClimatesOfFerngill.Logger.Log("Performing Lightning Strikes");
                for (int i = 0; i <= Dice.Next(3,12); i++)
                {
-                    if (ModConfig.Verbose) Logger.Log($"Attempt #{i}");
+                    if (ModConfig.Verbose) ClimatesOfFerngill.Logger.Log($"Attempt #{i}");
                     PerformLightningStrike();
                }
             }
@@ -125,7 +147,7 @@ namespace ClimatesOfFerngillRebuild
             if (diceRoll < 0.4 - Game1.dailyLuck)
             {
                 if (ModConfig.Verbose)
-                    Logger.Log($"Condition 1 with {diceRoll}. There will be a strike attempt.");
+                    ClimatesOfFerngill.Logger.Log($"Condition 1 with {diceRoll}. There will be a strike attempt.");
 
                 if (Game1.currentLocation.IsOutdoors && !(Game1.currentLocation is Desert) && !Game1.newDay)
                 {
@@ -153,7 +175,7 @@ namespace ClimatesOfFerngillRebuild
                                 return;
                             Vector2 strikeLocation = index2 * Game1.tileSize + new Vector2(Game1.tileSize / 2, 0.0f);
                             if (ModConfig.Verbose)
-                                Logger.Log($"Strike Location is {index2} for object {locationFromName.objects[index2]}");
+                                ClimatesOfFerngill.Logger.Log($"Strike Location is {index2} for object {locationFromName.objects[index2]}");
                             Utility.drawLightningBolt(strikeLocation, locationFromName);
                             return;
                         }
@@ -180,7 +202,7 @@ namespace ClimatesOfFerngillRebuild
                                 return;
                             locationFromName.temporarySprites.Add(new TemporaryAnimatedSprite(362, 75f, 6, 1, keyValuePair.Key, false, false));
                             if (ModConfig.Verbose)
-                                Logger.Log($"Strike Location is {keyValuePair.Key} for object {keyValuePair.Value}");
+                                ClimatesOfFerngill.Logger.Log($"Strike Location is {keyValuePair.Key} for object {keyValuePair.Value}");
                             Utility.drawLightningBolt(strikeLocation, locationFromName);
                         }
                         else
@@ -191,7 +213,7 @@ namespace ClimatesOfFerngillRebuild
                             (keyValuePair.Value as FruitTree).shake(keyValuePair.Key, true);
 
                             if (ModConfig.Verbose)
-                                Logger.Log($"Strike Location is {keyValuePair.Key} for object {keyValuePair.Value}");
+                                ClimatesOfFerngill.Logger.Log($"Strike Location is {keyValuePair.Key} for object {keyValuePair.Value}");
                             Utility.drawLightningBolt(strikeLocation, locationFromName);
                         }
                     }

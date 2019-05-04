@@ -3,7 +3,7 @@
     public interface IClimatesOfFerngillAPI
     {
         string GetCurrentWeatherName();
-        double GetTodaysHigh();
-        double GetTodaysLow();
+        double? GetTodaysHigh();
+        double? GetTodaysLow();
     }
 }

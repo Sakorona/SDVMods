@@ -65,6 +65,14 @@ If you're out in a blizzard during the day, it's *1.25 or 2.5 rounded down to 2.
   -`TooColdInside` - Double specifying the max temperature threshold to be too cold inside. Default is `8.4` (C). Valid Range is -100 to 100, really.
 
   ### Changelog
+  1.0.10
+   - Sandstorms added
+   - Will not display the inside message if you are outside at the time.
+
+  1.0.9
+  - fixes for SMAPI 1.3/SDV 1.3.36+
+  - updated for changes in Climates of Ferngill compatiblity
+
   1.0-beta.7
   - Updated for 1.3.20. .. and 1.3.21. 
   - Added in bath house method of clearing

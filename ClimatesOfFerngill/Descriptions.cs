@@ -70,14 +70,26 @@ namespace ClimatesOfFerngillRebuild
 
         private string GetTemperatureString(double temp)
         {
-            if (ModConfig.ShowBothScales)
+            //return a string based on what mod options are selected
+
+            if (ModConfig.ShowBothScales && ModConfig.DisplayCelsiusInsteadOfKraggs)
             {
-                return $"{temp.ToString("N1")} Kraggs ({GeneralFunctions.ConvCtF(temp).ToString("N1")} F)";
+                return Helper.Get("temp-bothScalesCelsius", new { temp=temp.ToString("N1"), tempFaren=GeneralFunctions.ConvCtF(temp).ToString("N1") });
             }
-            else
+            else if (ModConfig.ShowBothScales)
             {
-                return $"{temp.ToString("N1")} Kraggs";
+                return Helper.Get("temp-bothScales", new { temp = temp.ToString("N1"), tempFaren = GeneralFunctions.ConvCtF(temp).ToString("N1") });
             }
+            else if (ModConfig.SetDefaultScaleToF)
+            {
+                return Helper.Get("temp-farenOnly", new { temp = temp.ToString("N1")});
+            }
+            else if (ModConfig.DisplayCelsiusInsteadOfKraggs)
+            {
+                return Helper.Get("temp-celsiusSet", new { temp = temp.ToString("N1")});
+            }
+
+            return Helper.Get("temp-normal", new { temp = temp.ToString("N1")});
         }
 
         internal string UpperSeason(string season)
@@ -100,6 +112,9 @@ namespace ClimatesOfFerngillRebuild
                 text = Helper.Get("weather-menu.openingS4D28", new { descDay = Helper.Get($"date{UpperSeason(SDate.Now().Season)}{SDate.Now().Day}") }) + Environment.NewLine + Environment.NewLine;
             else
                 text = Helper.Get("weather-menu.opening", new { descDay = Helper.Get($"date{UpperSeason(SDate.Now().Season)}{SDate.Now().Day}") }) + Environment.NewLine + Environment.NewLine;
+
+            if (Current.ContainsCondition(CurrentWeather.Sandstorm))
+                text += Helper.Get("weather-menu.condition.sandstorm") + Environment.NewLine;
 
             if (Current.ContainsCondition(CurrentWeather.Heatwave))
             {
@@ -299,17 +314,22 @@ namespace ClimatesOfFerngillRebuild
         private string GetCondWarning(WeatherConditions Current)
         {
             int rNumber = OurDice.Next(2);
-            if (Current.ContainsCondition(CurrentWeather.Heatwave))
-                return Helper.Get($"weather-condition.heatwave.{rNumber}");
 
-            if (Current.ContainsCondition(CurrentWeather.Frost))
-                return Helper.Get($"weather-condition.frost.{rNumber}");
+            if (Current.ContainsCondition(CurrentWeather.Sandstorm))
+                return Helper.Get($"weather-condition.sandstorm.{rNumber}");
 
             if (Current.ContainsCondition(CurrentWeather.WhiteOut))
                 return Helper.Get($"weather-condition.whiteout.{rNumber}");
 
             if (Current.ContainsCondition(CurrentWeather.ThunderFrenzy))
                 return Helper.Get($"weather-condition.thunderfrenzy.{rNumber}");
+
+            if (Current.ContainsCondition(CurrentWeather.Heatwave))
+                return Helper.Get($"weather-condition.heatwave.{rNumber}");
+
+            if (Current.ContainsCondition(CurrentWeather.Frost))
+                return Helper.Get($"weather-condition.frost.{rNumber}");
+
 
             return "";            
         }
@@ -363,6 +383,8 @@ namespace ClimatesOfFerngillRebuild
         {
             if (Weather.CurrentWeatherIconBasic == WeatherIcon.IconBlizzard || Weather.CurrentWeatherIconBasic == WeatherIcon.IconWhiteOut)
                 return Helper.Get($"weather_blizzard");
+            else if (Weather.CurrentWeatherIconBasic == WeatherIcon.IconSandstorm)
+                return Helper.Get($"weather_sandstorm");
             else if (Weather.CurrentWeatherIconBasic == WeatherIcon.IconSpringDebris || Weather.CurrentWeatherIconBasic == WeatherIcon.IconDebris)
                 return Helper.Get($"weather_wind");
             else if (Weather.CurrentWeatherIconBasic == WeatherIcon.IconDryLightning)
@@ -395,6 +417,8 @@ namespace ClimatesOfFerngillRebuild
 
             if (Weather.CurrentWeatherIconBasic == WeatherIcon.IconBlizzard || Weather.CurrentWeatherIconBasic == WeatherIcon.IconWhiteOut)
                 return Helper.Get($"weat-{season}.blizzard.{rNumber}");
+            else if (Weather.CurrentWeatherIconBasic == WeatherIcon.IconSandstorm)
+                return Helper.Get($"weat-{season}.sandstorm.{rNumber}");
             else if (Weather.CurrentWeatherIconBasic == WeatherIcon.IconSpringDebris || Weather.CurrentWeatherIconBasic == WeatherIcon.IconDebris)
                 return Helper.Get($"weat-{season}.debris.{rNumber}");
             else if (Weather.CurrentWeatherIconBasic == WeatherIcon.IconDryLightning)

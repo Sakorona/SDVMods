@@ -28,30 +28,39 @@ namespace ClimatesOfFerngillRebuild
         private WeatherConfig WeatherOpt { get; set; }
 
         /// <summary> The pRNG object </summary>
-        private MersenneTwister Dice;
+        internal static MersenneTwister Dice;
 
         /// <summary> The current weather conditions </summary>
         internal static WeatherConditions Conditions;
 
         //provide common interfaces for logging
         internal static IMonitor Logger;
+        internal static IReflectionHelper Reflection;
         internal static ITranslationHelper Translator;
 
         /// <summary> The climate for the game </summary>
-        private FerngillClimate GameClimate;
+        private static FerngillClimate GameClimate;
 
         /// <summary> This is used to display icons on the menu </summary>
-        private Sprites.Icons OurIcons { get; set; }
+        internal static Sprites.Icons OurIcons { get; set; }
+
         private List<Vector2> CropList;
         private HUDMessage queuedMsg;
         private int ExpireTime;
+        internal static ClimateTracker trackerModel;
 
         /// <summary> This is used to allow the menu to revert back to a previous menu </summary>
         private IClickableMenu PreviousMenu;
         private Descriptions DescriptionEngine;
         private Rectangle RWeatherIcon;
         private bool Disabled = false;
+        private bool HasGottenSync = false;
+        private bool HasRequestedSync = false;
         private static bool IsBloodMoon = false;
+        //private double RainAmt;
+        internal static bool IsVariableRain { get; private set;}
+        private int TenMCounter;
+        internal static int AmtOfRainDrops { get; private set; }
 
         //Integrations
         internal static bool UseLunarDisturbancesApi = false;
@@ -79,13 +88,17 @@ namespace ClimatesOfFerngillRebuild
             WeatherOpt = helper.ReadConfig<WeatherConfig>();
             Logger = Monitor;
             Translator = Helper.Translation;
+            Reflection = Helper.Reflection;
             Dice = new MersenneTwister();
             OurIcons = new Sprites.Icons(Helper.Content);
             CropList = new List<Vector2>();
-            Conditions = new WeatherConditions(OurIcons, Dice, Helper.Translation, Monitor, WeatherOpt, helper.Events.Multiplayer);
+            Conditions = new WeatherConditions(OurIcons, Dice, Helper.Translation, WeatherOpt, helper.Multiplayer);
             DescriptionEngine = new Descriptions(Helper.Translation, Dice, WeatherOpt, Monitor);
             queuedMsg = null;
+            TenMCounter = 0;
             ExpireTime = 0;
+            IsVariableRain = false;
+            //RainAmt = 0.0;
 
             if (WeatherOpt.Verbose) Monitor.Log($"Loading climate type: {WeatherOpt.ClimateType} from file", LogLevel.Trace);
 
@@ -103,8 +116,7 @@ namespace ClimatesOfFerngillRebuild
 
             var harmony = HarmonyInstance.Create("koihimenakamura.climatesofferngill");
             harmony.PatchAll(Assembly.GetExecutingAssembly());
-
-
+            
             ConsoleCommands.Init();
 
             //patch SGame::DarkImpl
@@ -119,6 +131,22 @@ namespace ClimatesOfFerngillRebuild
             HarmonyMethod DrawTrans = new HarmonyMethod(AccessTools.Method(typeof(SGamePatches), "Transpiler"));
             Monitor.Log($"Patching {SGameDrawImpl} with Transpiler: {DrawTrans}", LogLevel.Trace);
             harmony.Patch(SGameDrawImpl,transpiler: DrawTrans);
+
+            t = AccessTools.TypeByName("StardewValley.WeatherDebris");
+            var DebrisConstructor = AccessTools.Constructor(t, new[] { typeof(Vector2), typeof (int), typeof(float), typeof(float), typeof(float)});
+            HarmonyMethod CtorPatch = new HarmonyMethod(AccessTools.Method(typeof(WeatherDebrisPatches), "CtorPostfix"));
+            Monitor.Log($"Patching {DebrisConstructor} with Postfix: {CtorPatch}", LogLevel.Trace);
+            harmony.Patch(DebrisConstructor, postfix: CtorPatch);
+
+            MethodInfo DebrisDraw = AccessTools.Method(typeof(WeatherDebris), "draw");
+            HarmonyMethod DebrisPatch = new HarmonyMethod(AccessTools.Method(typeof(WeatherDebrisPatches), "DrawPrefix"));
+            Monitor.Log($"Patching {DebrisDraw} with Prefix: {DebrisDraw}", LogLevel.Trace);
+            harmony.Patch(DebrisDraw,prefix: DebrisPatch);
+
+            MethodInfo DebrisUpdate = AccessTools.Method(typeof(WeatherDebris), "update", new[] { typeof(bool) });
+            HarmonyMethod DebrisUpdatePatch = new HarmonyMethod(AccessTools.Method(typeof(WeatherDebrisPatches), "UpdatePrefix"));
+            Monitor.Log($"Patching {DebrisUpdate} with Prefix: {DebrisUpdatePatch}", LogLevel.Trace);
+            harmony.Patch(DebrisUpdate, prefix: DebrisUpdatePatch);
 
             //subscribe to events
             var events = helper.Events;
@@ -142,10 +170,9 @@ namespace ClimatesOfFerngillRebuild
                 .Add("world_tmrwweather", helper.Translation.Get("console-text.desc_tmrweather"), ConsoleCommands.TomorrowWeatherChangeFromConsole)
                 .Add("world_setweather", helper.Translation.Get("console-text.desc_setweather"), ConsoleCommands.WeatherChangeFromConsole)
                 .Add("debug_clearspecial", "debug command to clear special weathers", ConsoleCommands.ClearSpecial)
-                .Add("debug_weatherstatus","!", ConsoleCommands.OutputWeather);
+                .Add("debug_weatherstatus","!", ConsoleCommands.OutputWeather)
+                .Add("debug_sswa","!", ConsoleCommands.ShowSpecialWeather);
         }
-
-
 
         /// <summary>Raised once per second after the game state is updated.</summary>
         /// <param name="sender">The event sender.</param>
@@ -181,7 +208,30 @@ namespace ClimatesOfFerngillRebuild
         private void OnSaveLoaded(object sender, SaveLoadedEventArgs e)
         {
             CustomTVMod.changeAction("weather", DisplayWeather);
+
+            if (Context.IsMainPlayer)
+            {
+                trackerModel = this.Helper.Data.ReadSaveData<ClimateTracker>("climate-tracker");
+            }
         } 
+
+        public static void SetVariableRain(bool isVariable)
+        {
+            IsVariableRain = isVariable;
+        }
+
+        public static void SetRainAmt(int rainAmt)
+        {
+            AmtOfRainDrops = rainAmt;
+            Array.Resize(ref Game1.rainDrops, AmtOfRainDrops);
+            if (Game1.IsMasterGame)
+                Logger.Log($"Setting rain to {AmtOfRainDrops}");
+            else
+            {
+                Logger.Log($"Setting from master: rain to {AmtOfRainDrops}");
+            }
+                
+        }
         
         public void DisplayWeather(TV tv, TemporaryAnimatedSprite sprite, Farmer who, string answer)
         {
@@ -291,6 +341,9 @@ namespace ClimatesOfFerngillRebuild
         private void OnSaving(object sender, SavingEventArgs e)
         {
             if (!Context.IsMainPlayer) return;
+
+            this.Helper.Data.WriteSaveData("climate-tracker", trackerModel);
+
             if (Conditions.HasWeather(CurrentWeather.Frost) && WeatherOpt.AllowCropDeath)
             {
                 Farm f = Game1.getFarm();
@@ -338,6 +391,13 @@ namespace ClimatesOfFerngillRebuild
             if (!Context.IsWorldReady)
                 return;
 
+            if (Context.IsMultiplayer && !Context.IsMainPlayer && Context.IsPlayerFree && !HasRequestedSync)
+            {
+                Monitor.Log("Requesting climate information");
+                this.Helper.Multiplayer.SendMessage<long>(Game1.player.UniqueMultiplayerID, "NewFarmHandJoin", new[] {"KoihimeNakamura.ClimatesOfFerngill" });
+                HasRequestedSync = true;
+            }
+
             // check for changes
             Conditions.MoveWeathers();  
             
@@ -380,6 +440,27 @@ namespace ClimatesOfFerngillRebuild
                         }
                     }
                 }
+            }
+
+            TenMCounter++;
+
+            if (TenMCounter == 3)
+            {
+                if (IsVariableRain)
+                {
+                    if (Dice.NextDouble() < WeatherOpt.VRChangeChance)
+                    {
+                        if (Dice.NextDouble() < WeatherOpt.VRMassiveStepChance)
+                            AmtOfRainDrops = WeatherUtilities.GetNextHighestRainCategoryBeginning(AmtOfRainDrops);
+                        else
+                            AmtOfRainDrops = (int)Math.Floor(AmtOfRainDrops * (1.0 + Dice.RollInRange(-1.0 * WeatherOpt.VRStepPercent, WeatherOpt.VRStepPercent)));
+
+                        SetRainAmt(AmtOfRainDrops);
+                        Conditions.GenerateWeatherSync();
+                    }
+
+                }
+                TenMCounter = 0;
             }
 
             if (Game1.currentLocation.IsOutdoors && Conditions.HasWeather(CurrentWeather.Lightning) && !Conditions.HasWeather(CurrentWeather.Rain) && Game1.timeOfDay < 2400)
@@ -494,9 +575,24 @@ namespace ClimatesOfFerngillRebuild
         
         private void OnModMessageRecieved(object sender, ModMessageReceivedEventArgs e)
         {
+            if (e.FromModID == "KoihimeNakamura.ClimatesOfFerngill" && e.Type == "NewFarmHandJoin" && Context.IsMainPlayer && !HasGottenSync)
+            {
+                Monitor.Log("Farmhand request for climate data recieved");
+                WeatherSync message = Conditions.GenerateWeatherSyncMessage();
+                Monitor.Log($"Sending {GenSyncMessageString(message)}");
+                this.Helper.Multiplayer.SendMessage<WeatherSync>(message,"WeatherSync",new[] {"KoihimeNakamura.ClimatesOfFerngill" },new[] {e.FromPlayerID });
+                HasGottenSync = true;
+            }
+
             if (e.FromModID == "KoihimeNakamura.ClimatesOfFerngill" && e.Type == "WeatherSync")
             {
                 WeatherSync message = e.ReadAs<WeatherSync>();
+                Monitor.Log("Message recieved from Master Game");
+                if (WeatherOpt.Verbose)
+                {
+                    Monitor.Log($"Message contents: {GenSyncMessageString(message)}");
+                }
+                
                 Conditions.SetSync(message);
             }
         }
@@ -506,9 +602,13 @@ namespace ClimatesOfFerngillRebuild
         /// <param name="e">The event arguments.</param>
         private void OnReturnedToTitle(object sender, ReturnedToTitleEventArgs e)
         {
+            TenMCounter = 0;
             Conditions.Reset();
+            IsVariableRain = false;
             IsBloodMoon = false;
             ExpireTime = 0;
+            AmtOfRainDrops = 0;
+            //RainAmt = 0.0;
             CropList.Clear(); 
         }
 
@@ -517,18 +617,46 @@ namespace ClimatesOfFerngillRebuild
         /// <param name="e">The event arguments.</param>
         private void OnDayStarted(object sender, DayStartedEventArgs e)
         {
+            TenMCounter = 0;
             Conditions.OnNewDay();
             IsBloodMoon = false;
 
             Conditions.SetTodayWeather(); //run this automatically
             if (!Context.IsMainPlayer) return;
 
+            if (trackerModel is null) { 
+                  trackerModel = new ClimateTracker();
+            }
+
+            AmtOfRainDrops = 0;
+
+            if (Conditions.ContainsCondition(CurrentWeather.Rain))
+                trackerModel.DaysSinceRainedLast = 0;
+            else
+                trackerModel.DaysSinceRainedLast++;
+
             CropList.Clear(); //clear the crop list
             UpdateWeatherOnNewDay();
             SetTommorowWeather();
             ExpireTime = 0;
+                       
+            WeatherSync message = Conditions.GenerateWeatherSyncMessage();
+            Monitor.Log("Generating weather sync");
+            this.Helper.Multiplayer.SendMessage(message, "WeatherSync", modIDs: new[] { this.ModManifest.UniqueID });
         }
 
+        private string GenSyncMessageString(WeatherSync ws)
+        {
+            string s = $"WeatherType: {ws.weatherType}, with today temps ({ws.todayLow},{ws.todayHigh}), tomorrow temps ({ws.tommorowLow},{ws.tommorowHigh}).";
+            s += $"{Environment.NewLine}Variable Rain: {ws.isVariableRain}, overcast: {ws.isOvercast}, rainAmt: {ws.rainAmt}";
+            s += $"{Environment.NewLine}Blizzard: {ws.isBlizzard}, time: ({ws.blizzWeatherBeginTime},{ws.blizzWeatherEndTime}).";
+            s += $"{Environment.NewLine}Fog: {ws.isFoggy}, time: ({ws.fogWeatherBeginTime},{ws.fogWeatherEndTime}).";
+            s += $"{Environment.NewLine}WhiteOut: {ws.isWhiteOut}, time: ({ws.whiteWeatherBeginTime},{ws.whiteWeatherEndTime}).";
+            s += $"{Environment.NewLine}Thunder: {ws.isThunderFrenzy}, time: ({ws.thunWeatherBeginTime},{ws.thunWeatherEndTime}).";
+            s += $"{Environment.NewLine}Sandstorm: {ws.isSandstorm}, time: ({ws.sandstormWeatherBeginTime},{ws.sandstormWeatherEndTime}).";
+
+            return s;
+        }
 
         private void SetTommorowWeather()
         {
@@ -665,6 +793,7 @@ namespace ClimatesOfFerngillRebuild
             if (Game1.dayOfMonth == 0) //do not run on day 0.
                 return;
 
+            //RainAmt = 0; //reset for recalc.
             //Set Temperature for today and tommorow. Get today's conditions.
             //   If tomorrow is set, move it to today, and autoregen tomorrow.
             //   *201711 Due to changes in the object, it auto attempts to update today from tomorrow.
@@ -685,16 +814,54 @@ namespace ClimatesOfFerngillRebuild
 
                 return;
             }
-            
-            if (Conditions.TestForSpecialWeather(GameClimate.GetClimateForDate(SDate.Now())))
+
+            if (Conditions.HasWeather(CurrentWeather.Rain))
+               AmtOfRainDrops = 70;
+
+            //variable rain conditions 
+            double roll = Dice.NextDouble();
+            if (roll < WeatherOpt.VariableRainChance)
             {
-                WeatherSync message = Conditions.GenerateWeatherSync();
-                this.Helper.Multiplayer.SendMessage(message, "WeatherSync", modIDs: new[] { this.ModManifest.UniqueID });
-                
+                Monitor.Log($"With {roll}, we are setting for variable rain");
+                IsVariableRain = true;
+             
+                if (Dice.NextDouble() < WeatherOpt.OvercastChance) { 
+                    IsVariableRain = false;
+                    Conditions.AddWeather(CurrentWeather.Overcast);
+                    Monitor.Log("Resizing rain array - settting weather to ovecast");
+                    Array.Resize(ref Game1.rainDrops,0);
+                    AmtOfRainDrops = 0;
+                    IsVariableRain = false;
+                }
+                else if (Dice.NextDouble() < WeatherOpt.VRChangeChance)
+                {
+                    if (Dice.NextDouble() < WeatherOpt.VRMassiveStepChance) 
+                        AmtOfRainDrops = WeatherUtilities.GetNextHighestRainCategoryBeginning(AmtOfRainDrops);
+                    else
+                        AmtOfRainDrops = (int)Math.Floor(AmtOfRainDrops * (1.0 + Dice.RollInRange(-1.0 * WeatherOpt.VRStepPercent, WeatherOpt.VRStepPercent)));
+
+                    Monitor.Log($"Resizing rain array - settting rain to {AmtOfRainDrops}");
+                    Array.Resize(ref Game1.rainDrops, AmtOfRainDrops);
+                }
+
+                //TODO calc the amount of water it's been since 3am
+               
+            }
+            //TODO water check
+            
+            if (Conditions.TestForSpecialWeather(GameClimate.GetClimateForDate(SDate.Now()), trackerModel))
+            {           
                 if (WeatherOpt.Verbose)
-                    Monitor.Log("Special weather created! Message sent.");
+                    Monitor.Log("Special weather created!");
             }
         }
+
+
+        internal static void ForceVariableRain()
+        {
+            IsVariableRain = true;
+        }
+
 
         public static bool ShouldPrecipInLocation()
         {
@@ -714,7 +881,6 @@ namespace ClimatesOfFerngillRebuild
         {
             return Color.Blue;
         }
-
 
         public static Color GetSnowColor()
         {
@@ -792,5 +958,16 @@ namespace ClimatesOfFerngillRebuild
             }
         }
         #endregion
+
+        internal static void GetTodayTemps()
+        {
+            Conditions.SetTodayTemps(GameClimate.GetTemperatures(SDate.Now(), Dice));
+        }
+
+        internal static void GetTomorrowTemps()
+        {
+            Conditions.SetTomorrowTemps(GameClimate.GetTemperatures(SDate.Now().AddDays(1), Dice));
+        }
+     
     }
 }

@@ -3,6 +3,8 @@
     public interface IClimatesOfFerngillAPI
     {
         string GetCurrentWeatherName();
+        double? GetTodaysHigh();
+        double? GetTodaysLow();
     }
     
     public class ClimatesOfFerngillAPI : IClimatesOfFerngillAPI
@@ -21,17 +23,12 @@
             return CurrentConditions.Weathers[(int)CurrentConditions.GetCurrentConditions()].ConditionName;
         }
 
-        public void SetWeather(string weather)
-        {
-            //TODO: Handle processing.
-        }
-
-        public double GetTodaysHigh()
+        public double? GetTodaysHigh()
         {
             return CurrentConditions.TodayHigh;
         }
 
-        public double GetTodaysLow()
+        public double? GetTodaysLow()
         {
             return CurrentConditions.TodayLow;
         }

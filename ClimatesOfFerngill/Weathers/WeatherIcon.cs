@@ -25,6 +25,8 @@
         IconWhiteOut = 20,
         IconWhiteOutFog = 21,
         IconThunderFrenzy = 22,
+        IconSandstorm = 23,
+        IconOvercast = 24,
         IconBloodMoon = 99
     }
 }

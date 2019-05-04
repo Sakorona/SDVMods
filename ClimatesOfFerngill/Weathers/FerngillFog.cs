@@ -27,7 +27,6 @@ namespace ClimatesOfFerngillRebuild
 
         private bool VerboseDebug { get; set; }
         public bool BloodMoon { get; set; }
-        private IMonitor Monitor { get; set; }
 
         /// <summary>  The alpha attribute of the fog. </summary>
         private float FogAlpha { get; set; }
@@ -65,8 +64,14 @@ namespace ClimatesOfFerngillRebuild
 
         /// <summary> Sets the fog expiration time. </summary>
         /// <param name="t">The time for the fog to expire</param>
-        public void SetWeatherExpirationTime(SDVTime t) => ExpirTime = t;
-        public void SetWeatherBeginTime(SDVTime t) => BeginTime = t;
+        public void SetWeatherExpirationTime(SDVTime t)
+        {
+            ExpirTime = new SDVTime(t);
+        }
+        public void SetWeatherBeginTime(SDVTime t)
+        {
+            BeginTime = new SDVTime(t);
+        }
         public SDVTimePeriods FogTimeSpan { get; set;}
         private MersenneTwister Dice { get; set; }
         private WeatherConfig ModConfig { get; set; }
@@ -75,13 +80,12 @@ namespace ClimatesOfFerngillRebuild
         private Stopwatch FogElapsed { get; set; }
 
         /// <summary> Default constructor. </summary>
-        internal FerngillFog(Icons Sheet, bool Verbose, IMonitor Monitor, MersenneTwister Dice, WeatherConfig config, SDVTimePeriods FogPeriod)
+        internal FerngillFog(Icons Sheet, bool Verbose, MersenneTwister Dice, WeatherConfig config, SDVTimePeriods FogPeriod)
         {
             this.Sheet = Sheet;
             CurrentFogType = FogType.None;
             ExpirTime = null;
             VerboseDebug = Verbose;
-            this.Monitor = Monitor;
             this.BloodMoon = false;
             this.Dice = Dice;
             this.ModConfig = config;
@@ -106,6 +110,29 @@ namespace ClimatesOfFerngillRebuild
             FadeOutFog = false;
             FadeInFog = false;
             FogElapsed.Reset(); 
+        }
+
+        public void ForceWeatherStart()
+        {
+            this.FogAlpha = 1f;
+            if (Dice.NextDoublePositive() <= .001)
+                CurrentFogType = FogType.Blinding;
+            else
+                CurrentFogType = FogType.Normal;
+
+            if (ModConfig.ShowLighterFog)
+            {
+                this.FogAlpha = .6f;
+            }
+        }
+
+        public string DebugWeatherOutput()
+        {
+            string s = "";
+            s += $"Weather {WeatherType} is {IsWeatherVisible}, Progress: {WeatherInProgress}, Begin Time {BeginTime} to End Time {ExpirTime}. Alpha is {FogAlpha}.";
+            s += $"{Environment.NewLine} Color is {FogColor}. Position is {FogPosition.ToString()}, with Fade Out Timer being {FadeOutFog} and In {FadeInFog}";
+            s += $"{Environment.NewLine} Fog Type is {CurrentFogType}";
+            return s;
         }
 
         /// <summary>Returns a string describing the fog type. </summary>
@@ -203,6 +230,8 @@ namespace ClimatesOfFerngillRebuild
             {
                 ExpirTime = new SDVTime(SDVTime.CurrentTime - 10);
                 CurrentFogType = FogType.None;
+                FogElapsed.Start();
+                FadeOutFog = true;
                 UpdateStatus(WeatherType, false);
             }
         }
@@ -231,7 +260,7 @@ namespace ClimatesOfFerngillRebuild
                 UpdateStatus(WeatherType, true);
             }
 
-            if (WeatherExpirationTime <= SDVTime.CurrentTime && IsWeatherVisible)
+            if (SDVTime.CurrentTime >= WeatherExpirationTime && IsWeatherVisible)
             {
                 FadeOutFog = true;
                 FogElapsed.Start();
@@ -307,7 +336,7 @@ namespace ClimatesOfFerngillRebuild
 
         public void MoveWeather()
         {
-            float FogFadeTime = 2690f;
+            const float FogFadeTime = 3120f;
             if (FadeOutFog)
             {
                 // we want to fade out the fog over 3 or so seconds, so we need to process a fade from 100% to 45%
@@ -315,7 +344,7 @@ namespace ClimatesOfFerngillRebuild
                 // let's try 955ms.. or 1345..
                 // or 2690.. so no longer 3s. :<
                 FogAlpha = 1 - (FogElapsed.ElapsedMilliseconds / FogFadeTime);
-
+               
                 if (FogAlpha <= 0)
                 {
                     FogAlpha = 0;

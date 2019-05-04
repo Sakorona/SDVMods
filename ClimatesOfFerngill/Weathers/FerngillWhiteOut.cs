@@ -21,11 +21,17 @@ namespace ClimatesOfFerngillRebuild
         private SDVTime BeginTime;
 
         private MersenneTwister Dice;
-        private WeatherConfig ModConfig;
+        private readonly WeatherConfig ModConfig;
 
         public string WeatherType => "WhiteOut";
-        public void SetWeatherExpirationTime(SDVTime t) => ExpirTime = t;
-        public void SetWeatherBeginTime(SDVTime t) => BeginTime = t;
+        public void SetWeatherExpirationTime(SDVTime t)
+        {
+            ExpirTime = new SDVTime(t);
+        }
+        public void SetWeatherBeginTime(SDVTime t)
+        {
+            BeginTime = new SDVTime(t);
+        }
 
         public SDVTime WeatherExpirationTime => (ExpirTime ?? new SDVTime(0600));
         public SDVTime WeatherBeginTime => (BeginTime ?? new SDVTime(0600));
@@ -39,6 +45,11 @@ namespace ClimatesOfFerngillRebuild
             this.ModConfig = config;
         }
 
+        public void ForceWeatherStart()
+        {
+            IsWhiteout = true;
+        }
+
         public void UpdateStatus(string weather, bool status)
         {
             if (OnUpdateStatus == null) return;
@@ -50,11 +61,15 @@ namespace ClimatesOfFerngillRebuild
         public void OnNewDay()
         {
             IsWhiteout = false;
+            BeginTime = new SDVTime(0600);
+            ExpirTime = new SDVTime(0600);
         }
 
         public void Reset()
         {
             IsWhiteout = false;
+            BeginTime = new SDVTime(0600);
+            ExpirTime = new SDVTime(0600);
         }
 
         public void SetWeatherTime(SDVTime begin, SDVTime end)
@@ -95,6 +110,14 @@ namespace ClimatesOfFerngillRebuild
                 ExpirTime = new SDVTime(SDVTime.CurrentIntTime - 10);
                 UpdateStatus(WeatherType, false);
             }
+        }
+
+        public string DebugWeatherOutput()
+        {
+            string s = "";
+            s += $"Weather (WO) {WeatherType} is {IsWeatherVisible}, Progress: {WeatherInProgress}, Begin Time {BeginTime} to End Time {ExpirTime}.";
+
+            return s;
         }
 
         public void SecondUpdate()

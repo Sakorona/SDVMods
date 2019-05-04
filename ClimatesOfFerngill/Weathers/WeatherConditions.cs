@@ -27,9 +27,6 @@ namespace ClimatesOfFerngillRebuild
         ///<summary>pRNG object</summary>
         private MersenneTwister Dice;
 
-        ///<summary>SMAPI logger</summary>
-        private IMonitor Monitor;
-
         /// <summary> The translation interface </summary>
         private ITranslationHelper Translation;
 
@@ -45,7 +42,7 @@ namespace ClimatesOfFerngillRebuild
         /// <summary>The list of custom weathers </summary>
         internal List<ISDVWeather> CurrentWeathers { get; set; }
 
-        private readonly IMultiplayerEvents Multiplayer;
+        private readonly IMultiplayerHelper Multiplayer;
 
         //evening fog details
         private bool HasSetEveningFog {get; set;}
@@ -61,9 +58,8 @@ namespace ClimatesOfFerngillRebuild
         /// <param name="Dice">pRNG</param>
         /// <param name="monitor">SMAPI log object</param>
         /// <param name="Config">Game configuration</param>
-        public WeatherConditions(Icons Sheets, MersenneTwister Dice, ITranslationHelper Translation, IMonitor monitor, WeatherConfig Config, IMultiplayerEvents Helper)
+        public WeatherConditions(Icons Sheets, MersenneTwister Dice, ITranslationHelper Translation, WeatherConfig Config, IMultiplayerHelper Helper)
         {
-            Monitor = monitor;
             this.Multiplayer = Helper;
             ModConfig = Config;
             this.Dice = Dice;
@@ -73,11 +69,11 @@ namespace ClimatesOfFerngillRebuild
             CurrentConditionsN = CurrentWeather.Unset;
             CurrentWeathers = new List<ISDVWeather>
             {
-                new FerngillFog(Sheets, Config.Verbose, monitor, Dice, Config, SDVTimePeriods.Morning),
+                new FerngillFog(Sheets, Config.Verbose, Dice, Config, SDVTimePeriods.Morning),
                 new FerngillWhiteOut(Dice, Config),
                 new FerngillBlizzard(Dice, Config),
-                new FerngillThunderFrenzy(monitor, Dice, Config),
-                //new FerngillCustomRain(monitor, Dice, Config, 300)
+                new FerngillThunderFrenzy(Dice, Config),
+                new FerngillSandstorm(Sheets,Config.Verbose,Dice,Config)
             };
 
             foreach (ISDVWeather weather in CurrentWeathers)
@@ -236,9 +232,23 @@ namespace ClimatesOfFerngillRebuild
 
                 { (int)(CurrentWeather.BloodMoon| CurrentWeather.Heatwave), new WeatherData(WeatherIcon.IconBloodMoon, WeatherIcon.IconBloodMoon, "bloodMoonHeatwave", Translation.Get("weather_bloodmoon"))},
 
-                { (int)(CurrentWeather.BloodMoon| CurrentWeather.Frost), new WeatherData(WeatherIcon.IconBloodMoon, WeatherIcon.IconBloodMoon, "bloodMoonFrost", Translation.Get("weather_bloodmoon"))}
+                { (int)(CurrentWeather.BloodMoon| CurrentWeather.Frost), new WeatherData(WeatherIcon.IconBloodMoon, WeatherIcon.IconBloodMoon, "bloodMoonFrost", Translation.Get("weather_bloodmoon"))},
 
-            };
+                { (int)(CurrentWeather.Sandstorm), new WeatherData(WeatherIcon.IconSandstorm, WeatherIcon.IconSandstorm, "sandstorm", Translation.Get("weather_sandstorm"))},
+                { (int)(CurrentWeather.Sandstorm | CurrentWeather.Wind), new WeatherData(WeatherIcon.IconSandstorm, WeatherIcon.IconSandstorm, "sandstormWind", Translation.Get("weather_sandstorm"))},
+                { (int)(CurrentWeather.Sandstorm | CurrentWeather.Wind | CurrentWeather.Heatwave), new WeatherData(WeatherIcon.IconSandstorm, WeatherIcon.IconSandstorm, "sandstormWindHW", Translation.Get("weather_sandstorm"))},
+                { (int)(CurrentWeather.Sandstorm | CurrentWeather.Wind | CurrentWeather.Frost), new WeatherData(WeatherIcon.IconSandstorm, WeatherIcon.IconSandstorm, "sandstormWindFrost", Translation.Get("weather_sandstorm"))},
+                { (int)(CurrentWeather.Sandstorm | CurrentWeather.Sunny), new WeatherData(WeatherIcon.IconSandstorm, WeatherIcon.IconSandstorm, "sandstorm", Translation.Get("weather_sandstorm"))},
+                { (int)(CurrentWeather.Sandstorm | CurrentWeather.Wind | CurrentWeather.Sunny), new WeatherData(WeatherIcon.IconSandstorm, WeatherIcon.IconSandstorm, "sandstormWind", Translation.Get("weather_sandstorm"))},
+                { (int)(CurrentWeather.Sandstorm | CurrentWeather.Wind | CurrentWeather.Heatwave| CurrentWeather.Sunny), new WeatherData(WeatherIcon.IconSandstorm, WeatherIcon.IconSandstorm, "sandstormWindHW", Translation.Get("weather_sandstorm"))},
+                { (int)(CurrentWeather.Sandstorm | CurrentWeather.Wind | CurrentWeather.Frost| CurrentWeather.Sunny), new WeatherData(WeatherIcon.IconSandstorm, WeatherIcon.IconSandstorm, "sandstormWindFrost", Translation.Get("weather_sandstorm"))},
+                { (int)(CurrentWeather.Rain | CurrentWeather.Overcast), new WeatherData(WeatherIcon.IconOvercast, WeatherIcon.IconOvercast, "overcast", Translation.Get("weather_overcast"))},
+                { (int)(CurrentWeather.Rain | CurrentWeather.Overcast | CurrentWeather.Heatwave), new WeatherData(WeatherIcon.IconOvercast, WeatherIcon.IconOvercast, "overcastHeatwave", Translation.Get("weather_overcast"))},
+                { (int)(CurrentWeather.Rain | CurrentWeather.Overcast | CurrentWeather.Frost), new WeatherData(WeatherIcon.IconOvercast, WeatherIcon.IconOvercast, "overcastFrost", Translation.Get("weather_overcast"))},
+                { (int)(CurrentWeather.Rain | CurrentWeather.Overcast | CurrentWeather.Fog | CurrentWeather.Heatwave), new WeatherData(WeatherIcon.IconOvercast, WeatherIcon.IconOvercast, "overcastHeatwaveFog", Translation.Get("weather_overcast"))},
+                { (int)(CurrentWeather.Rain | CurrentWeather.Overcast | CurrentWeather.Frost | CurrentWeather.Fog), new WeatherData(WeatherIcon.IconOvercast, WeatherIcon.IconOvercast, "overcastFrostFog", Translation.Get("weather_overcast"))},
+
+    };
         }
 
         /// *************************************************************************
@@ -324,6 +334,7 @@ namespace ClimatesOfFerngillRebuild
                 if (!ourFog.WeatherInProgress)
                 {
                     ourFog.SetEveningFog();
+                    this.GenerateWeatherSync();
                     HasSetEveningFog = true;
                 }
             }
@@ -482,7 +493,7 @@ namespace ClimatesOfFerngillRebuild
             {
                 if (e.Present)
                 {
-                    CurrentConditionsN = CurrentConditionsN | CurrentWeather.WhiteOut;
+                    CurrentConditionsN |= CurrentWeather.WhiteOut;
                     this.GenerateWeatherSync();
                 }
                 else
@@ -496,7 +507,7 @@ namespace ClimatesOfFerngillRebuild
             {
                 if (e.Present)
                 {
-                    CurrentConditionsN = CurrentConditionsN | CurrentWeather.ThunderFrenzy;
+                    CurrentConditionsN |= CurrentWeather.ThunderFrenzy;
                     this.GenerateWeatherSync();
                 }
                 else
@@ -506,11 +517,25 @@ namespace ClimatesOfFerngillRebuild
                 }
             }
 
+            if (e.Weather == "Sandstorm")
+            {
+                if (e.Present)
+                { 
+                    CurrentConditionsN |= CurrentWeather.Sandstorm;
+                    this.GenerateWeatherSync();
+                }
+                else
+                {
+                    CurrentConditionsN = CurrentConditionsN.RemoveFlags(CurrentWeather.Sandstorm);
+                    this.GenerateWeatherSync();
+                }
+            }
+
             if (e.Weather == "Fog")
             {
                 if (e.Present)
                 {
-                    CurrentConditionsN = CurrentConditionsN | CurrentWeather.Fog;
+                    CurrentConditionsN |= CurrentWeather.Fog;
                     this.GenerateWeatherSync();
                 }
                 else
@@ -524,7 +549,7 @@ namespace ClimatesOfFerngillRebuild
             {
   
                 if (e.Present) { 
-                    CurrentConditionsN = CurrentConditionsN | CurrentWeather.Blizzard;
+                    CurrentConditionsN |= CurrentWeather.Blizzard;
                     this.GenerateWeatherSync();
                 }
 
@@ -533,6 +558,230 @@ namespace ClimatesOfFerngillRebuild
                     this.GenerateWeatherSync();
                 }
             }
+        }
+
+        internal bool GetWeatherStatus(string weather)
+        {
+            foreach (ISDVWeather w in this.CurrentWeathers)
+            {
+                if (w.WeatherType == weather)
+                    return w.WeatherInProgress;
+            }
+            return false;
+        }
+
+        internal SDVTime GetWeatherBeginTime(string weather)
+        {
+            foreach (ISDVWeather w in this.CurrentWeathers)
+            {
+                if (w.WeatherType == weather)
+                    return w.WeatherBeginTime;
+            }
+
+            return new SDVTime(0600);
+        }
+
+        internal SDVTime GetWeatherEndTime(string weather)
+        {
+            foreach (ISDVWeather w in this.CurrentWeathers)
+            {
+                if (w.WeatherType == weather)
+                    return w.WeatherExpirationTime;
+            }
+
+            return new SDVTime(0600);
+        }
+
+        internal void SetWeatherBeginTime(string weather, int weatherTime)
+        {
+            foreach (ISDVWeather w in this.CurrentWeathers)
+            {
+                if (w.WeatherType == weather)
+                    w.SetWeatherBeginTime(new SDVTime(weatherTime));
+            }
+        }
+
+        internal void SetWeatherEndTime(string weather, int weatherTime)
+        {
+            foreach (ISDVWeather w in this.CurrentWeathers)
+            {
+                if (w.WeatherType == weather)
+                    w.SetWeatherExpirationTime(new SDVTime(weatherTime));
+            }
+        }
+
+        public void GenerateWeatherSync()
+        {
+            if (!Context.IsMainPlayer)
+                return;
+
+            WeatherSync Message = new WeatherSync
+            {
+                weatherType = WeatherUtilities.GetWeatherCode(),
+                isFoggy = GetWeatherStatus("Fog"),
+                isThunderFrenzy = GetWeatherStatus("ThunderFrenzy"),
+                isWhiteOut = GetWeatherStatus("WhiteOut"),
+                isBlizzard = GetWeatherStatus("Blizzard"),
+                isSandstorm = GetWeatherStatus("Sandstorm"),
+                isVariableRain = ClimatesOfFerngill.IsVariableRain,
+                isOvercast = ((CurrentConditionsN & CurrentWeather.Overcast) != 0),
+                rainAmt = ClimatesOfFerngill.AmtOfRainDrops,
+                fogWeatherBeginTime = GetWeatherBeginTime("Fog").ReturnIntTime(),
+                thunWeatherBeginTime = GetWeatherBeginTime("ThunderFrenzy").ReturnIntTime(),
+                blizzWeatherBeginTime = GetWeatherBeginTime("Blizzard").ReturnIntTime(),
+                whiteWeatherBeginTime = GetWeatherBeginTime("WhiteOut").ReturnIntTime(),
+                sandstormWeatherBeginTime = GetWeatherBeginTime("Sandstorm").ReturnIntTime(),
+                sandstormWeatherEndTime = GetWeatherEndTime("Sandstorm").ReturnIntTime(),
+                fogWeatherEndTime = GetWeatherEndTime("Fog").ReturnIntTime(),
+                thunWeatherEndTime = GetWeatherEndTime("ThunderFrenzy").ReturnIntTime(),
+                blizzWeatherEndTime = GetWeatherEndTime("Blizzard").ReturnIntTime(),
+                whiteWeatherEndTime = GetWeatherEndTime("WhiteOut").ReturnIntTime(),
+                todayHigh = TodayTemps.HigherBound,
+                todayLow = TodayTemps.LowerBound
+            };    
+
+
+            Multiplayer.SendMessage<WeatherSync>(Message, "WeatherSync", new [] { "KoihimeNakamura.ClimatesOfFerngill" });    
+        }
+
+        public WeatherSync GenerateWeatherSyncMessage()
+        {
+            WeatherSync Message = new WeatherSync
+            {
+                weatherType = WeatherUtilities.GetWeatherCode(),
+                isFoggy = GetWeatherStatus("Fog"),
+                isThunderFrenzy = GetWeatherStatus("ThunderFrenzy"),
+                isWhiteOut = GetWeatherStatus("WhiteOut"),
+                isBlizzard = GetWeatherStatus("Blizzard"),
+                isSandstorm = GetWeatherStatus("Sandstorm"),
+                isOvercast = ((CurrentConditionsN & CurrentWeather.Overcast) != 0),
+                isVariableRain = ClimatesOfFerngill.IsVariableRain,
+                rainAmt = ClimatesOfFerngill.AmtOfRainDrops,
+                fogWeatherBeginTime = GetWeatherBeginTime("Fog").ReturnIntTime(),
+                thunWeatherBeginTime = GetWeatherBeginTime("ThunderFrenzy").ReturnIntTime(),
+                blizzWeatherBeginTime = GetWeatherBeginTime("Blizzard").ReturnIntTime(),
+                whiteWeatherBeginTime = GetWeatherBeginTime("WhiteOut").ReturnIntTime(),
+                sandstormWeatherBeginTime = GetWeatherBeginTime("Sandstorm").ReturnIntTime(),
+                sandstormWeatherEndTime = GetWeatherEndTime("Sandstorm").ReturnIntTime(),
+                fogWeatherEndTime = GetWeatherEndTime("Fog").ReturnIntTime(),
+                thunWeatherEndTime = GetWeatherEndTime("ThunderFrenzy").ReturnIntTime(),
+                blizzWeatherEndTime = GetWeatherEndTime("Blizzard").ReturnIntTime(),
+                whiteWeatherEndTime = GetWeatherEndTime("WhiteOut").ReturnIntTime(),
+                todayHigh = TodayTemps.HigherBound,
+                todayLow = TodayTemps.LowerBound,
+                tommorowHigh = TomorrowHigh,
+                tommorowLow = TomorrowLow
+            };
+
+            return Message;
+        }
+
+        public void ForceWeatherStart(string s)
+        {
+            foreach (ISDVWeather w in this.CurrentWeathers)
+            {
+                if (w.WeatherType == s)
+                    w.ForceWeatherStart();
+            }
+        }
+
+        public void SetSync(WeatherSync ws)
+        {
+            //set general weather first, then the specialized weathers
+            switch (ws.weatherType)
+            {
+                case Game1.weather_sunny:
+                    WeatherUtilities.SetWeatherSunny();
+                    break;
+                case Game1.weather_debris:
+                    WeatherUtilities.SetWeatherDebris();
+                    break;
+                case Game1.weather_snow:
+                    WeatherUtilities.SetWeatherSnow();
+                    break;
+                case Game1.weather_rain:
+                    WeatherUtilities.SetWeatherRain();
+                    break;
+                case Game1.weather_lightning:
+                    WeatherUtilities.SetWeatherStorm();
+                    break;
+                default:
+                    WeatherUtilities.SetWeatherSunny();
+                    break;
+            }
+
+            Game1.updateWeatherIcon();
+
+            //yay, force set weathers!
+            if (ws.isFoggy)
+            {
+                ForceWeatherStart("Fog");
+                SetWeatherBeginTime("Fog", ws.fogWeatherBeginTime);
+                SetWeatherEndTime("Fog", ws.fogWeatherEndTime);
+            }
+
+            if (ws.isBlizzard)
+            {
+                ForceWeatherStart("Blizzard");
+                SetWeatherBeginTime("Blizzard", ws.blizzWeatherBeginTime);
+                SetWeatherEndTime("Blizzard", ws.blizzWeatherEndTime);
+            }
+
+            if (ws.isWhiteOut)
+            {
+                ForceWeatherStart("WhiteOut");
+                SetWeatherBeginTime("WhiteOut", ws.whiteWeatherBeginTime);
+                SetWeatherEndTime("WhiteOut", ws.whiteWeatherEndTime);
+            }
+
+            if (ws.isThunderFrenzy)
+            {
+                SetWeatherBeginTime("ThunderFrenzy", ws.thunWeatherBeginTime);
+                SetWeatherEndTime("ThunderFrenzy", ws.thunWeatherEndTime);
+            }
+
+            if (ws.isSandstorm)
+            {
+                ForceWeatherStart("Sandstorm");
+                SetWeatherBeginTime("Sandstorm", ws.sandstormWeatherBeginTime);
+                SetWeatherEndTime("Sandstorm", ws.sandstormWeatherEndTime);
+            }
+
+            if (ws.isOvercast)
+            {
+                ClimatesOfFerngill.SetRainAmt(0);
+                CurrentConditionsN |= CurrentWeather.Overcast;
+                ClimatesOfFerngill.SetVariableRain(false);
+            }
+            
+            if (ws.isVariableRain)
+            {
+                ClimatesOfFerngill.SetRainAmt(ws.rainAmt);
+                ClimatesOfFerngill.SetVariableRain(ws.isVariableRain);
+            }
+
+            if (TodayTemps is null)
+            {
+                TodayTemps = new RangePair();
+            }
+            TodayTemps.HigherBound = ws.todayHigh;
+            TodayTemps.LowerBound = ws.todayLow;
+            SetTomorrowTemps(new RangePair(ws.tommorowLow,ws.tommorowHigh));
+            //update tracker object
+
+            ClimatesOfFerngill.Conditions.SetTodayWeather();
+        }
+
+        public string PrintWeather()
+        {
+            string s = "";
+            foreach(ISDVWeather w in this.CurrentWeathers)
+            {
+                s += w.DebugWeatherOutput();
+                s += Environment.NewLine;
+            }
+
+            return s;
         }
 
         public bool ContainsCondition(CurrentWeather cond)
@@ -555,6 +804,7 @@ namespace ClimatesOfFerngillRebuild
 
             TodayTemps.HigherBound = high;
             TodayTemps.LowerBound = low;
+            this.GenerateWeatherSync();
         }
 
         /// <summary>This function resets the weather for a new day.</summary>
@@ -564,8 +814,15 @@ namespace ClimatesOfFerngillRebuild
                 weather.OnNewDay();
 
             CurrentConditionsN = CurrentWeather.Unset;
-            TodayTemps = TomorrowTemps; //If Tomorrow is null, should just allow it to be null.
-            TomorrowTemps = null;
+            //Formerly, if tomorrow was null, we'd just allow nulls. Now we don't. 
+            if (TomorrowTemps == null) { 
+                ClimatesOfFerngill.GetTodayTemps();
+                ClimatesOfFerngill.GetTomorrowTemps();
+            }
+            else { 
+                TodayTemps = TomorrowTemps; //If Tomorrow is null, should just allow it to be null.
+                ClimatesOfFerngill.GetTomorrowTemps();
+            }
 
             if (Game1.currentSeason == "fall")
             {
@@ -584,6 +841,8 @@ namespace ClimatesOfFerngillRebuild
                 Weathers[(int)(CurrentWeather.Wind | CurrentWeather.Lightning)] = new WeatherData(WeatherIcon.IconSpringDebris, WeatherIcon.IconSpringDebris, "drylightningwindy", Translation.Get("weather_drylightningwindy"));
                 Weathers[(int)(CurrentWeather.Wind | CurrentWeather.Heatwave | CurrentWeather.Lightning)] = new WeatherData(WeatherIcon.IconSpringDebris, WeatherIcon.IconSpringDebris, "drylightningheatwave", Translation.Get("weather_drylightningheatwavewindy"));
             }
+
+            this.GenerateWeatherSync();
         }
 
         /// <summary> This function resets the weather object to basic. </summary>
@@ -698,16 +957,17 @@ namespace ClimatesOfFerngillRebuild
             return ret;
         }
         
-        internal bool TestForSpecialWeather(FerngillClimateTimeSpan ClimateForDay)
+        internal bool TestForSpecialWeather(FerngillClimateTimeSpan ClimateForDay, ClimateTracker model)
         {
             bool specialWeatherTriggered = false;
             // Conditions: Blizzard - occurs in weather_snow in "winter"
             //             Dry Lightning - occurs if it's sunny in any season if temps exceed 25C.
             //             Frost and Heatwave check against the configuration.
             //             Thundersnow  - as Blizzard, but really rare.
+            //             Sandstorm - windy, with no precip for several days. Spring-Fall only, highest chance in summer.
             //             Fog - per climate, although night fog in winter is double normal chance
             GenerateEveningFog = (Dice.NextDouble() < ClimateForDay.EveningFogChance * ClimateForDay.RetrieveOdds(Dice,"fog",Game1.dayOfMonth)) && !this.GetCurrentConditions().HasFlag(CurrentWeather.Wind);
-
+          
             bool blockFog = ClimatesOfFerngill.MoonAPI != null && ClimatesOfFerngill.MoonAPI.IsSolarEclipse();
 
             if (blockFog)
@@ -720,19 +980,20 @@ namespace ClimatesOfFerngillRebuild
                 this.CreateWeather("Fog");
 
                 if (ModConfig.Verbose)
-                    Monitor.Log($"{FogDescription(fogRoll, ClimateForDay.RetrieveOdds(Dice, "fog", Game1.dayOfMonth))}");
+                    ClimatesOfFerngill.Logger.Log($"{FogDescription(fogRoll, ClimateForDay.RetrieveOdds(Dice, "fog", Game1.dayOfMonth))}");
 
                 specialWeatherTriggered = true;
             }
 
             if (this.HasWeather(CurrentWeather.Snow))
             {
-                double blizRoll = Dice.NextDoublePositive();
+                //double blizRoll = Dice.NextDoublePositive();
+                double blizRoll = 0;
                 if (blizRoll <= ModConfig.BlizzardOdds)
                 {
                     this.CreateWeather("Blizzard");
                     if (ModConfig.Verbose)
-                        Monitor.Log($"With roll {blizRoll:N3} against {ModConfig.BlizzardOdds}, there will be blizzards today");
+                        ClimatesOfFerngill.Logger.Log($"With roll {blizRoll:N3} against {ModConfig.BlizzardOdds}, there will be blizzards today");
                     if (Dice.NextDoublePositive() < .05 && ModConfig.HazardousWeather)
                     {
                         this.CreateWeather("WhiteOut");
@@ -752,7 +1013,7 @@ namespace ClimatesOfFerngillRebuild
                 {
                     this.AddWeather(CurrentWeather.Lightning);
                     if (ModConfig.Verbose)
-                        Monitor.Log($"With roll {oddsRoll:N3} against {ModConfig.ThundersnowOdds}, there will be thundersnow today");
+                        ClimatesOfFerngill.Logger.Log($"With roll {oddsRoll:N3} against {ModConfig.ThundersnowOdds}, there will be thundersnow today");
 
                     specialWeatherTriggered = true;
                 }
@@ -767,7 +1028,7 @@ namespace ClimatesOfFerngillRebuild
                 {
                     this.AddWeather(CurrentWeather.Lightning);
                     if (ModConfig.Verbose)
-                        Monitor.Log($"With roll {oddsRoll:N3} against {ModConfig.DryLightning}, there will be dry lightning today.");
+                        ClimatesOfFerngill.Logger.Log($"With roll {oddsRoll:N3} against {ModConfig.DryLightning}, there will be dry lightning today.");
 
                     specialWeatherTriggered = true;
                 }
@@ -776,6 +1037,17 @@ namespace ClimatesOfFerngillRebuild
                 {
                     this.AddWeather(CurrentWeather.Heatwave);
                     specialWeatherTriggered = true;
+                }
+
+                double sandstormOdds = .18;
+                if (Game1.currentSeason == "summer")
+                    sandstormOdds *= 2;
+
+                if (oddsRoll < sandstormOdds && ModConfig.HazardousWeather)
+                {
+                    this.AddWeather(CurrentWeather.Sandstorm);
+                    specialWeatherTriggered = true;
+                    this.CreateWeather("Sandstorm");
                 }
             }
 
@@ -807,7 +1079,7 @@ namespace ClimatesOfFerngillRebuild
                     this.AddWeather(CurrentWeather.ThunderFrenzy);
                     specialWeatherTriggered = true;
                     if (ModConfig.Verbose)
-                        Monitor.Log($"With roll {oddsRoll:N3} against {ModConfig.ThunderFrenzyOdds}, there will be a thunder frenzy today");
+                        ClimatesOfFerngill.Logger.Log($"With roll {oddsRoll:N3} against {ModConfig.ThunderFrenzyOdds}, there will be a thunder frenzy today");
                     this.CreateWeather("ThunderFrenzy");
                 }
             }
