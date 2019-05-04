@@ -54,6 +54,10 @@ If I have left you out of acknowledgements, please contact me so I can get you a
 
 
 ## Changelog
+v1.5-beta2
+ - Fixed MP sync issues with fog
+ - Some small fixes to all weathers
+
 v1.5
  - MP sync added in. 
  - Custom sprites added, adding in summer wind to the game (21%(-8,+6), (19%(-8,+6), 23%(-4%+8%))
