@@ -6,37 +6,61 @@ namespace ClimatesOfFerngillRebuild.Patches
 {
     public static class WeatherDebrisPatches
     {
+        public const int SingleLeafA = 0;
+        public const int SingleLeafB = 1;
+        public const int DoubleLeafA = 2;
+        public const int RareSeason = 3;
+
         static void CtorPostfix(WeatherDebris __instance)
         {
             Rectangle sourceRect = ClimatesOfFerngill.Reflection.GetField<Rectangle>(__instance,"sourceRect").GetValue();
+
             double prob = ClimatesOfFerngill.Dice.NextDouble();
             int which;
             if (prob < .6)
-                which = 0;
+                which = SingleLeafA;
             else if (prob >= .6 && prob < .8)
-                which = 1;
+                which = SingleLeafB;
             else if (prob >= .8 && prob < .9)
-                which = 2;
+                which = DoubleLeafA;
             else
-                which = 3;
+                which = RareSeason;
 
+            if (which == RareSeason && Game1.currentSeason == "summer")
+                which = SingleLeafB;
 
+            int offset = 0;
             switch (which)
             {
-                case 0:
-                    sourceRect = new Rectangle(0,160,16,16);
+                case SingleLeafA:
+                    if (Game1.currentSeason == "spring") offset = 0;
+                    if (Game1.currentSeason == "summer") offset = 80;
+                    if (Game1.currentSeason == "fall") offset = 112;
+                    if (Game1.currentSeason == "winter") offset = 176;
                     break;
-                case 1:
-                    sourceRect = new Rectangle(0,176,16,16);
+                case SingleLeafB:
+                    if (Game1.currentSeason == "spring") offset = 16;
+                    if (Game1.currentSeason == "summer") offset = 96;
+                    if (Game1.currentSeason == "fall") offset = 128;
+                    if (Game1.currentSeason == "winter") offset = 192;
                     break;
-                case 2:
-                    sourceRect = new Rectangle(0,192,16,16);
+                case DoubleLeafA:
+                    if (Game1.currentSeason == "spring") offset = 32;
+                    if (Game1.currentSeason == "summer") offset = 64;
+                    if (Game1.currentSeason == "fall") offset = 144;
+                    if (Game1.currentSeason == "winter") offset = 208;
                     break;
-                case 3:
-                    sourceRect = new Rectangle(0,208,16,16);
+                case RareSeason:
+                    if (Game1.currentSeason == "spring") offset = 48;
+                    if (Game1.currentSeason == "fall") offset = 48;
+                    if (Game1.currentSeason == "winter") offset = 160;
+                    break;
+                  default:
+                    offset = 0;
                     break;
             }
-
+  
+            sourceRect = new Rectangle(0, offset, 16, 16);
             ClimatesOfFerngill.Reflection.GetField<Rectangle>(__instance, "sourceRect").SetValue(sourceRect);
         }
 
@@ -120,6 +144,7 @@ namespace ClimatesOfFerngillRebuild.Patches
 
         static bool DrawPrefix(SpriteBatch b, WeatherDebris __instance, Rectangle ___sourceRect)
         {
+            ClimatesOfFerngill.Logger.Log($"Source Rect is {___sourceRect}");
             b.Draw(ClimatesOfFerngill.OurIcons.LeafSprites, __instance.position, new Rectangle?(___sourceRect), Color.White, 0.0f, Vector2.Zero, 3f, SpriteEffects.None, 1E-06f);
             return false;
         }

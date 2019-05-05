@@ -58,7 +58,6 @@ namespace ClimatesOfFerngillRebuild
             ClimatesOfFerngill.Conditions.GetWeatherMatchingType("ThunderFrenzy").First().EndWeather();
             Game1.isDebrisWeather = true;
             Game1.populateDebrisWeatherArray();
-            //WeatherUtilities.PopulateDebrisWeatherArray(ClimatesOfFerngill.Content);
         }
 
         internal static void SetWeatherSunny()
