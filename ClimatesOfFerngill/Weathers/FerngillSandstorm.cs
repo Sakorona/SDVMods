@@ -1,11 +1,9 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using StardewModdingAPI;
 using StardewValley;
 using StardewValley.Locations;
 using System;
 using System.Diagnostics;
-using TwilightShards.Common;
 using TwilightShards.Stardew.Common;
 using static ClimatesOfFerngillRebuild.Sprites;
 
@@ -17,8 +15,6 @@ namespace ClimatesOfFerngillRebuild.Weathers
 
         public static Rectangle SpriteSource = new Rectangle(0, 0, 64, 64);
         private Color SandstormColor = Color.IndianRed * 1.25f;
-        internal Icons Sheet;
-        private bool VerboseDebug { get; set; }
         public bool BloodMoon { get; set; }
         private float SandstormAlpha { get; set; }
         private Vector2 SandstormPosition { get; set; }
@@ -27,8 +23,6 @@ namespace ClimatesOfFerngillRebuild.Weathers
         public bool IsWeatherVisible => SandstormAlpha > 0f;
         public bool WeatherInProgress => (SDVTime.CurrentTime >= BeginTime && SDVTime.CurrentTime <= ExpirTime);
         public string WeatherType => "Sandstorm";
-        private MersenneTwister Dice { get; set; }
-        private WeatherConfig ModConfig { get; set; }
         private bool FadeOutSandstorm { get; set; }
         private bool FadeInSandstorm { get; set; }
         private Stopwatch SandstormElapsed { get; set; }
@@ -41,7 +35,7 @@ namespace ClimatesOfFerngillRebuild.Weathers
             BeginTime = new SDVTime(0600);
             ExpirTime = new SDVTime(0600);
 
-            if (ModConfig.ShowLighterFog)
+            if (ClimatesOfFerngill.WeatherOpt.ShowLighterFog)
                 SandstormAlpha = .6f;
 
             UpdateStatus(WeatherType, true);
@@ -57,15 +51,11 @@ namespace ClimatesOfFerngillRebuild.Weathers
         }
 
         /// <summary> Default constructor. </summary>
-        internal FerngillSandstorm(Icons Sheet, bool Verbose, MersenneTwister Dice, WeatherConfig config)
+        internal FerngillSandstorm()
         {
-            this.Sheet = Sheet;
             BeginTime = new SDVTime(0600);
             ExpirTime = new SDVTime(0600);
-            VerboseDebug = Verbose;
-            this.BloodMoon = false;
-            this.Dice = Dice;
-            this.ModConfig = config;
+            BloodMoon = false;
             SandstormElapsed = new Stopwatch();
         }
 
@@ -95,12 +85,12 @@ namespace ClimatesOfFerngillRebuild.Weathers
             BeginTime = new SDVTime(0600);
             
 
-            if (ModConfig.ShowLighterFog)
+            if (ClimatesOfFerngill.WeatherOpt.ShowLighterFog)
             {
                 SandstormAlpha = .6f;
             }
 
-            double WeatChance = Dice.NextDoublePositive();
+            double WeatChance = ClimatesOfFerngill.Dice.NextDoublePositive();
 
             if (WeatChance > 0 && WeatChance < .25)
                 this.ExpirTime = new SDVTime(1130);
@@ -187,10 +177,10 @@ namespace ClimatesOfFerngillRebuild.Weathers
         {
             SDVTime STime, ETime;
             STime = new SDVTime(Game1.getStartingToGetDarkTime());
-            STime.AddTime(Dice.Next(-25, 80));
+            STime.AddTime(ClimatesOfFerngill.Dice.Next(-25, 80));
 
             ETime = new SDVTime(STime);
-            ETime.AddTime(Dice.Next(120, 310));
+            ETime.AddTime(ClimatesOfFerngill.Dice.Next(120, 310));
 
             STime.ClampToTenMinutes();
             ETime.ClampToTenMinutes();
@@ -199,13 +189,14 @@ namespace ClimatesOfFerngillRebuild.Weathers
 
         public void DrawWeather()
         {
-            if (ModConfig.SandstormsInDesertOnly && !(Game1.currentLocation is Desert))
+            if (ClimatesOfFerngill.WeatherOpt.SandstormsInDesertOnly && !(Game1.currentLocation is Desert))
                 return;
 
             if (IsWeatherVisible)
             {
-                    Texture2D fogTexture = null;
-                    Vector2 position = new Vector2();
+                Texture2D fogTexture = ClimatesOfFerngill.OurIcons.DarudeTexture;
+
+                Vector2 position = new Vector2();
                     float num1 = -64 * Game1.pixelZoom + (int)(SandstormPosition.X % (double)(64 * Game1.pixelZoom));
                     while (num1 < (double)Game1.graphics.GraphicsDevice.Viewport.Width)
                     {
@@ -215,12 +206,6 @@ namespace ClimatesOfFerngillRebuild.Weathers
                             position.X = (int)num1;
                             position.Y = (int)num2;
 
-                            fogTexture = Sheet.DarudeTexture;
-
-                            /* if (Game1.isStartingToGetDarkOut())
-                            {
-                                SandstormColor = Color.LightBlue;
-                            } */
                             if (BloodMoon)
                             {
                                 SandstormColor = Color.DarkRed;
@@ -253,11 +238,11 @@ namespace ClimatesOfFerngillRebuild.Weathers
             const float FadeTime = 3120f;
             if (FadeOutSandstorm)
             {
-                if (ModConfig.ShowLighterFog)
+                if (ClimatesOfFerngill.WeatherOpt.ShowLighterFog)
                     SandstormAlpha = .6f - (SandstormElapsed.ElapsedMilliseconds / FadeTime);
                 else
                     SandstormAlpha = 1f - (SandstormElapsed.ElapsedMilliseconds / FadeTime);
-                //ClimatesOfFerngill.Logger.Log($"Sandstorm Alpha being set to {SandstormAlpha}. Elapsed Milliseconds: {SandstormElapsed.ElapsedMilliseconds}");
+
                 if (SandstormAlpha <= 0)
                 {
                     SandstormAlpha = 0;

@@ -20,9 +20,6 @@ namespace ClimatesOfFerngillRebuild
         private SDVTime ExpirTime;
         private SDVTime BeginTime;
 
-        private MersenneTwister Dice;
-        private readonly WeatherConfig ModConfig;
-
         public string WeatherType => "WhiteOut";
         public void SetWeatherExpirationTime(SDVTime t)
         {
@@ -37,12 +34,10 @@ namespace ClimatesOfFerngillRebuild
         public SDVTime WeatherBeginTime => (BeginTime ?? new SDVTime(0600));
         public bool WeatherInProgress => (SDVTime.CurrentTime >= BeginTime && SDVTime.CurrentTime <= ExpirTime);
 
-        public FerngillWhiteOut(MersenneTwister Dice, WeatherConfig config)
+        public FerngillWhiteOut()
         {
             ExpirTime = new SDVTime(2600);
             BeginTime = new SDVTime(0600);
-            this.Dice = Dice;
-            this.ModConfig = config;
         }
 
         public void ForceWeatherStart()
@@ -82,15 +77,15 @@ namespace ClimatesOfFerngillRebuild
         {
             BeginTime = new SDVTime(0600);
             ExpirTime = new SDVTime(2600);
-            if (Dice.NextDouble() >= .5 && Dice.NextDouble() < .8)
+            if (ClimatesOfFerngill.Dice.NextDouble() >= .5 && ClimatesOfFerngill.Dice.NextDouble() < .8)
             {
                 ExpirTime = new SDVTime(Game1.getModeratelyDarkTime());
             }
-            if (Dice.NextDouble() >= .8 && Dice.NextDouble() < .95)
+            if (ClimatesOfFerngill.Dice.NextDouble() >= .8 && ClimatesOfFerngill.Dice.NextDouble() < .95)
             {
                 ExpirTime = new SDVTime((BeginTime.ReturnIntTime() + 1000));
             }
-            if (Dice.NextDouble() >= .95)
+            if (ClimatesOfFerngill.Dice.NextDouble() >= .95)
             {
                 ExpirTime = new SDVTime((BeginTime.ReturnIntTime() + 500));
             }
@@ -154,7 +149,7 @@ namespace ClimatesOfFerngillRebuild
             {
                 snowPos = Game1.updateFloatingObjectPositionForMovement(snowPos, new Vector2(Game1.viewport.X, Game1.viewport.Y),
                     Game1.previousViewportPosition, -1f);
-                snowPos.X = snowPos.X % (16 * Game1.pixelZoom);
+                snowPos.X %= (16 * Game1.pixelZoom);
                 Vector2 position = new Vector2();
                 float num1 = -16 * Game1.pixelZoom + snowPos.X % (16 * Game1.pixelZoom);
                 while ((double)num1 < Game1.viewport.Width)
@@ -179,7 +174,7 @@ namespace ClimatesOfFerngillRebuild
             {
                 snowPos2 = Game1.updateFloatingObjectPositionForMovement(snowPos2, new Vector2(Game1.viewport.X, Game1.viewport.Y),
                             Game1.previousViewportPosition, -1f);
-                snowPos2.X = snowPos2.X % (12 * Game1.pixelZoom);
+                snowPos2.X %= (12 * Game1.pixelZoom);
                 Vector2 position = new Vector2();
                 float num1 = -12 * Game1.pixelZoom + snowPos2.X % (12 * Game1.pixelZoom);
                 while ((double)num1 < Game1.viewport.Width)

@@ -20,9 +20,6 @@ namespace ClimatesOfFerngillRebuild
         public bool IsBloodMoon;
         private SDVTime BeginTime;
 
-        private MersenneTwister Dice;
-        private readonly WeatherConfig ModConfig;
-
         public string WeatherType => "Blizzard";
         public void SetWeatherExpirationTime(SDVTime t){
             Console.WriteLine($"Weather end time is being set to {t}");
@@ -37,12 +34,10 @@ namespace ClimatesOfFerngillRebuild
         public SDVTime WeatherBeginTime => (BeginTime ?? new SDVTime(0600));
         public bool WeatherInProgress => (SDVTime.CurrentTime >= BeginTime && SDVTime.CurrentTime <= ExpirTime);
 
-        public FerngillBlizzard(MersenneTwister Dice, WeatherConfig config)
+        public FerngillBlizzard()
         {
             ExpirTime = new SDVTime(0600);
             BeginTime = new SDVTime(0600);
-            this.Dice = Dice;
-            this.ModConfig = config;
         }
 
         /* work on creating various buff code here */
@@ -97,16 +92,16 @@ namespace ClimatesOfFerngillRebuild
             //Blizzards opt to mostly being all day. 
             BeginTime = new SDVTime(0600);
             ExpirTime = new SDVTime(2800);
-            if (Dice.NextDouble() >= .5 && Dice.NextDouble() < .8)
+            if (ClimatesOfFerngill.Dice.NextDouble() >= .5 && ClimatesOfFerngill.Dice.NextDouble() < .8)
             {
                 Console.WriteLine($"Truly Dark: {Game1.getTrulyDarkTime()} Moderately: {Game1.getModeratelyDarkTime()} Starting: {Game1.getStartingToGetDarkTime()}");
                 ExpirTime = new SDVTime(Game1.getModeratelyDarkTime());
             }
-            if (Dice.NextDouble() >= .8 && Dice.NextDouble() < .95)
+            if (ClimatesOfFerngill.Dice.NextDouble() >= .8 && ClimatesOfFerngill.Dice.NextDouble() < .95)
             {
                 ExpirTime = new SDVTime((BeginTime.ReturnIntTime() + 1000));
             }
-            if (Dice.NextDouble() >= .95)
+            if (ClimatesOfFerngill.Dice.NextDouble() >= .95)
             {
                 ExpirTime = new SDVTime((BeginTime.ReturnIntTime() + 500));
             }
@@ -158,7 +153,7 @@ namespace ClimatesOfFerngillRebuild
             {
                 snowPos = Game1.updateFloatingObjectPositionForMovement(snowPos, new Vector2(Game1.viewport.X, Game1.viewport.Y),
                     Game1.previousViewportPosition, -1f);
-                snowPos.X = snowPos.X % (16 * Game1.pixelZoom);
+                snowPos.X %= (16 * Game1.pixelZoom);
                 Vector2 position = new Vector2();
                 float num1 = -16 * Game1.pixelZoom + snowPos.X % (16 * Game1.pixelZoom);
                 Color snowColor = IsBloodMoon ? Color.Red * Game1.options.snowTransparency : Color.White * Game1.options.snowTransparency;

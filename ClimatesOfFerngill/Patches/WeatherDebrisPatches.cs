@@ -9,10 +9,8 @@ namespace ClimatesOfFerngillRebuild.Patches
         static void CtorPostfix(WeatherDebris __instance)
         {
             Rectangle sourceRect = ClimatesOfFerngill.Reflection.GetField<Rectangle>(__instance,"sourceRect").GetValue();
-            
-            int which = 0;
             double prob = ClimatesOfFerngill.Dice.NextDouble();
-            
+            int which;
             if (prob < .6)
                 which = 0;
             else if (prob >= .6 && prob < .8)
@@ -26,16 +24,16 @@ namespace ClimatesOfFerngillRebuild.Patches
             switch (which)
             {
                 case 0:
-                    sourceRect = new Rectangle(0, 0, 16, 16);
+                    sourceRect = new Rectangle(0,160,16,16);
                     break;
                 case 1:
-                    sourceRect = new Rectangle(0,16,16,16);
+                    sourceRect = new Rectangle(0,176,16,16);
                     break;
                 case 2:
-                    sourceRect = new Rectangle(0,32,16,16);
+                    sourceRect = new Rectangle(0,192,16,16);
                     break;
                 case 3:
-                    sourceRect = new Rectangle(0, 48, 16, 16);
+                    sourceRect = new Rectangle(0,208,16,16);
                     break;
             }
 
@@ -123,7 +121,6 @@ namespace ClimatesOfFerngillRebuild.Patches
         static bool DrawPrefix(SpriteBatch b, WeatherDebris __instance, Rectangle ___sourceRect)
         {
             b.Draw(ClimatesOfFerngill.OurIcons.LeafSprites, __instance.position, new Rectangle?(___sourceRect), Color.White, 0.0f, Vector2.Zero, 3f, SpriteEffects.None, 1E-06f);
-
             return false;
         }
     }

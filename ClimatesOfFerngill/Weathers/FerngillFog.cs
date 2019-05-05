@@ -16,16 +16,12 @@ namespace ClimatesOfFerngillRebuild
     internal class FerngillFog : ISDVWeather
     {
         public event EventHandler<WeatherNotificationArgs> OnUpdateStatus;
-
         public static Rectangle FogSource = new Rectangle(0, 0, 64, 64);
         private Color FogColor = Color.White * 1.25f;
-
-        internal Icons Sheet;
 
         /// <summary> The Current Fog Type </summary>
         internal FogType CurrentFogType { get; set; }
 
-        private bool VerboseDebug { get; set; }
         public bool BloodMoon { get; set; }
 
         /// <summary>  The alpha attribute of the fog. </summary>
@@ -39,7 +35,6 @@ namespace ClimatesOfFerngillRebuild
         private SDVTime BeginTime { get; set; }
 
         public bool IsWeatherVisible => (CurrentFogType != FogType.None);
-
         public string WeatherType => "Fog";
 
         /// <summary> Returns the expiration time of fog. Note that this doesn't sanity check if the fog is even visible. </summary>
@@ -73,22 +68,16 @@ namespace ClimatesOfFerngillRebuild
             BeginTime = new SDVTime(t);
         }
         public SDVTimePeriods FogTimeSpan { get; set;}
-        private MersenneTwister Dice { get; set; }
-        private WeatherConfig ModConfig { get; set; }
         private bool FadeOutFog { get; set; }
         private bool FadeInFog { get; set; }
         private Stopwatch FogElapsed { get; set; }
 
         /// <summary> Default constructor. </summary>
-        internal FerngillFog(Icons Sheet, bool Verbose, MersenneTwister Dice, WeatherConfig config, SDVTimePeriods FogPeriod)
+        internal FerngillFog(SDVTimePeriods FogPeriod)
         {
-            this.Sheet = Sheet;
             CurrentFogType = FogType.None;
             ExpirTime = null;
-            VerboseDebug = Verbose;
             this.BloodMoon = false;
-            this.Dice = Dice;
-            this.ModConfig = config;
             this.FogTimeSpan = FogPeriod;
             FogElapsed = new Stopwatch();
         }
@@ -115,12 +104,12 @@ namespace ClimatesOfFerngillRebuild
         public void ForceWeatherStart()
         {
             this.FogAlpha = 1f;
-            if (Dice.NextDoublePositive() <= .001)
+            if (ClimatesOfFerngill.Dice.NextDoublePositive() <= .001)
                 CurrentFogType = FogType.Blinding;
             else
                 CurrentFogType = FogType.Normal;
 
-            if (ModConfig.ShowLighterFog)
+            if (ClimatesOfFerngill.WeatherOpt.ShowLighterFog)
             {
                 this.FogAlpha = .6f;
             }
@@ -163,18 +152,18 @@ namespace ClimatesOfFerngillRebuild
             this.FogAlpha = 1f;
             //First, let's determine the type.
             //... I am a dumb foxgirl. A really dumb one. 
-            if (Dice.NextDoublePositive() <= .001)
+            if (ClimatesOfFerngill.Dice.NextDoublePositive() <= .001)
                 CurrentFogType = FogType.Blinding;
             else
                 CurrentFogType = FogType.Normal;
 
-            if (ModConfig.ShowLighterFog)
+            if (ClimatesOfFerngill.WeatherOpt.ShowLighterFog)
             {
                 this.FogAlpha = .6f;
             }
 
             //now determine the fog expiration time
-            double FogChance = Dice.NextDoublePositive();
+            double FogChance = ClimatesOfFerngill.Dice.NextDoublePositive();
 
             /*
              * So we should rarely have full day fog, and it should on average burn off around 9am. 
@@ -211,10 +200,10 @@ namespace ClimatesOfFerngillRebuild
             else
             {
                 BeginTime = new SDVTime(Game1.getModeratelyDarkTime());
-                BeginTime.AddTime(Dice.Next(-15, 90));
+                BeginTime.AddTime(ClimatesOfFerngill.Dice.Next(-15, 90));
 
                 ExpirTime = new SDVTime(BeginTime);
-                ExpirTime.AddTime(Dice.Next(120, 310));
+                ExpirTime.AddTime(ClimatesOfFerngill.Dice.Next(120, 310));
 
                 BeginTime.ClampToTenMinutes();
                 ExpirTime.ClampToTenMinutes();
@@ -272,10 +261,10 @@ namespace ClimatesOfFerngillRebuild
         {
             SDVTime STime, ETime;
             STime = new SDVTime(Game1.getStartingToGetDarkTime());
-            STime.AddTime(Dice.Next(-25, 80));
+            STime.AddTime(ClimatesOfFerngill.Dice.Next(-25, 80));
 
             ETime = new SDVTime(STime);
-            ETime.AddTime(Dice.Next(120, 310));
+            ETime.AddTime(ClimatesOfFerngill.Dice.Next(120, 310));
 
             STime.ClampToTenMinutes();
             ETime.ClampToTenMinutes();
@@ -289,7 +278,7 @@ namespace ClimatesOfFerngillRebuild
                 if (CurrentFogType != FogType.Blinding && !(Game1.currentLocation is Desert))
                 {
                     //Game1.outdoorLight = fogLight;
-                    Texture2D fogTexture = null;
+                    Texture2D fogTexture = ClimatesOfFerngill.OurIcons.FogTexture;
                     Vector2 position = new Vector2();
                     float num1 = -64* Game1.pixelZoom + (int)(FogPosition.X % (double)(64 * Game1.pixelZoom));
                     while (num1 < (double)Game1.graphics.GraphicsDevice.Viewport.Width)
@@ -300,8 +289,6 @@ namespace ClimatesOfFerngillRebuild
                             position.X = (int)num1;
                             position.Y = (int)num2;
                             
-                            fogTexture = Sheet.FogTexture;
-
                             if (Game1.isStartingToGetDarkOut())
                             {
                                 FogColor = Color.LightBlue;

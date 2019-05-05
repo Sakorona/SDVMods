@@ -25,7 +25,7 @@ namespace ClimatesOfFerngillRebuild
     public class ClimatesOfFerngill : Mod
     {
         /// <summary> The options file </summary>
-        private WeatherConfig WeatherOpt { get; set; }
+        internal static WeatherConfig WeatherOpt { get; set; }
 
         /// <summary> The pRNG object </summary>
         internal static MersenneTwister Dice;
@@ -36,6 +36,7 @@ namespace ClimatesOfFerngillRebuild
         //provide common interfaces for logging
         internal static IMonitor Logger;
         internal static IReflectionHelper Reflection;
+        internal static IMultiplayerHelper MPHandler;
         internal static ITranslationHelper Translator;
 
         /// <summary> The climate for the game </summary>
@@ -89,11 +90,12 @@ namespace ClimatesOfFerngillRebuild
             Logger = Monitor;
             Translator = Helper.Translation;
             Reflection = Helper.Reflection;
+            MPHandler = Helper.Multiplayer;
             Dice = new MersenneTwister();
             OurIcons = new Sprites.Icons(Helper.Content);
             CropList = new List<Vector2>();
-            Conditions = new WeatherConditions(OurIcons, Dice, Helper.Translation, WeatherOpt, helper.Multiplayer);
-            DescriptionEngine = new Descriptions(Helper.Translation, Dice, WeatherOpt, Monitor);
+            Conditions = new WeatherConditions();
+            DescriptionEngine = new Descriptions();
             queuedMsg = null;
             TenMCounter = 0;
             ExpireTime = 0;
@@ -577,22 +579,18 @@ namespace ClimatesOfFerngillRebuild
         {
             if (e.FromModID == "KoihimeNakamura.ClimatesOfFerngill" && e.Type == "NewFarmHandJoin" && Context.IsMainPlayer && !HasGottenSync)
             {
-                Monitor.Log("Farmhand request for climate data recieved");
                 WeatherSync message = Conditions.GenerateWeatherSyncMessage();
-                Monitor.Log($"Sending {GenSyncMessageString(message)}");
-                this.Helper.Multiplayer.SendMessage<WeatherSync>(message,"WeatherSync",new[] {"KoihimeNakamura.ClimatesOfFerngill" },new[] {e.FromPlayerID });
+                MPHandler.SendMessage<WeatherSync>(message,"WeatherSync",new[] {"KoihimeNakamura.ClimatesOfFerngill" },new[] {e.FromPlayerID });
                 HasGottenSync = true;
             }
 
             if (e.FromModID == "KoihimeNakamura.ClimatesOfFerngill" && e.Type == "WeatherSync")
             {
                 WeatherSync message = e.ReadAs<WeatherSync>();
-                Monitor.Log("Message recieved from Master Game");
                 if (WeatherOpt.Verbose)
                 {
                     Monitor.Log($"Message contents: {GenSyncMessageString(message)}");
-                }
-                
+                }                
                 Conditions.SetSync(message);
             }
         }
@@ -641,8 +639,7 @@ namespace ClimatesOfFerngillRebuild
             ExpireTime = 0;
                        
             WeatherSync message = Conditions.GenerateWeatherSyncMessage();
-            Monitor.Log("Generating weather sync");
-            this.Helper.Multiplayer.SendMessage(message, "WeatherSync", modIDs: new[] { this.ModManifest.UniqueID });
+            MPHandler.SendMessage(message, "WeatherSync", modIDs: new[] { this.ModManifest.UniqueID });
         }
 
         private string GenSyncMessageString(WeatherSync ws)
@@ -856,18 +853,15 @@ namespace ClimatesOfFerngillRebuild
             }
         }
 
-
         internal static void ForceVariableRain()
         {
             IsVariableRain = true;
         }
 
-
         public static bool ShouldPrecipInLocation()
         {
             return true;
         }
-
 
         public static Color GetRainColor()
         {
@@ -876,7 +870,6 @@ namespace ClimatesOfFerngillRebuild
             else
                return Color.White;
         }
-
         public static Color GetRainBackColor()
         {
             return Color.Blue;
@@ -943,7 +936,7 @@ namespace ClimatesOfFerngillRebuild
 
             // show menu
             this.PreviousMenu = Game1.activeClickableMenu;
-            Game1.activeClickableMenu = new WeatherMenu(Monitor, this.Helper.Reflection, OurIcons, Conditions, MenuText);
+            Game1.activeClickableMenu = new WeatherMenu(OurIcons, Conditions, MenuText);
         }
 
         /// <summary>

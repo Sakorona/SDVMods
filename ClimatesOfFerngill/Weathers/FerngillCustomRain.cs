@@ -40,9 +40,6 @@ namespace ClimatesOfFerngillRebuild.Weathers
         public bool WeatherInProgress => (IsWeatherVisible);
         public SDVTime WeatherExpirationTime { get; private set; }
         public SDVTime WeatherBeginTime { get; private set; }
-        protected IMonitor Logger;
-        protected MersenneTwister pRNG;
-        protected WeatherConfig ModOptions;
         
         protected List<Color> colorsOfTheRainbow = new List<Color>
         {
@@ -69,11 +66,8 @@ namespace ClimatesOfFerngillRebuild.Weathers
 
         public event EventHandler<WeatherNotificationArgs> OnUpdateStatus;
 
-        public FerngillCustomRain(IMonitor Monitor, MersenneTwister Dice, WeatherConfig config, int numOfDrops, bool BloodRain = true)
+        public FerngillCustomRain(int numOfDrops, bool BloodRain = true)
         {
-            Logger = Monitor;
-            pRNG = Dice;
-            ModOptions = config;
             rainDrops = new RainDrop[numOfDrops];
             backRainColor = Color.Blue;
             rainColor = Color.White;
@@ -81,8 +75,8 @@ namespace ClimatesOfFerngillRebuild.Weathers
 
             for (int index = 0; index < this.rainDrops.Length; ++index)
             {
-                this.rainDrops[index] = new RainDrop(pRNG.Next(Game1.viewport.Width),
-                    pRNG.Next(Game1.viewport.Height), pRNG.Next(4), pRNG.Next(70));
+                this.rainDrops[index] = new RainDrop(ClimatesOfFerngill.Dice.Next(Game1.viewport.Width),
+                    ClimatesOfFerngill.Dice.Next(Game1.viewport.Height), ClimatesOfFerngill.Dice.Next(4), ClimatesOfFerngill.Dice.Next(70));
             }
         }
         
@@ -150,7 +144,7 @@ namespace ClimatesOfFerngillRebuild.Weathers
 
         public void MoveWeather()
         {
-            updateRaindropPosition();
+            UpdateRaindropPosition();
            
             TimeSpan timeSpan;
             if (Game1.currentLocation.IsOutdoors)
@@ -169,7 +163,7 @@ namespace ClimatesOfFerngillRebuild.Weathers
                                 (float) (index * 8 / this.rainDrops.Length - 16),
                                 (float) (32 - index * 8 / this.rainDrops.Length));
                             this.rainDrops[index].accumulator = 0;
-                            if (pRNG.NextDouble() < 0.1)
+                            if (ClimatesOfFerngill.Dice.NextDouble() < 0.1)
                                 ++this.rainDrops[index].frame;
                             if ((double) this.rainDrops[index].position.Y > (double) (Game1.viewport.Height + 64))
                                 this.rainDrops[index].position.Y = -64f;
@@ -188,8 +182,8 @@ namespace ClimatesOfFerngillRebuild.Weathers
                             this.rainDrops[index].accumulator = 0;
                             if (this.rainDrops[index].frame == 0)
                                 this.rainDrops[index].position = new Vector2(
-                                    (float) pRNG.Next(Game1.viewport.Width),
-                                    (float) pRNG.Next(Game1.viewport.Height));
+                                    (float)ClimatesOfFerngill.Dice.Next(Game1.viewport.Width),
+                                    (float)ClimatesOfFerngill.Dice.Next(Game1.viewport.Height));
                         }
                     }
                 }
@@ -238,7 +232,7 @@ namespace ClimatesOfFerngillRebuild.Weathers
             }
         }
 
-        public void updateRaindropPosition()
+        public void UpdateRaindropPosition()
         {
             int diffX = Game1.viewport.X - (int) Game1.previousViewportPosition.X;
             int diffY = Game1.viewport.Y - (int)Game1.previousViewportPosition.Y;
@@ -277,8 +271,8 @@ namespace ClimatesOfFerngillRebuild.Weathers
             Array.Resize(ref rainDrops,newSize);            
             for (int i = 0; i < this.rainDrops.Length; i++)
             {
-                this.rainDrops[i] = new RainDrop(pRNG.Next(Game1.viewport.Width),
-                    pRNG.Next(Game1.viewport.Height), pRNG.Next(4), pRNG.Next(70));
+                this.rainDrops[i] = new RainDrop(ClimatesOfFerngill.Dice.Next(Game1.viewport.Width),
+                    ClimatesOfFerngill.Dice.Next(Game1.viewport.Height), ClimatesOfFerngill.Dice.Next(4), ClimatesOfFerngill.Dice.Next(70));
             }
         }
 
@@ -288,8 +282,8 @@ namespace ClimatesOfFerngillRebuild.Weathers
             SecondCount = SecondCountB = RainbowColor = RainbowColorB = 0;
             for (int i = 0; i < this.rainDrops.Length; i++)
             {
-                this.rainDrops[i] = new RainDrop(pRNG.Next(Game1.viewport.Width),
-                    pRNG.Next(Game1.viewport.Height), pRNG.Next(4), pRNG.Next(70));
+                this.rainDrops[i] = new RainDrop(ClimatesOfFerngill.Dice.Next(Game1.viewport.Width),
+                    ClimatesOfFerngill.Dice.Next(Game1.viewport.Height), ClimatesOfFerngill.Dice.Next(4), ClimatesOfFerngill.Dice.Next(70));
             }
         }
 
