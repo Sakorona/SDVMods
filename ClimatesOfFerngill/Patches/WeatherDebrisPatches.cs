@@ -1,4 +1,4 @@
-﻿using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using StardewValley;
 
@@ -58,9 +58,9 @@ namespace ClimatesOfFerngillRebuild.Patches
                   default:
                     offset = 0;
                     break;
-            }
-  
+            } 
             sourceRect = new Rectangle(0, offset, 16, 16);
+            ClimatesOfFerngill.Logger.Log($"For {which}, our offset is {offset}. Our sourceRect is {sourceRect}");
             ClimatesOfFerngill.Reflection.GetField<Rectangle>(__instance, "sourceRect").SetValue(sourceRect);
         }
 
