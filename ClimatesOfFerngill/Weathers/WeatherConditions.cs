@@ -1,4 +1,4 @@
-﻿using EnumsNET;
+using EnumsNET;
 using StardewModdingAPI;
 using StardewModdingAPI.Utilities;
 using StardewValley;
@@ -173,6 +173,16 @@ namespace ClimatesOfFerngillRebuild
 
                 { (int)(CurrentWeather.Snow | CurrentWeather.Fog | CurrentWeather.Frost), new WeatherData(WeatherIcon.IconSnowFog, WeatherIcon.IconSnow, "snowyFrostFog", ClimatesOfFerngill.Translator.Get("weather_frostTwo", new { condition = ClimatesOfFerngill.Translator.Get("weather_snow"), conditionB = ClimatesOfFerngill.Translator.Get("weather_fog_basic") })) },
 
+                { (int)(CurrentWeather.Snow | CurrentWeather.Lightning), new WeatherData(WeatherIcon.IconThunderSnow, WeatherIcon.IconSnow, "thunderSnow",ClimatesOfFerngill.Translator.Get("weather_thundersnow")) },
+
+                { (int)(CurrentWeather.Snow | CurrentWeather.Blizzard | CurrentWeather.Lightning | CurrentWeather.Frost), new WeatherData(WeatherIcon.IconThunderSnow, WeatherIcon.IconSnow, "blizzardThunderSnowFrost",ClimatesOfFerngill.Translator.Get("weather_thundersnow")) },
+                
+                { (int)(CurrentWeather.Snow | CurrentWeather.Blizzard | CurrentWeather.Whiteout | CurrentWeather.Frost | CurrentWeather.Lightning), new WeatherData(WeatherIcon.IconThunderSnow, WeatherIcon.IconSnow, "whiteOutBlizzardFrostThunderSnow",ClimatesOfFerngill.Translator.Get("weather_thundersnow")) },
+                
+                { (int)(CurrentWeather.Snow | CurrentWeather.Blizzard | CurrentWeather.Lightning), new WeatherData(WeatherIcon.IconThunderSnow, WeatherIcon.IconSnow, "blizThunderSnow",ClimatesOfFerngill.Translator.Get("weather_thundersnow")) },
+                
+                { (int)(CurrentWeather.Snow | CurrentWeather.Blizzard | CurrentWeather.Whiteout | CurrentWeather.Lightning), new WeatherData(WeatherIcon.IconThunderSnow, WeatherIcon.IconSnow, "whiteOutThunderSnow",ClimatesOfFerngill.Translator.Get("weather_thundersnow")) },
+                
                 { (int)(CurrentWeather.Snow | CurrentWeather.Lightning | CurrentWeather.Fog), new WeatherData(WeatherIcon.IconThunderSnowFog, WeatherIcon.IconSnow, "thunderSnowFog", ClimatesOfFerngill.Translator.Get("weather_fog", new { condition = ClimatesOfFerngill.Translator.Get("weather_thundersnow") })) },
 
                 { (int)(CurrentWeather.Snow | CurrentWeather.Lightning | CurrentWeather.Fog | CurrentWeather.Frost), new WeatherData(WeatherIcon.IconThunderSnowFog, WeatherIcon.IconSnow, "thunderSnowFrostFog", ClimatesOfFerngill.Translator.Get("weather_frostTwo", new { condition = ClimatesOfFerngill.Translator.Get("weather_thundersnow"), conditionB = ClimatesOfFerngill.Translator.Get("weather_fog_basic") })) },
@@ -944,7 +954,7 @@ namespace ClimatesOfFerngillRebuild
             // Conditions: Blizzard - occurs in weather_snow in "winter"
             //             Dry Lightning - occurs if it's sunny in any season if temps exceed 25C.
             //             Frost and Heatwave check against the configuration.
-            //             Thundersnow  - as Blizzard, but really rare.
+            //             Thundersnow  - as Blizzard, but really rare. Will not happen in fog, may happen in Blizzard/WhiteOut
             //             Sandstorm - windy, with no precip for several days. Spring-Fall only, highest chance in summer.
             //             Fog - per climate, although night fog in winter is double normal chance
             GenerateEveningFog = (ClimatesOfFerngill.Dice.NextDouble() < ClimateForDay.EveningFogChance * ClimateForDay.RetrieveOdds(ClimatesOfFerngill.Dice,"fog",Game1.dayOfMonth)) && !this.GetCurrentConditions().HasFlag(CurrentWeather.Wind);
@@ -989,7 +999,7 @@ namespace ClimatesOfFerngillRebuild
             {
                 double oddsRoll = ClimatesOfFerngill.Dice.NextDoublePositive();
 
-                if (oddsRoll <= ClimatesOfFerngill.WeatherOpt.ThundersnowOdds)
+                if (oddsRoll <= ClimatesOfFerngill.WeatherOpt.ThundersnowOdds && !this.HasWeather(CurrentWeather.Fog))
                 {
                     this.AddWeather(CurrentWeather.Lightning);
                     if (ClimatesOfFerngill.WeatherOpt.Verbose)
