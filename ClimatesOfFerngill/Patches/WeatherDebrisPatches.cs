@@ -26,9 +26,6 @@ namespace ClimatesOfFerngillRebuild.Patches
             else
                 which = RareSeason;
 
-            if (which == RareSeason && Game1.currentSeason == "summer")
-                which = SingleLeafB;
-
             int offset = 0;
             switch (which)
             {
@@ -52,6 +49,7 @@ namespace ClimatesOfFerngillRebuild.Patches
                     break;
                 case RareSeason:
                     if (Game1.currentSeason == "spring") offset = 48;
+                    if (Game1.currentSeason == "summer") offset = 224;
                     if (Game1.currentSeason == "fall") offset = 48;
                     if (Game1.currentSeason == "winter") offset = 160;
                     break;

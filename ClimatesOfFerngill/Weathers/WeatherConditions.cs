@@ -177,11 +177,11 @@ namespace ClimatesOfFerngillRebuild
 
                 { (int)(CurrentWeather.Snow | CurrentWeather.Blizzard | CurrentWeather.Lightning | CurrentWeather.Frost), new WeatherData(WeatherIcon.IconThunderSnow, WeatherIcon.IconSnow, "blizzardThunderSnowFrost",ClimatesOfFerngill.Translator.Get("weather_thundersnow")) },
                 
-                { (int)(CurrentWeather.Snow | CurrentWeather.Blizzard | CurrentWeather.Whiteout | CurrentWeather.Frost | CurrentWeather.Lightning), new WeatherData(WeatherIcon.IconThunderSnow, WeatherIcon.IconSnow, "whiteOutBlizzardFrostThunderSnow",ClimatesOfFerngill.Translator.Get("weather_thundersnow")) },
+                { (int)(CurrentWeather.Snow | CurrentWeather.Blizzard | CurrentWeather.WhiteOut | CurrentWeather.Frost | CurrentWeather.Lightning), new WeatherData(WeatherIcon.IconThunderSnow, WeatherIcon.IconSnow, "whiteOutBlizzardFrostThunderSnow",ClimatesOfFerngill.Translator.Get("weather_thundersnow")) },
                 
                 { (int)(CurrentWeather.Snow | CurrentWeather.Blizzard | CurrentWeather.Lightning), new WeatherData(WeatherIcon.IconThunderSnow, WeatherIcon.IconSnow, "blizThunderSnow",ClimatesOfFerngill.Translator.Get("weather_thundersnow")) },
                 
-                { (int)(CurrentWeather.Snow | CurrentWeather.Blizzard | CurrentWeather.Whiteout | CurrentWeather.Lightning), new WeatherData(WeatherIcon.IconThunderSnow, WeatherIcon.IconSnow, "whiteOutThunderSnow",ClimatesOfFerngill.Translator.Get("weather_thundersnow")) },
+                { (int)(CurrentWeather.Snow | CurrentWeather.Blizzard | CurrentWeather.WhiteOut | CurrentWeather.Lightning), new WeatherData(WeatherIcon.IconThunderSnow, WeatherIcon.IconSnow, "whiteOutThunderSnow",ClimatesOfFerngill.Translator.Get("weather_thundersnow")) },
                 
                 { (int)(CurrentWeather.Snow | CurrentWeather.Lightning | CurrentWeather.Fog), new WeatherData(WeatherIcon.IconThunderSnowFog, WeatherIcon.IconSnow, "thunderSnowFog", ClimatesOfFerngill.Translator.Get("weather_fog", new { condition = ClimatesOfFerngill.Translator.Get("weather_thundersnow") })) },
 

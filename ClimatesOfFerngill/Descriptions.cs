@@ -1,5 +1,4 @@
 ﻿using Microsoft.Xna.Framework;
-using StardewModdingAPI;
 using StardewModdingAPI.Utilities;
 using StardewValley;
 using StardewValley.Objects;
@@ -13,11 +12,6 @@ namespace ClimatesOfFerngillRebuild
 {
     class Descriptions
     {
-       /* private ITranslationHelper Helper;
-        private MersenneTwister OurDice;
-        private WeatherConfig ModConfig;
-        private readonly IMonitor Output; */
-
         public Descriptions()
         {
         }

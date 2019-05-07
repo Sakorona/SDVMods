@@ -103,7 +103,12 @@ namespace ClimatesOfFerngillRebuild
 
             BeginTime = new SDVTime(stormStart);
 
-            stormStart.AddTime(ClimatesOfFerngill.Dice.Next(30, 190));
+            //control for more variance
+            if (ClimatesOfFerngill.Dice.NextDouble() < ClimatesOfFerngill.WeatherOpt.MoreSevereThunderFrenzyOdds)
+                stormStart.AddTime(ClimatesOfFerngill.Dice.Next(240, 380));
+            else
+                stormStart.AddTime(ClimatesOfFerngill.Dice.Next(30, 190));
+
             stormStart.ClampToTenMinutes();
             ExpirTime = new SDVTime(stormStart);
         }

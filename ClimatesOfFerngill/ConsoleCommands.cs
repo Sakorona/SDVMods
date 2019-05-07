@@ -47,6 +47,12 @@ namespace ClimatesOfFerngillRebuild
                     Game1.updateWeatherIcon();
                     ClimatesOfFerngill.Logger.Log(ClimatesOfFerngill.Translator.Get("console-text.weatherset_storm"), LogLevel.Info);
                     break;
+                case "thunderfrenzy":
+                    WeatherUtilities.SetWeatherStorm();
+                    ClimatesOfFerngill.Conditions.GetWeatherMatchingType("ThunderFrenzy").First().CreateWeather();
+                    Game1.updateWeatherIcon();
+                    ClimatesOfFerngill.Logger.Log(ClimatesOfFerngill.Translator.Get("console-text.weatherset_snow"), LogLevel.Info);
+                    break;
                 case "snow":
                     WeatherUtilities.SetWeatherSnow();
                     Game1.updateWeatherIcon();

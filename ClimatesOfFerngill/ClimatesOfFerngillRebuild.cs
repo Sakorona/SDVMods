@@ -816,10 +816,11 @@ namespace ClimatesOfFerngillRebuild
                AmtOfRainDrops = 70;
 
             //variable rain conditions 
+            //only roll this if it's actually raining. :|
             double roll = Dice.NextDouble();
-            if (roll < WeatherOpt.VariableRainChance)
+            if (roll <= WeatherOpt.VariableRainChance && Game1.isRaining)
             {
-                Monitor.Log($"With {roll}, we are setting for variable rain");
+                Monitor.Log($"With {roll}, we are setting for variable rain against {WeatherOpt.VariableRainChance}");
                 IsVariableRain = true;
              
                 if (Dice.NextDouble() < WeatherOpt.OvercastChance) { 

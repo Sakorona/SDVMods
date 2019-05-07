@@ -1,9 +1,9 @@
 ﻿# Climates of Ferngill (Rebuild) You Can (Not) Have Weather
 
-Current Version (April 2019): 1.5-beta.1
+Current Version (6 May 2019): 1.5-beta.2
 
 ## What's New
-
+- Variable Rain and snow.
 - Fog!
 - Blizzards, Thundersnow
 - A more customizable weather system
@@ -11,9 +11,7 @@ Current Version (April 2019): 1.5-beta.1
 - Thundersnow!
 
 ## Multiplayer
-
 Supports MP, with most features locked out to main player
-
 
 ## Requirements
 
@@ -29,7 +27,8 @@ This mod does the following:
 - Adds in several custom weathers - Thundersnow! Blizzards! Dry Lightning! Fog! Thunder Freeenzy!!!
 - Changes the rain totem to occasionally spawn storms as well.
 - Adds a weather menu option, which will display information about the weather
-- Changes the text for the TV weather channel 
+- Changes the text for the TV weather channel
+- Adds Variable rain and custom debris sprites
 
 ## Notices
 
@@ -37,8 +36,6 @@ This mod uses harmony to patch functions to allow it to draw custom rain and sno
 
 ## Upcoming Features
 
-- Variable rain
-- Debris sprites
 
 ## Acknowledgements
 - Prismuth for the fog sprite
@@ -57,6 +54,8 @@ If I have left you out of acknowledgements, please contact me so I can get you a
 v1.5-beta2
  - Fixed MP sync issues with fog
  - Some small fixes to all weathers
+ - added more thunder frenzy options
+ - fixed a thundersnow and wedding issue
 
 v1.5
  - MP sync added in. 
@@ -358,3 +357,5 @@ over a certain value.). Valid 0-1, but it's recommended that this is kept low. D
  - 'VRMassiveStepChance' - The chance of a massive change (category of rain)
 
  - 'SandstormsInDesertOnly' - As it says on the tin.
+
+ - 'MoreSevereThunderFrenzyOdds' - longer storms. 
