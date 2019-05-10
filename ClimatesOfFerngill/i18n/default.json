@@ -18,9 +18,12 @@
   //HUD Messages
   "hud-text.desc_stormtotem": "You hear a roll of thunder...",
   "hud-text.desc_frost_killed": "{{deadCrops}} crops died in the night due to the cold..!",
-  "hud-text.desc_heatwave_dry": "The extreme heat has caused some of your crops to become dry....!",
-  "hud-text.desc_heatwave_kill": "The extreme heat has caused some of your crops to dry out. If you don't water them, they'll die!",
+  "hud-text.desc_heatwave_dry": "The extreme heat has caused {{crops}} of your crops to become dry....!",
+  "hud-text.desc_heatwave_kill": "The extreme heat has caused {{crops}} of your crops to dry out. If you don't water them, they'll die!",
   "hud-text.desc_heatwave_cropdeath": "Some of the crops have died due to lack of water!",
+  "hud-text.desc_sandstorm_dry": "The sand is choking {{crops}} of your crops....!",
+  "hud-text.desc_sandstorm_kill": "The sand is choking {{crops}} of your crops! If you don't rinse them off, they'll die!",
+  "hud-text.desc_sandstorm_cropdeath": "Some of the crops have died due to being buried under sand!",
 
   //Ferngill Locations
   "fern-loc.0": "Castle Village",

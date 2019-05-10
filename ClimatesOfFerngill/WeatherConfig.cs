@@ -22,7 +22,7 @@ namespace ClimatesOfFerngillRebuild
         public double TooHotOutside { get; set; } = 39; //At this temp, it's too hot outside, and you can have a heatwave. 39 C or 102.2 F default
         public double DeadCropPercentage { get; set; } = .1; //default setting
         public double CropResistance { get; set; } = .75; //default settting
-        public double DarkFogChance { get; set; } = .0875; //default setting
+        public bool DisableAllFog { get; set; } = false; //default setting
         public bool Use12HourTime { get; set; } = false; //default setting
         public bool EnableCustomWeatherIcon { get; set; } = true;
         public double ThunderFrenzyOdds { get; set; } = .01; //default setting
@@ -40,7 +40,8 @@ namespace ClimatesOfFerngillRebuild
         public bool Verbose { get; set; } = true; 
         public bool SandstormsInDesertOnly { get; set; } = false; //default setting     
         public double MoreSevereThunderFrenzyOdds { get; set; } = .22; //default setting
-
+        public bool ShowSummitClouds { get; set;} = true; //default setting
+        public double RainToSnowConversion { get; set; } = .525; //default setting
         public WeatherConfig()
         {
         }

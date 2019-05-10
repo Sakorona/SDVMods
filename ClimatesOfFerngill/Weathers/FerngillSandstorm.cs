@@ -21,7 +21,7 @@ namespace ClimatesOfFerngillRebuild.Weathers
         private SDVTime ExpirTime { get; set; }
         private SDVTime BeginTime { get; set; }
         public bool IsWeatherVisible => SandstormAlpha > 0f;
-        public bool WeatherInProgress => (SDVTime.CurrentTime >= BeginTime && SDVTime.CurrentTime <= ExpirTime);
+        public bool WeatherInProgress => (SDVTime.CurrentTime >= BeginTime && SDVTime.CurrentTime <= ExpirTime && BeginTime != ExpirTime);
         public string WeatherType => "Sandstorm";
         private bool FadeOutSandstorm { get; set; }
         private bool FadeInSandstorm { get; set; }

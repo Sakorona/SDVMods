@@ -961,10 +961,10 @@ namespace ClimatesOfFerngillRebuild
           
             bool blockFog = ClimatesOfFerngill.MoonAPI != null && ClimatesOfFerngill.MoonAPI.IsSolarEclipse();
 
-            if (blockFog)
+            if (blockFog || ClimatesOfFerngill.WeatherOpt.DisableAllFog)
                 GenerateEveningFog = false;
             
-            double fogRoll = ClimatesOfFerngill.Dice.NextDoublePositive();
+            double fogRoll = (ClimatesOfFerngill.WeatherOpt.DisableAllFog ? 1.1 : ClimatesOfFerngill.Dice.NextDoublePositive());
            
             if (fogRoll < ClimateForDay.RetrieveOdds(ClimatesOfFerngill.Dice, "fog", Game1.dayOfMonth) && !this.GetCurrentConditions().HasFlag(CurrentWeather.Wind) && !blockFog)
             {
@@ -975,6 +975,28 @@ namespace ClimatesOfFerngillRebuild
 
                 specialWeatherTriggered = true;
             }
+
+            //do these here
+            if (this.TodayLow < ClimatesOfFerngill.WeatherOpt.TooColdOutside && !Game1.IsWinter)
+            {
+                if (ClimatesOfFerngill.WeatherOpt.HazardousWeather)
+                {
+                    this.AddWeather(CurrentWeather.Frost);
+                    specialWeatherTriggered = true;
+                }
+            }
+
+            //test for spring conversion
+            if (this.HasWeather(CurrentWeather.Rain) && this.HasWeather(CurrentWeather.Frost) && (Game1.currentSeason == "spring" || Game1.currentSeason == "fall")
+                && ClimatesOfFerngill.Dice.NextDoublePositive() <= ClimatesOfFerngill.WeatherOpt.RainToSnowConversion)
+            {
+                CurrentConditionsN.RemoveFlags(CurrentWeather.Rain);
+                CurrentConditionsN |= CurrentWeather.Snow;
+                Game1.isRaining = false;
+                Game1.isSnowing = true;
+                specialWeatherTriggered = true;
+            }
+
 
             if (this.HasWeather(CurrentWeather.Snow))
             {
@@ -1031,33 +1053,14 @@ namespace ClimatesOfFerngillRebuild
 
                 double sandstormOdds = .18;
                 if (Game1.currentSeason == "summer")
-                    sandstormOdds *= 2;
+                    sandstormOdds *= 1.2;
 
-                if (oddsRoll < sandstormOdds && ClimatesOfFerngill.WeatherOpt.HazardousWeather)
+                if (oddsRoll < sandstormOdds && ClimatesOfFerngill.WeatherOpt.HazardousWeather && Game1.isDebrisWeather)
                 {
                     this.AddWeather(CurrentWeather.Sandstorm);
                     specialWeatherTriggered = true;
                     this.CreateWeather("Sandstorm");
                 }
-            }
-
-            if (this.TodayLow < ClimatesOfFerngill.WeatherOpt.TooColdOutside && !Game1.IsWinter)
-            {
-                if (ClimatesOfFerngill.WeatherOpt.HazardousWeather)
-                {
-                    this.AddWeather(CurrentWeather.Frost);
-                    specialWeatherTriggered = true;
-                }
-            }
-
-            //test for spring conversion.- 50% chance
-            if (this.HasWeather(CurrentWeather.Rain) && this.HasWeather(CurrentWeather.Frost) && Game1.currentSeason == "spring" && ClimatesOfFerngill.Dice.NextDoublePositive() <= .5)
-            {
-                CurrentConditionsN.RemoveFlags(CurrentWeather.Rain);
-                CurrentConditionsN |= CurrentWeather.Snow;
-                Game1.isRaining = false;
-                Game1.isSnowing = true;
-                specialWeatherTriggered = true;
             }
 
             //and finally, test for thunder frenzy

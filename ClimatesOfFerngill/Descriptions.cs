@@ -172,6 +172,8 @@ namespace ClimatesOfFerngillRebuild
                 text += NightTime + Environment.NewLine;
             }
 
+
+
             return text;
         }
 

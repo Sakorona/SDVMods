@@ -58,7 +58,6 @@ namespace ClimatesOfFerngillRebuild.Patches
                     break;
             } 
             sourceRect = new Rectangle(0, offset, 16, 16);
-            ClimatesOfFerngill.Logger.Log($"For {which}, our offset is {offset}. Our sourceRect is {sourceRect}");
             ClimatesOfFerngill.Reflection.GetField<Rectangle>(__instance, "sourceRect").SetValue(sourceRect);
         }
 
@@ -142,7 +141,6 @@ namespace ClimatesOfFerngillRebuild.Patches
 
         static bool DrawPrefix(SpriteBatch b, WeatherDebris __instance, Rectangle ___sourceRect)
         {
-            ClimatesOfFerngill.Logger.Log($"Source Rect is {___sourceRect}");
             b.Draw(ClimatesOfFerngill.OurIcons.LeafSprites, __instance.position, new Rectangle?(___sourceRect), Color.White, 0.0f, Vector2.Zero, 3f, SpriteEffects.None, 1E-06f);
             return false;
         }

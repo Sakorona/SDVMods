@@ -58,10 +58,11 @@ namespace ClimatesOfFerngillRebuild
         private bool HasGottenSync = false;
         private bool HasRequestedSync = false;
         private static bool IsBloodMoon = false;
-        //private double RainAmt;
+        private float weatherX;
         internal static bool IsVariableRain { get; private set;}
         private int TenMCounter;
         internal static int AmtOfRainDrops { get; private set; }
+        private bool SummitRebornLoaded;
 
         //Integrations
         internal static bool UseLunarDisturbancesApi = false;
@@ -97,6 +98,7 @@ namespace ClimatesOfFerngillRebuild
             Conditions = new WeatherConditions();
             DescriptionEngine = new Descriptions();
             queuedMsg = null;
+            SummitRebornLoaded = false;
             TenMCounter = 0;
             ExpireTime = 0;
             IsVariableRain = false;
@@ -176,6 +178,14 @@ namespace ClimatesOfFerngillRebuild
                 .Add("debug_sswa","!", ConsoleCommands.ShowSpecialWeather);
         }
 
+        private static int GetPixelZoom()
+        {
+            FieldInfo field = typeof(Game1).GetField(nameof(Game1.pixelZoom), BindingFlags.Public | BindingFlags.Static);
+            if (field == null)
+                throw new InvalidOperationException($"The {nameof(Game1)}.{nameof(Game1.pixelZoom)} field could not be found.");
+            return (int)field.GetValue(null);
+        }
+
         /// <summary>Raised once per second after the game state is updated.</summary>
         /// <param name="sender">The event sender.</param>
         /// <param name="e">The event arguments.</param>
@@ -189,6 +199,13 @@ namespace ClimatesOfFerngillRebuild
         /// <param name="e">The event arguments.</param>
         private void OnGameLaunched(object sender, GameLaunchedEventArgs e)
         {
+            var modManifest = Helper.ModRegistry.Get("KoihimeNakamura.summitreborn");
+            if (modManifest != null)
+            {
+                SummitRebornLoaded = true;
+                Logger.Log("Summit Reborn loaded. Disabling summit redraw.");
+            }
+
             //testing for ZA MOON, YOUR HIGHNESS.
             MoonAPI = SDVUtilities.GetModApi<Integrations.ILunarDisturbancesAPI>(Monitor, Helper, "KoihimeNakamura.LunarDisturbances", "1.0");
             SafeLightningAPI = SDVUtilities.GetModApi<Integrations.ISafeLightningAPI>(Monitor, Helper, "cat.safelightning", "1.0");
@@ -265,7 +282,26 @@ namespace ClimatesOfFerngillRebuild
                 return;
 
             if (Game1.currentLocation.IsOutdoors)
-                Conditions.DrawWeathers();       
+                Conditions.DrawWeathers();
+
+            if (Game1.isRaining && Game1.currentLocation.IsOutdoors && (Game1.currentLocation is Summit) && !SummitRebornLoaded &&
+                (!Game1.eventUp || Game1.currentLocation.isTileOnMap(new Vector2((float)(Game1.viewport.X / Game1.tileSize), (float)(Game1.viewport.Y / Game1.tileSize)))))
+            {
+                for (int index = 0; index < Game1.rainDrops.Length; ++index)
+                {
+                    Game1.spriteBatch.Draw(Game1.rainTexture, Game1.rainDrops[index].position, new Microsoft.Xna.Framework.Rectangle?(Game1.getSourceRectForStandardTileSheet(Game1.rainTexture, Game1.rainDrops[index].frame, -1, -1)), Color.White);
+                }
+
+                if (WeatherOpt.ShowSummitClouds)
+                {
+                    int num2 = -61 * GetPixelZoom();
+                    while (num2 < Game1.viewport.Width + 61 * GetPixelZoom())
+                    {
+                        Game1.spriteBatch.Draw(Game1.mouseCursors, new Vector2((float)num2 + this.weatherX % (float)(61 * GetPixelZoom()), (float)(-Game1.tileSize / 2)), new Rectangle?(new Rectangle(643, 1142, 61, 53)), Color.DarkSlateGray * 1f, 0.0f, Vector2.Zero, (float)GetPixelZoom(), SpriteEffects.None, 1f);
+                        num2 += 61 * GetPixelZoom();
+                    }
+                }
+            }
         }
 
         /// <summary>Raised after a player warps to a new location.</summary>
@@ -400,6 +436,11 @@ namespace ClimatesOfFerngillRebuild
                 HasRequestedSync = true;
             }
 
+            if (Game1.currentGameTime != null)
+            {
+                this.weatherX += (float)Game1.currentGameTime.ElapsedGameTime.Milliseconds * 0.03f;
+            }
+
             // check for changes
             Conditions.MoveWeathers();  
             
@@ -478,7 +519,7 @@ namespace ClimatesOfFerngillRebuild
             //frost works at night, heatwave works during the day
             if (Game1.timeOfDay == 1700)
             {
-                if (Conditions.HasWeather(CurrentWeather.Heatwave))
+                if (Conditions.HasWeather(CurrentWeather.Heatwave) || Conditions.HasWeather(CurrentWeather.Sandstorm))
                 {
                     ExpireTime = 2000;
                     Farm f = Game1.getFarm();
@@ -502,10 +543,18 @@ namespace ClimatesOfFerngillRebuild
 
                     if (CropList.Count > 0)
                     {
-                        if (WeatherOpt.AllowCropDeath)
-                            SDVUtilities.ShowMessage(Helper.Translation.Get("hud-text.desc_heatwave_kill"),3);
-                        else
-                            SDVUtilities.ShowMessage(Helper.Translation.Get("hud-text.desc_heatwave_dry"),3);
+                        if (WeatherOpt.AllowCropDeath) {
+                            if (Conditions.HasWeather(CurrentWeather.Heatwave) && !Conditions.HasWeather(CurrentWeather.Sandstorm))
+                                SDVUtilities.ShowMessage(Helper.Translation.Get("hud-text.desc_heatwave_kill", new { crops = count }), 3);
+                            if (Conditions.HasWeather(CurrentWeather.Sandstorm))
+                                SDVUtilities.ShowMessage(Helper.Translation.Get("hud-text.desc_sandstorm_kill", new { crops = count }), 3);
+                        }
+                        else {
+                            if (Conditions.HasWeather(CurrentWeather.Heatwave) && !Conditions.HasWeather(CurrentWeather.Sandstorm))
+                                SDVUtilities.ShowMessage(Helper.Translation.Get("hud-text.desc_heatwave_dry", new { crops = count }),3);
+                            if (Conditions.HasWeather(CurrentWeather.Sandstorm))
+                                SDVUtilities.ShowMessage(Helper.Translation.Get("hud-text.desc_sandstorm_dry", new { crops = count }), 3);
+                        }
                     }
                 }
             }
@@ -526,8 +575,9 @@ namespace ClimatesOfFerngillRebuild
                     }
                 }
 
-                if (cDead)
+                if (cDead) { 
                     SDVUtilities.ShowMessage(Helper.Translation.Get("hud-text.desc_heatwave_cropdeath"),3);
+                }
             }
         }
 
@@ -618,6 +668,7 @@ namespace ClimatesOfFerngillRebuild
             TenMCounter = 0;
             Conditions.OnNewDay();
             IsBloodMoon = false;
+            IsVariableRain = false;
 
             Conditions.SetTodayWeather(); //run this automatically
             if (!Context.IsMainPlayer) return;

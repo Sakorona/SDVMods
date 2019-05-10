@@ -40,22 +40,7 @@ namespace ClimatesOfFerngillRebuild
         /// <summary> Returns the expiration time of fog. Note that this doesn't sanity check if the fog is even visible. </summary>
         public SDVTime WeatherExpirationTime => (ExpirTime ?? new SDVTime(0600));
         public SDVTime WeatherBeginTime => (BeginTime ?? new SDVTime(0600));
-        public bool WeatherInProgress
-        {
-            get
-            {
-                if (BeginTime is null || ExpirTime is null)
-                    return false;
-                if (SDVTime.CurrentTime is null)
-                    Console.WriteLine("CURRENT TIME IS NULL.");
-                if (WeatherBeginTime is null)
-                    Console.WriteLine("WBT is null");
-                if (WeatherExpirationTime is null)
-                    Console.WriteLine("WET is null");
-
-                return (SDVTime.CurrentTime >= WeatherBeginTime && SDVTime.CurrentTime <= WeatherExpirationTime);
-            }
-        }
+        public bool WeatherInProgress => (SDVTime.CurrentTime >= BeginTime && SDVTime.CurrentTime <= ExpirTime && BeginTime != ExpirTime);
 
         /// <summary> Sets the fog expiration time. </summary>
         /// <param name="t">The time for the fog to expire</param>

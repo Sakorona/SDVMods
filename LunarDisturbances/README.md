@@ -24,8 +24,16 @@ Thankfully, they don't appear to spawn on wedding and festival days..
 -- buy prices up 85%
 -- monsters spawn every 10 real-world seconds if you are outside.
 
+## Moon Cycle
+
+???
+
+
+
 ## Changelog
 1.0.9
+ - Moves some configuration options to config. I cannot believe I forgot that
+ - Updating readme.
  - I think I fixed the moon thing... I hope. I hope. Cleans up some issues with resetting
 
 1.0.8
@@ -83,7 +91,19 @@ To configure, edit config.json in the mod folder.
 
   -`ShowMoonInEndOfNight` - Shows the moon in the end of night menus. Default: true. Valid: true, false
 
-### Acknowledgements
+  -'CropGrowthChance' - The chance for a crop to grow on a full moon. Default: .285 (28.5%). Set this to 1 to make every crop grow
+
+  -'CropHaltChance' - The chance for a crop to not grow on a new moon. Default: .285 (28.5%). Set this to 0 to make every no crop halt
+
+  -'BeachRemovalChance' - The chance a item is removed from the beach. Default: .09 (9%)
+
+  -'BeachSpawnChance' - The chance an item spawns on the beach. Note this tries 5 times. Default: .35 (35%)
+
+  - 'GhostSpawnChance' - If moon events that hinder the player are turned on, this is the chance a ghost is spawned every 10 minutes on a combat farm while the player is on the farm.	Default: .02 (2%)
+   
+   
+ ### Acknowledgements
 - eemie for the moon sprites
 - ChefRude for testing
 - Sky for the Korean translation
+- FarAways for the Chinese? translation

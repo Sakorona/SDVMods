@@ -45,6 +45,7 @@ This mod uses harmony to patch functions to allow it to draw custom rain and sno
 - Pan for the new base debris sprites
 - FoggyWizard for the sandstorm sprite
 - FarAways for the Chinese translation
+- Amu Tsukiyomi for all of the debris sprites, and several icon sprites
 - The SDV discord #modding channel for discussions and encouragement.
 
 If I have left you out of acknowledgements, please contact me so I can get you added to the acknowledgement list
@@ -52,6 +53,12 @@ If I have left you out of acknowledgements, please contact me so I can get you a
 
 ## Changelog
 v1.5-beta2
+ - adds in a config option to disable all fog
+ - Moves snow check for spring (and extends it to fall) in front of other special weathers
+ - Chance of rain -> snow conversion is now a config option
+ - Sandstorms will now kill crops if the option is enabled
+ - Crop death warnings will say how many crops are affected
+ - If Summit Reborn isn't installed, it will enable code to allow rain rendering on the summit map.
  - Fixed MP sync issues with fog
  - Some small fixes to all weathers
  - added more thunder frenzy options
@@ -330,9 +337,7 @@ over a certain value.). Valid 0-1, but it's recommended that this is kept low. D
 
  - `DeadCropPercentage` - The amount of crops that a heatwave and frost can kill. (Note: Frost will kill more than heatwaves). Default: '.1' Valid range is 0 to 1.
 
- - `CropResistance` - This represents the resistance an average crop has to heatwaves and frosts. Default: '.4' Valid Range is 0 to 1.
-
- - `DarkFogChance` - This controls the chance of the darker fog appearing. Default is set to '.0875' (or a 1/8th chance if it's foggy it'll be dark fog.) Valid Range is 0 to 1.
+ - `CropResistance` - This represents the resistance an average crop has to heatwaves, frosts and sandstorms. Default: '.4' Valid Range is 0 to 1.
 
  - 'ThunderFrenzyOdds' - This controls the chance of the special weather Thunder Frenzy appearing. It's a double, valid range is 0 to 1
 
@@ -357,5 +362,11 @@ over a certain value.). Valid 0-1, but it's recommended that this is kept low. D
  - 'VRMassiveStepChance' - The chance of a massive change (category of rain)
 
  - 'SandstormsInDesertOnly' - As it says on the tin.
+
+ - 'DisableAllFog' - As it says on the tin.
+
+ - 'ShowSummitClouds' - Controls if rain clouds appear in the summit.
+
+ - 'RainToSnowConversion' - If cold enough, and in fall or spring, this is the chance rain will become snow.
 
  - 'MoreSevereThunderFrenzyOdds' - longer storms. 

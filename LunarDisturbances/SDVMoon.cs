@@ -16,21 +16,14 @@ namespace TwilightShards.LunarDisturbances
     public class SDVMoon
     {
         //encapsulated members
-        private MersenneTwister Dice;
-        private MoonConfig ModConfig;
-        private ITranslationHelper Translations;
+        private readonly MersenneTwister Dice;
+        private readonly MoonConfig ModConfig;
+        private readonly ITranslationHelper Translations;
 
         //internal trackers
         private static readonly int cycleLength = 14;
 
         //chances for various things
-#pragma warning disable IDE0044 // Add readonly modifier
-        private double CropGrowthChance;
-        private double CropNoGrowthChance;
-        private double GhostChance;
-        private double BeachRemovalChance;
-        private double BeachSpawnChance;
-#pragma warning restore IDE0044 // Add readonly modifier
         public Color BloodMoonWater = Color.Red * 0.8f;
 
         //is blood moon
@@ -46,13 +39,6 @@ namespace TwilightShards.LunarDisturbances
             ModConfig = config;
             IsBloodMoon = false;
             Translations = Trans;
-
-            //set chances.
-            CropGrowthChance = .09;
-            CropNoGrowthChance = .09;
-            BeachRemovalChance = .09;
-            BeachSpawnChance = .35;
-            GhostChance = .02;
         }
 
         public void OnNewDay()
@@ -161,13 +147,13 @@ namespace TwilightShards.LunarDisturbances
         /// Handles events that fire at sleep.
         /// </summary>
         /// <param name="f"></param>
-        public void HandleMoonAtSleep(Farm f)
+        public int HandleMoonAtSleep(Farm f)
         {
             if (f == null)
-                return;
+                return 0;
 
             if (Dice.NextDoublePositive() < .20)
-                return;
+                return 0;
 
             int cropsAffected = 0;
 
@@ -176,14 +162,13 @@ namespace TwilightShards.LunarDisturbances
             {
                 foreach (var TF in f.terrainFeatures.Pairs)
                 {
-                    if (TF.Value is HoeDirt curr && curr.crop != null && Dice.NextDouble() < CropGrowthChance)
+                    if (TF.Value is HoeDirt curr && curr.crop != null && Dice.NextDouble() < ModConfig.CropGrowthChance)
                     {
                         SDVUtilities.AdvanceArbitrarySteps(f, curr, TF.Key);                       
                     }
                 }
 
-                if (cropsAffected > 0)
-                    Game1.addHUDMessage(new HUDMessage(Translations.Get("moon-text.fullmoon_eff", new { cropsAffected })));
+                return cropsAffected;
             }
 
             if (CurrentPhase == MoonPhase.NewMoon && ModConfig.HazardousMoonEvents)
@@ -194,7 +179,7 @@ namespace TwilightShards.LunarDisturbances
                     {
                         if (TF.Value is HoeDirt curr && curr.crop != null)
                         {
-                            if (Dice.NextDouble() < CropNoGrowthChance)
+                            if (Dice.NextDouble() < ModConfig.CropHaltChance)
                             {
                                 cropsAffected++;
                                 curr.state.Value = HoeDirt.dry; 
@@ -203,9 +188,10 @@ namespace TwilightShards.LunarDisturbances
                     }
                 }
 
-                if (cropsAffected > 0)
-                    Game1.addHUDMessage(new HUDMessage(Translations.Get("moon-text.newmoon_eff", new { cropsAffected })));
+                return cropsAffected;
             }
+
+            return 0;
         }
 
         internal void ForceBloodMoon()
@@ -282,7 +268,7 @@ namespace TwilightShards.LunarDisturbances
 
                 foreach (KeyValuePair<Vector2, StardewValley.Object> rem in entries)
                 {
-                    if (Dice.NextDouble() < BeachRemovalChance)
+                    if (Dice.NextDouble() < ModConfig.BeachRemovalChance)
                     {
                         itemsChanged++;
                         b.objects.Remove(rem.Key);
@@ -312,7 +298,7 @@ namespace TwilightShards.LunarDisturbances
                         parentSheetIndex = 60;
 
 
-                    if (Dice.NextDouble() < BeachSpawnChance)
+                    if (Dice.NextDouble() < ModConfig.BeachSpawnChance)
                     {
                         Vector2 v = new Vector2((float)Game1.random.Next(rectangle.X, rectangle.Right), (float)Game1.random.Next(rectangle.Y, rectangle.Bottom));
                         itemsChanged++;
@@ -434,7 +420,7 @@ namespace TwilightShards.LunarDisturbances
         {
             if (Game1.timeOfDay > Game1.getTrulyDarkTime() && Game1.currentLocation.IsOutdoors && Game1.currentLocation is Farm)
             {
-                if (CurrentPhase is MoonPhase.FullMoon && Dice.NextDouble() < GhostChance && ModConfig.HazardousMoonEvents)
+                if (CurrentPhase is MoonPhase.FullMoon && Dice.NextDouble() < ModConfig.GhostSpawnChance && ModConfig.HazardousMoonEvents)
                 {
                     return true;
                 }

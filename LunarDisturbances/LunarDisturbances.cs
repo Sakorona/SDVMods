@@ -21,6 +21,7 @@ namespace TwilightShards.LunarDisturbances
         private MersenneTwister Dice;
         internal static ITranslationHelper Translation;
         private MoonConfig ModConfig;
+        private HUDMessage queuedMsg;
         public static Sprites.Icons OurIcons { get; set; }
         internal static bool IsEclipse { get; set; }
         private bool UseJsonAssetsApi = false;
@@ -40,6 +41,7 @@ namespace TwilightShards.LunarDisturbances
             ModConfig = Helper.ReadConfig<MoonConfig>();
             OurMoon = new SDVMoon(ModConfig, Dice, Helper.Translation);
             OurIcons = new Sprites.Icons(Helper.Content);
+            queuedMsg = null;
 
             helper.Events.GameLoop.GameLaunched += OnGameLaunched;
             helper.Events.GameLoop.OneSecondUpdateTicked += OnOneSecondUpdateTicked;
@@ -126,31 +128,15 @@ namespace TwilightShards.LunarDisturbances
                 IsEclipse = false;
 
             //moon works after frost does
-            OurMoon.HandleMoonAtSleep(Game1.getFarm());
-        }
-
-        private void GameLoop_SaveCreating(object sender, SaveCreatingEventArgs e)
-        {
-            if (!Context.IsMainPlayer)
-                return;
-
-            //cleanup any spawned monsters
-            foreach (GameLocation l in Game1.locations)
+            int cropCount = OurMoon.HandleMoonAtSleep(Game1.getFarm());
+            if (cropCount != 0)
             {
-                for (int index = l.characters.Count - 1; index >= 0; --index)
-                {
-                    if (l.characters[index] is Monster && !(l.characters[index] is GreenSlime))
-                        l.characters.RemoveAt(index);
-                }
+                if (OurMoon.CurrentPhase == MoonPhase.NewMoon)
+                    queuedMsg = new HUDMessage(Helper.Translation.Get("moon-text.newmoon_eff", new { cropCount }));
+                if (OurMoon.CurrentPhase == MoonPhase.FullMoon)
+                    queuedMsg = new HUDMessage(Helper.Translation.Get("moon-text.fullmoon_eff", new { cropCount }));
             }
-
-            if (IsEclipse)
-                IsEclipse = false;
-
-            //moon works after frost does
-            OurMoon.HandleMoonAtSleep(Game1.getFarm());
         }
-
 
         /// <summary>Raised after a game menu is opened, closed, or replaced.</summary>
         /// <param name="sender">The event sender.</param>
@@ -193,6 +179,12 @@ namespace TwilightShards.LunarDisturbances
             {
                 Monitor.Log("OurMoon is null");
                 return;
+            }
+
+            if (queuedMsg != null)
+            {
+                Game1.addHUDMessage(queuedMsg);
+                queuedMsg = null;
             }
 
             if (Dice.NextDouble() < ModConfig.EclipseChance && ModConfig.EclipseOn && OurMoon.CurrentPhase == MoonPhase.FullMoon &&
@@ -342,11 +334,6 @@ namespace TwilightShards.LunarDisturbances
                 JAAPi.AddedItemsToShop += JAAPi_AddedItemsToShop;
                 Monitor.Log("JsonAssets Integration enabled", LogLevel.Info);
             }
-        }
-
-        private void OutputLight(string arg1, string[] arg2)
-        {
-            Monitor.Log($"The outdoor light is {Game1.outdoorLight.ToString()}. The ambient light is {Game1.ambientLight.ToString()}");
         }
         
         private void JAAPi_AddedItemsToShop(object sender, EventArgs e)
