@@ -18,29 +18,22 @@ namespace ClimatesOfFerngillRebuild
         public event EventHandler<WeatherNotificationArgs> OnUpdateStatus;
         public static Rectangle FogSource = new Rectangle(0, 0, 64, 64);
         private Color FogColor = Color.White * 1.25f;
-
         /// <summary> The Current Fog Type </summary>
         internal FogType CurrentFogType { get; set; }
-
         public bool BloodMoon { get; set; }
-
         /// <summary>  The alpha attribute of the fog. </summary>
         private float FogAlpha { get; set; }
-
         /// <summary> Fog Position. For drawing. </summary>
         private Vector2 FogPosition { get; set; }
-
         /// <summary> Sets the expiration time of the fog </summary>
         private SDVTime ExpirTime { get; set; }
         private SDVTime BeginTime { get; set; }
-
         public bool IsWeatherVisible => (CurrentFogType != FogType.None);
         public string WeatherType => "Fog";
-
         /// <summary> Returns the expiration time of fog. Note that this doesn't sanity check if the fog is even visible. </summary>
         public SDVTime WeatherExpirationTime => (ExpirTime ?? new SDVTime(0600));
         public SDVTime WeatherBeginTime => (BeginTime ?? new SDVTime(0600));
-        public bool WeatherInProgress => (SDVTime.CurrentTime >= BeginTime && SDVTime.CurrentTime <= ExpirTime && BeginTime != ExpirTime);
+        public bool WeatherInProgress => (SDVTime.CurrentTime >= BeginTime && SDVTime.CurrentTime <= ExpirTime && WeatherBeginTime != WeatherExpirationTime);
 
         /// <summary> Sets the fog expiration time. </summary>
         /// <param name="t">The time for the fog to expire</param>
@@ -61,9 +54,10 @@ namespace ClimatesOfFerngillRebuild
         internal FerngillFog(SDVTimePeriods FogPeriod)
         {
             CurrentFogType = FogType.None;
-            ExpirTime = null;
-            this.BloodMoon = false;
-            this.FogTimeSpan = FogPeriod;
+            BeginTime = new SDVTime(0600);
+            ExpirTime = new SDVTime(0600);
+            BloodMoon = false;
+            FogTimeSpan = FogPeriod;
             FogElapsed = new Stopwatch();
         }
 
@@ -77,8 +71,8 @@ namespace ClimatesOfFerngillRebuild
         public void Reset()
         {
             CurrentFogType = FogType.None;
-            BeginTime = null;
-            ExpirTime = null;
+            BeginTime = new SDVTime(0600);
+            ExpirTime = new SDVTime(0600);
             BloodMoon = false;
             FogAlpha = 0f;
             FadeOutFog = false;

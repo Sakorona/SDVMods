@@ -155,6 +155,20 @@ namespace ClimatesOfFerngillRebuild
             ClimatesOfFerngill.Conditions.ClearAllSpecialWeather();
         }
 
+        internal static void SetRainAmt(string arg1, string[] arg2)
+        {
+            if (!Context.IsMainPlayer) return;
+
+            if (arg2.Length < 1)
+                return;
+
+            string category = arg2[0];
+            int rainAmt = (int)WeatherUtilities.RainCategories[category];
+
+            Array.Resize(ref Game1.rainDrops, rainAmt);
+            ClimatesOfFerngill.SetRainAmt(rainAmt);
+        }
+
         public static void OutputWeather(string arg1, string[] arg2)
         {
             var retString = $"Weather for {SDate.Now()} is {ClimatesOfFerngill.Conditions.ToString()}. {Environment.NewLine} System flags: isRaining {Game1.isRaining} isSnowing {Game1.isSnowing} isDebrisWeather: {Game1.isDebrisWeather} isLightning {Game1.isLightning}, with tommorow's set weather being {Game1.weatherForTomorrow}";

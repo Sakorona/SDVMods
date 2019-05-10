@@ -53,6 +53,8 @@ If I have left you out of acknowledgements, please contact me so I can get you a
 
 ## Changelog
 v1.5-beta2
+ - Variable Rain will no longer have a 1/3 in chance of becoming torrential every 30 minutes, so less invisible flash flooding.
+ -- The chance of ramping up massively is now halved every step above 200 raindrops (vanilla is 70)
  - adds in a config option to disable all fog
  - Moves snow check for spring (and extends it to fall) in front of other special weathers
  - Chance of rain -> snow conversion is now a config option

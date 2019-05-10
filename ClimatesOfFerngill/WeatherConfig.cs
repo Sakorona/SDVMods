@@ -35,7 +35,7 @@ namespace ClimatesOfFerngillRebuild
         public double OvercastChance { get; set;} = .05; //default setting
         public double VRChangeChance { get; set;} = .35; //default setting
         public double VRStepPercent {  get; set; }  = .245; //default setting
-        public double VRMassiveStepChance { get; set; } = .33; //default setting
+        public double VRMassiveStepChance { get; set; } = .13; //default setting
         public bool DisplayCelsiusInsteadOfKraggs { get; set; } = false; //default setting
         public bool Verbose { get; set; } = true; 
         public bool SandstormsInDesertOnly { get; set; } = false; //default setting     

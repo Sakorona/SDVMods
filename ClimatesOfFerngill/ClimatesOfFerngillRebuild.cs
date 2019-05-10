@@ -175,7 +175,8 @@ namespace ClimatesOfFerngillRebuild
                 .Add("world_setweather", helper.Translation.Get("console-text.desc_setweather"), ConsoleCommands.WeatherChangeFromConsole)
                 .Add("debug_clearspecial", "debug command to clear special weathers", ConsoleCommands.ClearSpecial)
                 .Add("debug_weatherstatus","!", ConsoleCommands.OutputWeather)
-                .Add("debug_sswa","!", ConsoleCommands.ShowSpecialWeather);
+                .Add("debug_sswa","!", ConsoleCommands.ShowSpecialWeather)
+                .Add("debug_vrainc","Set Rain Amt.", ConsoleCommands.SetRainAmt);
         }
 
         private static int GetPixelZoom()
@@ -493,7 +494,13 @@ namespace ClimatesOfFerngillRebuild
                 {
                     if (Dice.NextDouble() < WeatherOpt.VRChangeChance)
                     {
-                        if (Dice.NextDouble() < WeatherOpt.VRMassiveStepChance)
+                        double chance = WeatherOpt.VRMassiveStepChance;
+                        if (AmtOfRainDrops > 200)
+                            chance /= 2; //cut this chance in half.
+                        if (AmtOfRainDrops > 600)
+                            chance /= 2; //cut it in half *again*
+
+                        if (Dice.NextDouble() < chance)                      
                             AmtOfRainDrops = WeatherUtilities.GetNextHighestRainCategoryBeginning(AmtOfRainDrops);
                         else
                             AmtOfRainDrops = (int)Math.Floor(AmtOfRainDrops * (1.0 + Dice.RollInRange(-1.0 * WeatherOpt.VRStepPercent, WeatherOpt.VRStepPercent)));
@@ -884,7 +891,13 @@ namespace ClimatesOfFerngillRebuild
                 }
                 else if (Dice.NextDouble() < WeatherOpt.VRChangeChance)
                 {
-                    if (Dice.NextDouble() < WeatherOpt.VRMassiveStepChance) 
+                    double chance = WeatherOpt.VRMassiveStepChance;
+                    if (AmtOfRainDrops > 200)
+                        chance /= 2; //cut this chance in half.
+                    if (AmtOfRainDrops > 600)
+                        chance /= 2; //cut it in half *again*
+
+                    if (Dice.NextDouble() < chance)
                         AmtOfRainDrops = WeatherUtilities.GetNextHighestRainCategoryBeginning(AmtOfRainDrops);
                     else
                         AmtOfRainDrops = (int)Math.Floor(AmtOfRainDrops * (1.0 + Dice.RollInRange(-1.0 * WeatherOpt.VRStepPercent, WeatherOpt.VRStepPercent)));
