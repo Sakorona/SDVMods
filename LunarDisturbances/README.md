@@ -1,7 +1,7 @@
 ﻿# Lunar Disturbances
 
 ## Current Version: 
-1.0.8 (Last Update: 19 Jan 2019)
+1.0.10 (Last Update:10 May 2019)
 
 ## Requirements
 - SMAPI 2.10+
@@ -26,12 +26,11 @@ Thankfully, they don't appear to spawn on wedding and festival days..
 
 ## Moon Cycle
 
-???
-
+Upcoming
 
 
 ## Changelog
-1.0.9
+1.0.10
  - Moves some configuration options to config. I cannot believe I forgot that
  - Updating readme.
  - I think I fixed the moon thing... I hope. I hope. Cleans up some issues with resetting
