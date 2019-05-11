@@ -22,17 +22,15 @@ namespace ClimatesOfFerngillRebuild
 
         public string WeatherType => "Blizzard";
         public void SetWeatherExpirationTime(SDVTime t){
-            Console.WriteLine($"Weather end time is being set to {t}");
             ExpirTime = new SDVTime(t);
         }
         public void SetWeatherBeginTime(SDVTime t){
-            Console.WriteLine($"Weather begin time is being set to {t}");
             BeginTime = new SDVTime(t);
         }
 
         public SDVTime WeatherExpirationTime => (ExpirTime ?? new SDVTime(0600));
         public SDVTime WeatherBeginTime => (BeginTime ?? new SDVTime(0600));
-        public bool WeatherInProgress => (SDVTime.CurrentTime >= BeginTime && SDVTime.CurrentTime <= ExpirTime);
+        public bool WeatherInProgress => (SDVTime.CurrentTime >= BeginTime && SDVTime.CurrentTime <= ExpirTime && BeginTime != ExpirTime);
 
         public FerngillBlizzard()
         {
@@ -63,6 +61,8 @@ namespace ClimatesOfFerngillRebuild
         public void Reset()
         {
             IsBlizzard = false;
+            ExpirTime = new SDVTime(0600);
+            BeginTime = new SDVTime(0600);
         }
 
         public void SetWeatherTime(SDVTime begin, SDVTime end)

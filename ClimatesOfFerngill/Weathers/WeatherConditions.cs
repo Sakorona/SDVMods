@@ -703,35 +703,42 @@ namespace ClimatesOfFerngillRebuild
 
             Game1.updateWeatherIcon();
 
+            if (ws.isFoggy && ws.fogWeatherEndTime == Game1.timeOfDay)
+                ForceWeatherEnd("Fog");
+
+
+            if (ws.isBlizzard && ws.blizzWeatherEndTime == Game1.timeOfDay)
+                ForceWeatherEnd("Blizzard");
+
             //yay, force set weathers!
-            if (ws.isFoggy)
+            if (ws.isFoggy && (ws.fogWeatherBeginTime >= Game1.timeOfDay && ws.fogWeatherEndTime < Game1.timeOfDay))
             {
                 ForceWeatherStart("Fog");
                 SetWeatherBeginTime("Fog", ws.fogWeatherBeginTime);
                 SetWeatherEndTime("Fog", ws.fogWeatherEndTime);
             }
 
-            if (ws.isBlizzard)
+            if (ws.isBlizzard && (ws.blizzWeatherBeginTime >= Game1.timeOfDay && ws.blizzWeatherEndTime < Game1.timeOfDay))
             {
                 ForceWeatherStart("Blizzard");
                 SetWeatherBeginTime("Blizzard", ws.blizzWeatherBeginTime);
                 SetWeatherEndTime("Blizzard", ws.blizzWeatherEndTime);
             }
 
-            if (ws.isWhiteOut)
+            if (ws.isWhiteOut && (ws.whiteWeatherBeginTime >= Game1.timeOfDay && ws.whiteWeatherEndTime < Game1.timeOfDay))
             {
                 ForceWeatherStart("WhiteOut");
                 SetWeatherBeginTime("WhiteOut", ws.whiteWeatherBeginTime);
                 SetWeatherEndTime("WhiteOut", ws.whiteWeatherEndTime);
             }
 
-            if (ws.isThunderFrenzy)
+            if (ws.isThunderFrenzy && (ws.thunWeatherBeginTime >= Game1.timeOfDay && ws.thunWeatherEndTime < Game1.timeOfDay)))
             {
                 SetWeatherBeginTime("ThunderFrenzy", ws.thunWeatherBeginTime);
                 SetWeatherEndTime("ThunderFrenzy", ws.thunWeatherEndTime);
             }
 
-            if (ws.isSandstorm)
+            if (ws.isSandstorm && (ws.sandstormWeatherBeginTime >= Game1.timeOfDay && ws.sandstormWeatherEndTime < Game1.timeOfDay))))
             {
                 ForceWeatherStart("Sandstorm");
                 SetWeatherBeginTime("Sandstorm", ws.sandstormWeatherBeginTime);
@@ -964,8 +971,9 @@ namespace ClimatesOfFerngillRebuild
             if (blockFog || ClimatesOfFerngill.WeatherOpt.DisableAllFog)
                 GenerateEveningFog = false;
             
-            double fogRoll = (ClimatesOfFerngill.WeatherOpt.DisableAllFog ? 1.1 : ClimatesOfFerngill.Dice.NextDoublePositive());
-           
+            //double fogRoll = (ClimatesOfFerngill.WeatherOpt.DisableAllFog ? 1.1 : ClimatesOfFerngill.Dice.NextDoublePositive());
+            double fogRoll = 0;
+
             if (fogRoll < ClimateForDay.RetrieveOdds(ClimatesOfFerngill.Dice, "fog", Game1.dayOfMonth) && !this.GetCurrentConditions().HasFlag(CurrentWeather.Wind) && !blockFog)
             {
                 this.CreateWeather("Fog");

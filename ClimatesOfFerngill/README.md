@@ -1,6 +1,6 @@
 ﻿# Climates of Ferngill (Rebuild) You Can (Not) Have Weather
 
-Current Version (6 May 2019): 1.5-beta.2
+Current Version (11 May 2019): 1.5-beta.3
 
 ## What's New
 - Variable Rain and snow.
@@ -52,6 +52,10 @@ If I have left you out of acknowledgements, please contact me so I can get you a
 
 
 ## Changelog
+v1.5-beta3
+ - Fixes to white outs and blizzards
+ - Letting the days go by, living underwater~
+
 v1.5-beta2
  - Variable Rain will no longer have a 1/3 in chance of becoming torrential every 30 minutes, so less invisible flash flooding.
  -- The chance of ramping up massively is now halved every step above 200 raindrops (vanilla is 70)
