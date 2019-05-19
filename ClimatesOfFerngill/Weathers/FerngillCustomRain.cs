@@ -142,6 +142,15 @@ namespace ClimatesOfFerngillRebuild.Weathers
         {
         }
 
+        public void ForceWeatherEnd()
+        {
+            WeatherBeginTime = new SDVTime(0600);
+            WeatherExpirationTime = new SDVTime(0600);
+
+            UpdateStatus("customrain", false);
+            IsWeatherVisible = false;
+        }
+
         public void MoveWeather()
         {
             UpdateRaindropPosition();

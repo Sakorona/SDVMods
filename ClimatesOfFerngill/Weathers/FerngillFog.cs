@@ -1,14 +1,10 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using StardewModdingAPI;
-using StardewModdingAPI.Utilities;
 using StardewValley;
 using StardewValley.Locations;
 using System;
 using System.Diagnostics;
-using TwilightShards.Common;
 using TwilightShards.Stardew.Common;
-using static ClimatesOfFerngillRebuild.Sprites;
 
 namespace ClimatesOfFerngillRebuild
 {
@@ -92,6 +88,15 @@ namespace ClimatesOfFerngillRebuild
             {
                 this.FogAlpha = .6f;
             }
+        }
+
+        public void ForceWeatherEnd()
+        {
+            ExpirTime = new SDVTime(SDVTime.CurrentTime - 10);
+            CurrentFogType = FogType.None;
+            FogElapsed.Start();
+            FadeOutFog = true;
+            UpdateStatus(WeatherType, false);
         }
 
         public string DebugWeatherOutput()

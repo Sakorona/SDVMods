@@ -60,6 +60,13 @@ namespace ClimatesOfFerngillRebuild
             ExpirTime = new SDVTime(2600);
         }
 
+        public void ForceWeatherEnd()
+        {
+            ExpirTime = new SDVTime(SDVTime.CurrentTime - 10);
+            IsThorAngry = false;
+            UpdateStatus(WeatherType, false);
+        }
+
         public void Reset()
         {
             IsThorAngry = false;

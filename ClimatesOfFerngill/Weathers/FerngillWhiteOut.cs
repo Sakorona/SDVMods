@@ -3,7 +3,6 @@ using Microsoft.Xna.Framework.Graphics;
 using StardewValley;
 using StardewValley.Locations;
 using System;
-using TwilightShards.Common;
 using TwilightShards.Stardew.Common;
 
 namespace ClimatesOfFerngillRebuild
@@ -43,6 +42,13 @@ namespace ClimatesOfFerngillRebuild
         public void ForceWeatherStart()
         {
             IsWhiteout = true;
+        }
+
+        public void ForceWeatherEnd()
+        {
+            IsWhiteout = false;
+            ExpirTime = new SDVTime(SDVTime.CurrentIntTime - 10);
+            UpdateStatus(WeatherType, false);
         }
 
         public void UpdateStatus(string weather, bool status)

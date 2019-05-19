@@ -130,6 +130,11 @@ namespace ClimatesOfFerngillRebuild
                 text += ClimatesOfFerngill.Translator.Get("weather-menu.condition.bloodmoon") + Environment.NewLine;
             }
 
+            if (ClimatesOfFerngill.UseLunarDisturbancesApi && ClimatesOfFerngill.MoonAPI.IsSolarEclipse())
+            {
+                text += ClimatesOfFerngill.Translator.Get("weather-menu.condition.solareclipse") + Environment.NewLine;
+            }
+
             ISDVWeather CurrentFog = Current.GetWeatherMatchingType("Fog").First();
             string fogString = "";
 
@@ -172,6 +177,13 @@ namespace ClimatesOfFerngillRebuild
                 text += NightTime + Environment.NewLine;
             }
 
+            if (ClimatesOfFerngill.UseLunarDisturbancesApi)
+            {
+                if (ClimatesOfFerngill.MoonAPI.IsMoonUp(Game1.timeOfDay))
+                text += Environment.NewLine + ClimatesOfFerngill.Translator.Get("weather-menu.desc-moonNotUp", new { moonPhase = ClimatesOfFerngill.MoonAPI.GetCurrentMoonPhase(), moonRise = ClimatesOfFerngill.MoonAPI.GetMoonRise(), moonSet = ClimatesOfFerngill.MoonAPI.GetMoonSet()});
+                else
+                    text += Environment.NewLine + ClimatesOfFerngill.Translator.Get("weather-menu.desc-moonUp", new { moonPhase = ClimatesOfFerngill.MoonAPI.GetCurrentMoonPhase(), moonSet = ClimatesOfFerngill.MoonAPI.GetMoonSet() });
+            }
 
 
             return text;

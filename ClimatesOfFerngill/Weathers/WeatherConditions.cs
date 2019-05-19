@@ -5,11 +5,9 @@ using StardewValley;
 using System.Collections.Generic;
 using System.Linq;
 using TwilightShards.Common;
-using static ClimatesOfFerngillRebuild.Sprites;
 using System;
 using ClimatesOfFerngillRebuild.Weathers;
 using TwilightShards.Stardew.Common;
-using StardewModdingAPI.Events;
 
 namespace ClimatesOfFerngillRebuild
 {
@@ -635,6 +633,12 @@ namespace ClimatesOfFerngillRebuild
             ClimatesOfFerngill.MPHandler.SendMessage<WeatherSync>(Message, "WeatherSync", new [] { "KoihimeNakamura.ClimatesOfFerngill" });    
         }
 
+        internal void SetTodayTempsFromTomorrow()
+        {
+            TodayTemps.LowerBound = TomorrowTemps.LowerBound;
+            TodayTemps.HigherBound = TomorrowTemps.HigherBound;
+        }
+
         public WeatherSync GenerateWeatherSyncMessage()
         {
             WeatherSync Message = new WeatherSync
@@ -676,6 +680,15 @@ namespace ClimatesOfFerngillRebuild
             }
         }
 
+        public void ForceWeatherEnd(string s)
+        {
+            foreach (ISDVWeather w in this.CurrentWeathers)
+            {
+                if (w.WeatherType == s)
+                    w.ForceWeatherEnd();
+            }
+        }
+
         public void SetSync(WeatherSync ws)
         {
             //set general weather first, then the specialized weathers
@@ -703,42 +716,47 @@ namespace ClimatesOfFerngillRebuild
 
             Game1.updateWeatherIcon();
 
-            if (ws.isFoggy && ws.fogWeatherEndTime == Game1.timeOfDay)
+            if (ws.isFoggy && ws.fogWeatherEndTime <= Game1.timeOfDay)
                 ForceWeatherEnd("Fog");
 
-
-            if (ws.isBlizzard && ws.blizzWeatherEndTime == Game1.timeOfDay)
+            if (ws.isBlizzard && ws.blizzWeatherEndTime <= Game1.timeOfDay)
                 ForceWeatherEnd("Blizzard");
 
+            if (ws.isWhiteOut && ws.whiteWeatherEndTime <= Game1.timeOfDay)
+                ForceWeatherEnd("WhiteOut");
+
+            if (ws.isThunderFrenzy && ws.thunWeatherEndTime <= Game1.timeOfDay)
+                ForceWeatherEnd("ThunderFrenzy");
+
             //yay, force set weathers!
-            if (ws.isFoggy && (ws.fogWeatherBeginTime >= Game1.timeOfDay && ws.fogWeatherEndTime < Game1.timeOfDay))
+            if (ws.isFoggy && (ws.fogWeatherBeginTime <= Game1.timeOfDay && ws.fogWeatherEndTime > Game1.timeOfDay))
             {
                 ForceWeatherStart("Fog");
                 SetWeatherBeginTime("Fog", ws.fogWeatherBeginTime);
                 SetWeatherEndTime("Fog", ws.fogWeatherEndTime);
             }
 
-            if (ws.isBlizzard && (ws.blizzWeatherBeginTime >= Game1.timeOfDay && ws.blizzWeatherEndTime < Game1.timeOfDay))
+            if (ws.isBlizzard && (ws.blizzWeatherBeginTime <= Game1.timeOfDay && ws.blizzWeatherEndTime > Game1.timeOfDay))
             {
                 ForceWeatherStart("Blizzard");
                 SetWeatherBeginTime("Blizzard", ws.blizzWeatherBeginTime);
                 SetWeatherEndTime("Blizzard", ws.blizzWeatherEndTime);
             }
 
-            if (ws.isWhiteOut && (ws.whiteWeatherBeginTime >= Game1.timeOfDay && ws.whiteWeatherEndTime < Game1.timeOfDay))
+            if (ws.isWhiteOut && (ws.whiteWeatherBeginTime <= Game1.timeOfDay && ws.whiteWeatherEndTime > Game1.timeOfDay))
             {
                 ForceWeatherStart("WhiteOut");
                 SetWeatherBeginTime("WhiteOut", ws.whiteWeatherBeginTime);
                 SetWeatherEndTime("WhiteOut", ws.whiteWeatherEndTime);
             }
 
-            if (ws.isThunderFrenzy && (ws.thunWeatherBeginTime >= Game1.timeOfDay && ws.thunWeatherEndTime < Game1.timeOfDay)))
+            if (ws.isThunderFrenzy && (ws.thunWeatherBeginTime <= Game1.timeOfDay && ws.thunWeatherEndTime > Game1.timeOfDay))
             {
                 SetWeatherBeginTime("ThunderFrenzy", ws.thunWeatherBeginTime);
                 SetWeatherEndTime("ThunderFrenzy", ws.thunWeatherEndTime);
             }
 
-            if (ws.isSandstorm && (ws.sandstormWeatherBeginTime >= Game1.timeOfDay && ws.sandstormWeatherEndTime < Game1.timeOfDay))))
+            if (ws.isSandstorm && (ws.sandstormWeatherBeginTime <= Game1.timeOfDay && ws.sandstormWeatherEndTime > Game1.timeOfDay))
             {
                 ForceWeatherStart("Sandstorm");
                 SetWeatherBeginTime("Sandstorm", ws.sandstormWeatherBeginTime);

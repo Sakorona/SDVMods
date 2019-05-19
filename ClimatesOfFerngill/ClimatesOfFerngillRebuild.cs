@@ -636,6 +636,9 @@ namespace ClimatesOfFerngillRebuild
         {
             if (e.FromModID == "KoihimeNakamura.ClimatesOfFerngill" && e.Type == "NewFarmHandJoin" && Context.IsMainPlayer && !HasGottenSync)
             {
+                if (!Conditions.IsTodayTempSet)
+                    Conditions.SetTodayTemps(GameClimate.GetTemperatures(SDate.Now(), Dice));
+
                 WeatherSync message = Conditions.GenerateWeatherSyncMessage();
                 MPHandler.SendMessage<WeatherSync>(message,"WeatherSync",new[] {"KoihimeNakamura.ClimatesOfFerngill" },new[] {e.FromPlayerID });
                 HasGottenSync = true;
@@ -646,7 +649,7 @@ namespace ClimatesOfFerngillRebuild
                 WeatherSync message = e.ReadAs<WeatherSync>();
                 if (WeatherOpt.Verbose)
                 {
-                    Monitor.Log($"Message contents: {GenSyncMessageString(message)}");
+                    Monitor.Log($"Message contents at {Game1.timeOfDay} : {GenSyncMessageString(message)}");
                 }                
                 Conditions.SetSync(message);
             }
@@ -853,10 +856,15 @@ namespace ClimatesOfFerngillRebuild
             //   If tomorrow is set, move it to today, and autoregen tomorrow.
             //   *201711 Due to changes in the object, it auto attempts to update today from tomorrow.
 
-            if (!Conditions.IsTomorrowTempSet)
-                Conditions.SetTodayTemps(GameClimate.GetTemperatures(SDate.Now(), Dice));
+            if (!Conditions.IsTodayTempSet)
+            {
+                if (!Conditions.IsTomorrowTempSet)
+                    Conditions.SetTodayTemps(GameClimate.GetTemperatures(SDate.Now(), Dice));
+                else
+                    Conditions.SetTodayTempsFromTomorrow();
 
-            Conditions.SetTomorrowTemps(GameClimate.GetTemperatures(SDate.Now().AddDays(1), Dice));
+                Conditions.SetTomorrowTemps(GameClimate.GetTemperatures(SDate.Now().AddDays(1), Dice));
+            }
 
             if (WeatherOpt.Verbose)
                 Monitor.Log($"Updated the temperature for tommorow and today. Setting weather for today... ", LogLevel.Trace);

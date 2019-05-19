@@ -41,6 +41,14 @@ namespace ClimatesOfFerngillRebuild.Weathers
             UpdateStatus(WeatherType, true);
         }
 
+        public void ForceWeatherEnd()
+        {
+            ExpirTime = new SDVTime(SDVTime.CurrentTime - 10);
+            FadeOutSandstorm = true;
+            SandstormElapsed.Start();
+            UpdateStatus(WeatherType, false);
+        }
+
         public void SetWeatherExpirationTime(SDVTime t)
         {
             ExpirTime = new SDVTime(t);

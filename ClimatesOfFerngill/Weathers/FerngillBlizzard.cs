@@ -53,6 +53,12 @@ namespace ClimatesOfFerngillRebuild
             ExpirTime = new SDVTime(2600);
         }
 
+        public void ForceWeatherEnd()
+        {
+            IsBlizzard = false;
+            ExpirTime = new SDVTime(0600);
+        }
+
         public void OnNewDay()
         {
             IsBlizzard = false;

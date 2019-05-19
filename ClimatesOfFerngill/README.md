@@ -1,6 +1,6 @@
 ﻿# Climates of Ferngill (Rebuild) You Can (Not) Have Weather
 
-Current Version (11 May 2019): 1.5-beta.3
+Current Version (18 May 2019): 1.5-beta.7
 
 ## What's New
 - Variable Rain and snow.
@@ -45,6 +45,7 @@ This mod uses harmony to patch functions to allow it to draw custom rain and sno
 - Pan for the new base debris sprites
 - FoggyWizard for the sandstorm sprite
 - FarAways for the Chinese translation
+- mouse and minerva for the testing
 - Amu Tsukiyomi for all of the debris sprites, and several icon sprites
 - The SDV discord #modding channel for discussions and encouragement.
 
@@ -52,6 +53,10 @@ If I have left you out of acknowledgements, please contact me so I can get you a
 
 
 ## Changelog
+v1.5-beta6
+ - fixes to fog
+ - moon text restored if Lunar Disturbances is installed
+
 v1.5-beta3
  - Fixes to white outs and blizzards
  - Letting the days go by, living underwater~

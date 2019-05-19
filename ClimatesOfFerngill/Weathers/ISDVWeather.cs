@@ -103,6 +103,11 @@ namespace ClimatesOfFerngillRebuild
        /// This function controls how they are ended
        /// </summary>
        void EndWeather();
+        
+       /// <summary>
+       /// This function forces the weather to end
+       /// </summary>
+       void ForceWeatherEnd();
 
         /// <summary>
         /// This function forces the weather to start
