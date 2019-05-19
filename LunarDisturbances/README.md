@@ -20,7 +20,7 @@ A blood moon is a rare event in Pelican Town. It only appears to happen 1 in 67 
 
 Thankfully, they don't appear to spawn on wedding and festival days..
 
--- sale prices down 20%
+-- sale prices down 25%
 -- buy prices up 85%
 -- monsters spawn every 10 real-world seconds if you are outside.
 
