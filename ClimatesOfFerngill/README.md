@@ -1,6 +1,6 @@
-﻿# Climates of Ferngill (Rebuild) You Can (Not) Have Weather
+﻿# Climates of Ferngill
 
-Current Version (18 May 2019): 1.5-beta.7
+Current Version (24 June 2019): 1.5-beta.9
 
 ## What's New
 - Variable Rain and snow.
@@ -11,7 +11,7 @@ Current Version (18 May 2019): 1.5-beta.7
 - Thundersnow!
 
 ## Multiplayer
-Supports MP, with most features locked out to main player
+Supports MP, with most features locked out to main player. However, most weathers will render on farmhands screen.
 
 ## Requirements
 
@@ -34,9 +34,6 @@ This mod does the following:
 
 This mod uses harmony to patch functions to allow it to draw custom rain and snow colors.
 
-## Upcoming Features
-
-
 ## Acknowledgements
 - Prismuth for the fog sprite
 - Pathoschild for ideas
@@ -53,6 +50,17 @@ If I have left you out of acknowledgements, please contact me so I can get you a
 
 
 ## Changelog
+v1.5-beta9
+ - Manifest name fix for better log parsing
+ - Lighter Fog option now further lightens the fog in rain
+ - An option was included to display fog in the desert
+
+v1.5-beta8
+ - updated bundled SDVUtilities to use code that should work better in some locations
+
+v1.5-beta7
+ - removes some debug code that made it silent hill, all the time
+
 v1.5-beta6
  - fixes to fog
  - moon text restored if Lunar Disturbances is installed
@@ -376,7 +384,7 @@ over a certain value.). Valid 0-1, but it's recommended that this is kept low. D
 
  - 'DisableAllFog' - As it says on the tin.
 
- - 'ShowSummitClouds' - Controls if rain clouds appear in the summit.
+ - 'ShowSummitClouds' - Controls if rain clouds appear in the summit. NOTE: Will not trigger if the mod detects Summit Reborn is installed.
 
  - 'RainToSnowConversion' - If cold enough, and in fall or spring, this is the chance rain will become snow.
 

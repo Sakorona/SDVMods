@@ -30,17 +30,10 @@ namespace TwilightShards.FerngillTaxes
         {
             Options = helper.ReadConfig<TaxConfig>();
 
-            var harmony = HarmonyInstance.Create("koihimenakamura.ferngilltaxes");
-            harmony.PatchAll(Assembly.GetExecutingAssembly());
+            /* var harmony = HarmonyInstance.Create("koihimenakamura.ferngilltaxes");
+            harmony.PatchAll(Assembly.GetExecutingAssembly()); */
 
-            //patch answerDialogue
-            MethodInfo answerDialogue = GetSDVType("BusStop").GetMethods(BindingFlags.Static | BindingFlags.Public).ToList().Find(m => m.Name == "answerDialogue");
-            MethodInfo prefix = typeof(Patches.AnswerDialoguePatch).GetMethods(BindingFlags.Static | BindingFlags.Public).ToList().Find(m => m.Name == "Prefix");
-            Monitor.Log($"Prefixing {answerDialogue} with {prefix}", LogLevel.Trace);
-            harmony.Patch(answerDialogue, prefix:new HarmonyMethod(prefix));
-
-            helper.Events.Display.MenuChanged += OnMenuChanged;
-            
+            helper.Events.Display.MenuChanged += OnMenuChanged;            
         }
 
         /// <summary>Raised after the game is launched, right before the first update tick. This happens once per game session (unrelated to loading saves). All mods are loaded and initialised at this point, so this is a good time to set up mod integrations.</summary>

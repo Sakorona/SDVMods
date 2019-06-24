@@ -7,6 +7,7 @@
         public double wellDiscount = 50;
         public double costPerSprinkler = 5;
         public double tierMultipliable = 1.2;
+        public bool TaxSubsiszedServices = false;
 
         public TaxConfig()
         {

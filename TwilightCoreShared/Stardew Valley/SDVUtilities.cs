@@ -39,7 +39,7 @@ namespace TwilightShards.Stardew.Common
             string s = "";
             for (int i = 0; i < array.Length; i++)
             {
-                s = s + $"Command {i} is {array[i]}";
+                s += $"Command {i} is {array[i]}";
             }
 
             return s;
@@ -273,7 +273,7 @@ namespace TwilightShards.Stardew.Common
                 return;
 
             //due to how this will be called, we do need to some checking
-            if (!loc.Name.Equals("Greenhouse") && (currCrop.dead.Value || !currCrop.seasonsToGrowIn.Contains(Game1.currentSeason)))
+            if (!loc.IsGreenhouse && (currCrop.dead.Value || !currCrop.seasonsToGrowIn.Contains(Game1.currentSeason)))
             {
                 currCrop.dead.Value = true;
             }
@@ -283,7 +283,7 @@ namespace TwilightShards.Stardew.Common
                 {
                     //get the day of the current phase - if it's fully grown, we can just leave it here.
                     if (currCrop.fullyGrown.Value)
-                        currCrop.dayOfCurrentPhase.Value = currCrop.dayOfCurrentPhase.Value - 1;
+                        currCrop.dayOfCurrentPhase.Value -= 1;
                     else
                     {
                         //check to sere what the count of current days is

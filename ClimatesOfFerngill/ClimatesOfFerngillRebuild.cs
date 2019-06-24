@@ -528,6 +528,7 @@ namespace ClimatesOfFerngillRebuild
             {
                 if (Conditions.HasWeather(CurrentWeather.Heatwave) || Conditions.HasWeather(CurrentWeather.Sandstorm))
                 {
+                    Monitor.Log("Beginning Heatwave code");
                     ExpireTime = 2000;
                     Farm f = Game1.getFarm();
                     int count = 0, maxCrops = (int)Math.Floor(SDVUtilities.CropCountInFarm(f) * WeatherOpt.DeadCropPercentage);
@@ -563,11 +564,16 @@ namespace ClimatesOfFerngillRebuild
                                 SDVUtilities.ShowMessage(Helper.Translation.Get("hud-text.desc_sandstorm_dry", new { crops = count }), 3);
                         }
                     }
+                    else
+                    {
+                        SDVUtilities.ShowMessage(Helper.Translation.Get("hud-text.desc_heatwave"),3);
+                    }
                 }
             }
 
             if (Game1.timeOfDay == ExpireTime && WeatherOpt.AllowCropDeath)
             {
+                Monitor.Log("Beginning Crop Death code");
                 //if it's still de watered - kill it.
                 Farm f = Game1.getFarm();
                 bool cDead = false;
@@ -582,6 +588,7 @@ namespace ClimatesOfFerngillRebuild
                     }
                 }
 
+                CropList.Clear(); //clear the list
                 if (cDead) { 
                     SDVUtilities.ShowMessage(Helper.Translation.Get("hud-text.desc_heatwave_cropdeath"),3);
                 }
@@ -700,7 +707,7 @@ namespace ClimatesOfFerngillRebuild
             ExpireTime = 0;
                        
             WeatherSync message = Conditions.GenerateWeatherSyncMessage();
-            MPHandler.SendMessage(message, "WeatherSync", modIDs: new[] { this.ModManifest.UniqueID });
+            MPHandler.SendMessage(message, "WeatherSync", modIDs: new[] { ModManifest.UniqueID });
         }
 
         private string GenSyncMessageString(WeatherSync ws)

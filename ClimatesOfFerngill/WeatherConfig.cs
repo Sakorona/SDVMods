@@ -42,6 +42,7 @@ namespace ClimatesOfFerngillRebuild
         public double MoreSevereThunderFrenzyOdds { get; set; } = .22; //default setting
         public bool ShowSummitClouds { get; set;} = true; //default setting
         public double RainToSnowConversion { get; set; } = .525; //default setting
+        public bool DisplayFogInDesert { get; set;} = false;
         public WeatherConfig()
         {
         }

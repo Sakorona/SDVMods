@@ -30,6 +30,9 @@ Upcoming
 
 
 ## Changelog
+1.0.11
+ - Updated SDVUtilities base code. Should now not cause random crop death in Crops Anywhere when the two mods are used together.
+
 1.0.10
  - Moves some configuration options to config. I cannot believe I forgot that
  - Updating readme.

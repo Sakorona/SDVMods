@@ -989,8 +989,7 @@ namespace ClimatesOfFerngillRebuild
             if (blockFog || ClimatesOfFerngill.WeatherOpt.DisableAllFog)
                 GenerateEveningFog = false;
             
-            //double fogRoll = (ClimatesOfFerngill.WeatherOpt.DisableAllFog ? 1.1 : ClimatesOfFerngill.Dice.NextDoublePositive());
-            double fogRoll = 0;
+            double fogRoll = (ClimatesOfFerngill.WeatherOpt.DisableAllFog ? 1.1 : ClimatesOfFerngill.Dice.NextDoublePositive());
 
             if (fogRoll < ClimateForDay.RetrieveOdds(ClimatesOfFerngill.Dice, "fog", Game1.dayOfMonth) && !this.GetCurrentConditions().HasFlag(CurrentWeather.Wind) && !blockFog)
             {

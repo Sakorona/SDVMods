@@ -81,6 +81,10 @@ namespace TwilightShards.WeatherIllnesses
 
             //handle being inside...
             double? temp = (UseClimates) ? climatesAPI.GetTodaysLow() : 100.0;
+            if (temp is null)
+            {
+                temp = 100.0;
+            }
             
             Game1.player.stamina += StaminaMngr.TenMinuteTick(Game1.player.hat.Value?.which.Value, temp, weatherStatus, TicksInLocation, TicksOutside, TicksTotal, Dice);
 

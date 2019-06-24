@@ -6,6 +6,7 @@ using StardewValley;
 using Microsoft.Xna.Framework;
 using StardewValley.TerrainFeatures;
 using SObject = StardewValley.Object;
+using xTile.Tiles;
 
 namespace FloodEventsTesting
 {
@@ -14,6 +15,7 @@ namespace FloodEventsTesting
         protected Dictionary<GameLocation,Dictionary<int,List<Point>>> FloodedTiles;
         protected int CurrentFloodDepth;
         protected int TotalFloodDepth = 4;
+        private bool FloodMapCreated;
 
         /// <summary>The mod entry point, called after the mod is first loaded.</summary>
         /// <param name="helper">Provides simplified APIs for writing mods.</param>
@@ -21,6 +23,7 @@ namespace FloodEventsTesting
         {
             FloodedTiles = new Dictionary<GameLocation, Dictionary<int, List<Point>>>();
             CurrentFloodDepth = TotalFloodDepth;
+            FloodMapCreated = false;
             //do something here, I suppose.
             helper.Events.GameLoop.UpdateTicked += OnUpdateTicked;
             helper.Events.GameLoop.TimeChanged += OnTimeChanged;
@@ -86,7 +89,10 @@ namespace FloodEventsTesting
             if (!Context.IsWorldReady || !e.IsMultipleOf(4))
                 return;
 
-            CreateFlood();
+            if (!FloodMapCreated) { 
+                CreateFlood();
+                FloodMapCreated = true;
+            }
         }
 
         /// <summary>Raised after the player presses a button on the keyboard, controller, or mouse.</summary>
@@ -142,24 +148,26 @@ namespace FloodEventsTesting
             {
                 GameLocation loc = kvp.Key;
                 var fPoints = kvp.Value[CurrentFloodDepth];
-                
-                for (int i = 0; i <  loc.waterTiles.GetLength(0); i++)
+
+                for (int i = 0; i < loc.waterTiles.GetLength(0); i++)
                 {
-                    for (int j = 0; j <  loc.waterTiles.GetLength(1); j++)
+                    for (int j = 0; j < loc.waterTiles.GetLength(1); j++)
                     {
                         if (fPoints.Contains(new Point(i, j)))
                         {
-                            Console.WriteLine($"Flipping tile [{i},{j}] to true");
+                            Console.WriteLine($"Flipping tile [{i},{j}] in {loc.ToString()} to true");
                             loc.waterTiles[i, j] = true;
-                            loc.map.GetLayer("Back").Tiles[i, j].Properties.Add("Water", "T");
-                            
-                            Vector2 currTile = new Vector2(i*16, j*16);
+                            Tile t = loc.map.GetLayer("Back").PickTile(new xTile.Dimensions.Location(i, j) * Game1.tileSize, Game1.viewport.Size);
+                            t.Properties.Add("Water", "T");
+                            t.Properties.Add("WaterSource", "T");
+
+                            Vector2 currTile = new Vector2(i * Game1.tileSize, j * Game1.tileSize);
 
                             if (loc.terrainFeatures.ContainsKey(currTile) && (loc.terrainFeatures[currTile] is HoeDirt ||
                                                                               loc.terrainFeatures[currTile] is Grass ||
-                                                                              (loc.terrainFeatures[currTile] is Tree t &&
-                                                                               (t.growthStage.Value <= 3 ||
-                                                                                t.health.Value <= 18f)) ||
+                                                                              (loc.terrainFeatures[currTile] is Tree tr &&
+                                                                               (tr.growthStage.Value <= 3 ||
+                                                                                tr.health.Value <= 18f)) ||
                                                                               (loc.terrainFeatures[
                                                                                    currTile] is FruitTree tf &&
                                                                                (tf.growthStage.Value <= 3 ||
@@ -180,7 +188,9 @@ namespace FloodEventsTesting
 
                     }
                 }
-            }
+
+                loc.updateMap();
+            }            
         }
 
         /// <summary>Raised after the in-game clock time changes.</summary>

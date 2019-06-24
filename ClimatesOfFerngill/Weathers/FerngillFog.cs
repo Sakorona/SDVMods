@@ -79,15 +79,17 @@ namespace ClimatesOfFerngillRebuild
         public void ForceWeatherStart()
         {
             this.FogAlpha = 1f;
-            if (ClimatesOfFerngill.Dice.NextDoublePositive() <= .001)
-                CurrentFogType = FogType.Blinding;
-            else
-                CurrentFogType = FogType.Normal;
+            CurrentFogType = FogType.Normal;
 
             if (ClimatesOfFerngill.WeatherOpt.ShowLighterFog)
             {
-                this.FogAlpha = .6f;
+                if (Game1.isRaining) 
+                    this.FogAlpha = .4f;
+                else
+                    this.FogAlpha = .6f;
             }
+            
+                
         }
 
         public void ForceWeatherEnd()
@@ -134,16 +136,14 @@ namespace ClimatesOfFerngillRebuild
         public void CreateWeather()
         {
             this.FogAlpha = 1f;
-            //First, let's determine the type.
-            //... I am a dumb foxgirl. A really dumb one. 
-            if (ClimatesOfFerngill.Dice.NextDoublePositive() <= .001)
-                CurrentFogType = FogType.Blinding;
-            else
-                CurrentFogType = FogType.Normal;
+            CurrentFogType = FogType.Normal;
 
             if (ClimatesOfFerngill.WeatherOpt.ShowLighterFog)
             {
-                this.FogAlpha = .6f;
+                if (Game1.isRaining)
+                    this.FogAlpha = .4f;
+                else
+                    this.FogAlpha = .6f;
             }
 
             //now determine the fog expiration time
@@ -259,7 +259,7 @@ namespace ClimatesOfFerngillRebuild
         {
             if (IsWeatherVisible)
             {
-                if (CurrentFogType != FogType.Blinding && !(Game1.currentLocation is Desert))
+                if (!(Game1.currentLocation is Desert) || (ClimatesOfFerngill.WeatherOpt.DisplayFogInDesert && Game1.currentLocation is Desert))
                 {
                     //Game1.outdoorLight = fogLight;
                     Texture2D fogTexture = ClimatesOfFerngill.OurIcons.FogTexture;
