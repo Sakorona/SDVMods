@@ -26,6 +26,7 @@ namespace ClimatesOfFerngillRebuild
             ClimatesOfFerngill.Conditions.GetWeatherMatchingType("WhiteOut").First().EndWeather();
             ClimatesOfFerngill.Conditions.GetWeatherMatchingType("ThunderFrenzy").First().EndWeather();
             ClimatesOfFerngill.Conditions.GetWeatherMatchingType("Sandstorm").First().EndWeather();
+            ClimatesOfFerngill.Conditions.SetVariableRain(false);
         }
 
         internal static void SetWeatherStorm()
@@ -86,20 +87,5 @@ namespace ClimatesOfFerngillRebuild
                     return Game1.weather_rain;
             }
         }
-
-        internal static int GetNextHighestRainCategoryBeginning(int currentRain)
-        {
-            for(int i = 0; i < RainCategories.Count; i++)
-            {
-                if ((int)RainCategories[i] == currentRain && i+1 < RainCategories.Count)
-                    return (int)RainCategories[i+1];
-                else if ((int)RainCategories[i] == currentRain && i + 1 == RainCategories.Count)
-                    return (int)RainCategories[i];
-                else if ((int)RainCategories[i] > currentRain)
-                    return (int)RainCategories[i];
-            }
-            
-            return currentRain;      
-        }      
     }
 }

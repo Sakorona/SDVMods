@@ -1,9 +1,9 @@
 ﻿#Time Reminder
-Current Version: 1.2
+Current Version: 1.2.3
 
 ## Requirements
-- SMAPI 2.7+
-- Stardew Valley 1.3.28+
+- SMAPI 3.0+
+- Stardew Valley 1.3.36+
 
 ## This Mod Does:
 - Gives you reminders every x minutes. Also lets you set in game reminders for certain times.
@@ -23,6 +23,9 @@ Type in /setreminder 1200 to set a reminder for 12:00 in game. Use /setrreminder
 Input is between 0600 and 2600 (non inclusive).
 
 ## Changelog
+1.2.3
+ - SMAPI 3.0 compatible
+ - Other minor changes
 1.2.1
 - Added update key to manifest
 1.2

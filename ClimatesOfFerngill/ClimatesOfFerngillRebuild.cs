@@ -33,7 +33,7 @@ namespace ClimatesOfFerngillRebuild
         /// <summary> The current weather conditions </summary>
         internal static WeatherConditions Conditions;
 
-        //provide common interfaces for logging
+        //provide common interfaces for logging, and access to SMAPI APIs
         internal static IMonitor Logger;
         internal static IReflectionHelper Reflection;
         internal static IMultiplayerHelper MPHandler;
@@ -48,7 +48,6 @@ namespace ClimatesOfFerngillRebuild
         private List<Vector2> CropList;
         private HUDMessage queuedMsg;
         private int ExpireTime;
-        internal static ClimateTracker trackerModel;
 
         /// <summary> This is used to allow the menu to revert back to a previous menu </summary>
         private IClickableMenu PreviousMenu;
@@ -59,11 +58,9 @@ namespace ClimatesOfFerngillRebuild
         private bool HasRequestedSync = false;
         private static bool IsBloodMoon = false;
         private float weatherX;
-        internal static bool IsVariableRain { get; private set;}
-        private int TenMCounter;
-        internal static int AmtOfRainDrops { get; private set; }
+        
         private bool SummitRebornLoaded;
-
+        
         //Integrations
         internal static bool UseLunarDisturbancesApi = false;
         internal static Integrations.ILunarDisturbancesAPI MoonAPI;
@@ -99,10 +96,7 @@ namespace ClimatesOfFerngillRebuild
             DescriptionEngine = new Descriptions();
             queuedMsg = null;
             SummitRebornLoaded = false;
-            TenMCounter = 0;
             ExpireTime = 0;
-            IsVariableRain = false;
-            //RainAmt = 0.0;
 
             if (WeatherOpt.Verbose) Monitor.Log($"Loading climate type: {WeatherOpt.ClimateType} from file", LogLevel.Trace);
 
@@ -231,27 +225,9 @@ namespace ClimatesOfFerngillRebuild
 
             if (Context.IsMainPlayer)
             {
-                trackerModel = this.Helper.Data.ReadSaveData<ClimateTracker>("climate-tracker");
+                Conditions.trackerModel = this.Helper.Data.ReadSaveData<ClimateTracker>("climate-tracker");
             }
         } 
-
-        public static void SetVariableRain(bool isVariable)
-        {
-            IsVariableRain = isVariable;
-        }
-
-        public static void SetRainAmt(int rainAmt)
-        {
-            AmtOfRainDrops = rainAmt;
-            Array.Resize(ref Game1.rainDrops, AmtOfRainDrops);
-            if (Game1.IsMasterGame)
-                Logger.Log($"Setting rain to {AmtOfRainDrops}");
-            else
-            {
-                Logger.Log($"Setting from master: rain to {AmtOfRainDrops}");
-            }
-                
-        }
         
         public void DisplayWeather(TV tv, TemporaryAnimatedSprite sprite, Farmer who, string answer)
         {
@@ -374,14 +350,27 @@ namespace ClimatesOfFerngillRebuild
             }
         }
 
+        private bool IsWinterForageable(int index)
+        {
+            switch (index) { 
+                case 412:
+                case 414:
+                case 416:
+                case 418:
+                    return true;
+                default:
+                    return false;
+            }              
+        }
+
         /// <summary>Raised before the game begins writes data to the save file (except the initial save creation).</summary>
         /// <param name="sender">The event sender.</param>
         /// <param name="e">The event arguments.</param>
         private void OnSaving(object sender, SavingEventArgs e)
         {
             if (!Context.IsMainPlayer) return;
-
-            this.Helper.Data.WriteSaveData("climate-tracker", trackerModel);
+            Conditions.OnSaving();           
+            this.Helper.Data.WriteSaveData("climate-tracker", Conditions.trackerModel);
 
             if (Conditions.HasWeather(CurrentWeather.Frost) && WeatherOpt.AllowCropDeath)
             {
@@ -396,7 +385,9 @@ namespace ClimatesOfFerngillRebuild
 
                     if (tf.Value is HoeDirt curr && curr.crop != null)
                     {
-                        if (Dice.NextDouble() > WeatherOpt.CropResistance)
+                        Crop test = new Crop(curr.crop.indexOfHarvest.Value,0,0);
+
+                        if (Dice.NextDouble() > WeatherOpt.CropResistance && (!test.seasonsToGrowIn.Contains("winter") || !IsWinterForageable(test.indexOfHarvest.Value)))
                         {
                             CropList.Add(tf.Key);
                             count++;
@@ -485,33 +476,9 @@ namespace ClimatesOfFerngillRebuild
                     }
                 }
             }
+            
 
-            TenMCounter++;
-
-            if (TenMCounter == 3)
-            {
-                if (IsVariableRain)
-                {
-                    if (Dice.NextDouble() < WeatherOpt.VRChangeChance)
-                    {
-                        double chance = WeatherOpt.VRMassiveStepChance;
-                        if (AmtOfRainDrops > 200)
-                            chance /= 2; //cut this chance in half.
-                        if (AmtOfRainDrops > 600)
-                            chance /= 2; //cut it in half *again*
-
-                        if (Dice.NextDouble() < chance)                      
-                            AmtOfRainDrops = WeatherUtilities.GetNextHighestRainCategoryBeginning(AmtOfRainDrops);
-                        else
-                            AmtOfRainDrops = (int)Math.Floor(AmtOfRainDrops * (1.0 + Dice.RollInRange(-1.0 * WeatherOpt.VRStepPercent, WeatherOpt.VRStepPercent)));
-
-                        SetRainAmt(AmtOfRainDrops);
-                        Conditions.GenerateWeatherSync();
-                    }
-
-                }
-                TenMCounter = 0;
-            }
+ 
 
             if (Game1.currentLocation.IsOutdoors && Conditions.HasWeather(CurrentWeather.Lightning) && !Conditions.HasWeather(CurrentWeather.Rain) && Game1.timeOfDay < 2400)
                 Utility.performLightningUpdate();
@@ -595,6 +562,30 @@ namespace ClimatesOfFerngillRebuild
             }
         }
 
+        /*private void UpdateDynamicRain()
+        {
+            if (IsVariableRain)
+            {
+                if (Dice.NextDouble() < WeatherOpt.VRChangeChance)
+                {
+                    double chance = WeatherOpt.VRMassiveStepChance;
+                    if (AmtOfRainDrops > 200)
+                        chance /= 2; //cut this chance in half.
+                    if (AmtOfRainDrops > 600)
+                        chance /= 2; //cut it in half *again*
+
+                    //if (Dice.NextDouble() < chance)
+                       // AmtOfRainDrops = WeatherUtilities.GetNextHighestRainCategoryBeginning(AmtOfRainDrops);
+                    //else
+                        AmtOfRainDrops = (int)Math.Floor(AmtOfRainDrops * (1.0 + Dice.RollInRange(-1.0 * WeatherOpt.VRStepPercent, WeatherOpt.VRStepPercent)));
+
+                    SetRainAmt(AmtOfRainDrops);
+                    Conditions.GenerateWeatherSync();
+                }
+
+            }
+        }*/
+
         /// <summary>Raised after drawing the HUD (item toolbar, clock, etc) to the sprite batch, but before it's rendered to the screen. The vanilla HUD may be hidden at this point (e.g. because a menu is open).</summary>
         /// <param name="sender">The event sender.</param>
         /// <param name="e">The event arguments.</param>
@@ -667,13 +658,9 @@ namespace ClimatesOfFerngillRebuild
         /// <param name="e">The event arguments.</param>
         private void OnReturnedToTitle(object sender, ReturnedToTitleEventArgs e)
         {
-            TenMCounter = 0;
             Conditions.Reset();
-            IsVariableRain = false;
             IsBloodMoon = false;
             ExpireTime = 0;
-            AmtOfRainDrops = 0;
-            //RainAmt = 0.0;
             CropList.Clear(); 
         }
 
@@ -682,24 +669,11 @@ namespace ClimatesOfFerngillRebuild
         /// <param name="e">The event arguments.</param>
         private void OnDayStarted(object sender, DayStartedEventArgs e)
         {
-            TenMCounter = 0;
             Conditions.OnNewDay();
             IsBloodMoon = false;
-            IsVariableRain = false;
 
             Conditions.SetTodayWeather(); //run this automatically
             if (!Context.IsMainPlayer) return;
-
-            if (trackerModel is null) { 
-                  trackerModel = new ClimateTracker();
-            }
-
-            AmtOfRainDrops = 0;
-
-            if (Conditions.ContainsCondition(CurrentWeather.Rain))
-                trackerModel.DaysSinceRainedLast = 0;
-            else
-                trackerModel.DaysSinceRainedLast++;
 
             CropList.Clear(); //clear the crop list
             UpdateWeatherOnNewDay();
@@ -885,57 +859,23 @@ namespace ClimatesOfFerngillRebuild
                 return;
             }
 
-            if (Conditions.HasWeather(CurrentWeather.Rain))
-               AmtOfRainDrops = 70;
-
             //variable rain conditions 
-            //only roll this if it's actually raining. :|
-            double roll = Dice.NextDouble();
-            if (roll <= WeatherOpt.VariableRainChance && Game1.isRaining)
-            {
-                Monitor.Log($"With {roll}, we are setting for variable rain against {WeatherOpt.VariableRainChance}");
-                IsVariableRain = true;
-             
-                if (Dice.NextDouble() < WeatherOpt.OvercastChance) { 
-                    IsVariableRain = false;
-                    Conditions.AddWeather(CurrentWeather.Overcast);
-                    Monitor.Log("Resizing rain array - settting weather to ovecast");
-                    Array.Resize(ref Game1.rainDrops,0);
-                    AmtOfRainDrops = 0;
-                    IsVariableRain = false;
-                }
-                else if (Dice.NextDouble() < WeatherOpt.VRChangeChance)
-                {
-                    double chance = WeatherOpt.VRMassiveStepChance;
-                    if (AmtOfRainDrops > 200)
-                        chance /= 2; //cut this chance in half.
-                    if (AmtOfRainDrops > 600)
-                        chance /= 2; //cut it in half *again*
+            Conditions.HandleDynamicRain();
 
-                    if (Dice.NextDouble() < chance)
-                        AmtOfRainDrops = WeatherUtilities.GetNextHighestRainCategoryBeginning(AmtOfRainDrops);
-                    else
-                        AmtOfRainDrops = (int)Math.Floor(AmtOfRainDrops * (1.0 + Dice.RollInRange(-1.0 * WeatherOpt.VRStepPercent, WeatherOpt.VRStepPercent)));
-
-                    Monitor.Log($"Resizing rain array - settting rain to {AmtOfRainDrops}");
-                    Array.Resize(ref Game1.rainDrops, AmtOfRainDrops);
-                }
-
-                //TODO calc the amount of water it's been since 3am
-               
-            }
             //TODO water check
             
-            if (Conditions.TestForSpecialWeather(GameClimate.GetClimateForDate(SDate.Now()), trackerModel))
+            if (Conditions.TestForSpecialWeather(GameClimate.GetClimateForDate(SDate.Now())))
             {           
                 if (WeatherOpt.Verbose)
                     Monitor.Log("Special weather created!");
             }
         }
 
+        
+
         internal static void ForceVariableRain()
         {
-            IsVariableRain = true;
+            Conditions.SetVariableRain(true);
         }
 
         public static bool ShouldPrecipInLocation()

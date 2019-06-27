@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace ClimatesOfFerngillRebuild
+﻿namespace ClimatesOfFerngillRebuild
 {
     public class WeatherSync
     {
@@ -31,6 +25,8 @@ namespace ClimatesOfFerngillRebuild
         public double todayHigh;
         public double tommorowLow;
         public double tommorowHigh;
+        public string RainStatus;
+        public ClimateTracker currTracker;
 
         //default constructor
         public WeatherSync()

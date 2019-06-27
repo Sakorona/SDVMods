@@ -54,6 +54,9 @@ v1.5-beta9
  - Manifest name fix for better log parsing
  - Lighter Fog option now further lightens the fog in rain
  - An option was included to display fog in the desert
+ - Frosts now apply in Winter except for crops that are meant to grow in winter, or if the crop is a winter forgable. This can be turned off in the config
+ - Variable Rain now will alter if crops are watered until a certain threshold (the vanilla amount) is reached. This can be turned off in the config
+ - Overcast code will not show up as precipitation.
 
 v1.5-beta8
  - updated bundled SDVUtilities to use code that should work better in some locations

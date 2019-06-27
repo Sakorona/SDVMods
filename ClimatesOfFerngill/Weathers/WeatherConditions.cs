@@ -30,10 +30,15 @@ namespace ClimatesOfFerngillRebuild
 
         /// <summary>The list of custom weathers </summary>
         internal List<ISDVWeather> CurrentWeathers { get; set; }
-
+        internal bool IsVariableRain { get; private set; }
+        internal int AmtOfRainDrops { get; private set; }
+        internal string RainStatus { get; set;}
         //evening fog details
         private bool HasSetEveningFog {get; set;}
         public bool GenerateEveningFog { get; set; }
+        internal ClimateTracker trackerModel;
+        internal int TodayRain;
+        private int TenMCounter;
 
         /// ******************************************************************************
         /// CONSTRUCTORS
@@ -44,9 +49,11 @@ namespace ClimatesOfFerngillRebuild
         /// </summary>
         public WeatherConditions()
         {
+            TenMCounter = 0;
             Weathers = PopulateWeathers();
 
             CurrentConditionsN = CurrentWeather.Unset;
+            RainStatus = "Unset";
             CurrentWeathers = new List<ISDVWeather>
             {
                 new FerngillFog(SDVTimePeriods.Morning),
@@ -328,6 +335,16 @@ namespace ClimatesOfFerngillRebuild
                     HasSetEveningFog = true;
                 }
             }
+
+            TodayRain += AmtOfRainDrops;
+            TenMCounter++;
+
+            if (TenMCounter == 3)
+            {
+                UpdateDynamicRain();
+                TenMCounter = 0;
+            }
+            
         }
 
         public void SecondUpdate()
@@ -471,7 +488,7 @@ namespace ClimatesOfFerngillRebuild
 
         public bool HasPrecip()
         {
-            if (CurrentConditionsN.HasAnyFlags(CurrentWeather.Snow | CurrentWeather.Rain | CurrentWeather.Blizzard))
+            if (CurrentConditionsN.HasAnyFlags(CurrentWeather.Snow | CurrentWeather.Rain | CurrentWeather.Blizzard) && !CurrentConditionsN.HasFlag(CurrentWeather.Overcast))
                 return true;
 
             return false;
@@ -613,9 +630,8 @@ namespace ClimatesOfFerngillRebuild
                 isWhiteOut = GetWeatherStatus("WhiteOut"),
                 isBlizzard = GetWeatherStatus("Blizzard"),
                 isSandstorm = GetWeatherStatus("Sandstorm"),
-                isVariableRain = ClimatesOfFerngill.IsVariableRain,
+                isVariableRain = IsVariableRain,
                 isOvercast = ((CurrentConditionsN & CurrentWeather.Overcast) != 0),
-                rainAmt = ClimatesOfFerngill.AmtOfRainDrops,
                 fogWeatherBeginTime = GetWeatherBeginTime("Fog").ReturnIntTime(),
                 thunWeatherBeginTime = GetWeatherBeginTime("ThunderFrenzy").ReturnIntTime(),
                 blizzWeatherBeginTime = GetWeatherBeginTime("Blizzard").ReturnIntTime(),
@@ -626,8 +642,11 @@ namespace ClimatesOfFerngillRebuild
                 thunWeatherEndTime = GetWeatherEndTime("ThunderFrenzy").ReturnIntTime(),
                 blizzWeatherEndTime = GetWeatherEndTime("Blizzard").ReturnIntTime(),
                 whiteWeatherEndTime = GetWeatherEndTime("WhiteOut").ReturnIntTime(),
+                RainStatus = RainStatus,
+                rainAmt = AmtOfRainDrops,
                 todayHigh = TodayTemps.HigherBound,
-                todayLow = TodayTemps.LowerBound
+                todayLow = TodayTemps.LowerBound,
+                currTracker = new ClimateTracker(trackerModel)
             };    
 
             ClimatesOfFerngill.MPHandler.SendMessage<WeatherSync>(Message, "WeatherSync", new [] { "KoihimeNakamura.ClimatesOfFerngill" });    
@@ -650,8 +669,7 @@ namespace ClimatesOfFerngillRebuild
                 isBlizzard = GetWeatherStatus("Blizzard"),
                 isSandstorm = GetWeatherStatus("Sandstorm"),
                 isOvercast = ((CurrentConditionsN & CurrentWeather.Overcast) != 0),
-                isVariableRain = ClimatesOfFerngill.IsVariableRain,
-                rainAmt = ClimatesOfFerngill.AmtOfRainDrops,
+                isVariableRain = IsVariableRain,
                 fogWeatherBeginTime = GetWeatherBeginTime("Fog").ReturnIntTime(),
                 thunWeatherBeginTime = GetWeatherBeginTime("ThunderFrenzy").ReturnIntTime(),
                 blizzWeatherBeginTime = GetWeatherBeginTime("Blizzard").ReturnIntTime(),
@@ -664,8 +682,11 @@ namespace ClimatesOfFerngillRebuild
                 whiteWeatherEndTime = GetWeatherEndTime("WhiteOut").ReturnIntTime(),
                 todayHigh = TodayTemps.HigherBound,
                 todayLow = TodayTemps.LowerBound,
+                RainStatus = RainStatus,
+                rainAmt = AmtOfRainDrops,
                 tommorowHigh = TomorrowHigh,
-                tommorowLow = TomorrowLow
+                tommorowLow = TomorrowLow,
+                currTracker = new ClimateTracker(trackerModel)
             };
 
             return Message;
@@ -765,15 +786,15 @@ namespace ClimatesOfFerngillRebuild
 
             if (ws.isOvercast)
             {
-                ClimatesOfFerngill.SetRainAmt(0);
+                SetRainAmt(0);
                 CurrentConditionsN |= CurrentWeather.Overcast;
-                ClimatesOfFerngill.SetVariableRain(false);
+                IsVariableRain = false;
             }
             
             if (ws.isVariableRain)
             {
-                ClimatesOfFerngill.SetRainAmt(ws.rainAmt);
-                ClimatesOfFerngill.SetVariableRain(ws.isVariableRain);
+                AmtOfRainDrops = ws.rainAmt;
+                IsVariableRain = ws.isVariableRain;
             }
 
             if (TodayTemps is null)
@@ -783,8 +804,10 @@ namespace ClimatesOfFerngillRebuild
             TodayTemps.HigherBound = ws.todayHigh;
             TodayTemps.LowerBound = ws.todayLow;
             SetTomorrowTemps(new RangePair(ws.tommorowLow,ws.tommorowHigh));
-            //update tracker object
+            RainStatus = ws.RainStatus;
 
+            //update tracker object
+            trackerModel = new ClimateTracker(ws.currTracker);
             ClimatesOfFerngill.Conditions.SetTodayWeather();
         }
 
@@ -829,6 +852,19 @@ namespace ClimatesOfFerngillRebuild
             foreach (ISDVWeather weather in CurrentWeathers)
                 weather.OnNewDay();
 
+            TenMCounter = 0;
+            AmtOfRainDrops = 0;
+            IsVariableRain = false;
+            RainStatus = "Unset";
+            if (trackerModel is null)
+            {
+                trackerModel = new ClimateTracker();
+            }
+            if (this.HasWeather(CurrentWeather.Rain))
+                trackerModel.DaysSinceRainedLast = 0;
+            else
+                trackerModel.DaysSinceRainedLast++;
+
             CurrentConditionsN = CurrentWeather.Unset;
             //Formerly, if tomorrow was null, we'd just allow nulls. Now we don't. 
             if (TomorrowTemps == null) { 
@@ -867,6 +903,11 @@ namespace ClimatesOfFerngillRebuild
             foreach (ISDVWeather weather in CurrentWeathers)
                 weather.Reset();
 
+            TenMCounter = 0;
+            trackerModel = null;
+            AmtOfRainDrops = 0;
+            IsVariableRain = false;
+            RainStatus = "Unset";
             TodayTemps = null;
             TomorrowTemps = null;
             CurrentConditionsN = CurrentWeather.Unset;
@@ -920,6 +961,22 @@ namespace ClimatesOfFerngillRebuild
             return CurrentWeather.Sunny;
         }
 
+        internal void SetRainAmt(int rainAmt)
+        {
+            if (AmtOfRainDrops != rainAmt)
+                AmtOfRainDrops = rainAmt;
+
+            Array.Resize(ref Game1.rainDrops, AmtOfRainDrops);
+
+            if (Game1.IsMasterGame)
+                ClimatesOfFerngill.Logger.Log($"Setting rain to {AmtOfRainDrops}");
+            else
+            {
+                ClimatesOfFerngill.Logger.Log($"Setting from master: rain to {AmtOfRainDrops}");
+            }
+
+        }
+
         internal void SetTodayWeather()
         {      
             CurrentConditionsN = CurrentWeather.Unset; //reset the flag.
@@ -929,8 +986,13 @@ namespace ClimatesOfFerngillRebuild
                 AddWeather(CurrentWeather.Sunny);
             }
 
-            if (Game1.isRaining)
+            if (Game1.isRaining) { 
                 AddWeather(CurrentWeather.Rain);
+                if (IsVariableRain)
+                {
+                    SetRainAmt(AmtOfRainDrops);
+                }
+            }
             if (Game1.isDebrisWeather)
                 AddWeather(CurrentWeather.Wind);
             if (Game1.isLightning)
@@ -972,8 +1034,75 @@ namespace ClimatesOfFerngillRebuild
 
             return ret;
         }
-        
-        internal bool TestForSpecialWeather(FerngillClimateTimeSpan ClimateForDay, ClimateTracker model)
+
+        internal void OnSaving()
+        {
+            trackerModel.AmtOfRainSinceDay1 += TodayRain;
+            trackerModel.AmtOfRainInCurrentStreak += TodayRain;
+            TodayRain = 0;
+        }
+
+        internal void SetVariableRain(bool val)
+        {
+            IsVariableRain = val;
+        }
+
+        internal void HandleDynamicRain()
+        {
+            if (!this.HasWeather(CurrentWeather.Rain))
+                return;
+
+            AmtOfRainDrops = 70;
+            RainStatus = "Normal";
+
+            //only roll this if it's actually raining. :|
+            double roll = ClimatesOfFerngill.Dice.NextDouble();
+
+            if (roll <= ClimatesOfFerngill.WeatherOpt.VariableRainChance && Game1.isRaining)
+            {
+                ClimatesOfFerngill.Logger.Log($"With {roll}, we are setting for variable rain against {ClimatesOfFerngill.WeatherOpt.VariableRainChance}");
+                IsVariableRain = true;
+
+                // Variable Rain either: changes the amt within a certain value, or escalates your steps.
+
+
+                if (Dice.NextDouble() < WeatherOpt.OvercastChance)
+                {
+                    IsVariableRain = false;
+                    Conditions.AddWeather(CurrentWeather.Overcast);
+                    Monitor.Log("Resizing rain array - settting weather to ovecast");
+                    Array.Resize(ref Game1.rainDrops, 0);
+                    AmtOfRainDrops = 0;
+                    IsVariableRain = false;
+                }
+                else if (Dice.NextDouble() < WeatherOpt.VRChangeChance)
+                {
+                    double chance = WeatherOpt.VRMassiveStepChance;
+                    if (AmtOfRainDrops > 200)
+                        chance /= 2; //cut this chance in half.
+                    if (AmtOfRainDrops > 600)
+                        chance /= 2; //cut it in half *again*
+
+                    /* if (Dice.NextDouble() < chance)
+                     {
+                         if (Dice.NextDouble() <= .5)
+                             AmtOfRainDrops = WeatherUtilities.GetNextHighestRainCategoryBeginning(AmtOfRainDrops);
+                         else
+                             AmtOfRainDrops = WeatherUtilities.GetNextLowestRainCategoryBeginning(AmtOfRainDrops);
+                     }*/
+                    else
+                        AmtOfRainDrops = (int)Math.Floor(AmtOfRainDrops * (1.0 + Dice.RollInRange(-1.0 * WeatherOpt.VRStepPercent, WeatherOpt.VRStepPercent)));
+
+                    Monitor.Log($"Resizing rain array - settting rain to {AmtOfRainDrops}");
+                    Array.Resize(ref Game1.rainDrops, AmtOfRainDrops);
+                }
+
+                //TODO calc the amount of water it's been since 3am
+
+            }
+        }
+
+        internal bool TestForSpecialWeather(FerngillClimateTimeSpan ClimateForDay)
         {
             bool specialWeatherTriggered = false;
             // Conditions: Blizzard - occurs in weather_snow in "winter"
@@ -1002,7 +1131,9 @@ namespace ClimatesOfFerngillRebuild
             }
 
             //do these here
-            if (this.TodayLow < ClimatesOfFerngill.WeatherOpt.TooColdOutside && !Game1.IsWinter)
+            //20190626 - Thanks to Crops Anywhere, I have to add this 
+            if ((this.TodayLow < ClimatesOfFerngill.WeatherOpt.TooColdOutside && !Game1.IsWinter) || (this.TodayLow < ClimatesOfFerngill.WeatherOpt.TooColdOutside && Game1.IsWinter &&
+                ClimatesOfFerngill.WeatherOpt.ApplyFrostsInWinter))
             {
                 if (ClimatesOfFerngill.WeatherOpt.HazardousWeather)
                 {
