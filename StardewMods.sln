@@ -12,13 +12,9 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".metadata", ".metadata", "{
 		stardewvalley.targets = stardewvalley.targets
 	EndProjectSection
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BetterShippingBox", "BetterShippingBox\BetterShippingBox.csproj", "{FBDB5A7B-3A3F-4089-92D3-B15A27A92439}"
-EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ClimatesOfFerngill", "ClimatesOfFerngill\ClimatesOfFerngill.csproj", "{05619393-D9AA-441D-AEE6-08A9867A8A8A}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CustomizableCartRedux", "CustomizableCartRedux\CustomizableCartRedux.csproj", "{2C01E33D-677B-495C-AF34-C974D6A8153F}"
-EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CustomizableClock", "CustomizableClock\CustomizableClock.csproj", "{712A4AD9-F03B-43AB-8D09-F7A9E16B08FD}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DynamicNightTime", "DynamicNightTime\DynamicNightTime.csproj", "{548156A4-534F-45D6-9659-1828B5C32FA5}"
 EndProject
@@ -33,8 +29,6 @@ EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SummitReborn", "SummitReborn\SummitReborn.csproj", "{FB52480F-F19E-4FED-8DC8-FF8F0D239A75}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TimeReminder", "TimeReminder\TimeReminder.csproj", "{0F884B11-11BE-479F-B328-3EE49966B58B}"
-EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TreeOverhaul", "TreeOverhaul\TreeOverhaul.csproj", "{022D7931-9689-48AC-969B-E1F1A2C83556}"
 EndProject
 Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "TwilightCoreShared", "TwilightCoreShared\TwilightCoreShared.shproj", "{01DA90D0-EEC8-427B-9409-3168A8089F20}"
 EndProject
@@ -52,10 +46,6 @@ Global
 		Release|x86 = Release|x86
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{FBDB5A7B-3A3F-4089-92D3-B15A27A92439}.Debug|x86.ActiveCfg = Debug|x86
-		{FBDB5A7B-3A3F-4089-92D3-B15A27A92439}.Debug|x86.Build.0 = Debug|x86
-		{FBDB5A7B-3A3F-4089-92D3-B15A27A92439}.Release|x86.ActiveCfg = Release|x86
-		{FBDB5A7B-3A3F-4089-92D3-B15A27A92439}.Release|x86.Build.0 = Release|x86
 		{05619393-D9AA-441D-AEE6-08A9867A8A8A}.Debug|x86.ActiveCfg = Debug|x86
 		{05619393-D9AA-441D-AEE6-08A9867A8A8A}.Debug|x86.Build.0 = Debug|x86
 		{05619393-D9AA-441D-AEE6-08A9867A8A8A}.Release|x86.ActiveCfg = Release|x86
@@ -64,10 +54,6 @@ Global
 		{2C01E33D-677B-495C-AF34-C974D6A8153F}.Debug|x86.Build.0 = Debug|x86
 		{2C01E33D-677B-495C-AF34-C974D6A8153F}.Release|x86.ActiveCfg = Release|x86
 		{2C01E33D-677B-495C-AF34-C974D6A8153F}.Release|x86.Build.0 = Release|x86
-		{712A4AD9-F03B-43AB-8D09-F7A9E16B08FD}.Debug|x86.ActiveCfg = Debug|x86
-		{712A4AD9-F03B-43AB-8D09-F7A9E16B08FD}.Debug|x86.Build.0 = Debug|x86
-		{712A4AD9-F03B-43AB-8D09-F7A9E16B08FD}.Release|x86.ActiveCfg = Release|x86
-		{712A4AD9-F03B-43AB-8D09-F7A9E16B08FD}.Release|x86.Build.0 = Release|x86
 		{548156A4-534F-45D6-9659-1828B5C32FA5}.Debug|x86.ActiveCfg = Debug|x86
 		{548156A4-534F-45D6-9659-1828B5C32FA5}.Debug|x86.Build.0 = Debug|x86
 		{548156A4-534F-45D6-9659-1828B5C32FA5}.Release|x86.ActiveCfg = Release|x86
@@ -96,10 +82,6 @@ Global
 		{0F884B11-11BE-479F-B328-3EE49966B58B}.Debug|x86.Build.0 = Debug|x86
 		{0F884B11-11BE-479F-B328-3EE49966B58B}.Release|x86.ActiveCfg = Release|x86
 		{0F884B11-11BE-479F-B328-3EE49966B58B}.Release|x86.Build.0 = Release|x86
-		{022D7931-9689-48AC-969B-E1F1A2C83556}.Debug|x86.ActiveCfg = Debug|x86
-		{022D7931-9689-48AC-969B-E1F1A2C83556}.Debug|x86.Build.0 = Debug|x86
-		{022D7931-9689-48AC-969B-E1F1A2C83556}.Release|x86.ActiveCfg = Release|x86
-		{022D7931-9689-48AC-969B-E1F1A2C83556}.Release|x86.Build.0 = Release|x86
 		{32A91CA3-CAAB-4E95-BAE5-FBF459DE6927}.Debug|x86.ActiveCfg = Debug|x86
 		{32A91CA3-CAAB-4E95-BAE5-FBF459DE6927}.Debug|x86.Build.0 = Debug|x86
 		{32A91CA3-CAAB-4E95-BAE5-FBF459DE6927}.Release|x86.ActiveCfg = Release|x86
