@@ -1,0 +1,494 @@
+﻿{
+  //console command text
+  "console-text.desc_tmrwweather": "Ändert das morgige Wetter.\"rain,storm,snow,debris,festival,wedding,sun\" ",
+  "console-text.desc_setweather": "Ändert das aktuelle Wetter. \"rain,storm,snow,debris,sun\"",
+  "console-text.weatherset_rain": "Das Wetter ist nun Regen",
+  "console-text.weatherset_storm": "Das Wetter ist nun Gewitter",
+  "console-text.weatherset_snow": "Das Wetter ist nun Schnee",
+  "console-text.weatherset_debris": "Das Wetter ist nun Rückstände",
+  "console-text.weatherset_sun": "Das Wetter ist nun sonnig",
+  "console-text.weatherset-tmrwrain": "Das für morgen gesetzte Wetter ist: Regen",
+  "console-text.weatherset-tmrwstorm": "Das für morgen gesetzte Wetter ist: Gewitter",
+  "console-text.weatherset-tmrwsnow": "Das für morgen gesetzte Wetter ist: Schnee",
+  "console-text.weatherset-tmrwdebris": "Das für morgen gesetzte Wetter ist: Rückstände",
+  "console-text.weatherset-tmrwfestival": "Das für morgen gesetzte Wetter ist: Fest",
+  "console-text.weatherset-tmrwsun": "Das für morgen gesetzte Wetter ist: sonnig",
+  "console-text.weatherset-tmrwwedding": "Das für morgen gesetzte Wetter ist: Hochzeit",
+
+  //HUD Messages
+  "hud-text.desc_stormtotem": "Du hörst ein Gewittergrollen...",
+  "hud-text.desc_frost_killed": "{{deadCrops}} Pflanzen starben in der Nacht aufgrund der Kälte..!",
+  "hud-text.desc_heatwave_dry": "Die extreme Hitze ließ {{crops}} deiner Pflanzen trocken werden....!",
+  "hud-text.desc_heatwave_kill": "Die extreme Hitze ließ {{crops}} deiner Pflanzen trocken werden. Wenn du sie nicht gießt, werden sie sterben!",
+  "hud-text.desc_heatwave_cropdeath": "Einige deiner Pflanzen starben aufgrund des Wassermangels!",
+  "hud-text.desc_sandstorm_dry": "Der Sand bedeckt {{crops}} deiner Pflanzen....!",
+  "hud-text.desc_sandstorm_kill": "Der Sand bedeckt {{crops}} deiner Pflanzen! Wenn du sie nicht befreist, werden sie sterben!",
+  "hud-text.desc_sandstorm_cropdeath": "Einige Pflanzen starben, da sie vom Sand bedeckt waren!",
+
+  //Ferngill Locations
+  "fern-loc.0": "Burgdorf",
+  "fern-loc.1": "Korbstadt",
+  "fern-loc.2": "Kieferbergstadt",
+  "fern-loc.3": "Point Break",
+  "fern-loc.4": "Ministertal",
+  "fern-loc.5": "Grampleton",
+  "fern-loc.6": "Zuzu Stadt",
+  "fern-loc.7": "Fort Josa",
+  "fern-loc.8": "Chestertal",
+  "fern-loc.9": "Farn Insel",
+  "fern-loc.10": "Tanker Wäldchen",
+  "fern-loc.11": "Pathos Insel",
+
+  //Temp Strings
+  //"temp-bothScales": "{{temp}} Kraggs ({tempFaren} Farenheit)",
+  //"temp-bothScalesCelsius": "{{temp}} Celsius ({{tempFaren}} Farenheit)",
+  "temp-bothScalesCelsius": "{{temp}} C ({{tempFaren}} F)",
+  "temp-bothScales": "{{temp}} Kr ({{tempFaren}} F)",
+  "temp-farenOnly": "{{temp}} F",
+  "temp-celsiusSet": "{{temp}} C",
+  "temp-normal": "{{temp}} Kr",
+
+  //Weather - Generic Strings
+  "weat-loc.0": ".. schließt den Bericht zu {{location}} ab.#Nun zu Pelikan Stadt. Erwarten Sie {{descWeather}}, mit Höchsttemperaturen von {{todayHigh}} bis minimal {{todayLow}}. {{condWarning}}{{eveningFog}} #Erwarten Sie morgen {{tomorrowWeather}} mit Höchsttemperaturen von {{tomorrowHigh}} bis minimal {{tomorrowLow}}",
+  "weat-loc.1": "Und nun zu Pelikan Stadt. Erwarten Sie {{descWeather}}, mit Höchsttemperaturen von {{todayHigh}} und minimal {{todayLow}}. {{condWarning}}{{eveningFog}}#Erwarten Sie morgen {{tomorrowWeather}} mit maximal {{tomorrowHigh}} und minimal {{tomorrowLow}}",
+  "weat-loc.2": "Das Wetter im Sternentautal wird {{todayWeather}} sein mit Temperaturen von maximal {{todayHigh}} und Tiefsttemperaturen von {{todayLow}}.{{condWarning}}{{eveningFog}}#Morgen können Sie {{tomorrowWeather}} erwarten mit Höchsttemperaturen von {{tomorrowHigh}} bis minimal {{tomorrowLow}}",
+
+  "weat-loc.fog.0": ".. schließt den Bericht zu {{location}} ab.#Nun zu Pelikan Stadt. Das Tal wird bis ca. {{fogTime}} von Nebel bedeckt sein. Erwarten Sie dann {{descWeather}}, mit Höchsttemperaturen von {{todayHigh}} bis minimal {{todayLow}}. {{condWarning}}{{eveningFog}}#Morgen können Sie {{tomorrowWeather}} erwarten mit Höchsttemperaturen von {{tomorrowHigh}} bis minimal {{tomorrowLow}}",
+  "weat-loc.fog.1": "Nun zu Pelikan Stadt. Die Region wird bis ca. {{fogTime}} von Nebel bedeckt sein. Erwarten Sie dann {{descWeather}}, mit Höchsttemperaturen von {{todayHigh}} bis minimal {{todayLow}}. {{condWarning}}{{eveningFog}}#Morgen können Sie {{tomorrowWeather}} erwarten mit Höchsttemperaturen von {{tomorrowHigh}} bis minimal {{tomorrowLow}}",
+  "weat-loc.fog.2": "Das Sternentautal wird bis ca. {{fogTime}} von Nebel bedeckt sein bis schließlich {{descWeather}} einsetzt, mit Höchsttemperaturen von {{todayHigh}} bis minimal {{todayLow}}. {{condWarning}}{{eveningFog}}#Morgen können Sie {{tomorrowWeather}} erwarten mit Höchsttemperaturen von {{tomorrowHigh}} bis minimal {{tomorrowLow}}",
+  "weat-gen.bloodmoon.0": "Heute, PANIK! PANIK! DER BLUTMOND IST ABGESTIEGEN!!!!#Ich meine...Nun zu Pelikan Stadt. Erwarten Sie {{descWeather}}, mit Höchsttemperaturen von {{todayHigh}} bis minimal {{todayLow}}. {{condWarning}}{{eveningFog}} #Erwarten Sie morgen {{tomorrowWeather}} mit Höchsttemperaturen von {{tomorrowHigh}} bis minimal {{tomorrowLow}}",
+  
+
+  //Weather - Morning Strings
+  "weat-morn.0": "Guten Morgen an all unsere Zuschauer. Erwarten Sie heute {{descWeather}}, mit Höchsttemperaturen von {{todayHigh}} bis minimal {{todayLow}}. {{condWarning}}{{eveningFog}} #Erwarten Sie morgen {{tomorrowWeather}} mit Höchsttemperaturen von {{tomorrowHigh}} bis minimal {{tomorrowLow}}", 
+  "weat-morn.1": "Ein neuer Tag beginnt. Erwarten Sie {{descWeather}}, mit Höchsttemperaturen von {{todayHigh}} bis minimal {{todayLow}}. {{condWarning}}{{eveningFog}} #Erwarten Sie morgen {{tomorrowWeather}} mit Höchsttemperaturen von {{tomorrowHigh}} bis minimal {{tomorrowLow}}",
+  "weat-morn.2": ".. und das war Yari mit dem Verkehr.#Kommen wir nun zum Wetter in Pelikan Stadt... Erwarten Sie {{descWeather}}, mit Höchsttemperaturen von {{todayHigh}} bis minimal {{todayLow}}. {{condWarning}}{{eveningFog}} #Erwarten Sie morgen {{tomorrowWeather}} mit Höchsttemperaturen von {{tomorrowHigh}} bis minimal {{tomorrowLow}}",
+
+  //Weather - Afternoon Strings
+  "weat-afternoon.0": "Während der Tag in den Nachmittag übergeht, wird das Wetter weiterhin {{descWeather}} sein mit Höchsttemperaturen von {{todayHigh}} bis minimal {{todayLow}}. {{condWarning}}{{eveningFog}} #Erwarten Sie morgen {{tomorrowWeather}} mit Höchsttemperaturen von {{tomorrowHigh}} bis minimal {{tomorrowLow}}",
+  "weat-afternoon.1": "Das Wetter wird weiterhin {{descWeather}} sein mit Höchsttemperaturen von {{todayHigh}} bis minimal {{todayLow}}. {{condWarning}}{{eveningFog}} #Erwarten Sie morgen {{tomorrowWeather}} mit Höchsttemperaturen von {{tomorrowHigh}} bis minimal {{tomorrowLow}}",
+  "weat-afternoon.1": "Das Wetter ist momentan {{descWeather}} sein mit Höchsttemperaturen von {{todayHigh}} bis minimal {{todayLow}}. {{condWarning}}{{eveningFog}} #Erwarten Sie morgen {{tomorrowWeather}} mit Höchsttemperaturen von {{tomorrowHigh}} bis minimal {{tomorrowLow}}",
+
+  //Weather - Evening Strings
+  "weat-evening.0": "Die Sonne geht hinter dem Studio unter. Was uns zum heutigen Abschluss bringt.#{{condString}}{{eveningFog}}Erwarten Sie morgen {{tomorrowWeather}} mit Höchsttemperaturen von {{tomorrowHigh}} bis minimal {{tomorrowLow}}",
+  "weat-evening.1": "{{condString}}{{eveningFog}}Erwarten Sie morgen {{tomorrowWeather}} mit Höchsttemperaturen von {{tomorrowHigh}} bis minimal {{tomorrowLow}}",
+  "weat-evening.2": "{{condString}}{{eveningFog}}Erwarten Sie morgen {{tomorrowWeather}} mit Höchsttemperaturen von {{tomorrowHigh}} bis minimal {{tomorrowLow}}",
+
+  //Weather - Night
+  "weat-night.0": "{{condString}}{{eveningFog}}Erwarten Sie morgen {{tomorrowWeather}} mit Höchsttemperaturen von {{tomorrowHigh}} bis minimal {{tomorrowLow}}",
+  "weat-night.1": "{{condString}}{{eveningFog}}Morgen können Sie {{tomorrowWeather}} erwarten mit Höchsttemperaturen von {{tomorrowHigh}} bis minimal {{tomorrowLow}}",
+  "weat-night.2": "{{condString}}{{eveningFog}}Erwarten Sie morgen {{tomorrowWeather}} mit Höchsttemperaturen von {{tomorrowHigh}} bis minimal {{tomorrowLow}}",
+
+  //Weather - Midnight
+  "weat-midnight.0": "während die Hexenstude schlägt... Das morgige Wetter ist {{tomorrowWeather}} mit Höchsttemperaturen von {{tomorrowHigh}} bis minimal {{tomorrowLow}}.",
+  "weat-midnight.1": "... schließt das für {{location}} ab.#Morgen, erwarten Sie {{tomorrowWeather}} mit Höchsttemperaturen von {{tomorrowHigh}} bis minimal {{tomorrowLow}}.",
+  "weat-midnight.2": "Die letzen Berichte vom KOZU Wettertisch sind da...#Für Pelikan Stadt und Umgebung können Sie {{tomorrowWeather}} erwarten mit Höchsttemperaturen von {{tomorrowHigh}} bis minimal {{tomorrowLow}}",
+
+  //Weather - Late Night
+  "weat-latenight.0": "Hier das die Wettervorhersage für die Schlaflosen. Erwarten Sie {{tomorrowWeather}} mit Höchsttemperaturen von {{tomorrowHigh}} bis minimal {{tomorrowLow}}.",
+  "weat-latenight.1": "Und nun zum großartigen, alles in Einem, Iridium beschichteten, Pufferküken beworbenen Farmwerkzeug von Nexus Co!#..Die Werbesendung läuft weiter...",
+  "weat-latenight.2": "Für die Frühpendler, das heutige Wetter ist {{tomorrowWeather}} mit Höchsttemperaturen von {{tomorrowHigh}} bis minimal {{tomorrowLow}}",
+
+  //Weather - Festivals Today
+  "weat-fesToday.0": "Heute im Sternentautal zum {{festival}} können Sie {{descWeather}} erwarten.#Erwarten Sie {{tomorrowWeather}} mit Höchsttemperaturen von {{tomorrowHigh}} bis minimal {{tomorrowLow}}.",
+
+  //And Tomorrow
+  "weat-fesTomorrow.0": "Heute können Sie {{descWeather}} erwarten mit Höchsttemperaturen von {{todayHigh}} und Tiefsttemperaturen von {{todayLow}}#Zum morgigen {{festivalTomorrow}} erwarten Sie {{tomorrowWeather}}",
+  "weat-fesTomorrow.BM.0": "Heute, PANIK! PANIK! DER BLUTMOND IST ABGESTIEGEN!!!!#Ich meine.. erwarten Sie {{descWeather}} mit Höchsttemperaturen von {{todayHigh}} bis minimal {{todayLow}}#Zum morgigen {{festivalTomorrow}} erwarten Sie {{tomorrowWeather}}",
+
+  //Weather - Wedding Today
+  "weat-wedToday.0": "Heute im Sternentautal, während der Hochzeitsfeier, erwarten Sie {{descWeather}}.#Erwarten Sie morgen {{tomorrowWeather}} mit Höchsttemperaturen von {{tomorrowHigh}} bis minimal {{tomorrowLow}}.",
+
+  //And Tomorrow
+  "weat-wedTomorrow.0": "Erwarten Sie heute {{descWeather}} mit Höchsttemperaturen {{todayHigh}} bis minimal {{todayLow}}#Morgen zur Hochzeit, erwarten Sie {{tomorrowWeather}}",
+  "weat-wedTomorrow.BM.0": "Heute, PANIK! PANIK! DER BLUTMOND IST ABGESTIEGEN!!!!#Ich meine... erwarten Sie {{descWeather}} mit Höchsttemperaturen {{todayHigh}} bis minimal {{todayLow}}#Morgen, zur Hochzeit, erwartet Sie {{tomorrowWeather}}",
+
+  //Weather - Condition Strings
+  "weather-condition.heatwave.0": "Es wird eine Hitzewelle aus Zuzu Stadt für die Sternentautal-Region erwartet. Bitte trinken Sie genug! ",
+  "weather-condition.heatwave.1": "Für Regionen die an die Edelsteinsee grenzen wird eine Hitzewelle erwartet. ",
+  "weather-condition.heatwave.2": "Regionen an der Edelsteinsee sind von einer Hitzewelle betroffen. ",
+
+  "weather-condition.frost.0": "Außer-saisonaler Frost aus den Gebieten südlich und östlich von Ministertal, einschließlich Sternentautal, ist zu erwarten. Ziehen Sie sich warm an! ",
+  "weather-condition.frost.1": "Frost wird für die Gebiete an der Edelsteinsee erwartet. Erwarten Sie Schäden an Pflanzen wie mögliche Hypothermia.",
+  "weather-condition.frost.2": "Nächtlicher Frost ist für die Gebiete an der Edelsteinsee zu erwarten. ",
+
+  "weather-condition.whiteout.0": "Ein extremer Schneesturm weht über die Region. ",
+  "weather-condition.whiteout.1": "Ein heulender Schneesturm ist im Tal zu erwarten. Vermeiden sie unnötige Reisen. ",
+  "weather-condition.whiteout.2": "Erwarten sie extrem schlechte Sicht während ein Schneesturm durchzieht. ",
+
+  "weather-condition.thunderfrenzy.0": "SCHWERE GEWITTERWARNUNG. Suchen Sie Schutz.",
+  "weather-condition.thunderfrenzy.1": "SCHWERE GEWITTERWARNUNG. Gewitterzellen ziehen durch die Region. ",
+  "weather-condition.thunderfrenzy.2": "SCHWERE GEWITTERWARNUNG. Seien sie sich der Möglichkeit von Abwinden und einer Großzahl an Blitzschlägen bewusst. ",
+  
+  "weather-condition.sandstorm.0": "Sandsturm-Warnung aufgrund von Hochwinden, die von der Calico-Wüste kommen. ",
+  "weather-condition.sandstorm.1": "Aufgrund der Trockenheit weht ein Sandsturm durch das Tal. ",
+  "weather-condition.sandstorm.2": "Seien sie Draußen vorsichtig, da ein Sandsturm durch das Tal weht. ",
+  
+  //this is the night string
+  "weather-condition.frost.night": "Berichterstatter sprechen bereits von sehr niedrigen Temperaturen und Sie sollten heute Nacht mit Frost rechnen. ",
+  "weather-condition.evenFog": "Nebel ist für den Abend vorhergesagt von {{startTime}} bis {{endTime}}. ",
+  "weather-condition.eveningFogNoTime": "Nebel ist für den Abend vorhergesagt.",
+
+  //Weather Descriptions - Spring
+  "weat-spring.sunny_daytime.0": "einen schönen, sonnigen Tag",
+  "weat-spring.sunny_daytime.1": "einen guten Tag um die Sonne zu genießen an einem warmen Frühlingsmorgen",
+  "weat-spring.sunny_daytime.2": "einen weiteren Tag um die Gärten zu bepflanzen",
+  
+  "weat-spring.sunny_nighttime.0": "eine klare Frühlingsnacht",
+  "weat-spring.sunny_nighttime.1": "eine kalte und schöne Nacht für Himmelsbeobachtungen",
+  "weat-spring.sunny_nighttime.2": "den Rest des Tages eine kühle Nacht",
+  
+  "weat-spring.rainy.0": "Niederschlag",
+  "weat-spring.rainy.1": "sanften Nieselregen, der die Blumen bewässert",
+  "weat-spring.rainy.2": "einen guten Tag um Drinnen zu bleiben und zu lesen, während der Regen auf die Stadt niedergeht",
+
+  "weat-spring.stormy.0": "Frühlingstürme, die von der Edelsteinsee kommen",
+  "weat-spring.stormy.1": "den ganzen Tag Stürme, die durch das Tal wehen",
+  "weat-spring.stormy.2": "ganztägig Gewitter",
+
+  "weat-spring.debris.0": "Pollenflug, also seien Sie vorsichtig, wenn Sie allergisch sind",
+  "weat-spring.debris.1": "starken Wind",
+  "weat-spring.debris.2": "eine steife Brise, die den ganzen Tag Pollen verbreitet",
+  
+  "weat-spring.snow.0": "einen späten Schneefall, der über das Tal kommt",
+  "weat-spring.snow.1": "eine möglichweise unerfreuliche Überaschung in Form von Schnee",
+  "weat-spring.snow.2": ", dass das weiße Zeug herunterkommt",
+
+  "weat-spring.blizzard.0": "einen ungewöhnlichen Schneesturm, der durch das Tal weht",
+  "weat-spring.blizzard.1": "einen späten Schneesturm, der das Reisen gefährlich macht",
+  "weat-spring.blizzard.2": "schwieriges Wetter, mit Schneestürmen, die durch das Tal kommen",
+
+  "weat-spring.drythunder.0": "Gewitter aber keinen Regen",
+  "weat-spring.drythunder.1": "aufgrund fehlender Feuchtigkeit Gewitter ohne Regen",
+  "weat-spring.drythunder.2": "Gewitter aber keinen Regen",
+
+  "weat-spring.thundersnow.0": "einen außersaisonalen Geswitterschneesturm, der durch das Tal kommt",
+  "weat-spring.thundersnow.1": "einen außersaisonalen Geswitterschneesturm, der durch das Tal kommt",
+  "weat-spring.thundersnow.2": "einen außersaisonalen Geswitterschneesturm, der durch das Tal kommt",
+
+  "weat-spring.sandstorm.0": "einen Sandsturm, der durch das Tal bläst",
+  "weat-spring.sandstorm.1": "einen ungewöhnlich frühen Sandsturm, der über das Tal kommt",
+  "weat-spring.sandstorm.2": "einen Sandsturm aufgrund der Trockenheit",
+
+  "weat-spring.overcast.0": "bewölkten Himmel ohne Niederschlag",
+  "weat-spring.overcast.1": "eine Wolkenfront, die den Himmel bedeckt",
+  "weat-spring.sandstorm.2": "düstere Tage aufgrund der Wolkendecke",
+
+  //Weather Descriptions - Summer
+  "weat-summer.sunny_daytime.0": "einen heißen, sonnigen Tag",
+  "weat-summer.sunny_daytime.1": "einen guten Tag, um die Sonne zu genießen",
+  "weat-summer.sunny_daytime.2": "einen hellen, schönen Tag",
+
+  "weat-summer.sunny_nighttime.0": "eine warme Sommernacht",
+  "weat-summer.sunny_nighttime.1": "eine warme, klare Nacht",
+  "weat-summer.sunny_nighttime.2": "eine tolle Nacht für Sternenbeobachtungen",
+
+  "weat-summer.rainy.0": "Niederschlag",
+  "weat-summer.rainy.1": "Regen, der die Stadt benässt",
+  "weat-summer.rainy.2": "einen guten Tag zum Drinnen bleiben und zu lesen",
+
+  "weat-summer.stormy.0": "weitere Sommerstürme von der Edelsteinsee. Binden Sie alles gut fest!",
+  "weat-summer.stormy.1": ", dass die Stürme den ganzen Tag durch das Tal wehen",
+  "weat-summer.stormy.2": "Gewitterstürme den ganzen Tag",
+
+  "weat-summer.snow.0": "einen ungewöhnlichen, plötzlichen Schneefall",
+  "weat-summer.snow.1": "eine großartige Überraschung in Form von Schneefall",
+  "weat-summer.snow.2": "einen überraschenden Schneefall",
+
+  "weat-summer.blizzard.0": "einen ungewöhnlichen, plötzlichen Schneesturm",
+  "weat-summer.blizzard.1": "einen überraschenden Schneesturm, der das Reisen gefährlich macht. Anwohner machen Zauberer verantwortlich",
+  "weat-summer.blizzard.2": "einen Schneesturm .. im Sommer",
+
+  "weat-summer.drythunder.0": "heute Gewitter ohne Regenfall",
+  "weat-summer.drythunder.1": "aufgrund fehlender Feuchtigkeit Gewitter ohne Niederschlag. Gebiete sind angehalten auf Waldbrände zu achten",
+  "weat-summer.drythunder.2": "Blitze und Donner aber keinen Regen",
+  
+  "weat-summer.drylightning.0": "heute Gewitter ohne Regenfall",
+  "weat-summer.drylightning.1": "aufgrund fehlender Feuchtigkeit Gewitter ohne Niederschlag. Gebiete sind angehalten auf Waldbrände zu achten",
+  "weat-summer.drylightning.2": "Blitze und Donner aber keinen Regen",
+
+  "weat-summer.thundersnow.0": "einen außersaisonalen Geswitterschneesturm, der durch das Tal kommt",
+  "weat-summer.thundersnow.1": "einen außersaisonalen Geswitterschneesturm, der durch das Tal kommt",
+  "weat-summer.thundersnow.2": "einen außersaisonalen Geswitterschneesturm, der durch das Tal kommt",
+    
+  "weat-summer.sandstorm.0": "einen durch das Tal kommenden Sandsturm",
+  "weat-summer.sandstorm.1": "einen Sandsturm aus der Wüste aufgrund fehlender Feuchtigkeit",
+  "weat-summer.sandstorm.2": "einen pflanzenbedeckenden Sandsturm, der durch das Tal weht",
+
+  "weat-summer.overcast.0": "bedeckten Himmel ohne Niederschlag",
+  "weat-summer.overcast.1": "eine Wolkenfront, die den Himmel bedeckt",
+  "weat-summer.sandstorm.2": "düstere Tage aufgrund der Wolkendecke",
+
+  //Weather Descriptions - Fall
+  "weat-fall.sunny_daytime.0": "einen kühlen, sonnigen Tag",
+  "weat-fall.sunny_daytime.1": "einen guten Tag um die Sonne an einem schönen Herbstmorgen zu genießen",
+  "weat-fall.sunny_daytime.2": "einen hellen, schönen Tag",
+
+  "weat-fall.sunny_nighttime.0": "eine kühle, klare Nacht",
+  "weat-fall.sunny_nighttime.1": "eine kühle Nacht",
+  "weat-fall.sunny_nighttime.2": "eine gute Nacht, um auf der Terrasse zu sitzen",
+
+  "weat-fall.rainy.0": "Niederschlag",
+  "weat-fall.rainy.1": "Regenfall",
+  "weat-fall.rainy.2": "einen guten Tag zum Drinnenbleiben und zu lesen, während der Regen die Stadt benässt",
+
+  "weat-fall.stormy.0": "Herbststürme von der Edelsteinsee kommend",
+  "weat-fall.stormy.1": "Stürme, die in Wellen durch das Tal kommen",
+  "weat-fall.stormy.2": "ganztägig Blitz und Donner",
+
+  "weat-fall.debris.0": "wehendes Laub, also springen sie nicht in die Laubhaufen, die Leute sind am Fegen!",
+  "weat-fall.debris.1": "Wind, der Laub durch das Tal bläst",
+  "weat-fall.debris.2": "eine steife Brise, die das Laub verweht",
+
+  "weat-fall.snow.0": "einen frühen Schneefall",
+  "weat-fall.snow.1": "einen Vorboten des Winters in Form von Schneefall",
+  "weat-fall.snow.2": "einen unerwarteten Schneefall",
+
+  "weat-fall.blizzard.0": "einen verfrühten Schneesturm, der durch das Tal zieht",
+  "weat-fall.blizzard.1": "einen frühen Schneesturm, der das Reisen gefährlich macht",
+  "weat-fall.blizzard.2": "schwierige Wetterverhältnisse mit Schneestürmen",
+
+  "weat-fall.drythunder.0": "heute Gewitter ohne Regenfall",
+  "weat-fall.drythunder.1": "aufgrund fehlender Feuchtigkeit Gewitter ohne Niederschlag.",
+  "weat-fall.drythunder.2": "Blitze und Donner aber keinen Regen",
+  
+  "weat-fall.thundersnow.0": "ein sehr verfrühtes Schneegewitter",
+  "weat-fall.thundersnow.1": "ein seltenes Schneegewitter",
+  "weat-fall.thundersnow.2": "ein seltenes Schneegewitter kommt durch das Tal",
+
+  "weat-fall.sandstorm.0": "einen Sandsturm, der durch das Tal weht",
+  "weat-fall.sandstorm.1": "einen ungewöhnlich späten Sandsturm, der durch das Tal bläst",
+  "weat-fall.sandstorm.2": "einen Sandsturm aus der Wüste aufgrund fehlender Feuchtigkeit",
+
+  "weat-fall.overcast.0": "bedeckten Himmel ohne Niederschlag",
+  "weat-fall.overcast.1": "eine Wolkenfront, die den Himmel bedeckt",
+  "weat-fall.overcast.2": "düstere Tage aufgrund der Wolkendecke",
+
+  //Weather Descriptions - Winter
+  "weat-winter.sunny_daytime.0": "einen kalten, sonnigen Tag",
+  "weat-winter.sunny_daytime.1": "einen guten Tag um die Sonne an einem kalten Wintermorgen zu genießen",
+  "weat-winter.sunny_daytime.2": "einen hellen Wintertag",
+
+  "weat-winter.sunny_nighttime.0": "eine bitterkalte Nacht",
+  "weat-winter.sunny_nighttime.1": "einen guten Tag um Drinnen heiße Schokolade zu trinken",
+  "weat-winter.sunny_nighttime.2": "eine eiskalte, wolkenlose Nacht",
+
+  "weat-winter.rainy.0": "einen ungewöhnlich warmen Tag mit Regenfall",
+  "weat-winter.rainy.1": "Regenfall",
+  "weat-winter.rainy.2": "einen guten Tag zum Drinnenbleiben, um dem eiskalten Regen zu entkommen",
+
+  "weat-winter.stormy.0": "Winterstürme aus Zuzu Stadt von Osten kommend",
+  "weat-winter.stormy.1": "in Wellen kommende Winterstürme über den Tag verteilt",
+  "weat-winter.stormy.2": "zusätzlich zur Kälte Winterstürme",
+
+  "weat-winter.debris.0": "Schneefall",
+  "weat-winter.debris.1": "Wind, der Schnee in das Tal bringt",
+  "weat-winter.debris.2": "eine steife Brise, die zu Schneeverwehungen führen kann",
+
+  "weat-winter.snow.0": "Schneefall",
+  "weat-winter.snow.1": "ganztägig Schneefall von der Küste bis in die Stadt",
+  "weat-winter.snow.2": "Schneefall, der die Region mit einem weißen Teppich bedeckt",
+
+  "weat-winter.blizzard.0": "einen Schneesturm, der durch das Tal kommt",
+  "weat-winter.blizzard.1": "einen gefährlichen Schneesturm",
+  "weat-winter.blizzard.2": "Schneestürme im Tal",
+
+  "weat-winter.drythunder.0": "Gewitter ohne Regenfall",
+  "weat-winter.drythunder.1": "aufgrund fehlender Feuchtigkeit Gewitter ohne Niederschlag",
+  "weat-winter.drythunder.2": "Blitze und Donner aber keinen Regen",
+    
+  "weat-winter.thundersnow.0": "ein Schneegewitter, das durch das Tal kommt",
+  "weat-winter.thundersnow.1": "ein seltenes Schneegewitter",
+  "weat-winter.thundersnow.2": "Gewitter mit Schnee",
+
+  "weat-winter.sandstorm.0": "FEHLER: Sandsturm im Winter",
+  "weat-winter.sandstorm.1": "FEHLER: Sandsturm im Winter",
+  "weat-winter.sandstorm.2": "FEHLER: Sandsturm im Winter",
+
+  "weat-winter.overcast.0": "bedeckten Himmel ohne Niederschlag",
+  "weat-winter.overcast.1": "eine Wolkenfront, die den Himmel bedeckt",
+  "weat-winter.sandstorm.2": "düstere Tage aufgrund der Wolkendecke",
+
+  //Lunar Messages
+  "moon-text.phase-full": "Vollmond",
+  "moon-text.phase-firstqrt": "Erstes Viertel",
+  "moon-text.phase-thirdqrt": "Drittes Viertel",
+  "moon-text.phase-waningcres": "Abnehmende Mondsichel",
+  "moon-text.phase-waxingcres": "Zunehmende Mondsichel",
+  "moon-text.phase-waninggibb": "Abnehmender Halbmond",
+  "moon-text.phase-waxinggibb": "Zunehmender Halbmond",
+  "moon-text.phase-new": "Neumond",
+  "moon-text.error": "Fehler",
+  
+  "moon-text.hud_message_full": "Es ist Vollmond! Die Strände haben vielleicht mehr zu finden aber Geister sind unterwegs.",
+  "moon-text.hud_message_new": "Es ist Neumond! Die Strände haben weniger zu finden...",
+  "moon-text.fullmoon_eff": "Die Mächte des Vollmonds beschleunigten das Wachstum von {{cropsAffected}} Pflanzen..",
+  "moon-text.newmoon_eff": "Die Mächte des Neumonds verlangsamten {{cropsAffected}} beim Wachsen...",
+  "moon-desc.desc_moonphase": "Aktuelle Mondphase: {{moonPhase}}",
+
+  //Weather Menu strings
+  "weather-menu.opening": "Hier ist Kylie vom KZAM Radio, wir senden auf 92.5 von Point Drake. Es ist der {{descDay}}, und hier ist der Wetterbericht für das Sternentautal:",
+  "weather-menu.openingS1D1": "Hier ist Kylie vom KZAM Radio, wir senden auf 92.5 von Point Drake. Es ist der Jahresanfang, der {{descDay}}, und hier ist der Wetterbericht für das Sternentautal:",
+  "weather-menu.openingS4D28": "Hier ist Kylie vom KZAM Radio, wir senden auf 92.5 von Point Drake. Es ist das Jahresende, der {{descDay}}, und hier ist der Wetterbericht für das Sternentautal:",
+  "weather-menu.condition.frost": "Warnung: Heute Frost.",
+  "weather-menu.condition.heatwave": "Warnung: Hitzwelle wird erwartet.",
+  "weather-menu.condition.sandstorm": "Warnung: Sandstürme kommen durch die Region. Bleiben sie drinnen oder tragen sie eine Maske, wenn sie raus müssen.",
+  "weather-menu.condition.whiteOut": "Warnung: Schwere Schneestürme kommen durch das Tal:",  
+  "weather-menu.condition.thunderFrenzy": "Warnung: Mesozyklone bewegen sich durch das Tal:",
+  "weather-menu.condition.bloodmoon": "Vorsicht, der Blutmond steigt auf.....",
+  "weather-menu.current": "Momentane Bedingungen: {{todayCondition}}. Heute, Höchsttemperatur: {{todayHigh}} und Tiefsttemperatur: {{todayLow}}.{{fogString}}",
+  "weather-menu.fog": "Es bleibt neblig bis {{fogTime}}, bevor das Wetter in {{condition}} übergeht",
+  "weather-menu.expectedFog": " Am Abend ist außerdem Nebel zu erwarten.",
+  "weather-menu.fogFuture": " Später ist Nebel zu erwarten von {{fogTime}} bis {{endFog}}.",
+  "weather-menu.tomorrow": "Vorhersage für morgen: {{tomorrowCondition}}. Höchsttemperatur: {{tomorrowHigh}} und Tiefsttemperatur: {{tomorrowLow}}.",
+  "weather-menu.desc-moonNotUp": "Der Mondphase wird {{moonPhase}} sein, aufgehen um {{moonRise}} und untergehen um {{moonSet}}",
+  "weather-menu.desc-moonUp": "Die Mondphase ist {{moonPhase}}, und wird um {{moonSet}} untergehen",
+  "nightTime" :  "Der Sonnenaufgang ist um {{sunrise}}, der Untergang um {{sunset}}. Vollständige Dunkelheit setzt um {{nighttime}} ein.",
+
+  //basic conditions
+  "weather_bloodmoon": "Blutmond",
+  "weather_hurricanerain" :  "Sintflutartige Ergüsse",
+  "weather_sunny_daytime": "Sonnig",
+  "weather_sunny_nighttime": "Klar",
+  "weather_sunny": "Sonnig",
+  "weather_whiteout": "Schneesturm",
+  "weather_wind": "Windig",
+  "weather_lightning": "Gewitter",
+  "weather_snow": "Schnee",
+  "weather_rainy": "Regnerisch",
+  "weather_festival": "Fest",
+  "weather_frenzy": "Gewitter",
+  "weather_wedding": "Hochzeit",
+  "weather_drylightning": "Trockenes Gewitter",
+  "weather_blizzard": "Schneesturm",
+  "weather_frost": "Frost mit {{condition}}",
+  "weather_frostTwo": "Frost mit {{condition}} und {{conditionB}}",
+  "weather_heatwaveCond": "Hitzewelle mit {{condition}}",
+  "weather_heatwaveTwo": "Hitzewelle mit {{condition}} und {{conditionB}}",
+  "weather_frost_night": "Klar und frierend kalt",
+  "weather_heatwave": "Hitzewelle",
+  "weather_drylightningheatwave": "Trockenes Gewitter mit Hitzewelle",
+  "weather_drylightningheatwavesunny": "Trockenes Gewitter mit Hitzewelle und Sonne",
+  "weather_drylightningheatwavewindy": "Trockenes Gewitter mit Hitzewelle und Wind",
+  "weather_drylightningwindy": "Trockenes Gewitter mit Hochwinden",
+  "weather_thundersnow": "Schneegewitter",
+  "weather_fog": "Nebel mit {{condition}} erwartet",
+  "weather_fog_basic": "Nebel",
+  "weather_sandstorm": "Sandsturm",
+  "weather_overcast": "Bedeckt",
+  "weather_unset": "Unset",
+
+  //ordinal strings
+  "dateSpring1": "1. Frühlingstag",
+  "dateSpring2": "2. Frühlingstag",
+  "dateSpring3": "3. Frühlingstag",
+  "dateSpring4": "4. Frühlingstag",
+  "dateSpring5": "5. Frühlingstag",
+  "dateSpring6": "6. Frühlingstag",
+  "dateSpring7": "7. Frühlingstag",
+  "dateSpring8": "8. Frühlingstag",
+  "dateSpring9": "9. Frühlingstag",
+  "dateSpring10": "10. Frühlingstag",
+  "dateSpring11": "11. Frühlingstag",
+  "dateSpring12": "12. Frühlingstag",
+  "dateSpring13": "13. Frühlingstag",
+  "dateSpring14": "14. Frühlingstag",
+  "dateSpring15": "15. Frühlingstag",
+  "dateSpring16": "16. Frühlingstag",
+  "dateSpring17": "17. Frühlingstag",
+  "dateSpring18": "18. Frühlingstag",
+  "dateSpring19": "19. Frühlingstag",
+  "dateSpring20": "20. Frühlingstag",
+  "dateSpring21": "21. Frühlingstag",
+  "dateSpring22": "22. Frühlingstag",
+  "dateSpring23": "23. Frühlingstag",
+  "dateSpring24": "24. Frühlingstag",
+  "dateSpring25": "25. Frühlingstag",
+  "dateSpring26": "26. Frühlingstag",
+  "dateSpring27": "27. Frühlingstag",
+  "dateSpring28": "28. Frühlingstag",
+  "dateSummer1": "1. Sommertag",
+  "dateSummer2": "2. Sommertag",
+  "dateSummer3": "3. Sommertag",
+  "dateSummer4": "4. Sommertag",
+  "dateSummer5": "5. Sommertag",
+  "dateSummer6": "6. Sommertag",
+  "dateSummer7": "7. Sommertag",
+  "dateSummer8": "8. Sommertag",
+  "dateSummer9": "9. Sommertag",
+  "dateSummer10": "10. Sommertag",
+  "dateSummer11": "11. Sommertag",
+  "dateSummer12": "12. Sommertag",
+  "dateSummer13": "13. Sommertag",
+  "dateSummer14": "14. Sommertag",
+  "dateSummer15": "15. Sommertag",
+  "dateSummer16": "16. Sommertag",
+  "dateSummer17": "17. Sommertag",
+  "dateSummer18": "18. Sommertag",
+  "dateSummer19": "19. Sommertag",
+  "dateSummer20": "20. Sommertag",
+  "dateSummer21": "21. Sommertag",
+  "dateSummer22": "22. Sommertag",
+  "dateSummer23": "23. Sommertag",
+  "dateSummer24": "24. Sommertag",
+  "dateSummer25": "25. Sommertag",
+  "dateSummer26": "26. Sommertag",
+  "dateSummer27": "27. Sommertag",
+  "dateSummer28": "28. Sommertag",
+  "dateFall1": "1. Herbsttag",
+  "dateFall2": "2. Herbsttag",
+  "dateFall3": "3. Herbsttag",
+  "dateFall4": "4. Herbsttag",
+  "dateFall5": "5. Herbsttag",
+  "dateFall6": "6. Herbsttag",
+  "dateFall7": "7. Herbsttag",
+  "dateFall8": "8. Herbsttag",
+  "dateFall9": "9. Herbsttag",
+  "dateFall10": "10. Herbsttag",
+  "dateFall11": "11. Herbsttag",
+  "dateFall12": "12. Herbsttag",
+  "dateFall13": "13. Herbsttag",
+  "dateFall14": "14. Herbsttag",
+  "dateFall15": "15. Herbsttag",
+  "dateFall16": "16. Herbsttag",
+  "dateFall17": "17. Herbsttag",
+  "dateFall18": "18. Herbsttag",
+  "dateFall19": "19. Herbsttag",
+  "dateFall20": "20. Herbsttag",
+  "dateFall21": "21. Herbsttag",
+  "dateFall22": "22. Herbsttag",
+  "dateFall23": "23. Herbsttag",
+  "dateFall24": "24. Herbsttag",
+  "dateFall25": "25. Herbsttag",
+  "dateFall26": "26. Herbsttag",
+  "dateFall27": "27. Herbsttag",
+  "dateFall28": "28. Herbsttag",
+  "dateWinter1": "1. Wintertag",
+  "dateWinter2": "2. Wintertag",
+  "dateWinter3": "3. Wintertag",
+  "dateWinter4": "4. Wintertag",
+  "dateWinter5": "5. Wintertag",
+  "dateWinter6": "6. Wintertag",
+  "dateWinter7": "7. Wintertag",
+  "dateWinter8": "8. Wintertag",
+  "dateWinter9": "9. Wintertag",
+  "dateWinter10": "10. Wintertag",
+  "dateWinter11": "11. Wintertag",
+  "dateWinter12": "12. Wintertag",
+  "dateWinter13": "13. Wintertag",
+  "dateWinter14": "14. Wintertag",
+  "dateWinter15": "15. Wintertag",
+  "dateWinter16": "16. Wintertag",
+  "dateWinter17": "17. Wintertag",
+  "dateWinter18": "18. Wintertag",
+  "dateWinter19": "19. Wintertag",
+  "dateWinter20": "20. Wintertag",
+  "dateWinter21": "21. Wintertag",
+  "dateWinter22": "22. Wintertag",
+  "dateWinter23": "23. Wintertag",
+  "dateWinter24": "24. Wintertag",
+  "dateWinter25": "25. Wintertag",
+  "dateWinter26": "26. Wintertag",
+  "dateWinter27": "27. Wintertag",
+  "dateWinter28": "28. Wintertag"
+}
