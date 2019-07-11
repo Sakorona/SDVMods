@@ -76,7 +76,7 @@ namespace ClimatesOfFerngillRebuild
             if (API == null)
                 API = new ClimatesOfFerngillAPI(Conditions);
 
-            return API;
+            return API;s
         }
 
         /// <summary>The mod entry point, called after the mod is first loaded.</summary>
