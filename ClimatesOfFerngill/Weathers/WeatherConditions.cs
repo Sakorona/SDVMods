@@ -605,30 +605,7 @@ namespace ClimatesOfFerngillRebuild
             if (!Context.IsMainPlayer)
                 return;
 
-            WeatherSync Message = new WeatherSync
-            {
-                weatherType = WeatherUtilities.GetWeatherCode(),
-                isFoggy = GetWeatherStatus("Fog"),
-                isThunderFrenzy = GetWeatherStatus("ThunderFrenzy"),
-                isWhiteOut = GetWeatherStatus("WhiteOut"),
-                isBlizzard = GetWeatherStatus("Blizzard"),
-                isSandstorm = GetWeatherStatus("Sandstorm"),
-                isVariableRain = ClimatesOfFerngill.IsVariableRain,
-                isOvercast = ((CurrentConditionsN & CurrentWeather.Overcast) != 0),
-                rainAmt = ClimatesOfFerngill.AmtOfRainDrops,
-                fogWeatherBeginTime = GetWeatherBeginTime("Fog").ReturnIntTime(),
-                thunWeatherBeginTime = GetWeatherBeginTime("ThunderFrenzy").ReturnIntTime(),
-                blizzWeatherBeginTime = GetWeatherBeginTime("Blizzard").ReturnIntTime(),
-                whiteWeatherBeginTime = GetWeatherBeginTime("WhiteOut").ReturnIntTime(),
-                sandstormWeatherBeginTime = GetWeatherBeginTime("Sandstorm").ReturnIntTime(),
-                sandstormWeatherEndTime = GetWeatherEndTime("Sandstorm").ReturnIntTime(),
-                fogWeatherEndTime = GetWeatherEndTime("Fog").ReturnIntTime(),
-                thunWeatherEndTime = GetWeatherEndTime("ThunderFrenzy").ReturnIntTime(),
-                blizzWeatherEndTime = GetWeatherEndTime("Blizzard").ReturnIntTime(),
-                whiteWeatherEndTime = GetWeatherEndTime("WhiteOut").ReturnIntTime(),
-                todayHigh = TodayTemps.HigherBound,
-                todayLow = TodayTemps.LowerBound
-            };    
+            WeatherSync Message = GenerateWeatherSyncMessage();
 
             ClimatesOfFerngill.MPHandler.SendMessage<WeatherSync>(Message, "WeatherSync", new [] { "KoihimeNakamura.ClimatesOfFerngill" });    
         }
@@ -666,6 +643,7 @@ namespace ClimatesOfFerngillRebuild
                 todayLow = TodayTemps.LowerBound,
                 tommorowHigh = TomorrowHigh,
                 tommorowLow = TomorrowLow
+
             };
 
             return Message;
