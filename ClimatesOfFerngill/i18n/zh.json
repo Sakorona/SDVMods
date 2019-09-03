@@ -1,7 +1,7 @@
 {
   //console command text
   "console-text.desc_tmrwweather": "改变明天的天气。\"rain,storm,snow,debris,festival,wedding,sun\" ",
-  "console-text.desc_setweather": "改变今天的天气。 \"rain,storm,snow,debris,sun\""",
+  "console-text.desc_setweather": "改变今天的天气。 \"rain,storm,snow,debris,sun\"",
   "console-text.weatherset_rain": "现在的天气是 雨",
   "console-text.weatherset_storm": "现在的天气是 暴风雨",
   "console-text.weatherset_snow": "现在的天气是 雪",
