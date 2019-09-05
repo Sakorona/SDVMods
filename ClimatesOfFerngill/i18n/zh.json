@@ -157,9 +157,9 @@
   "weat-spring.blizzard.1": "有一场迟来的暴风雪，这将使出行变得危险",
   "weat-spring.blizzard.2": "天气将会非常恶劣，一场暴风雪会席卷整个地区",
 
-  "weat-spring.drythunder.0": "会雷电交加，但没有降雨",
+  "weat-spring.drythunder.0": "将雷电交加，但没有降雨",
   "weat-spring.drythunder.1": "由于缺乏水分，今天只会打雷不会下雨",
-  "weat-spring.drythunder.2": "会电闪雷鸣，但没有降雨",
+  "weat-spring.drythunder.2": "将电闪雷鸣，但没有降雨",
 
   "weat-spring.thundersnow.0": "将出现一场罕见的不合时节的雷雨",
   "weat-spring.thundersnow.1": "将出现一场罕见的不合时节的雷雨",
@@ -198,11 +198,11 @@
   "weat-summer.blizzard.1": "有一场惊人的暴风雪，这会使出行变得危险。当地居民正在指责巫师",
   "weat-summer.blizzard.2": "天气会很恶劣，整个地区都有暴风雪。emmmmm在夏天...",
 
-  "weat-summer.drythunder.0": "会雷电交加，但没有降雨",
+  "weat-summer.drythunder.0": "将雷电交加，但没有降雨",
   "weat-summer.drythunder.1": "由于缺乏水分，今天的闪电将不包括降雨。预计各地区将密切关注野火",
-  "weat-summer.drythunder.2": "会电闪雷鸣，但没有降雨",
+  "weat-summer.drythunder.2": "将电闪雷鸣，但没有降雨",
   
-  "weat-summer.drylightning.0": "今天将雷电交加，但没有降雨",
+  "weat-summer.drylightning.0": "将雷电交加，但没有降雨",
   "weat-summer.drylightning.1": "由于缺乏水分，今天只会打雷而不会下雨。各地区需要密切关注野火",
   "weat-summer.drylightning.2": "会电闪雷鸣，但没有降雨",
 
