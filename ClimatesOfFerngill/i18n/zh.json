@@ -54,8 +54,8 @@
   "weat-loc.2": "星露谷的天气将为{{todayWeather}}，最高气温{{todayHigh}}，最低气温{{todayLow}}。{{condWarning}}{{eveningFog}}#预计明天{{tomorrowWeather}}，最高气温{{tomorrowHigh}} ，最低气温{{tomorrowLow}}。",
 
   "weat-loc.fog.0": "..{{location}}的天气播报已结束。#现在播报鹈鹕镇的天气情况，星露谷将被雾笼罩，直到{{fogTime}}才会散去，另预计今天{{descWeather}}，最高气温{{todayHigh}} ，最低气温{{todayLow}}。{{condWarning}}{{eveningFog}}#预计明天{{tomorrowWeather}}，最高气温{{tomorrowHigh}}，最低气温{{tomorrowLow}}。",
-  "weat-loc.fog.1": "现在播报鹈鹕镇的天气情况，大雾将继续笼罩着这一地区，直到{{fogTime}}才会散去，另预计今天天气{{descWeather}}，最高气温{{todayHigh}} ，最低气温{{todayLow}}。{{condWarning}}{{eveningFog}}#预计明天{{tomorrowWeather}}，最高气温{{tomorrowHigh}}，最低气温{{tomorrowLow}}。",
-  "weat-loc.fog.2": "早晨的晨雾将持续到{{fogTime}}，另预计今天天气{{descWeather}}，最高气温{{todayHigh}}，最低气温{{todayLow}}。{{condWarning}}{{eveningFog}}#预计明天{{tomorrowWeather}}，最高气温{{tomorrowHigh}}，最低气温{{tomorrowLow}}。",
+  "weat-loc.fog.1": "现在播报鹈鹕镇的天气情况，大雾将继续笼罩着这一地区，直到{{fogTime}}才会散去，另预计今天{{descWeather}}，最高气温{{todayHigh}} ，最低气温{{todayLow}}。{{condWarning}}{{eveningFog}}#预计明天{{tomorrowWeather}}，最高气温{{tomorrowHigh}}，最低气温{{tomorrowLow}}。",
+  "weat-loc.fog.2": "早晨的晨雾将持续到{{fogTime}}，另预计今天{{descWeather}}，最高气温{{todayHigh}}，最低气温{{todayLow}}。{{condWarning}}{{eveningFog}}#预计明天{{tomorrowWeather}}，最高气温{{tomorrowHigh}}，最低气温{{tomorrowLow}}。",
   "weat-gen.bloodmoon.0": "今天血月降临了！！！ [慌张] [慌张]#我的意思是...现在播报鹈鹕镇的天气情况，预计{{descWeather}}，最高气温{{todayHigh}} ，最低气温{{todayLow}}。{{condWarning}}{{eveningFog}} #预计明天{{tomorrowWeather}}，最高气温{{tomorrowHigh}}，最低气温{{tomorrowLow}}。",
 
   //Weather - Morning Strings
@@ -89,18 +89,18 @@
   "weat-latenight.2": "对于早早上下班的人来说，今天的天气是{{tomorrowWeather}}，最高气温{{tomorrowHigh}}，最低气温{{tomorrowLow}}。",
 
   //Weather - Festivals Today
-  "weat-fesToday.0": "今天，在星露谷里，有{{festival}}，预计今天天气{{descWeather}}。#预计明天天气{{tomorrowWeather}}，最高气温{{tomorrowHigh}}，最低气温{{tomorrowLow}}。",
+  "weat-fesToday.0": "今天，在星露谷里，有{{festival}}，预计今天{{descWeather}}。#预计明天{{tomorrowWeather}}，最高气温{{tomorrowHigh}}，最低气温{{tomorrowLow}}。",
 
   //And Tomorrow
   "weat-fesTomorrow.0": "今天，预计{{descWeather}}，最高气温{{todayHigh}}，最低气温{{todayLow}}#明天，有{{festivalTomorrow}}，预计{{tomorrowWeather}}。",
-  "weat-fesTomorrow.BM.0": "今天血月降临了！！！ [慌张] [慌张]#我的意思是，预计今天天气{{descWeather}}，最高气温{{todayHigh}}，最低气温{{todayLow}}#明天，有{{festivalTomorrow}}，预计{{tomorrowWeather}}。",
+  "weat-fesTomorrow.BM.0": "今天血月降临了！！！ [慌张] [慌张]#我的意思是，预计今天{{descWeather}}，最高气温{{todayHigh}}，最低气温{{todayLow}}#明天，有{{festivalTomorrow}}，预计{{tomorrowWeather}}。",
 
   //Weather - Wedding Today
-  "weat-wedToday.0": "今天，在星露谷里，有婚礼举行，预计今天天气{{weather}}.#预计明天{{tomorrowWeather}}，最高气温{{tomorrowHigh}}，最低气温{{tomorrowLow}}。",
+  "weat-wedToday.0": "今天，在星露谷里，有婚礼举行，预计今天{{weather}}.#预计明天{{tomorrowWeather}}，最高气温{{tomorrowHigh}}，最低气温{{tomorrowLow}}。",
 
   //And Tomorrow
   "weat-wedTomorrow.0": "今天，预计为{{weather}}，最高气温{{high}}，最低气温{{low}}#明天，有婚礼举行，预计{{tomorrowWeather}}。",
-  "weat-wedTomorrow.BM.0": "今天血月降临了！！！ [慌张] [慌张]#我的意思是，预计今天天气{{descWeather}}，最高气温{{todayHigh}}，最低气温{{todayLow}}#明天，有婚礼举行，预计{{tomorrowWeather}}",
+  "weat-wedTomorrow.BM.0": "今天血月降临了！！！ [慌张] [慌张]#我的意思是，预计今天{{descWeather}}，最高气温{{todayHigh}}，最低气温{{todayLow}}#明天，有婚礼举行，预计{{tomorrowWeather}}",
 
   //Weather - Condition Strings
   "weather-condition.heatwave.0": "RWS: 预计有一股高温气流袭击Zuzu市的星露谷地区。请注意浇水！",
