@@ -15,6 +15,7 @@ namespace TwilightShards.WeatherIllnesses
         None,
         TooColdOutside,
         TooHotOutside,
+        Darude,
         TooColdInside,
         InclementWeather,
         BlizzardsOutside,
@@ -24,17 +25,17 @@ namespace TwilightShards.WeatherIllnesses
 
     internal class StaminaDrain
     {
-        private IllnessConfig IllOptions;
-        private ITranslationHelper Helper;
+        private readonly IllnessConfig IllOptions;
+        private readonly ITranslationHelper Helper;
         private bool FarmerSick;
         private bool turnTheHeatOn;
         private IllCauses ReasonSick ;
         public bool FarmerHasBeenSick;
         public bool IssuedInHouseWarning;
-        private IMonitor Monitor;
+        private readonly IMonitor Monitor;
 
-        public static readonly int MedicineClear = 1;
-        public static readonly int BathHouseClear = 2;
+        public const int MedicineClear = 1;
+        public const int BathHouseClear = 2;
 
         public StaminaDrain(IllnessConfig Options, ITranslationHelper SHelper, IMonitor mon)
         {
@@ -67,6 +68,9 @@ namespace TwilightShards.WeatherIllnesses
                     break;
                 case IllCauses.TheWampaWillGetYou:
                     SDVUtilities.ShowMessage(Helper.Get("hud-text.desc_wampa"),4);
+                    break;
+                case IllCauses.Darude:
+                    SDVUtilities.ShowMessage(Helper.Get("hud-text.desc_darude"),4);
                     break;
                 case IllCauses.TooColdInside:
                     SDVUtilities.ShowMessage(Helper.Get("hud-text.desc_turntheheaton"), 4);
@@ -122,7 +126,7 @@ namespace TwilightShards.WeatherIllnesses
             return true;
         }
 
-        public int TenMinuteTick(int? hatID, double temp, string conditions,int ticksInHouse, int ticksOutside, int ticksTotal, MersenneTwister Dice)
+        public int TenMinuteTick(int? hatID, double? temp, string conditions,int ticksInHouse, int ticksOutside, int ticksTotal, MersenneTwister Dice)
         {
             double amtOutside = ticksOutside / (double)ticksTotal, totalMulti = 0;
             double amtInHouse = ticksInHouse / (double)ticksTotal;
@@ -137,8 +141,8 @@ namespace TwilightShards.WeatherIllnesses
             }
             
             //First, update the sick status
-            bool farmerCaughtCold = false;
-            double sickOdds = IllOptions.ChanceOfGettingSick - Game1.dailyLuck;
+            bool farmerCaughtCold;
+            double sickOdds = IllOptions.ChanceOfGettingSick - Game1.player.DailyLuck;
 
             //weee.
             if (hatID == 28 && (conditions.Contains("lightning") || conditions.Contains("stormy") || conditions.Contains("thundersnow")))
@@ -171,16 +175,20 @@ namespace TwilightShards.WeatherIllnesses
                     isHeaterHere = true;
                 }
             }
+
+            if (!(temp is null)) { 
             
             turnTheHeatOn = (turnTheHeatOn || (amtInHouse >= IllOptions.PercentageOutside && farmerCaughtCold &&
                                                temp < IllOptions.TooColdInside && !isHeaterHere && IssuedInHouseWarning && 
                                                (Game1.timeOfDay < 1000 || Game1.timeOfDay > 1650)));
+            
                               
             if (!IssuedInHouseWarning && amtInHouse >= IllOptions.PercentageOutside && temp < IllOptions.TooColdInside
                 && (Game1.timeOfDay < 1000 || Game1.timeOfDay > 1650) && !Game1.currentLocation.IsOutdoors && !isHeaterHere)
             {
                 SDVUtilities.ShowMessage(Helper.Get("hud-text.desc_HeatOn"),4);
                 IssuedInHouseWarning = true;
+            }
             }
 
             if (amtOutside >= IllOptions.PercentageOutside && farmerCaughtCold || this.FarmerSick || turnTheHeatOn)
@@ -189,9 +197,9 @@ namespace TwilightShards.WeatherIllnesses
                 if (FarmerCanGetSick())
                 {
                     //rewrite time..
-                    if (conditions.Contains("blizzard") || conditions.Contains("whiteout") || (conditions.Contains("lightning") || conditions.Contains("stormy") || conditions.Contains("thundersnow")) && !(Game1.currentLocation is Desert) || (conditions.Contains("frost") && SDVTime.IsNight) || (conditions.Contains("heatwave") && !SDVTime.IsNight) || turnTheHeatOn)
+                    if (conditions.Contains("blizzard") || conditions.Contains("sandstorm") || conditions.Contains("whiteout") || (conditions.Contains("lightning") || conditions.Contains("stormy") || conditions.Contains("thundersnow")) && !(Game1.currentLocation is Desert) || (conditions.Contains("frost") && SDVTime.IsNight) || (conditions.Contains("heatwave") && !SDVTime.IsNight) || turnTheHeatOn)
                     {
-                        if (turnTheHeatOn)
+                        if (turnTheHeatOn && !Game1.currentLocation.IsOutdoors)
                             ReasonSick = IllCauses.TooColdInside;
                         else if ((conditions.Contains("heatwave") && !SDVTime.IsNight))
                             ReasonSick = IllCauses.TooHotOutside;
@@ -201,6 +209,8 @@ namespace TwilightShards.WeatherIllnesses
                             ReasonSick = IllCauses.BlizzardsOutside;
                         else if (condList.Contains("whiteout"))
                             ReasonSick = IllCauses.TheWampaWillGetYou;
+                        else if (condList.Contains("sandstorm"))
+                            ReasonSick = IllCauses.Darude;
                         else if (conditions.Contains("lightning") || conditions.Contains("stormy"))
                             ReasonSick = IllCauses.InclementWeather;
                         else
@@ -233,6 +243,12 @@ namespace TwilightShards.WeatherIllnesses
                 {
                     totalMulti += 1.25;
                     condList.Add("Blizzard");
+                }
+
+                if (this.FarmerSick && conditions.Contains("sandstorm"))
+                {
+                    totalMulti += 1.25;
+                    condList.Add("Sandstorm");
                 }
 
                 if (this.FarmerSick && conditions.Contains("blizzard") && conditions.Contains("whiteout"))

@@ -28,12 +28,24 @@ namespace TimeReminder
             Config = helper.ReadConfig<TimeConfig>();
             PrevDate = DateTime.Now;
 
+            helper.Events.GameLoop.GameLaunched += GameLaunched;
             helper.Events.GameLoop.OneSecondUpdateTicked += OnOneSecondTicked;
             helper.Events.GameLoop.TimeChanged += OnTimeChanged;
 
             Helper.ConsoleCommands.Add("SetReminder","This sets a one time reminder", SetReminder);
             Helper.ConsoleCommands.Add("ClearAllReminders", "This clears all reminders", ClearAllReminder);
             Helper.ConsoleCommands.Add("SetRReminder", "This sets a recurring reminder", SetRecurringReminder);
+        }
+
+        private void GameLaunched(object sender, GameLaunchedEventArgs e)
+        {
+            var api = Helper.ModRegistry.GetApi<Integrations.GenericModConfigMenuAPI>("spacechase0.GenericModConfigMenu");
+            if (api != null)
+            {
+                api.RegisterModConfig(ModManifest, () => Config = new TimeConfig(), () => Helper.WriteConfig(Config));
+                api.RegisterSimpleOption(ModManifest, "Alerts On The Hour", "This option toggles alerts on the real world hour", () => Config.AlertOnTheHour, (bool val) => Config.AlertOnTheHour = val);
+                api.RegisterClampedOption(ModManifest, "NumOfMinutes", "This controls how many real world minutes it takes between alerts. Constrained to be 1 minute to 720 minutes (12 hours)", () => Config.NumOfMinutes, (int val) => Config.NumOfMinutes = val, 1, 720);
+            }
         }
 
         /// <summary>Raised after the in-game clock time changes.</summary>

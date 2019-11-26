@@ -13,72 +13,123 @@ namespace ClimatesOfFerngillRebuild
 {
     class Descriptions
     {
-        private ITranslationHelper Helper;
-        private MersenneTwister OurDice;
-        private WeatherConfig ModConfig;
-        private readonly IMonitor Output;
+        private readonly WeatherConfig Opt;
+        private readonly ITranslationHelper Translator;
 
-        public Descriptions(ITranslationHelper Translaton, MersenneTwister mDice, WeatherConfig wc, IMonitor log)
+        public Descriptions(WeatherConfig O, ITranslationHelper T)
         {
-            Helper = Translaton;
-            OurDice = mDice;
-            ModConfig = wc;
-            Output = log;
+            Opt = O;
+            Translator = T;
         }
 
+        public double GetRainfallAmt(int rainFall)
+        {
+            double rain;
+
+            //70, or normal rain, should be about 4mm. 280 should be 12? 
+            //It gives violent as >50mm, so if we use these two, we get a slope of [12-4/280-70] or [8/210] = 0.03809 with a b intercept of 
+            //4 = (70)(.03809) + b; 4 = 2.663 + b; b  = 1.3337; testing this, 7 is 1.6003 mm, and we cross the light threshold at 30-35. 
+            //Expanded testing: Midpoint of the sunshower is 1.67nm, light is 2.6nm, normal is 4nm, moderate is 6.66nm, heavy is 11.99nm
+            //severe is 22.66nm, torrential is 43.99nm, typhoon is 86.65nm, and noahsflood is 141.5049nm. The cap (at 4000) is 153.69nm
+            rain = (rainFall) * (0.0380952381) + 1.3337;
+
+            if (Opt.UseImperialForRainfall)
+                return rain / 25.4;
+            else
+                return rain;
+        }
+
+        public string DescRainfallAmt(int rainFall)
+        {
+            return GetRainfallAmt(rainFall).ToString("N2");
+        }
+		
         internal string GetDescOfDay(SDate date)
         {
-            return Helper.Get("date" + GeneralFunctions.FirstLetterToUpper(date.Season) + date.Day);
+            return Translator.Get("date" + GeneralFunctions.FirstLetterToUpper(date.Season) + date.Day);
         }
 
         internal string DescribeInGameWeather(int weather)
         {
             if (weather == Game1.weather_debris)
-                return Helper.Get("weather_wind");
+                return Translator.Get("weather_wind");
             if (weather == Game1.weather_festival)
-                return Helper.Get("weather_festival");
+                return Translator.Get("weather_festival");
             if (weather == Game1.weather_lightning)
-                return Helper.Get("weather_lightning");
+                return Translator.Get("weather_lightning");
             if (weather == Game1.weather_rain)
-                return Helper.Get("weather_rainy");
+                return Translator.Get("weather_rainy");
             if (weather == Game1.weather_snow)
-                return Helper.Get("weather_snow");
+                return Translator.Get("weather_snow");
             if (weather == Game1.weather_sunny)
-                return Helper.Get("weather_sunny");
+                return Translator.Get("weather_sunny");
             if (weather == Game1.weather_wedding)
-                return Helper.Get("weather_wedding");
+                return Translator.Get("weather_wedding");
 
             return "ERROR";
         }
 
-        private string GetNextSeason(string season)
-        {
-            switch (season)
-            {
-                case "spring":
-                    return "summer";
-                case "summer":
-                    return "fall";
-                case "fall":
-                    return "winter";
-                case "winter":
-                    return "spring";
-                default:
-                    return "error";
-            }
-        }
-
         private string GetTemperatureString(double temp)
         {
-            if (ModConfig.ShowBothScales)
-            {
-                return $"{temp.ToString("N1")} Kraggs ({GeneralFunctions.ConvCtF(temp).ToString("N1")} F)";
-            }
-            else
-            {
-                return $"{temp.ToString("N1")} Kraggs";
-            }
+			//rewrote to simplify.
+			if (Opt.ShowBothScales)
+			{
+				return Translator.Get("temp-bothScales", new { tempOne=ConvertTempFromCtoTarget(temp,Opt.FirstTempScale).ToString("N1"), tempOneN = GetTempNotation(Opt.FirstTempScale), tempTwo=ConvertTempFromCtoTarget(temp,Opt.SecondTempScale).ToString("N1"),tempTwoN = GetTempNotation(Opt.SecondTempScale)});
+			}
+			else
+			{
+				return Translator.Get("temp-oneScale", new { tempOne=ConvertTempFromCtoTarget(temp,Opt.FirstTempScale).ToString("N1"), tempOneN = GetTempNotation(Opt.FirstTempScale)});
+			}			
         }
+		
+		private string GetTempNotation(string target)
+		{
+			switch (target)
+			{
+				case "Farenheit":
+					return Translator.Get("temp-FareNotation");
+				case "Kelvin":
+					return Translator.Get("temp-KelvinNotation");
+				case "Rankine":
+					return Translator.Get("temp-RankineNotation");
+				case "Delisle":
+					return Translator.Get("temp-DelisleNotation");
+				case "Romer":
+					return Translator.Get("temp-RomerNotation");
+				case "Reaumur":
+					return Translator.Get("temp-ReaumurNotation");
+				case "Celsius":
+					return Translator.Get("temp-CelsNotation");
+				case "Kraggs":
+					return Translator.Get("temp-KraggsNotation");
+				default:
+					return Translator.Get("temp-errorNotation");
+			}
+		}
+		
+		private double ConvertTempFromCtoTarget(double temp, string target)
+		{
+			//supported values need to be listed.
+			switch (target)
+			{
+				case "Farenheit":
+					return GeneralFunctions.ConvCtF(temp);
+				case "Kelvin":
+					return GeneralFunctions.ConvCtK(temp);
+				case "Rankine":
+					return GeneralFunctions.ConvCtRa(temp);
+				case "Delisle":
+					return GeneralFunctions.ConvCtD(temp);
+				case "Romer":
+					return GeneralFunctions.ConvCtRo(temp);
+				case "Reaumur":
+					return GeneralFunctions.ConvCtRe(temp);
+				case "Celsius":
+				case "Kraggs":
+				default:
+					return temp;
+			}
+		}
 
         internal string UpperSeason(string season)
         {
@@ -90,40 +141,96 @@ namespace ClimatesOfFerngillRebuild
             return "error";
         }
 
+        private string GetRainDesc(int rainAmt)
+        {
+            switch (WeatherUtilities.GetCategory(rainAmt))
+            {
+                case RainLevels.Sunshower:
+                    return Translator.Get("weather-tv.rain.sunshowers");
+                case RainLevels.Light:
+                    return Translator.Get("weather-tv.rain.light");
+                case RainLevels.Normal:
+                    return Translator.Get("weather-tv.rain.normal");
+                case RainLevels.Moderate:
+                    return Translator.Get("weather-tv.rain.moderate");
+                case RainLevels.Heavy:
+                    return Translator.Get("weather-tv.rain.heavy");
+                case RainLevels.Severe:
+                    return Translator.Get("weather-tv.rain.severe");
+                case RainLevels.Torrential:
+                    return Translator.Get("weather-tv.rain.torrential");
+                case RainLevels.Typhoon:
+                    return Translator.Get("weather-tv.rain.typhoon");
+                case RainLevels.NoahsFlood:
+                    return Translator.Get("weather-tv.rain.noahsflood");
+                default:
+                    return Translator.Get("weather-tv.rain.unknown");
+
+            }
+        }
+
         internal string GenerateMenuPopup(WeatherConditions Current, string MoonPhase = "", string NightTime = "")
         {
-            string text = "";
-
+            string text;
             if (SDate.Now().Season == "spring" && SDate.Now().Day == 1)
-                text = Helper.Get("weather-menu.openingS1D1", new { descDay = Helper.Get($"date{UpperSeason(SDate.Now().Season)}{SDate.Now().Day}") }) + Environment.NewLine + Environment.NewLine;
+                text = Translator.Get("weather-menu.openingS1D1", new { descDay = Translator.Get($"date{UpperSeason(SDate.Now().Season)}{SDate.Now().Day}") }) + Environment.NewLine + Environment.NewLine;
             else if (SDate.Now().Season == "winter" && SDate.Now().Day == 28)
-                text = Helper.Get("weather-menu.openingS4D28", new { descDay = Helper.Get($"date{UpperSeason(SDate.Now().Season)}{SDate.Now().Day}") }) + Environment.NewLine + Environment.NewLine;
+                text = Translator.Get("weather-menu.openingS4D28", new { descDay = Translator.Get($"date{UpperSeason(SDate.Now().Season)}{SDate.Now().Day}") }) + Environment.NewLine + Environment.NewLine;
             else
-                text = Helper.Get("weather-menu.opening", new { descDay = Helper.Get($"date{UpperSeason(SDate.Now().Season)}{SDate.Now().Day}") }) + Environment.NewLine + Environment.NewLine;
+                text = Translator.Get("weather-menu.opening", new { descDay = Translator.Get($"date{UpperSeason(SDate.Now().Season)}{SDate.Now().Day}") }) + Environment.NewLine + Environment.NewLine;
+
+            if (Current.ContainsCondition(CurrentWeather.Sandstorm))
+                text += Translator.Get("weather-menu.condition.sandstorm") + Environment.NewLine;
 
             if (Current.ContainsCondition(CurrentWeather.Heatwave))
             {
-                text += Helper.Get("weather-menu.condition.heatwave") + Environment.NewLine;
+                text += Translator.Get("weather-menu.condition.heatwave") + Environment.NewLine;
             }
 
             if (Current.ContainsCondition(CurrentWeather.Frost))
-            { 
-                text += Helper.Get("weather-menu.condition.frost") + Environment.NewLine;
+            {
+                text += Translator.Get("weather-menu.condition.frost") + Environment.NewLine;
             }
 
             if (Current.ContainsCondition(CurrentWeather.WhiteOut))
             {
-                text += Helper.Get("weather-menu.condition.whiteOut") + Environment.NewLine;
+                text += Translator.Get("weather-menu.condition.whiteOut") + Environment.NewLine;
             }
 
             if (Current.ContainsCondition(CurrentWeather.ThunderFrenzy))
             {
-                text += Helper.Get("weather-menu.condition.thunderFrenzy") + Environment.NewLine;
+                text += Translator.Get("weather-menu.condition.thunderFrenzy") + Environment.NewLine;
+            }
+			
+            if (Current.IsVariableRain)
+            {
+                switch (WeatherUtilities.GetCategory(Current.AmtOfRainDrops))
+                {
+                    case RainLevels.Severe:
+                        text += Translator.Get("weather-condition.vrain.severe_sw") + Environment.NewLine;
+                        break;
+                    case RainLevels.Torrential:
+                        text += Translator.Get("weather-condition.vrain.torrential_sw") + Environment.NewLine;
+                        break;
+                    case RainLevels.Typhoon:
+                        text += Translator.Get("weather-condition.vrain.typhoon_sw") + Environment.NewLine;
+                        break;
+                    case RainLevels.NoahsFlood:
+                        text += Translator.Get("weather-condition.vrain.godswrath_sw") + Environment.NewLine;
+                        break;
+                    default:
+                        break;
+                }
             }
 
             if (MoonPhase == "Blood Moon")
             {
-                text += Helper.Get("weather-menu.condition.bloodmoon") + Environment.NewLine;
+                text += Translator.Get("weather-menu.condition.bloodmoon") + Environment.NewLine;
+            }
+
+            if (ClimatesOfFerngill.UseLunarDisturbancesApi && ClimatesOfFerngill.MoonAPI.IsSolarEclipse())
+            {
+                text += Translator.Get("weather-menu.condition.solareclipse") + Environment.NewLine;
             }
 
             ISDVWeather CurrentFog = Current.GetWeatherMatchingType("Fog").First();
@@ -134,9 +241,9 @@ namespace ClimatesOfFerngillRebuild
             // That said, if it's not, we need to pull the fog information down, assuming it's been reset. This checks that the fog end
             //    time is *before* now. To avoid nested trinary statements..
             if (SDVTime.CurrentTime < CurrentFog.WeatherExpirationTime && Current.GenerateEveningFog && CurrentFog.WeatherBeginTime < new SDVTime(1200))
-                fogString = Helper.Get("weather-menu.expectedFog");
+                fogString = Translator.Get("weather-menu.expectedFog");
             if (CurrentFog.WeatherBeginTime > SDVTime.CurrentTime && Current.GenerateEveningFog)
-                fogString = Helper.Get("weather-menu.fogFuture",
+                fogString = Translator.Get("weather-menu.fogFuture",
                     new
                     {
                         fogTime = CurrentFog.WeatherBeginTime.ToString(),
@@ -144,281 +251,401 @@ namespace ClimatesOfFerngillRebuild
                     });
 
             //Current Conditions.
-            text += Helper.Get("weather-menu.current", new
+			string currentMenu;
+			if (Current.HasWeather(CurrentWeather.Rain) && Current.IsVariableRain)
+				currentMenu = "weather-menu.currentRainfall";
+			else
+				currentMenu = "weather-menu.current";
+			
+            text += Translator.Get(currentMenu, new
             {
-                todayCondition = Current.HasWeather(CurrentWeather.Fog) ? Helper.Get("weather-menu.fog", new { condition = GetBasicWeather(Current, Game1.currentSeason), fogTime = CurrentFog.IsWeatherVisible ? CurrentFog.WeatherExpirationTime.ToString() : "" }) : GetBasicWeather(Current, Game1.currentSeason),
-
+                todayCondition = Current.HasWeather(CurrentWeather.Fog) 
+					? Translator.Get("weather-menu.fog", new { condition = GetBasicWeather(Current), fogTime = CurrentFog.IsWeatherVisible 
+						? CurrentFog.WeatherExpirationTime.ToString() 
+						: "" }) 
+					: GetBasicWeather(Current),
+				tempString = GetTemperatureString(Current.GetCurrentTemperature(Game1.timeOfDay)),
                 todayHigh = GetTemperatureString(Current.TodayHigh),
                 todayLow = GetTemperatureString(Current.TodayLow),
+				currentRainfall = GetRainfallAmt(Current.AmtOfRainDrops),
                 fogString               
             }) + Environment.NewLine;
 
             //Tomorrow weather
-            text += Helper.Get("weather-menu.tomorrow", 
+            text += Translator.Get("weather-menu.tomorrow", 
                         new {
-                            tomorrowCondition = GetBasicWeather(Game1.weatherForTomorrow, Game1.currentSeason),
+                            tomorrowCondition = GetBasicWeather(Game1.weatherForTomorrow),
                             tomorrowLow = GetTemperatureString(Current.TomorrowLow),
                             tomorrowHigh = GetTemperatureString(Current.TomorrowHigh)
                         }) + Environment.NewLine;
 
             //now, night time
-            if (NightTime != "")
+            if (!String.IsNullOrEmpty(NightTime))
             {
                 text += Environment.NewLine;
                 text += NightTime + Environment.NewLine;
             }
 
+            if (ClimatesOfFerngill.UseLunarDisturbancesApi)
+            {
+                if (ClimatesOfFerngill.MoonAPI.IsMoonUp(Game1.timeOfDay))
+					text += Environment.NewLine + Translator.Get("weather-menu.desc-moonNotUp", new { moonPhase = ClimatesOfFerngill.MoonAPI.GetCurrentMoonPhase(), moonRise = ClimatesOfFerngill.MoonAPI.GetMoonRise(), moonSet = ClimatesOfFerngill.MoonAPI.GetMoonSet()});
+                else
+                    text += Environment.NewLine + Translator.Get("weather-menu.desc-moonUp", new { moonPhase = ClimatesOfFerngill.MoonAPI.GetCurrentMoonPhase(), moonSet = ClimatesOfFerngill.MoonAPI.GetMoonSet() });
+            }
+
             return text;
         }
 
-        internal string GenerateTVForecast(WeatherConditions Current, string MoonPhase = "")
-        {            
-            //assemble params
-            var talkParams = new Dictionary<string, string>
-            {
-                { "location", GetRandomLocation() },
-                { "descWeather", GetWeather(Current, Game1.dayOfMonth, Game1.currentSeason) },
-                { "festival", SDVUtilities.GetFestivalName(SDate.Now()) },
-                { "festivalTomorrow", SDVUtilities.GetFestivalName(SDate.Now().AddDays(1)) },
-                { "fogTime", Current.GetFogTime().ToString() },
-                { "todayHigh", GetTemperatureString(Current.TodayHigh) },
-                { "todayLow", GetTemperatureString(Current.TodayLow) },
-                { "tomorrowWeather", GetWeather(Game1.weatherForTomorrow, Game1.dayOfMonth, Game1.currentSeason, true) },
-                { "tomorrowHigh", GetTemperatureString(Current.TomorrowHigh) },
-                { "tomorrowLow", GetTemperatureString(Current.TomorrowLow) },
-                { "condWarning", GetCondWarning(Current) },
-                { "condString", GetCondWarning(Current) },
-                { "eveningFog", GetEveningFog(Current) }
-            };
-
-            //select the weather string for the TV.
-            SDVTimePeriods CurrentPeriod = SDVTime.CurrentTimePeriod; //get the current time period
-            int nRandom = OurDice.Next(2);
-
-            //blood moon checks
-            if ((Game1.player.spouse != null && Game1.player.isEngaged() && Game1.player.friendshipData[Game1.player.spouse].CountdownToWedding == 1) && MoonPhase == "Blood Moon")
-            {
-                talkParams["tomrrowWeather"] = Helper.Get($"weat-{Game1.currentSeason}.sunny.{nRandom}");
-                return Helper.Get("weat-wedTomorrow.BM.0", talkParams);
-            }
-
-            //festival tomorrow
-            else if (SDVUtilities.GetFestivalName(SDate.Now().AddDays(1)) != "" && MoonPhase == "Blood Moon")
-            {
-                return Helper.Get("weat-fesTomorrow.BM.0", talkParams);
-            }
-
-            else if (MoonPhase == "Blood Moon")
-            {
-                return Helper.Get("weat-gen.bloodmoon.0", talkParams);
-            }
-
-            //first, check for special conditions -fog, festival, wedding
-            else if (Current.HasWeather(CurrentWeather.Fog))
-            {
-                return Helper.Get($"weat-loc.fog.{nRandom}", talkParams);
-            }
-
-            //festival today
-            else if (Current.HasWeather(CurrentWeather.Festival))
-            {
-                return Helper.Get("weat-fesToday.0", talkParams);
-            }
-
-            //festival tomorrow
-            else if (SDVUtilities.GetFestivalName(SDate.Now().AddDays(1)) != "")
-            {
-                return Helper.Get("weat-fesTomorrow.0", talkParams);
-            }
-
-            //wedding today
-            else if (Current.HasWeather(CurrentWeather.Wedding))
-            {
-                return Helper.Get("weat-wedToday.0", talkParams);
-            }
-
-            //wedding tomrrow
-            else if (Game1.player.spouse != null && Game1.player.isEngaged() && Game1.player.friendshipData[Game1.player.spouse].CountdownToWedding == 1)
-            {
-                talkParams["tomrrowWeather"] = Helper.Get($"weat-{Game1.currentSeason}.sunny.{nRandom}");
-                return Helper.Get("weat-wedTomorrow.0", talkParams);
-            }
-
-            if (OurDice.NextDoublePositive() > .45)
-            {
-                if (CurrentPeriod == SDVTimePeriods.Morning)
-                    return Helper.Get($"weat-morn.{nRandom}", talkParams);
-                else if (CurrentPeriod == SDVTimePeriods.Afternoon)
-                    return Helper.Get($"weat-afternoon.{nRandom}", talkParams);
-                else if (CurrentPeriod == SDVTimePeriods.Evening)
-                    return Helper.Get($"weat-evening.{nRandom}", talkParams);
-                else if (CurrentPeriod == SDVTimePeriods.Night)
-                    return Helper.Get($"weat-night.{nRandom}", talkParams);
-                else if (CurrentPeriod == SDVTimePeriods.Midnight)
-                    return Helper.Get($"weat-midnight.{nRandom}", talkParams);
-                else if (CurrentPeriod == SDVTimePeriods.LateNight)
-                    return Helper.Get($"weat-latenight.{nRandom}", talkParams);
-            }
-            else
-            {
-                //ye olde generic!
-                return Helper.Get($"weat-loc.{nRandom}", talkParams);
-            }
-
-            return "";
-        }
-
-        private string GetEveningFog(WeatherConditions Current)
+        internal string GenerateTVForecast(WeatherConditions Current, MersenneTwister Dice, double fogOdds, string MoonPhase = "", bool IsMoonUp = false)
         {
-            if (Current.GenerateEveningFog)
+            string ret = "";
+
+            //opening string
+            ret += Translator.Get("weather-tv.opening", new
             {
-                var fList = Current.GetWeatherMatchingType("Fog");
-                foreach (ISDVWeather weat in fList)
-                {
-                   if (weat is FerngillFog fWeat)
-                    {
-                        if (Current.GetWeatherMatchingType("Fog").First().IsWeatherVisible && (SDVTime.CurrentTime > new SDVTime(1200)))
-                            return Helper.Get("weather-condition.fog", new { fogTime = fWeat.WeatherExpirationTime.ToString() });
-                        else 
-                        {
-                            if (fWeat.WeatherBeginTime != fWeat.WeatherExpirationTime && fWeat.WeatherBeginTime > new SDVTime(1500))
-                                return Helper.Get("weather-condition.evenFog", new { startTime = fWeat.WeatherBeginTime.ToString(), endTime = fWeat.WeatherExpirationTime.ToString() });
-                            else if (fWeat.WeatherBeginTime != fWeat.WeatherExpirationTime)
-                                return Helper.Get("weather-condition.eveningFogNoTime");
-                            else
-                                return "";
-                        }
-                    }
+                location = Translator.Get("fern-loc." + Dice.Next(12)),
+                playerLocation = Translator.Get("weather-location.player." + Dice.Next(4))
+            });
+
+            //hazard warning
+            if (MoonPhase == "Blood Moon" && IsMoonUp)
+            {
+                ret += Translator.Get("weather-tv.bloodmoon");
+            }
+
+            if (Current.WeatherIsHazardous())
+            {
+                string hazard = "", rainfallW = "", hazardT = "", hazardF;
+
+                if (Current.HasWeather(CurrentWeather.Heatwave)) {
+                    hazardT = Translator.Get("weather-tv.hazard.hw");
                 }
-                return "";
+                if (Current.HasWeather(CurrentWeather.Frost)) {
+                    hazardT = Translator.Get("weather-tv.hazard.frost");
+                }
+
+                if (Current.HasWeather(CurrentWeather.Blizzard))
+                    hazard = Translator.Get("weather-tv.hazard.blizzard");
+                if (Current.HasWeather(CurrentWeather.WhiteOut))
+                    hazard = Translator.Get("weather-tv.hazard.whiteout");
+                if (Current.HasWeather(CurrentWeather.ThunderFrenzy))
+                    hazard = Translator.Get("weather-tv.hazard.thunderfrenzy");
+                if (Current.HasWeather(CurrentWeather.Sandstorm))
+                    hazard = Translator.Get("weather-tv.hazard.sandstorm");
+                if (WeatherUtilities.IsSevereRainFall(Current.AmtOfRainDrops)) {
+                    switch (WeatherUtilities.GetCategory(Current.AmtOfRainDrops))
+                    {
+                        case RainLevels.Severe:
+                            hazard = Translator.Get("weather-tv.hazard.rainfall.severe");
+                            break;
+                        case RainLevels.Torrential:
+                            hazard = Translator.Get("weather-tv.hazard.rainfall.torrential");
+                            break;
+                        case RainLevels.Typhoon:
+                            hazard = Translator.Get("weather-tv.hazard.rainfall.typhoon");
+                            break;
+                        case RainLevels.NoahsFlood:
+                            hazard = Translator.Get("weather-tv.hazard.rainfall.noahsflood");
+                            break;
+                        default:
+                            hazard = Translator.Get("weather-tv.hazard.rainfall.severe");
+                            break;
+                    }
+
+                    rainfallW = Translator.Get("weather-tv.rainfallW");
+                }
+
+                if (!String.IsNullOrEmpty(hazard) && !String.IsNullOrEmpty(hazardT))
+                    hazardF = Translator.Get("weather-tv.twoHazardString", new { hazardOne = hazard, hazardTwo = hazardT });
+                else if (!String.IsNullOrEmpty(hazard))
+                    hazardF = hazard;
+                else
+                    hazardF = hazardT;
+
+                ret += Translator.Get("weather-tv.hazard", new {
+                    hazard = hazardF,
+                    repLocation = Translator.Get("weather-location.reporter."+Dice.Next(4)),
+                    rainfallWarning = rainfallW
+                });
+            }
+
+            //current conditions
+            string time;
+            switch (SDVTime.CurrentTimePeriod)
+            {
+                case SDVTimePeriods.Morning:
+                    time = Translator.Get("weather-tv.time.morning");
+                    break;
+                case SDVTimePeriods.Noon:
+                case SDVTimePeriods.Afternoon:
+                    time = Translator.Get("weather-tv.time.afternoon");
+                    break;
+                case SDVTimePeriods.Evening:
+                    time = Translator.Get("weather-tv.time.evening");
+                    break;
+                case SDVTimePeriods.Night:
+                    time = Translator.Get("weather-tv.time.night");
+                    break;
+                case SDVTimePeriods.Midnight:
+                case SDVTimePeriods.LateNight:
+                    time = Translator.Get("weather-tv.time.latenight");
+                    break;
+                default:
+                    time = Translator.Get("weather-tv.time.generic");
+                    break;
+            }
+
+            string abText = "";
+            if (Current.IsAbnormalHeat)
+                abText = Translator.Get("weather-tv.abnormalHeat");
+
+            if (Current.IsAbnormalChill)
+                abText = Translator.Get("weather-tv.abnormalChill");
+
+            string sysText = "";
+            if (Current.trackerModel.WeatherSystemDays > 0)
+            {
+                if (Current.trackerModel.IsWeatherSystem)
+                    sysText = Translator.Get("weather-tv.systemMaint");
+            }
+
+            //the first monster, describing the weather.
+            string dWeather = "";
+            if (!String.IsNullOrEmpty(SDVUtilities.GetFestivalName(SDate.Now())))
+                dWeather = Translator.Get("weather-tv.weat.festival", new { festivalName = SDVUtilities.GetFestivalName(SDate.Now()) });
+
+            if (Current.HasWeather(CurrentWeather.Wedding))
+                dWeather = Translator.Get("weather-tv.weat.wedding");
+
+            if (Current.HasWeather(CurrentWeather.Sunny))
+                dWeather = Translator.Get("weather-tv.weat.wedding");
+
+            if (Current.HasWeather(CurrentWeather.Rain) && !Current.HasWeather(CurrentWeather.Lightning))
+            {
+                dWeather = (Current.IsVariableRain ? Translator.Get("weather-tv.weat.rain.variable", new { rainDesc = GetRainDesc(Current.AmtOfRainDrops) }) 
+                                                   : Translator.Get("weather-tv.weat.rain", new { rainDesc = GetRainDesc(Current.AmtOfRainDrops) }));
+            }
+
+            if (Current.HasWeather(CurrentWeather.Rain) && Current.HasWeather(CurrentWeather.Lightning) && !Current.HasWeather(CurrentWeather.ThunderFrenzy))
+                dWeather = Translator.Get("weather-tv.weat.thunderstorm");
+
+            if (Current.HasWeather(CurrentWeather.ThunderFrenzy))
+                dWeather = Translator.Get("weather-tv.weat.thunderfrenzy");
+
+            if (!Current.HasWeather(CurrentWeather.Rain) && Current.HasWeather(CurrentWeather.Lightning))
+                dWeather = Translator.Get("weather-tv.weat.drylightning");
+
+            if (Current.HasWeather(CurrentWeather.Blizzard) && !Current.HasWeather(CurrentWeather.WhiteOut))
+                dWeather = Translator.Get("weather-tv.weat.blizzard");
+
+            if (Current.HasWeather(CurrentWeather.WhiteOut))
+                dWeather = Translator.Get("weather-tv.weat.whiteout");
+
+            if (Current.HasWeather(CurrentWeather.Snow) && !Current.HasWeather(CurrentWeather.Blizzard) && !Current.HasWeather(CurrentWeather.WhiteOut) && !Current.HasWeather(CurrentWeather.Lightning))
+                dWeather = Translator.Get("weather-tv.weat.snowy");
+
+            if (Current.HasWeather(CurrentWeather.Snow) && !Current.HasWeather(CurrentWeather.Blizzard) && !Current.HasWeather(CurrentWeather.WhiteOut) && Current.HasWeather(CurrentWeather.Lightning))
+                dWeather = Translator.Get("weather-tv.weat.thundersnow");
+
+            if (Current.HasWeather(CurrentWeather.Sandstorm))
+                dWeather = Translator.Get("weather-tv.weat.sandstorms");
+
+            if (Current.HasWeather(CurrentWeather.Wind))
+            {
+                if (Game1.currentSeason == "winter")
+                    dWeather = Translator.Get("weather-tv.weat.windy.winter");
+                else
+                    dWeather = Translator.Get("weather-tv.weat.windy");
+            }
+
+            string fog = "";
+            if (Current.HasWeather(CurrentWeather.Fog))
+            {
+                fog = Translator.Get("weather-tv.weat.fog", new { time = Current.GetFogTime() });
+            }
+
+            //ending up the current conditions.
+            string tHazard = "";
+            if (Current.HasWeather(CurrentWeather.Heatwave)) 
+            {
+                tHazard = Translator.Get("weather-tv.tempHazard.heat");
+            }
+            
+            if (Current.HasWeather(CurrentWeather.Frost))
+            {
+                tHazard = Translator.Get("weather-tv.tempHazard.cold",
+                    new { time = (Game1.currentSeason == "spring" 
+                          ? Translator.Get("weather-tv.tempHazard.cold.spring") : 
+                          Translator.Get("weather-tv.tempHazard.cold.fall"))
+                   });
+            }
+
+            string rRate = "";
+            if (Current.HasWeather(CurrentWeather.Rain))
+            {
+                rRate = Translator.Get("weather-tv.rainfallRate", new { rate = GetRainDesc(Current.AmtOfRainDrops) });
+            }
+
+
+            var transParams = new Dictionary<string, string>{
+                { "time",time },
+                { "currentTemp",GetTemperatureString(Current.GetCurrentTemperature(Game1.timeOfDay)) },
+				{ "abnormalText", abText },
+				{ "systemText", sysText },
+                { "descWeather", dWeather },
+                { "fogText", fog },
+                { "tempHazard", tHazard },
+                { "rainfallRate", rRate }
+			};
+
+            ret += Translator.Get("weather-tv.currentCond", transParams);
+            transParams.Clear();
+
+            //now, tomorrow!! :D
+
+            sysText = "";
+            if (Current.trackerModel.WeatherSystemDays > 0)
+            {
+                if (Current.trackerModel.IsWeatherSystem)
+                    sysText = Translator.Get("weather-tv.tmrw.systemMaint", 
+                        new {desc = Translator.Get("weather-location.system.desc."+Dice.Next(6)) });
+                if (!Current.trackerModel.IsWeatherSystem && (Game1.weatherForTomorrow != WeatherUtilities.GetWeatherCode()))
+                    sysText = Translator.Get("weather-tv.tmrw.systemEnding",
+                        new { desc = Translator.Get("weather-location.system.desc." + Dice.Next(6)), direction = Translator.Get("weather-location.system.move." + Dice.Next(4))});
             }
             else
-                return "";
+            {
+                sysText = Translator.Get("weather-tv.tmrw.systemNone");
+            }
+
+            //now weather
+            switch (Game1.weatherForTomorrow)
+            {
+                case Game1.weather_rain:
+                    dWeather = Translator.Get("weather-tv.rain." + Dice.Next(2));
+                    break;
+                case Game1.weather_festival:
+                    dWeather = Translator.Get("weather-tv.festival", new { festName = SDVUtilities.GetFestivalName(SDate.Now().AddDays(1)) });
+                    break;
+                case Game1.weather_debris:
+                    dWeather = Translator.Get("weather-tv.debris." + Dice.Next(2));
+                    break;
+                case Game1.weather_snow:
+                    dWeather = Translator.Get("weather-tv.snowy." + Dice.Next(2));
+                    break;
+                case Game1.weather_wedding:
+                    dWeather = Translator.Get("weather-tv.wedding");
+                    break;
+                case Game1.weather_lightning:
+                    dWeather = Translator.Get("weather-tv.snowy." + Dice.Next(2));
+                    break;
+                case Game1.weather_sunny:
+                default:
+                    dWeather = Translator.Get("weather-tv.sunny." + Dice.Next(2));
+                    break;
+            }
+
+            //overrides for festival and wedding (just in case, my paranoia is spiking. :|)
+            if (!String.IsNullOrEmpty(SDVUtilities.GetFestivalName(SDate.Now().AddDays(1))))
+            {
+                dWeather = Translator.Get("weather-tv.festival", new { festName = SDVUtilities.GetFestivalName(SDate.Now().AddDays(1)) });
+            }
+            if (Game1.player.spouse != null && Game1.player.isEngaged() && Game1.player.friendshipData[Game1.player.spouse].CountdownToWedding == 1)
+            {
+                dWeather = Translator.Get("weather-tv.wedding");
+            }
+
+            fog = "";
+            //now, the fog string
+            if (fogOdds >= .6)
+            {
+                fog = Translator.Get("weather-tv.fogChance");
+            }
+
+            //tHazard string
+
+            if (Current.TomorrowHigh > (Current.TodayHigh + 1.5))
+            {
+                tHazard = Translator.Get("weather-tv.tmrw.warmer", new
+                {
+                    high = GetTemperatureString(Current.TomorrowHigh),
+                    low = GetTemperatureString(Current.TomorrowLow),
+                });
+            }
+            else if ((Current.TomorrowHigh < (Current.TodayHigh - 1.5)))
+            {
+                tHazard = Translator.Get("weather-tv.tmrw.cooler", new
+                {
+                    high = GetTemperatureString(Current.TomorrowHigh),
+                    low = GetTemperatureString(Current.TomorrowLow),
+                });
+            }
+            else
+            {
+                tHazard = Translator.Get("weather-tv.tmrw.effsame", new
+                {
+                    high = GetTemperatureString(Current.TomorrowHigh),
+                    low = GetTemperatureString(Current.TomorrowLow),
+                });
+            }
+
+
+            transParams.Add("sysText", sysText);
+            transParams.Add("weather", dWeather);
+            transParams.Add("fogChance", fog);
+            transParams.Add("tempString", tHazard);
+
+            ret += Translator.Get("weather-tv.tomorrowForecast", transParams);
+			return ret;
         }
 
-        private string GetCondWarning(WeatherConditions Current)
+
+        private string GetBasicWeather(int weather)
         {
-            int rNumber = OurDice.Next(2);
-            if (Current.ContainsCondition(CurrentWeather.Heatwave))
-                return Helper.Get($"weather-condition.heatwave.{rNumber}");
-
-            if (Current.ContainsCondition(CurrentWeather.Frost))
-                return Helper.Get($"weather-condition.frost.{rNumber}");
-
-            if (Current.ContainsCondition(CurrentWeather.WhiteOut))
-                return Helper.Get($"weather-condition.whiteout.{rNumber}");
-
-            if (Current.ContainsCondition(CurrentWeather.ThunderFrenzy))
-                return Helper.Get($"weather-condition.thunderfrenzy.{rNumber}");
-
-            return "";            
-        }
-
-        private string GetWeather(int weather, int day, string season, bool TomorrowWeather = false)
-        {
-            int rNumber = OurDice.Next(2);
-
-            if (day == 28)
-                season = GetNextSeason(season);
-
             if (weather == Game1.weather_debris)
-                return Helper.Get($"weat-{season}.debris.{rNumber}");
-            else if (weather == Game1.weather_festival || weather == Game1.weather_wedding || weather == Game1.weather_sunny && SDVTime.CurrentIntTime < Game1.getModeratelyDarkTime() && !TomorrowWeather)
-                return Helper.Get($"weat-{season}.sunny_daytime.{rNumber}");
-            else if (weather == Game1.weather_festival || weather == Game1.weather_wedding || weather == Game1.weather_sunny && SDVTime.CurrentIntTime >= Game1.getModeratelyDarkTime() && !TomorrowWeather)
-                return Helper.Get($"weat-{season}.sunny_nighttime.{rNumber}");
-            else if (weather == Game1.weather_festival || weather == Game1.weather_wedding || weather == Game1.weather_sunny && TomorrowWeather)
-                return Helper.Get($"weat-{season}.sunny_daytime.{rNumber}");
-            else if (weather == Game1.weather_lightning)
-                return Helper.Get($"weat-{season}.stormy.{rNumber}");
-            else if (weather == Game1.weather_rain)
-                return Helper.Get($"weat-{season}.rainy.{rNumber}");
-            else if (weather == Game1.weather_snow)
-                return Helper.Get($"weat-{season}.snow.{rNumber}");
-
-            return "ERROR";
-        }
-
-        private string GetBasicWeather(int weather, string season)
-        {
-            int rNumber = OurDice.Next(2);
-
-            if (weather == Game1.weather_debris)
-                return Helper.Get($"weather_wind");
+                return Translator.Get($"weather_wind");
             else if (weather == Game1.weather_festival || weather == Game1.weather_wedding)
-                return Helper.Get($"weather_sunny");
+                return Translator.Get($"weather_sunny");
             else if (weather == Game1.weather_lightning)
-                return Helper.Get($"weather_lightning");
+                return Translator.Get($"weather_lightning");
             else if (weather == Game1.weather_rain)
-                return Helper.Get($"weather_rainy");
+                return Translator.Get($"weather_rainy");
             else if (weather == Game1.weather_snow)
-                return Helper.Get($"weather_snow");
+                return Translator.Get($"weather_snow");
             else if (weather == Game1.weather_sunny)
-                return Helper.Get($"weather_sunny");
+                return Translator.Get($"weather_sunny");
 
             return "ERROR";
         }
 
-        private string GetBasicWeather(WeatherConditions Weather, string season)
+        private string GetBasicWeather(WeatherConditions Weather)
         {
             if (Weather.CurrentWeatherIconBasic == WeatherIcon.IconBlizzard || Weather.CurrentWeatherIconBasic == WeatherIcon.IconWhiteOut)
-                return Helper.Get($"weather_blizzard");
+                return Translator.Get($"weather_blizzard");
+            else if (Weather.CurrentWeatherIconBasic == WeatherIcon.IconSandstorm)
+                return Translator.Get($"weather_sandstorm");
             else if (Weather.CurrentWeatherIconBasic == WeatherIcon.IconSpringDebris || Weather.CurrentWeatherIconBasic == WeatherIcon.IconDebris)
-                return Helper.Get($"weather_wind");
+                return Translator.Get($"weather_wind");
             else if (Weather.CurrentWeatherIconBasic == WeatherIcon.IconDryLightning)
-                return Helper.Get($"weather_drylightning");
+                return Translator.Get($"weather_drythunder");
             else if (Weather.CurrentWeatherIconBasic == WeatherIcon.IconSunny && SDVTime.CurrentIntTime < Game1.getModeratelyDarkTime())
-                return Helper.Get($"weather_sunny_daytime");
+                return Translator.Get($"weather_sunny_daytime");
             else if (Weather.CurrentWeatherIconBasic == WeatherIcon.IconSunny && SDVTime.CurrentIntTime >= Game1.getModeratelyDarkTime())
-                return Helper.Get($"weather_sunny_nighttime");
+                return Translator.Get($"weather_sunny_nighttime");
             else if (Weather.CurrentWeatherIconBasic == WeatherIcon.IconStorm)
-                return Helper.Get($"weather_lightning");
+                return Translator.Get($"weather_lightning");
             else if (Weather.CurrentWeatherIconBasic == WeatherIcon.IconSnow)
-                return Helper.Get($"weather_snow");
+                return Translator.Get($"weather_snow");
             else if (Weather.CurrentWeatherIconBasic == WeatherIcon.IconRain)
-                return Helper.Get($"weather_rainy");
+                return Translator.Get($"weather_rainy");
             else if (Weather.CurrentWeatherIconBasic == WeatherIcon.IconThunderSnow)
-                return Helper.Get($"weather_thundersnow");
+                return Translator.Get($"weather_thundersnow");
             else if (Weather.CurrentWeatherIconBasic == WeatherIcon.IconWedding)
-                return Helper.Get($"weather_wedding");
+                return Translator.Get($"weather_wedding");
             else if (Weather.CurrentWeatherIconBasic == WeatherIcon.IconFestival)
-                return Helper.Get($"weather_festival");
+                return Translator.Get($"weather_festival");
             return "ERROR";
-        }
-
-        private string GetWeather(WeatherConditions Weather, int day, string season)
-        {
-            if (day == 28)
-                season = GetNextSeason(season);
-
-            int rNumber = OurDice.Next(2);
-
-            if (Weather.CurrentWeatherIconBasic == WeatherIcon.IconBlizzard || Weather.CurrentWeatherIconBasic == WeatherIcon.IconWhiteOut)
-                return Helper.Get($"weat-{season}.blizzard.{rNumber}");
-            else if (Weather.CurrentWeatherIconBasic == WeatherIcon.IconSpringDebris || Weather.CurrentWeatherIconBasic == WeatherIcon.IconDebris)
-                return Helper.Get($"weat-{season}.debris.{rNumber}");
-            else if (Weather.CurrentWeatherIconBasic == WeatherIcon.IconDryLightning)
-                return Helper.Get($"weat-{season}.drylightning.{rNumber}");
-            else if (Weather.CurrentWeatherIconBasic == WeatherIcon.IconWedding || Weather.CurrentWeatherIconBasic == WeatherIcon.IconFestival || Weather.CurrentWeatherIconBasic == WeatherIcon.IconSunny && SDVTime.CurrentIntTime < Game1.getModeratelyDarkTime())
-                return Helper.Get($"weat-{season}.sunny_daytime.{rNumber}");
-            else if (Weather.CurrentWeatherIconBasic == WeatherIcon.IconSunny || Weather.CurrentWeatherIconBasic == WeatherIcon.IconWedding || Weather.CurrentWeatherIconBasic == WeatherIcon.IconFestival && SDVTime.CurrentIntTime >= Game1.getModeratelyDarkTime())
-                return Helper.Get($"weat-{season}.sunny_nighttime.{rNumber}");
-            else if (Weather.CurrentWeatherIconBasic == WeatherIcon.IconStorm)
-                return Helper.Get($"weat-{season}.stormy.{rNumber}");
-            else if (Weather.CurrentWeatherIconBasic == WeatherIcon.IconSnow)
-                return Helper.Get($"weat-{season}.snow.{rNumber}");
-            else if (Weather.CurrentWeatherIconBasic == WeatherIcon.IconRain)
-                return Helper.Get($"weat-{season}.rainy.{rNumber}");
-            else if (Weather.CurrentWeatherIconBasic == WeatherIcon.IconThunderSnow)
-                return Helper.Get($"weat-{season}.thundersnow.{rNumber}");
-            else if (Weather.CurrentWeatherIconBasic == WeatherIcon.IconBloodMoon)
-                return Helper.Get($"weat-bloodmoon");
-            return "ERROR";
-        }
-
-        private string GetRandomLocation()
-        {
-            return Helper.Get("fern-loc." + OurDice.Next(12));
         }
 
         internal TemporaryAnimatedSprite GetWeatherOverlay(WeatherConditions Current, TV tv)

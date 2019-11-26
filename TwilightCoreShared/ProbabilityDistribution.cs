@@ -81,7 +81,7 @@ namespace TwilightShards.Common
         {
             EndPoints.Clear();
             CurrentPoint = 0;
-            OverflowResult = default(T);
+            OverflowResult = default;
         }
 
         /// <summary>
@@ -197,7 +197,7 @@ namespace TwilightShards.Common
                 }
             }
 
-            Result = default(T);
+            Result = default;
             return false;
         }
     }

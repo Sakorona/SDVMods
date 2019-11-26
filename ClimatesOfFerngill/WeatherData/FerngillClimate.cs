@@ -10,6 +10,7 @@ namespace ClimatesOfFerngillRebuild
         public bool AllowRainInWinter;
         public bool AllowThunderSnow;
         public bool AllowSnowInFall;
+        public double ChanceForNonNormalRain;
         public List<string> LocationsAffected;
         public List<FerngillClimateTimeSpan> ClimateSequences;
 
@@ -44,7 +45,7 @@ namespace ClimatesOfFerngillRebuild
                     return s;
             }
 
-            return default(FerngillClimateTimeSpan);
+            return default;
         }
 
         /// <summary>
@@ -55,8 +56,10 @@ namespace ClimatesOfFerngillRebuild
         public RangePair GetTemperatures(SDate Target, MersenneTwister dice)
         {
             var Weather = GetClimateForDate(Target);
-            return new RangePair(Weather.RetrieveTemp(dice, "lowtemp", Target.Day), 
-                                 Weather.RetrieveTemp(dice, "hightemp", Target.Day));
+            var temps = new RangePair(Weather.RetrieveTemp(dice, "lowtemp", Target.Day), 
+                                 Weather.RetrieveTemp(dice, "hightemp", Target.Day), true);
+            ClimatesOfFerngill.Logger.Log($"We are gathering temperatures from the climate file. Temps is {temps.LowerBound}, {temps.HigherBound}");
+            return temps;
         }
 
         public double GetStormOdds(SDate Target, MersenneTwister dice)
@@ -64,7 +67,7 @@ namespace ClimatesOfFerngillRebuild
             return GetClimateForDate(Target).RetrieveOdds(dice, "storm", Target.Day);
         }
 
-        public double GetEveningFogOdds(SDate Target, MersenneTwister dice, StringBuilder Debug)
+        public double GetEveningFogOdds(SDate Target)
         {
             return GetClimateForDate(Target).EveningFogChance;
         }

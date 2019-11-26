@@ -50,6 +50,18 @@ namespace StardewNotification
             if (StardewNotification.Config.NotifyFarm)
             {
                 CheckObjectsInLocation(Trans, Game1.getFarm());
+                CheckFish(Trans, Game1.getFarm());
+            }
+        }
+
+        public void CheckFish(ITranslationHelper Trans, Farm f)
+        {
+            foreach(Building b in f.buildings)
+            {
+                if (b is FishPond fish && fish.output.Value != null)
+                {
+                    Util.ShowMessage(Trans.Get("FishPond"));
+                }
             }
         }
 

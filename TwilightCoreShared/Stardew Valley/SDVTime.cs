@@ -81,19 +81,32 @@ namespace TwilightShards.Stardew.Common
         {
             hour = t / 100;
 
-            if (hour > MAXHOUR)
-                throw new ArgumentOutOfRangeException("Invalid Time passed to the constructor.");
+            if (hour < 0)
+                throw new ArgumentException("You cannot have a time value of less than 0 seconds");
 
-            t = t - (hour * 100);
+            if (hour > MAXHOUR) { 
+                hour = MAXHOUR;
+                minute = 0;
+            }
+            else { 
 
-            if (t < MINPERHR)
-                minute = t;
-            else
-            {
-                hour++;
-                if (hour > MAXHOUR)
-                    throw new ArgumentOutOfRangeException("Invalid Time passed to the constructor");
-                minute = t - MINPERHR;
+                t -= (hour * 100);
+
+                if (t < MINPERHR)
+                    minute = t;
+                else
+                {
+                    hour++;
+                    if (hour > MAXHOUR)
+                    {
+                        hour = MAXHOUR;
+                        minute = 0;
+                    }
+                    else
+                    { 
+                       minute = t - MINPERHR;
+                    }
+                }
             }
         }
 
@@ -101,7 +114,9 @@ namespace TwilightShards.Stardew.Common
         {
             hour = h;
             if (hour > MAXHOUR)
-                throw new Exception("Invalid Time passed to the constructor");
+                throw new ArgumentOutOfRangeException($"Invalid Time passed to the constructor. Hour value more than {MAXHOUR}");
+            if (hour < 0)
+                throw new ArgumentOutOfRangeException("Invalid Time passed to the constructor. Hour value less than 0.");
 
             minute = m;
 
@@ -135,11 +150,11 @@ namespace TwilightShards.Stardew.Common
                     if (minute >= 60)
                     {
                         hour++;
-                        minute = minute - 60;
+                        minute -= 60;
                     }
 
                     if (hour > MAXHOUR)
-                        hour = hour - MAXHOUR;
+                        hour -= MAXHOUR;
                 }
                 if (minute % 10 < 5 && (minute % 10 != 0))
                 {
@@ -148,15 +163,15 @@ namespace TwilightShards.Stardew.Common
                         if (minute < 0)
                         {
                             hour--;
-                            minute = minute + 60;
+                            minute += 60;
                         }
                     }
                 }
 
         public void AddTime(int hour, int minute)
         {
-            this.hour = this.hour + hour;
-            this.minute = this.minute + minute;
+            this.hour += hour;
+            this.minute += minute;
             while (minute > 59)
             {
                 this.hour++;
@@ -170,7 +185,7 @@ namespace TwilightShards.Stardew.Common
             }
 
             if (hour > 28)
-                hour = hour - 28;
+                this.hour -= 28;
         }
 
         public void AddTime(int time)
@@ -178,9 +193,9 @@ namespace TwilightShards.Stardew.Common
             int addhr = time / MINPERHR;
             int addmin = time - (MINPERHR * addhr);
 
-            hour = hour + addhr;
+            hour += addhr;
 
-            minute = minute + addmin;
+            minute += addmin;
             while (minute > 59)
             {
                 hour++;
@@ -194,13 +209,13 @@ namespace TwilightShards.Stardew.Common
             }
 
             if (hour > 28)
-                hour = hour - 28;
+                hour -= 28;
         }
 
         public void AddTime(SDVTime sTime)
         {
-            hour = hour + sTime.hour;
-            minute = minute + sTime.minute;
+            hour += sTime.hour;
+            minute += sTime.minute;
 
             while (minute > 59)
             {
@@ -216,7 +231,7 @@ namespace TwilightShards.Stardew.Common
 
             if (hour >= MAXHOUR)
             {
-                hour = hour - MAXHOUR;
+                hour -= MAXHOUR;
             }
         }
 
@@ -231,8 +246,8 @@ namespace TwilightShards.Stardew.Common
         public static SDVTime operator -(SDVTime s1, SDVTime s2)
         {
             SDVTime ret = new SDVTime(s1);
-            s1.hour = s1.hour + s2.hour;
-            s1.minute = s1.minute + s2.minute;
+            s1.hour += s2.hour;
+            s1.minute += s2.minute;
 
             while (s1.minute > 59)
             {
@@ -248,7 +263,7 @@ namespace TwilightShards.Stardew.Common
 
             if (s1.hour >= MAXHOUR)
             {
-                s1.hour = s1.hour - MAXHOUR;
+                s1.hour -= MAXHOUR;
             }
             return ret;
         }
@@ -285,9 +300,6 @@ namespace TwilightShards.Stardew.Common
 
         public static bool operator ==(SDVTime s1, int s2)
         {
-            int intHour = s2 / 100;
-            int intMinute = s2 % 100;
-
             if ((s1.hour == (s2 / 100)) && (s1.minute == (s2 % 100)))
                 return true;
             else

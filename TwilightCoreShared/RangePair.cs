@@ -1,7 +1,7 @@
 ﻿namespace TwilightShards.Common
 {
     /// <summary>
-    /// generic pair struct
+    /// generic pair class
     /// </summary>
     public class RangePair
     {
@@ -33,7 +33,7 @@
             this.LowerBound = l;
             this.HigherBound = h;
 
-            if (this.LowerBound > this.HigherBound)
+            if (this.LowerBound > this.HigherBound && EnforceHigherOverLower)
             {
                 double temp = this.LowerBound;
                 this.LowerBound = this.HigherBound;
@@ -61,12 +61,22 @@
 
             if (EnforceHigherOverLower == true && this.LowerBound > this.HigherBound)
             {
-                double temp = 0;
-                temp = this.LowerBound;
+                double temp = this.LowerBound;
                 this.LowerBound = this.HigherBound;
                 this.HigherBound = temp;
             }
         }
+		
+		///<summary>
+		/// This function updates the range pair. Used to avoid creating more objects.
+		/// </summary>
+		/// <param name="lower">The lower of the new range pair</param>
+		/// <param name="hhigher">The higher of the new range pair</param>
+		public void UpdateRangePair(double lower, double higher)
+		{
+			this.LowerBound = lower;
+			this.HigherBound = higher;
+		}
 
         /// <summary>
         /// Returns an item in range between Lower and Higher Bound
@@ -79,6 +89,15 @@
                 return LowerBound;
 
             return (d.NextDoublePositive() * (HigherBound - LowerBound) + LowerBound);
+        }
+
+        /// <summary>
+        /// This function returns the midpoint of the range.
+        /// </summary>
+        /// <returns>The mid point of the range</returns>
+        public double GetMidPoint()
+        {
+            return ((LowerBound + HigherBound) / 2.0);
         }
     }
 }

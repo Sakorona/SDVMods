@@ -1,25 +1,25 @@
 ﻿using System;
-using System.Collections.Generic;
 using StardewModdingAPI;
 using StardewValley;
 using StardewModdingAPI.Events;
 using StardewValley.Locations;
-using System.Linq;
 using StardewModdingAPI.Utilities;
 using Microsoft.Xna.Framework;
-using SObject = StardewValley.Object;
-using StardewValley.Objects;
 using TwilightShards.Common;
+using Harmony;
+using System.Reflection;
+using CustomizableTravelingCart.Patches;
+using System.Collections.Generic;
 
-namespace CustomizableCartRedux
+namespace CustomizableTravelingCart
 {
     public class CustomizableCartRedux : Mod
     {
         public static Mod instance;
-        public CartConfig OurConfig;
+        public static IMonitor Logger;
+        public static CartConfig OurConfig;
         public MersenneTwister Dice;
-        private Dictionary<Item, int[]> generatedStock;
-
+        internal static Dictionary<StardewValley.Object, int[]> APIItemsToBeAdded;
         private ICustomizableCart API;
 
         /// <summary>The mod entry point, called after the mod is first loaded.</summary>
@@ -29,9 +29,54 @@ namespace CustomizableCartRedux
             instance = this;
             Dice = new MersenneTwister();
             OurConfig = helper.ReadConfig<CartConfig>();
+            Logger = Monitor;
+            APIItemsToBeAdded = new Dictionary<StardewValley.Object, int[]>();
 
+            var harmony = HarmonyInstance.Create("koihimenakamura.customizablecart");
+            harmony.PatchAll(Assembly.GetExecutingAssembly());
+
+            MethodInfo CheckAction = AccessTools.Method(typeof(Forest), "checkAction");
+            HarmonyMethod CATranspiler = new HarmonyMethod(AccessTools.Method(typeof(ForestPatches), "CheckActionTranspiler"));
+            Monitor.Log($"Patching {CheckAction} with Transpiler: {CATranspiler}", LogLevel.Trace); ;
+            harmony.Patch(CheckAction, transpiler: CATranspiler);
+
+            MethodInfo ForestDraw = AccessTools.Method(typeof(Forest), "draw");
+            HarmonyMethod DrawTranspiler = new HarmonyMethod(AccessTools.Method(typeof(ForestPatches), "DrawTranspiler"));
+            Monitor.Log($"Patching {ForestDraw} with Transpiler: {DrawTranspiler}", LogLevel.Trace); ;
+            harmony.Patch(ForestDraw, transpiler: DrawTranspiler);
+
+            MethodInfo GenerateTMS = AccessTools.Method(typeof(Utility), "getTravelingMerchantStock");
+            HarmonyMethod LTMPrefix = new HarmonyMethod(AccessTools.Method(typeof(UtilityPatches), "getTravelingMerchantStockPrefix"));
+            Monitor.Log($"Patching {GenerateTMS} with Prefix: {LTMPrefix}", LogLevel.Trace); ;
+            harmony.Patch(GenerateTMS, prefix: LTMPrefix);
+             
             helper.Events.GameLoop.DayStarted += OnDayStarted;
-            helper.Events.Player.Warped += OnWarped;
+            helper.Events.GameLoop.GameLaunched += OnGameLanuched;
+        }
+
+        private void OnGameLanuched(object sender, GameLaunchedEventArgs e)
+        {
+            var api = Helper.ModRegistry.GetApi<Integrations.GenericModConfigMenuAPI>("spacechase0.GenericModConfigMenu");
+            if (api != null)
+            {
+                api.RegisterModConfig(ModManifest, () => OurConfig = new CartConfig(), () => Helper.WriteConfig(OurConfig));
+                api.RegisterClampedOption(ModManifest, "Monday Apparence", "The chance for the cart to appear on Monday", () => (float)OurConfig.MondayChance, (float val) => OurConfig.MondayChance = val, 0f, 1f);
+                api.RegisterClampedOption(ModManifest, "Tuesday Apparence", "The chance for the cart to appear on Tuesday", () => (float)OurConfig.TuesdayChance, (float val) => OurConfig.TuesdayChance = val, 0f, 1f);
+                api.RegisterClampedOption(ModManifest, "Wednesday Apparence", "The chance for the cart to appear on Wednesday", () => (float)OurConfig.WednesdayChance, (float val) => OurConfig.WednesdayChance = val, 0f, 1f);
+                api.RegisterClampedOption(ModManifest, "Thursday Apparence", "The chance for the cart to appear on Thursday", () => (float)OurConfig.ThursdayChance, (float val) => OurConfig.ThursdayChance = val, 0f, 1f);
+                api.RegisterClampedOption(ModManifest, "Friday Apparence", "The chance for the cart to appear on Friday", () => (float)OurConfig.FridayChance, (float val) => OurConfig.FridayChance = val, 0f, 1f);
+                api.RegisterClampedOption(ModManifest, "Saturday Apparence", "The chance for the cart to appear on Saturday", () => (float)OurConfig.SaturdayChance, (float val) => OurConfig.SaturdayChance = val, 0f, 1f);
+                api.RegisterClampedOption(ModManifest, "Sunday Apparence", "The chance for the cart to appear on Sunday", () => (float)OurConfig.SundayChance, (float val) => OurConfig.SundayChance = val, 0f, 1f);
+                api.RegisterSimpleOption(ModManifest, "Appear Only At Start Of Season", "If selected, the cart only appears at the beginning of the season", () => OurConfig.AppearOnlyAtStartOfSeason, (bool val) => OurConfig.AppearOnlyAtStartOfSeason = val);
+                api.RegisterSimpleOption(ModManifest, "Appear Only At End Of Season", "If selected, the cart only appears at the end of the season", () => OurConfig.AppearOnlyAtEndOfSeason, (bool val) => OurConfig.AppearOnlyAtEndOfSeason = val);
+                api.RegisterSimpleOption(ModManifest, "Appear Only At Start and End Of Season", "If selected, the cart only appears at the beginning and end of the season", () => OurConfig.AppearOnlyAtStartAndEndOfSeason, (bool val) => OurConfig.AppearOnlyAtStartAndEndOfSeason = val);
+                api.RegisterSimpleOption(ModManifest, "Appear Only Every Other Week", "If selected, the cart only appears every other week", () => OurConfig.AppearOnlyEveryOtherWeek, (bool val) => OurConfig.AppearOnlyEveryOtherWeek = val);
+                api.RegisterSimpleOption(ModManifest, "Use Vanilla Max", "The game defaults to a max of 790. Turning this off allows PPJA assets to appear in the cart.", () => OurConfig.UseVanillaMax, (bool val) => OurConfig.UseVanillaMax = val);
+                api.RegisterClampedOption(ModManifest, "Amount of Items", "The amount of items the cart contains.", () => OurConfig.AmountOfItems, (int val) => OurConfig.AmountOfItems = val, 3, 100);
+                api.RegisterSimpleOption(ModManifest, "Use Cheaper Pricing", "Toggling this to true allows for cheaper pricing.", () => OurConfig.UseCheaperPricing, (bool val) => OurConfig.UseCheaperPricing = val);
+                api.RegisterClampedOption(ModManifest, "Opening Time", "The time the cart opens. Please select a 10-minute time.", () => OurConfig.OpeningTime, (int val) => OurConfig.OpeningTime = val, 600, 2600);
+                api.RegisterClampedOption(ModManifest, "Closing Time", "The time the cart closes for the night. Please select a 10-minute time. You don't have to go home, but you can't stay here.", () => OurConfig.ClosingTime, (int val) => OurConfig.ClosingTime = val, 600, 2600);
+            }
         }
 
         /// <summary>Get an API that other mods can access. This is always called after <see cref="M:StardewModdingAPI.Mod.Entry(StardewModdingAPI.IModHelper)" />.</summary>
@@ -40,41 +85,23 @@ namespace CustomizableCartRedux
             return API ?? (API = new CustomizableCartAPI(Helper.Reflection));
         }
 
-        /// <summary>Raised after a player warps to a new location.</summary>
-        /// <param name="sender">The event sender.</param>
-        /// <param name="e">The event arguments.</param>
-        private void OnWarped(object sender, WarpedEventArgs e)
-        {
-            if (!Context.IsMainPlayer || !e.IsLocalPlayer)
-                return;
-
-            if (e.NewLocation is Forest f)
-            {
-                Helper.Reflection.GetField<Dictionary<Item, int[]>>(f, "travelerStock").SetValue(generatedStock);
-            }
-        }
-
         /// <summary>Raised after the game begins a new day (including when the player loads a save).</summary>
         /// <param name="sender">The event sender.</param>
         /// <param name="e">The event arguments.</param>
         private void OnDayStarted(object sender, DayStartedEventArgs e)
         {
-            // set cart spawn
-
             if (!Context.IsMainPlayer)
                 return;
 
             Random r = new Random();
-            double randChance = r.NextDouble(), dayChance = 0;
+            double randChance = r.NextDouble();
 
             if (!(Game1.getLocationFromName("Forest") is Forest f))
                 throw new Exception("The Forest is not loaded. Please verify your game is properly installed.");
             
-            //generate the stock
-            generatedStock = GetTravelingMerchantStock(OurConfig.AmountOfItems);
-
             //get the day
             DayOfWeek day = GetDayOfWeek(SDate.Now());
+            double dayChance;
             switch (day)
             {
                 case DayOfWeek.Monday:
@@ -153,15 +180,11 @@ namespace CustomizableCartRedux
             if (setCartToOn)
             {
                 f.travelingMerchantDay = true;
-                f.travelingMerchantBounds.Add(new Rectangle(1472, 640, 492, 112));
+                f.travelingMerchantBounds.Add(new Rectangle(1472, 640, 492, 116));
                 f.travelingMerchantBounds.Add(new Rectangle(1652, 744, 76, 48));
-                f.travelingMerchantBounds.Add(new Rectangle(1812, 744, 104, 48));            
-
-                Helper.Reflection.GetField<Dictionary<Item, int[]>>(f, "travelerStock").SetValue(generatedStock);
+                f.travelingMerchantBounds.Add(new Rectangle(1812, 744, 104, 48));
                 foreach (Rectangle travelingMerchantBound in f.travelingMerchantBounds)
-                {
-                    Utility.clearObjectsInArea(travelingMerchantBound, f);                 
-                }
+                    Utility.clearObjectsInArea(travelingMerchantBound, f);       
 
                 ((CustomizableCartAPI)API).InvokeCartProcessingComplete();
             }
@@ -170,197 +193,7 @@ namespace CustomizableCartRedux
                 //clear other values
                 f.travelingMerchantBounds.Clear();
                 f.travelingMerchantDay = false;
-                Helper.Reflection.GetField<Dictionary<Item, int[]>>(f, "travelerStock").SetValue(null);                
-            }
-        }
-
-        private Dictionary<Item, int[]> GetTravelingMerchantStock(int numStock)
-        {
-            Dictionary<Item, int[]> dictionary = new Dictionary<Item, int[]>();
-            int maxItemID = 0;
-
-            maxItemID = OurConfig.UseVanillaMax ? 803 : Game1.objectInformation.Keys.Max();
-
-            numStock = (numStock <= 3 ? 4 : numStock); //Ensure the stock isn't too low.
-            var itemsToBeAdded = new List<int>();
-
-            //get items
-            for (int i = 0; i < (numStock - 3); i++)
-            {
-                int index2 = GetItem(maxItemID);
-
-                while (!CanSellItem(index2))
-                    index2 = GetItem(maxItemID);
-
-                if (OurConfig.DisableDuplicates)
-                {
-                    while (itemsToBeAdded.Contains(index2) || !CanSellItem(index2))
-                    {
-                        index2 = GetItem(maxItemID);
-                    }
-                }
-
-                itemsToBeAdded.Add(index2);
-            }
-
-            //assign price
-            foreach(int i in itemsToBeAdded)
-            {
-                string[] strArray = Game1.objectInformation[i].Split('/');
-                dictionary.Add(new SObject(i, 1), new int[2]
-                {
-                    (OurConfig.UseCheaperPricing ? (int)Math.Max(Dice.Next(1,6) * 81, Math.Round(Dice.RollInRange(1.87,5.95) * Convert.ToInt32(strArray[1])))
-                        : Math.Max(Dice.Next(1, 11) * 100, Convert.ToInt32(strArray[1]) * Dice.Next(3, 6))),
-                    Dice.NextDouble() < 0.1 ? 5 : 1
-                });
-            }
-
-            //hardcoded item add.
-            dictionary.Add(GetRandomFurniture(null, 0, 1613), new int[2]
-            {
-                Dice.Next(1, 11) * 250,
-                1
-            });
-
-            // if it's less than fall, add a rare seed
-            if (Utility.getSeasonNumber(Game1.currentSeason) < 2)
-            {
-                dictionary.Add(new SObject(347, 1), new int[2]
-                {
-                    1000, Dice.NextDouble() < 0.1 ? 5 : 1
-                });
-
-            }
-            else if (Dice.NextDouble() < 0.4)
-            {
-                dictionary.Add(new SObject(Vector2.Zero, 136), new int[2]
-                {
-                    4000, 1
-                });
-            }
-
-            dictionary.Add(key: Dice.NextDouble() < 0.25 ? new SObject(433, 1) : new SObject(578, 1), value: new int[2]
-            {
-                1000, 1
-            });
-
-            if (Context.IsMultiplayer && !Game1.player.craftingRecipes.ContainsKey("Wedding Ring"))
-            {
-                if (!dictionary.ContainsKey(new SObject(801, 1, true)))
-                    dictionary.Add(key: new SObject(801, 1, true), value: new[] 
-                    {
-                        500,
-                        1
-                    });
-            }
-
-            return dictionary;
-        }
-
-        private int GetItem(int maxItemID)
-        {
-            string[] strArray;
-            int index2 = Dice.Next(2, maxItemID);
-            do
-            {
-                do //find the nearest one if it doesn't exist
-                {
-                    index2 = (index2 + 1) % maxItemID;
-                }
-                while (!Game1.objectInformation.ContainsKey(index2) || Utility.isObjectOffLimitsForSale(index2));
-
-                strArray = Game1.objectInformation[index2].Split('/');
-            }
-            while (BannedItemsByCondition(index2, strArray));
-
-            return index2;
-        }
-
-        private bool CanSellItem(int item)
-        {
-            bool Allowed = true;
-
-            List<int> RestrictedItems = new List<int>() { 680, 681, 682, 688, 689, 690, 774, 775, 454, 460, 645, 413, 437, 439, 158, 159, 160, 161, 162, 163, 326, 341, 795, 796 };
-
-            if (RestrictedItems.Contains(item))
-                Allowed = false;
-
-            if (OurConfig.AllowedItems.Contains(item))
-                Allowed = true;
-
-            if (OurConfig.BlacklistedItems.Contains(item))
-                Allowed = false;
-
-            return Allowed;
-        }
-
-        private bool BannedItemsByCondition(int item, string[] strArray)
-        {
-            bool categoryBanned =
-                (!strArray[3].Contains('-') || 
-                 Convert.ToInt32(strArray[1]) <= 0 || 
-                 (strArray[3].Contains("-13") || strArray[3].Equals("Quest")) || 
-                 (strArray[0].Equals("Weeds") || strArray[3].Contains("Minerals") || strArray[3].Contains("Arch")));
-
-            if (OurConfig.AllowedItems.Contains(item))
-                categoryBanned = false;
-
-            return categoryBanned;
-        }
-
-        private Furniture GetRandomFurniture(List<Item> stock, int lowerIndexBound = 0, int upperIndexBound = 1462)
-        {
-            Dictionary<int, string> dictionary = Game1.content.Load<Dictionary<int, string>>("Data\\Furniture");
-            int num;
-            do
-            {
-                num = Dice.Next(lowerIndexBound, upperIndexBound);
-                if (stock != null)
-                {
-                    foreach (Item obj in stock)
-                    {
-                        if (obj is Furniture && obj.ParentSheetIndex == num)
-                            num = -1;
-                    }
-                }
-            }
-            while (IsFurnitureOffLimitsForSale(num) || !dictionary.ContainsKey(num));
-            Furniture furniture = new Furniture(num, Vector2.Zero);
-            int maxValue = int.MaxValue;
-            furniture.Stack = maxValue;
-            return furniture;
-        }
-
-        private static bool IsFurnitureOffLimitsForSale(int index)
-        {
-            switch (index)
-            {
-                case 1680:
-                case 1733:
-                case 1669:
-                case 1671:
-                case 1541:
-                case 1545:
-                case 1554:
-                case 1402:
-                case 1466:
-                case 1468:
-                case 131:
-                case 1226:
-                case 1298:
-                case 1299:
-                case 1300:
-                case 1301:
-                case 1302:
-                case 1303:
-                case 1304:
-                case 1305:
-                case 1306:
-                case 1307:
-                case 1308:
-                    return true;
-                default:
-                    return false;
+                
             }
         }
 
@@ -385,6 +218,15 @@ namespace CustomizableCartRedux
                 default:
                     return 0;
             }
+        }
+
+        public static bool IsValidHours()
+        {
+            int TimeOfDay = Game1.timeOfDay;
+            if (TimeOfDay >= OurConfig.OpeningTime && TimeOfDay <= OurConfig.ClosingTime)
+                return true;
+
+            return false;
         }
     }
 }   

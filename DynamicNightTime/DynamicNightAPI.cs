@@ -1,4 +1,4 @@
-﻿using TwilightShards.Stardew.Common;
+﻿using StardewModdingAPI.Utilities;
 
 namespace DynamicNightTime
 {
@@ -15,10 +15,14 @@ namespace DynamicNightTime
         int GetMorningCivilTwilightTime();
         int GetNavalTwilightTime();
         int GetMorningNavalTwilightTime();
+        int GetAnySunsetTime(SDate date);
+        int GetAnySunriseTime(SDate date);
     }
 
     public class DynamicNightAPI : IDynamicNightAPI
     {
+        public int GetAnySunsetTime(SDate date) => DynamicNightTime.GetSunsetForDay(date).ReturnIntTime();
+        public int GetAnySunriseTime(SDate date) => DynamicNightTime.GetSunriseForDay(date).ReturnIntTime();
         public int GetSunriseTime() => DynamicNightTime.GetSunriseTime();
         public int GetSunsetTime() => DynamicNightTime.GetSunset().ReturnIntTime();
         public int GetAstroTwilightTime() => DynamicNightTime.GetAstroTwilight().ReturnIntTime();

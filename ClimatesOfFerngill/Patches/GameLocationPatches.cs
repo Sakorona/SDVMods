@@ -9,7 +9,9 @@ namespace ClimatesOfFerngillRebuild.Patches
 {
     public static class GameLocationPatches
     {
-        public static IEnumerable<CodeInstruction> Transpiler(MethodBase original, IEnumerable<CodeInstruction> instructions)
+#pragma warning disable IDE0060 // Remove unused parameter
+        public static IEnumerable<CodeInstruction> DAAFLTranspiler(MethodBase original, IEnumerable<CodeInstruction> instructions)
+#pragma warning restore IDE0060 // Remove unused parameter
         {
             var codes = new List<CodeInstruction>(instructions);
             for (int i = 0; i < codes.Count; i++)

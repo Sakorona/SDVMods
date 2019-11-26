@@ -1,5 +1,4 @@
-This repository contains my SMAPI mods for Stardew Valley. See the individual mods for
-documentation, licenses, and release notes. May have other related projects that are here for tracking.
+This repository contains my SMAPI mods for Stardew Valley. See the individual mods for documentation, licenses, and release notes. May have other related projects that are here for tracking.
 
 ## Mods
  
@@ -15,10 +14,6 @@ _This mod adds a moon, which adds events, such as the Blood Moon, to the world. 
 
 _This adds a stamina system to the game. In hazardous weather, the player will drain stamina per 10 minutes._
 
-* **[USDVP](https://github.com/JohnsonNicholas/SDVMods/releases/tag/USDVP-alpha)** <small>([source](USDVP))</small>
-
-_A in progress patch mod for Stardew Valley. On hiatus until after the SDV 1.3 beta ends._
-
 * **[Climates of Ferngill (Rebuild)](http://www.nexusmods.com/stardewvalley/mods/604)** <small>([source](ClimatesOfFerngill))</small>
 
 _Creates a different climate system, with custom weather, including fog and thunder frenzy. 
@@ -32,25 +27,12 @@ _Alerts you of system time after a configurable number of minutes._
 
 _Want a dynamic day/night cycle? Look here!_
 
-* **CustomizableClock**(<small>[source](CustomizableClock)</small>)
-
-_This mod was written for someone on Discord, and as such has no intended release at this time. Fork of the 24h clock available on Nexus._
   
 ## Depricated Mods
 * **[Solar Eclipse Event](http://www.nexusmods.com/stardewvalley/mods/897)** <small>([source](SolarEclipseEvent))</small>  
 
 _This adds the possibility of a solar eclipse to your game! Configurable chance. Also will spawn monsters if you have a wilderness farm in line with the same percentages as the base game. Now implemented into Lunar Disturbances, and as of SDV 1.3, no longer maintained.._
-  
-## Patches for SMAPI 2.0/SDV 1.3
-
-* **[Better Shipping Box](https://community.playstarbound.com/threads/better-shipping-box.126235/#post-3228667)**<small> ([source](BetterShippingBox))</small>
-
-_This is a SMAPI 2.0 port of Kthio's Better Shipping Box, which gives you a menu. I recommend using [Chests Anywhere](https://www.nexusmods.com/stardewvalley/mods/518) by Pathoschild instead._
-  
-* **[Tree Overhaul](https://github.com/JohnsonNicholas/SDVMods/releases/download/1.2.0/TreeOverhaul.zip)** <small>([source](TreeOverhaul))</small>
-
-_This is the source code for the unofficial patch I am maintaining to make it compatibile with 2.0. Original author is Goldenrevolver._
-  
+    
 * **[StardewNotification](https://github.com/JohnsonNicholas/SDVMods/releases/download/stardew-notifcation/StardewNotification.1.7.2-kylindraUpdate.zip)** <small>([source](StardewNotification))</small>
 
 _Source code for Stardew Notification, currently maintained by me. MIT License. Original author is monopandora_

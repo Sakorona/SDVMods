@@ -11,7 +11,7 @@
 
     public class LunarDisturbancesAPI : ILunarDisturbancesAPI
     {
-        private SDVMoon IntMoon;
+        private readonly SDVMoon IntMoon;
 
         public LunarDisturbancesAPI(SDVMoon OurMoon)
         {

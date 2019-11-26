@@ -17,27 +17,21 @@ namespace ClimatesOfFerngillRebuild
         /*********
         ** Properties
         *********/
-
-        /// <summary>Encapsulates logging and monitoring.</summary>
-        private readonly IMonitor Monitor;
-
-        /// <summary>Simplifies access to private game code.</summary>
-        private readonly IReflectionHelper Reflection;
-      
+              
         /// <summary>The aspect ratio of the page background.</summary>
         private readonly Vector2 AspectRatio = new Vector2(Sprites.Letter.Sprite.Width, Sprites.Letter.Sprite.Height);
 
         /// <summary> The current weather status </summary>
-        private WeatherConditions CurrentWeather;
+        private readonly WeatherConditions CurrentWeather;
 
         /// <summary> Our Icons </summary>
-        private Sprites.Icons IconSheet;
+        private readonly Sprites.Icons IconSheet;
 
         /// <summary>Whether the game's draw mode has been validated for compatibility.</summary>
         private bool ValidatedDrawMode;
 
         /// <summary> The text for the weather menu </summary>
-        private string MenuText;
+        private readonly string MenuText;
 
         /*********
         ** Public methods
@@ -46,13 +40,10 @@ namespace ClimatesOfFerngillRebuild
         ** Constructors
         ****/
         /// <summary>Construct an instance.</summary>
-        /// <param name="monitor">Encapsulates logging and monitoring.</param>
-        public WeatherMenu(IMonitor monitor, IReflectionHelper reflectionHelper, Sprites.Icons Icon, WeatherConditions weat, string text)
+        public WeatherMenu(Sprites.Icons Icon, WeatherConditions weat, string text)
         {
             // save data
             MenuText = text;
-            Monitor = monitor;
-            Reflection = reflectionHelper;
             CurrentWeather = weat;
             IconSheet = Icon;
 
@@ -128,11 +119,11 @@ namespace ClimatesOfFerngillRebuild
             if (!ValidatedDrawMode)
             {
                 IReflectedField<SpriteSortMode> sortModeField =
-                    Reflection.GetField<SpriteSortMode>(Game1.spriteBatch, "spriteSortMode", required: false) // XNA
-                    ?? Reflection.GetField<SpriteSortMode>(Game1.spriteBatch, "_sortMode"); // MonoGame
+                    ClimatesOfFerngill.Reflection.GetField<SpriteSortMode>(Game1.spriteBatch, "spriteSortMode", required: false) // XNA
+                    ?? ClimatesOfFerngill.Reflection.GetField<SpriteSortMode>(Game1.spriteBatch, "_sortMode"); // MonoGame
                 if (sortModeField.GetValue() == SpriteSortMode.Immediate)
                 {
-                    Monitor.Log("Aborted the weather draw because the game's current rendering mode isn't compatible with the mod's UI. This only happens in rare cases (e.g. the Stardew Valley Fair).", LogLevel.Warn);
+                    ClimatesOfFerngill.Logger.Log("Aborted the weather draw because the game's current rendering mode isn't compatible with the mod's UI. This only happens in rare cases (e.g. the Stardew Valley Fair).", LogLevel.Warn);
                     exitThisMenu(playSound: false);
                     return;
                 }
@@ -172,8 +163,7 @@ namespace ClimatesOfFerngillRebuild
             float wrapWidth = width - leftOffset - gutter;
             {
                 Vector2 textSize = spriteBatch.DrawTextBlock(font, MenuText, new Vector2(x + leftOffset, y + topOffset), wrapWidth);
-                topOffset += textSize.Y;
-                topOffset += lineHeight;
+                topOffset += textSize.Y + lineHeight;
             }
 
             drawMouse(Game1.spriteBatch);
@@ -205,7 +195,7 @@ namespace ClimatesOfFerngillRebuild
         /// <param name="ex">The intercepted exception.</param>
         private void OnDrawError(Exception ex)
         {
-            Monitor.Log($"handling an error in the draw code {ex}", LogLevel.Error);
+            ClimatesOfFerngill.Logger.Log($"handling an error in the draw code {ex}", LogLevel.Error);
         }
     }
 }

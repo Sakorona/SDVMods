@@ -1,9 +1,9 @@
-﻿# Climates of Ferngill (Rebuild) You Can (Not) Have Weather
+﻿# Climates of Ferngill
 
-Current Version (19 November 2018): 1.4.1
+Current Version (12 September 2019): 1.5-gamma
 
 ## What's New
-
+- Variable Rain and snow.
 - Fog!
 - Blizzards, Thundersnow
 - A more customizable weather system
@@ -11,13 +11,12 @@ Current Version (19 November 2018): 1.4.1
 - Thundersnow!
 
 ## Multiplayer
-
-Currently doesn't do any custom weathers in MP. Works only for the host player in MP. Will be changing shortly with the new MP API.
+Supports MP, with most features locked out to main player. However, most weathers will render on farmhands screen.
 
 ## Requirements
 
-- SMAPI 2.8+
-- Stardew Valley 1.3.32+
+- SMAPI 3.0+
+- Stardew Valley 1.4+
 - PyTK: latest
  
 ## Overview
@@ -28,28 +27,105 @@ This mod does the following:
 - Adds in several custom weathers - Thundersnow! Blizzards! Dry Lightning! Fog! Thunder Freeenzy!!!
 - Changes the rain totem to occasionally spawn storms as well.
 - Adds a weather menu option, which will display information about the weather
-- Changes the text for the TV weather channel 
+- Changes the text for the TV weather channel
+- Adds Variable rain and custom debris sprites
 
 ## Notices
 
 This mod uses harmony to patch functions to allow it to draw custom rain and snow colors.
 
-## Upcoming Features
-
-- Sandstorms
-- Variable rain
-
 ## Acknowledgements
 - Prismuth for the fog sprite
 - Pathoschild for ideas
+- Sky for the Korean translation
 - ChefRude for testing and the night icon sprites (as well as better fog textures)
+- Pan for the new base debris sprites
 - FoggyWizard for the sandstorm sprite
+- FarAways for the Chinese translation
+- mouse and minerva for the testing
+- Amu Tsukiyomi for all of the debris sprites, and several icon sprites
+- jahangmar for a bug fix re sync
 - The SDV discord #modding channel for discussions and encouragement.
+
+If I have left you out of acknowledgements, please contact me so I can get you added to the acknowledgement list
 
 
 ## Changelog
+v1.5-gamma4
+ - Adjusted chances of rain adjusting
+ - messages no longer show up in the desert
+
+v1.5-gamma3
+ - Variable rain won't display messages indicating rain fall when you sleep
+ - Weather systems no longer have a +1400% chance to run. :|
+
+v1.5-gamma2
+ - Updated for latest SMAPI changes
+ - Fixes to .gamma version
+
+v1.5-gamma
+ - Variable Rain will show popups when it changes (currently set to 20%) or a category changes.
+ - Fixes a potential issue with internal rain calculation
+
+v1.5-beta16
+ - SMAPI patch update
+ - fix for a NRE. I think.
+ - Severe rain blocks egrees to going outside
+ - Removed all watering code.
+
+v1.5-beta14
+ - Variable rain fixes some more (for watering issues)
+ - overcast fixes to work properly 
+ - fix for a badly coded check of rain
+ - SDV 1.4 Support
+ - Variable Rain may now start with a lower level of rain to start with.
+
+v1.5-beta9
+ - Bug fix added to the sync that should finally kill the get low error.
+ - Fix for Farenheit display
+ - Manifest name fix for better log parsing
+ - Lighter Fog option now further lightens the fog in rain
+ - An option was included to display fog in the desert
+ - Frosts now apply in Winter except for crops that are meant to grow in winter, or if the crop is a winter forgable. This can be turned off in the config
+ - Variable Rain now will alter if crops are watered until a certain threshold (the vanilla amount) is reached. This can be turned off in the config
+ - Overcast code will not show up as precipitation.
+
+v1.5-beta8
+ - updated bundled SDVUtilities to use code that should work better in some locations
+
+v1.5-beta7
+ - removes some debug code that made it silent hill, all the time
+
+v1.5-beta6
+ - fixes to fog
+ - moon text restored if Lunar Disturbances is installed
+
+v1.5-beta3
+ - Fixes to white outs and blizzards
+ - Letting the days go by, living underwater~
+
+v1.5-beta2
+ - Variable Rain will no longer have a 1/3 in chance of becoming torrential every 30 minutes, so less invisible flash flooding.
+ -- The chance of ramping up massively is now halved every step above 200 raindrops (vanilla is 70)
+ - adds in a config option to disable all fog
+ - Moves snow check for spring (and extends it to fall) in front of other special weathers
+ - Chance of rain -> snow conversion is now a config option
+ - Sandstorms will now kill crops if the option is enabled
+ - Crop death warnings will say how many crops are affected
+ - If Summit Reborn isn't installed, it will enable code to allow rain rendering on the summit map.
+ - Fixed MP sync issues with fog
+ - Some small fixes to all weathers
+ - added more thunder frenzy options
+ - fixed a thundersnow and wedding issue
+
 v1.5
- - is coming
+ - MP sync added in. 
+ - Custom sprites added, adding in summer wind to the game (21%(-8,+6), (19%(-8,+6), 23%(-4%+8%))
+ - Thunder Frenzy weather improperly not clearing out on day reset causing issues with weather display has been fixed.
+ - Variable Rain! Overcast weather and variable rain fall has been added.
+ - Sandstorms now spawn in windy weather when it hasn't rained for a while
+ - New config option for Farenheit: "SetScaletoF"
+ - New config option to control cursor redrawing: "RedrawCursor"
 
 v1.4.2
  - removed extra Harmony debug line
@@ -315,14 +391,34 @@ over a certain value.). Valid 0-1, but it's recommended that this is kept low. D
 
  - `DeadCropPercentage` - The amount of crops that a heatwave and frost can kill. (Note: Frost will kill more than heatwaves). Default: '.1' Valid range is 0 to 1.
 
- - `CropResistance` - This represents the resistance an average crop has to heatwaves and frosts. Default: '.4' Valid Range is 0 to 1.
-
- - `DarkFogChance` - This controls the chance of the darker fog appearing. Default is set to '.0875' (or a 1/8th chance if it's foggy it'll be dark fog.) Valid Range is 0 to 1.
+ - `CropResistance` - This represents the resistance an average crop has to heatwaves, frosts and sandstorms. Default: '.4' Valid Range is 0 to 1.
 
  - 'ThunderFrenzyOdds' - This controls the chance of the special weather Thunder Frenzy appearing. It's a double, valid range is 0 to 1
-
- - `Use12HourTime` - Tells it whether or not to use 12hour time or not in displays. Defaults to false. Valid: true, false
 
  - `DynamicRain` - Allows for the mod to dynamically control rain during the day. Defaults to true. Valid: true, false
 
  - `DisableHighRainWind` - If your computer has issues with high rain or wind, set this to true. Defaults to false.
+
+ - `SetDefaultScaleToF` - This sets the default scale used to Farenheit. NOTE: DisplayBothScales will override this. Defaults to false. This setting will also invalidate DisplayCelsisuInsteadOfKraggs
+ 
+ - `DisplayCelsiusInsteadOfKraggs` - Will display Celsius/C instead of Kraggs. NOTE: SetDefaultScaleToF will override this setting.
+
+ - 'VariableRainChance' - The chance the rain will be variable instead of constant. Default is 27.5% (.275). Valid range is 0 to 1.
+
+ - 'OvercastChance' - The chance the rain will be overcast instead of variable. Default is 5%. (.05). Valid range is 0 to 1. NOTE: This triggers off it being variable. (So the default is .01735) (1.735%)
+
+ - 'VRChangeChance' - The chance that the rain amount will change on the 30 minute step. 
+
+ - 'VRStepPercent' - The step percentage it applies (may be up or down)
+  
+ - 'VRMassiveStepChance' - The chance of a massive change (category of rain)
+
+ - 'SandstormsInDesertOnly' - As it says on the tin.
+
+ - 'DisableAllFog' - As it says on the tin.
+
+ - 'ShowSummitClouds' - Controls if rain clouds appear in the summit. NOTE: Will not trigger if the mod detects Summit Reborn is installed.
+
+ - 'RainToSnowConversion' - If cold enough, and in fall or spring, this is the chance rain will become snow.
+
+ - 'MoreSevereThunderFrenzyOdds' - longer storms. 

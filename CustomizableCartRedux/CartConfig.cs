@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace CustomizableCartRedux
+namespace CustomizableTravelingCart
 {
     public class CartConfig
     {
@@ -19,23 +19,25 @@ namespace CustomizableCartRedux
 
         public bool UseVanillaMax { get; set; }
         public int AmountOfItems { get; set; }
-        public bool DisableDuplicates { get; set; }
         public bool UseCheaperPricing { get; set; }
         public List<int> AllowedItems { get; set; }
         public List<int> BlacklistedItems { get; set; }
-
+        public int OpeningTime { get; set; }
+        public int ClosingTime { get; set; }
         public CartConfig()
         {
             AppearOnlyAtEndOfSeason = false;
             AppearOnlyAtStartAndEndOfSeason = false;
             AppearOnlyAtStartOfSeason = false;
             AppearOnlyEveryOtherWeek = false;
-            DisableDuplicates = false;
             BlacklistedItems = new List<int>();
             AllowedItems = new List<int>();
             UseCheaperPricing = false;
             UseVanillaMax = true;
             AmountOfItems = 12;
+
+            OpeningTime = 0600;
+            ClosingTime = 2000;
 
             MondayChance = .2;
             TuesdayChance = .2;

@@ -1,4 +1,4 @@
-﻿using TwilightShards.Stardew.Common;
+﻿using StardewModdingAPI.Utilities;
 
 namespace ClimatesOfFerngillRebuild.Integrations
 {
@@ -6,11 +6,16 @@ namespace ClimatesOfFerngillRebuild.Integrations
     {
         int GetSunriseTime();
         int GetSunsetTime();
+        int GetSolarNoon();
+        int GetLateAfternoon();
+        int GetEarlyMorning();
         int GetAstroTwilightTime();
         int GetMorningAstroTwilightTime();
         int GetCivilTwilightTime();
         int GetMorningCivilTwilightTime();
         int GetNavalTwilightTime();
         int GetMorningNavalTwilightTime();
+        int GetAnySunsetTime(SDate date);
+        int GetAnySunriseTime(SDate date);
     }
 }

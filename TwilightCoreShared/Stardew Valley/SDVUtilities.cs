@@ -9,9 +9,8 @@ using System.Collections.Generic;
 using TwilightShards.Common;
 using xTile.Dimensions;
 using SObject = StardewValley.Object;
-using Microsoft.Xna.Framework.Graphics;
-using Microsoft.Xna.Framework.Input;
 using StardewModdingAPI;
+using StardewValley.Locations;
 
 namespace TwilightShards.Stardew.Common
 {
@@ -31,6 +30,68 @@ namespace TwilightShards.Stardew.Common
             return false;
         }
 
+        internal static void SetWeather(int weather)
+        {
+            Game1.netWorldState.Value.WeatherForTomorrow = Game1.weatherForTomorrow = weather;
+        }
+
+        internal static bool UpdateAudio()
+        {
+
+            if (!Game1.isRaining && Game1.currentSong.Name.Equals("rain"))
+            {
+                Game1.stopMusicTrack(Game1.MusicContext.Default);
+                Game1.currentLocation.checkForMusic(Game1.currentGameTime);
+            }
+
+            if (Game1.eventUp)
+                return false;
+
+            if (Game1.currentSong.Name.Contains("none"))
+            {
+                if (Game1.currentLocation is FarmHouse || Game1.currentLocation is Farm)
+                {
+                    Game1.currentLocation.checkForMusic(Game1.currentGameTime);
+                    return true;
+                }
+                return false;
+            }
+
+            if (Game1.currentLocation is Desert || Game1.currentLocation is LibraryMuseum || Game1.currentLocation is Club || Game1.currentLocation is CommunityCenter
+                || Game1.currentLocation is LibraryMuseum || Game1.currentLocation is BathHousePool || Game1.currentLocation is MovieTheater || Game1.currentLocation is MermaidHouse
+                || Game1.currentLocation is Submarine || Game1.currentLocation.Name == "SandyHouse")
+                return false;
+
+            if (Game1.currentLocation.Name == "Sunroom" && !Game1.isRaining)
+            {
+                Game1.changeMusicTrack("SunRoom", false, Game1.MusicContext.SubLocation);
+                return true;
+            }
+
+            if (Game1.isRaining && (Game1.currentSong == null || !Game1.currentSong.Name.Equals("rain")) && !Game1.currentLocation.Name.StartsWith("UndergroundMine"))
+            {
+                Game1.changeMusicTrack("rain", true, Game1.MusicContext.Default);
+                return true;
+            }
+
+            if (!Game1.isRaining)
+            {
+                if (Game1.currentLocation is Woods && Game1.timeOfDay < 1800 && !Game1.isDarkOut())
+                {
+                    Game1.changeMusicTrack("woodsTheme", false, Game1.MusicContext.Default);
+                    return true;
+                }
+                if (!Game1.eventUp && (Game1.currentLocation.IsOutdoors || Game1.currentLocation is FarmHouse || Game1.currentLocation is AnimalHouse
+                    || Game1.currentLocation is Shed && Game1.options.musicVolumeLevel > 0.025 && Game1.timeOfDay < 1200) && (Game1.currentSong.Name.Contains("ambient") || Game1.currentSong.Name.Contains("none")))
+
+                    Game1.playMorningSong();
+                else
+                    Game1.currentLocation.checkForMusic(Game1.currentGameTime);
+                return true;
+            }
+
+            return false;
+        }
         public static string GetFestivalName() => GetFestivalName(Game1.dayOfMonth, Game1.currentSeason);
         public static string GetTomorrowFestivalName() => GetFestivalName(Game1.dayOfMonth + 1, Game1.currentSeason);
         
@@ -39,10 +100,31 @@ namespace TwilightShards.Stardew.Common
             string s = "";
             for (int i = 0; i < array.Length; i++)
             {
-                s = s + $"Command {i} is {array[i]}";
+                s += $"Command {i} is {array[i]}";
             }
 
             return s;
+        }
+
+        public static Type GetSDVType(string type)
+        {
+            const string prefix = "StardewValley.";
+
+            return Type.GetType(prefix + type + ", Stardew Valley") ?? Type.GetType(prefix + type + ", StardewValley");
+        }
+
+        public static bool IsWinterForageable(int index)
+        {
+            switch (index)
+            {
+                case 412:
+                case 414:
+                case 416:
+                case 418:
+                    return true;
+                default:
+                    return false;
+            }
         }
 
         public static string GetWeatherName()
@@ -206,61 +288,362 @@ namespace TwilightShards.Stardew.Common
             return Math.Sqrt(Math.Pow(beta.X - alpha.X, 2) + Math.Pow(beta.Y - alpha.Y, 2));
         }
 
-        public static void SpawnMonster(GameLocation location)
+        public static Vector2 SpawnRandomMonster(GameLocation location)
         {
-            Vector2 zero = Vector2.Zero;
-            Vector2 randomTile = Vector2.Zero;
-            int numTries = 0;
-            do
+            for (int index = 0; index < 15; ++index)
             {
-                randomTile = location.getRandomTile();
-                numTries++;
-            } while (GetDistance(randomTile, Game1.player.position) > 45 && numTries < 10000);            
-
-            if (Utility.isOnScreen(Utility.Vector2ToPoint(randomTile), Game1.tileSize, location))
-                randomTile.X -= (Game1.viewport.Width / Game1.tileSize);
-
-            if (location.isTileLocationTotallyClearAndPlaceable(randomTile))
-            {
-                if (Game1.player.CombatLevel >= 10 && Game1.random.NextDouble() < .05)
+                Vector2 randomTile = location.getRandomTile();
+                if (Utility.isOnScreen(Utility.Vector2ToPoint(randomTile), 64, location))
+                    randomTile.X -= Game1.viewport.Width / 64;
+                if (location.isTileLocationTotallyClearAndPlaceable(randomTile))
                 {
-                    Skeleton skeleton = new Skeleton(randomTile * Game1.tileSize)
+                    if (Game1.player.CombatLevel >= 10 && Game1.MasterPlayer.deepestMineLevel >= 145 && Game1.random.NextDouble() <= .001 && Game1.MasterPlayer.stats.getMonstersKilled("Pepper Rex") > 0)
                     {
-                        focusedOnFarmers = true
-                    };
-                    location.characters.Add(skeleton);
-                }
+                        DinoMonster squidKid = new DinoMonster(randomTile * Game1.tileSize)
+                        {
+                            focusedOnFarmers = true
+                        };
+                        location.characters.Add(squidKid);
 
-                if (Game1.player.CombatLevel >= 8 && Game1.random.NextDouble() < 0.15)
-                {
-                    ShadowBrute shadowBrute = new ShadowBrute(randomTile * Game1.tileSize)
-                    {
-                        focusedOnFarmers = true
-                    };
-                    location.characters.Add(shadowBrute);
-                }
-                else if (Game1.random.NextDouble() < 0.65 && location.isTileLocationTotallyClearAndPlaceable(randomTile))
-                {
-                    RockGolem rockGolem = new RockGolem(randomTile * Game1.tileSize, Game1.player.CombatLevel)
-                    {
-                        focusedOnFarmers = true
-                    };
-                    location.characters.Add(rockGolem);
-                }
-                else
-                {
-                    int mineLevel = 1;
-                    if (Game1.player.CombatLevel >= 10)
-                        mineLevel = 140;
-                    else if (Game1.player.CombatLevel >= 8)
-                        mineLevel = 100;
-                    else if (Game1.player.CombatLevel >= 4)
-                        mineLevel = 41;
+                        return (randomTile);
+                    }
 
-                    GreenSlime greenSlime = new GreenSlime(randomTile * Game1.tileSize, mineLevel);
-                    location.characters.Add(greenSlime);
+                    else if (Game1.player.CombatLevel >= 10 && Game1.MasterPlayer.deepestMineLevel >= 145 && Game1.random.NextDouble() <= .05)
+                    {
+                        MetalHead squidKid = new MetalHead(randomTile * Game1.tileSize,145)
+                        {
+                            focusedOnFarmers = true
+                        };
+                        location.characters.Add(squidKid);
+                        
+                        return (randomTile);
+                    }
+
+                    else if (Game1.player.CombatLevel >= 10 && Game1.random.NextDouble() <= .25)
+                    {
+                        Skeleton skeleton = new Skeleton(randomTile * Game1.tileSize)
+                        {
+                            focusedOnFarmers = true
+                        };
+                        location.characters.Add(skeleton);
+                        
+                        return (randomTile);
+                    }
+
+                    else if (Game1.player.CombatLevel >= 8 && Game1.random.NextDouble() <= 0.15)
+                    {
+                        ShadowBrute shadowBrute = new ShadowBrute(randomTile * Game1.tileSize)
+                        {
+                            focusedOnFarmers = true
+                        };
+                        location.characters.Add(shadowBrute);
+                        
+                        return (randomTile);
+                    }
+                    else if (Game1.random.NextDouble() < 0.65 && location.isTileLocationTotallyClearAndPlaceable(randomTile))
+                     {
+                         RockGolem rockGolem = new RockGolem(randomTile * Game1.tileSize, Game1.player.CombatLevel)
+                         {
+                             focusedOnFarmers = true
+                         };
+						 rockGolem.Sprite.currentFrame = 16;
+						 rockGolem.Sprite.loop = false;
+						 rockGolem.Sprite.UpdateSourceRect();
+                         location.characters.Add(rockGolem);
+                         return (randomTile);
+                     } 
+                    else
+                    {
+                        int mineLevel;
+                        if (Game1.player.CombatLevel > 1 && Game1.player.CombatLevel <= 4)
+							mineLevel = 41;
+						else if (Game1.player.CombatLevel > 4 && Game1.player.CombatLevel <= 8)
+							mineLevel = 100;
+						else if (Game1.player.CombatLevel > 8 && Game1.player.CombatLevel <= 10)
+							mineLevel = 140;
+						else 
+							mineLevel = 200;
+
+                        GreenSlime greenSlime = new GreenSlime(randomTile * Game1.tileSize, mineLevel)
+                        {
+                            focusedOnFarmers = true,
+                        };
+                        greenSlime.color.Value = Color.IndianRed;
+                        location.characters.Add(greenSlime);
+                        
+                        return (randomTile);
+                    }
                 }
             }
+
+            return Vector2.Zero;
+        }
+
+        public static void AlterWaterStatusOfCrops(bool water = true)
+        {
+            foreach (GameLocation loc in Game1.locations)
+            {
+                if (loc is Farm)
+                {
+                    foreach (TerrainFeature tf in loc.terrainFeatures.Values)
+                    {
+                        if (tf is HoeDirt h && !(h.crop is null))
+                        {
+                            if (water)
+                                h.state.Value = 1;
+                        }
+                    }
+                }
+            }
+        }
+
+        public static string CropStatus(HoeDirt h, Vector2 pos)
+        {
+            string ret = "";
+            ret += $"This crop is at {pos}.";
+            ret += $"Harvest index is {GetNameFromCrop(h.crop.indexOfHarvest.Value)} ({h.crop.indexOfHarvest.Value})." + Environment.NewLine;
+
+            ret += "Days per phase are [";
+            for (int i = 0; i < h.crop.phaseDays.Count; i++)
+            {
+                ret += " " + h.crop.phaseDays[i];
+            }
+            ret +=" ] " + Environment.NewLine;
+			
+			ret += $"Current phase is {h.crop.currentPhase.Value}, with the current day in the phase being {h.crop.dayOfCurrentPhase.Value}, and the last growth phase being {h.crop.phaseDays.Count - 1}" + Environment.NewLine;
+			
+			if (h.crop.programColored.Value)
+				ret += $"The stored color is {h.crop.tintColor.Value}" + Environment.NewLine;
+			
+			if (h.crop.regrowAfterHarvest.Value != -1)
+			{
+				ret += $"The crop regrows every {h.crop.regrowAfterHarvest.Value}." + Environment.NewLine;
+			}
+			
+			ret += (h.state.Value == 1 ? "The crop is watered. " : "The crop is unwatered. ");
+			
+			if (h.fertilizer.Value != 0)
+			{
+				switch (h.fertilizer.Value)
+				{
+					case 368:
+					  ret += "The crop has Basic Fertilizer applied.";
+					  break;
+					case 369:
+					  ret += "The crop has Deluxe Fertilizer applied.";
+					  break;
+					case 370:
+					  ret += "The crop has basic water retaining fertilizer applied.";
+					  break;
+					case 371:
+					  ret += "The crop has deluxe water retaining fertilizer applied.";
+					  break;
+					case 465:
+					  ret += "The crop has basic speed-gro applied.";
+					  break;
+					case 466:
+					  ret += "The crop has deluxe speed-gro applied.";
+					  break;
+					default:
+					  ret += $"The crop has had unknown fertilizer {h.fertilizer.Value}";
+					  break;
+				}
+				
+				ret += Environment.NewLine;
+			}
+			else
+			{
+				ret += Environment.NewLine;
+			}
+			
+			ret += $"Fully grown status: {h.crop.fullyGrown.Value}. This crop can be harvested: {h.readyForHarvest()}"+ Environment.NewLine;
+			
+			return ret;
+		}
+		
+		public static string GetNameFromCrop(int index)
+		{
+			Dictionary<int, string> dictionary = Game1.content.Load<Dictionary<int, string>>("Data\\ObjectInformation");
+            
+            foreach(var c in dictionary)
+            {
+                string[] strArray1 = c.Value.Split('/');
+                if (c.Key == index)
+					return strArray1[0];
+
+            }
+
+			return "ERROR";           
+		}
+
+        /// <summary>
+        /// This function deadvances crops
+        /// </summary>
+        /// <param name="loc">Location of the crop</param>
+        /// <param name="h">Hoe Dirt of the crop</param>
+        /// <param name="position">The position of the crop</param>
+        /// <param name="numSteps">The number of steps being deadvanced by</param>
+        /// <param name="giantCropRequiredSteps">The number of minumum steps to affect the giant crop (default: 4)</param>
+        /// <param name="giantCropDestructionOdds">The chance of the giant crop being affected (default: 50%)</param>
+        /// <exception cref="">Throws a generic exception if it finds a giant crop that doesn't have an actual crop backing.</exception>
+        public static void DeAdvanceCrop(GameLocation loc, HoeDirt h, Vector2 position, int numSteps, int giantCropRequiredSteps = 4, double giantCropDestructionOdds = .5)
+        {
+            //determine the phase of the crop
+            Crop currCrop = h.crop;
+
+            if (!(currCrop is null))
+            {
+                int countPhases = currCrop.phaseDays.Count;
+                int finalPhase = countPhases - 1;
+
+                for (int i = 0; i < numSteps; i++)
+                {
+                    //now, check the phase - handle the final phase.
+                    if (currCrop.currentPhase.Value == finalPhase && currCrop.regrowAfterHarvest.Value == -1)
+                    {
+                        if (currCrop.dayOfCurrentPhase.Value > 0){ 
+							currCrop.dayOfCurrentPhase.Value--;
+						}
+                        else if (currCrop.dayOfCurrentPhase.Value == 0)
+                        {
+                            currCrop.fullyGrown.Value = false;
+                            currCrop.currentPhase.Value--;
+                            currCrop.dayOfCurrentPhase.Value = currCrop.phaseDays[currCrop.currentPhase.Value];
+                        }
+                        continue;
+                    }
+
+                    //handle regrowth crops.
+                    else if (currCrop.regrowAfterHarvest.Value != -1 && currCrop.currentPhase.Value  == finalPhase)
+                    {
+                        currCrop.dayOfCurrentPhase.Value++;
+                        continue;
+                    }
+
+                    //now handle it being any phase but 0.
+                    else if (currCrop.currentPhase.Value != finalPhase || currCrop.currentPhase.Value != 0)
+                    {
+                        if (currCrop.dayOfCurrentPhase.Value >= currCrop.phaseDays[currCrop.currentPhase.Value] && currCrop.currentPhase.Value > 0)
+                        {
+                            currCrop.currentPhase.Value--;
+                            currCrop.dayOfCurrentPhase.Value = currCrop.phaseDays[currCrop.currentPhase.Value];
+                        }
+                        else
+                        {
+                            currCrop.dayOfCurrentPhase.Value++;
+                        }
+                        continue;
+                    }
+
+                    //final check. Phase 0.
+                    else if (currCrop.currentPhase.Value == 0)
+                    {
+                        if (currCrop.dayOfCurrentPhase.Value != 0 && currCrop.dayOfCurrentPhase.Value > 0)
+                        {
+                            currCrop.dayOfCurrentPhase.Value--;
+                        }
+                        continue;
+                    }
+
+                    //Sanity check here.
+                    else if (currCrop.currentPhase.Value < 0){
+                        currCrop.currentPhase.Value = 0;
+					}
+                }
+            }
+
+            //check for giant crop.
+            if (loc is Farm f)
+            {
+                foreach (ResourceClump rc in f.resourceClumps)
+                {
+                    if (rc is GiantCrop gc && CheckIfPositionIsWithinGiantCrop(position, gc))
+                    {
+                        //This breaks my heart, given the requirements...
+                        if (numSteps > giantCropRequiredSteps && Game1.random.NextDouble() < giantCropDestructionOdds)
+                        {
+                            numSteps -= giantCropRequiredSteps;
+                            Vector2 upperLeft = gc.tile.Value;
+                            int cropReplacement = gc.parentSheetIndex.Value, width = gc.width.Value, height = gc.height.Value;
+
+                            int? cropSeed = GetCropForSheetIndex(cropReplacement);
+                            if (cropSeed == null)
+                                throw new Exception($"Somehow, this giant crop has no valid seed from it's stored parent index. This needs to be troubleshooted. Parent seed index is {cropReplacement}");
+
+                            f.resourceClumps.Remove(gc);
+                            for (int i = 0; i < width; i++)
+                            {
+                                for (int j = 0; j < height; j++)
+                                {
+                                    Vector2 currPos = new Vector2(upperLeft.X + i, upperLeft.Y + i);
+                                    HoeDirt hd = new HoeDirt(1)
+                                    {
+                                        crop = new Crop((int)cropSeed, (int)currPos.X, (int)currPos.Y)
+                                    };
+                                    hd.crop.growCompletely();
+                                    loc.terrainFeatures.Add(currPos, hd);
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+            //we aren't handling forage crops here.
+        }
+        
+        /*
+        /// <summary>
+        /// This function checks if the crop has multiple harvests
+        /// </summary>
+        /// <param name="cropSeed">The crop seed</param>
+        /// <returns>If the crop has multiple harvests</returns>
+        private static bool CheckCropMultipleHarvests(int cropSeed)
+        {
+            Dictionary<int, string> dictionary = Game1.content.Load<Dictionary<int, string>>("Data\\Crops");
+            foreach (var c in dictionary)
+            {
+                string[] strArray1 = c.Value.Split('/');
+                if (strArray1[4] != "-1")
+                    return true;
+            }
+
+            return false;
+        }
+        */
+
+        /// <summary>
+        /// This function returns a crop seed given the harvested crop ID
+        /// </summary>
+        /// <param name="sheetIndex">The sheet index of the harvested crop</param>
+        /// <returns>The crop seed if it exists, null if it does not</returns>
+        public static int? GetCropForSheetIndex(int sheetIndex)
+        {
+            Dictionary<int, string> dictionary = Game1.content.Load<Dictionary<int, string>>("Data\\Crops");
+            int? val = null;
+            foreach(var c in dictionary)
+            {
+                string[] strArray1 = c.Value.Split('/');
+                if (strArray1[3] == sheetIndex.ToString())
+                {
+                    val = c.Key;
+                }
+
+            }
+
+            return val;
+        }
+
+        public static bool CheckIfPositionIsWithinGiantCrop(Vector2 position, GiantCrop g)
+        {
+          if (position.X >= g.tile.Value.X && position.X <= g.tile.Value.X + g.width.Value)
+            {
+                if (position.Y >= g.tile.Value.Y && position.Y < g.tile.Value.Y + g.height.Value)
+                {
+                    return true;
+                }
+            }
+
+            return false;
         }
 
         private static void AdvanceCropOneStep(GameLocation loc, HoeDirt h, Vector2 position)
@@ -273,7 +656,7 @@ namespace TwilightShards.Stardew.Common
                 return;
 
             //due to how this will be called, we do need to some checking
-            if (!loc.Name.Equals("Greenhouse") && (currCrop.dead.Value || !currCrop.seasonsToGrowIn.Contains(Game1.currentSeason)))
+            if (!loc.IsGreenhouse && (currCrop.dead.Value || !currCrop.seasonsToGrowIn.Contains(Game1.currentSeason)))
             {
                 currCrop.dead.Value = true;
             }
@@ -283,12 +666,12 @@ namespace TwilightShards.Stardew.Common
                 {
                     //get the day of the current phase - if it's fully grown, we can just leave it here.
                     if (currCrop.fullyGrown.Value)
-                        currCrop.dayOfCurrentPhase.Value = currCrop.dayOfCurrentPhase.Value - 1;
+                        currCrop.dayOfCurrentPhase.Value -= 1;
                     else
                     {
                         //check to sere what the count of current days is
 
-                        int phaseCount = 0; //get the count of days in the current phase
+                        int phaseCount; //get the count of days in the current phase
                         if (currCrop.phaseDays.Count > 0)
                             phaseCount = currCrop.phaseDays[Math.Min(currCrop.phaseDays.Count - 1, currCrop.currentPhase.Value)];
                         else
@@ -402,37 +785,6 @@ namespace TwilightShards.Stardew.Common
                 AdvanceCropOneStep(loc, h, position);
         }
 
-        public static void RedrawMouseCursor()
-        {
-            if (Game1.activeClickableMenu == null && Game1.mouseCursor > -1 && (Mouse.GetState().X != 0 || Mouse.GetState().Y != 0) && (Game1.getOldMouseX() != 0 || Game1.getOldMouseY() != 0))
-            {
-                if (Game1.mouseCursorTransparency <= 0.0 || !Utility.canGrabSomethingFromHere(Game1.getOldMouseX() + Game1.viewport.X, Game1.getOldMouseY() + Game1.viewport.Y, Game1.player) || Game1.mouseCursor == 3)
-                {
-                    if (Game1.player.ActiveObject != null && Game1.mouseCursor != 3 && !Game1.eventUp)
-                    {
-                        if (Game1.mouseCursorTransparency > 0.0 || Game1.options.showPlacementTileForGamepad)
-                        {
-                            Game1.player.ActiveObject.drawPlacementBounds(Game1.spriteBatch, Game1.currentLocation);
-                            if (Game1.mouseCursorTransparency > 0.0)
-                            {
-                                bool flag = Utility.playerCanPlaceItemHere(Game1.currentLocation, Game1.player.CurrentItem, Game1.getMouseX() + Game1.viewport.X, Game1.getMouseY() + Game1.viewport.Y, Game1.player) || Utility.isThereAnObjectHereWhichAcceptsThisItem(Game1.currentLocation, Game1.player.CurrentItem, Game1.getMouseX() + Game1.viewport.X, Game1.getMouseY() + Game1.viewport.Y) && Utility.withinRadiusOfPlayer(Game1.getMouseX() + Game1.viewport.X, Game1.getMouseY() + Game1.viewport.Y, 1, Game1.player);
-                                Game1.player.CurrentItem.drawInMenu(Game1.spriteBatch, new Vector2((Game1.getMouseX() + Game1.tileSize / 4), (Game1.getMouseY() + Game1.tileSize / 4)), flag ? (float)(Game1.dialogueButtonScale / 75.0 + 1.0) : 1f, flag ? 1f : 0.5f, 0.999f);
-                            }
-                        }
-                    }
-                    else if (Game1.mouseCursor == 0 && Game1.isActionAtCurrentCursorTile)
-                        Game1.mouseCursor = Game1.isInspectionAtCurrentCursorTile ? 5 : 2;
-                }
-                if (!Game1.options.hardwareCursor)
-                    Game1.spriteBatch.Draw(Game1.mouseCursors, new Vector2(Game1.getMouseX(), Game1.getMouseY()), new Microsoft.Xna.Framework.Rectangle?(Game1.getSourceRectForStandardTileSheet(Game1.mouseCursors, Game1.mouseCursor, 16, 16)), Color.White * Game1.mouseCursorTransparency, 0.0f, Vector2.Zero, Game1.pixelZoom + Game1.dialogueButtonScale / 150f, SpriteEffects.None, 1f);
-                Game1.wasMouseVisibleThisFrame = Game1.mouseCursorTransparency > 0.0;
-            }
-            Game1.mouseCursor = 0;
-            if (Game1.isActionAtCurrentCursorTile || Game1.activeClickableMenu != null)
-                return;
-            Game1.mouseCursorTransparency = 1f;
-        }
-
         public static int CreateWeeds(GameLocation spawnLoc, int numOfWeeds)
         {
             if (spawnLoc == null)
@@ -449,7 +801,7 @@ namespace TwilightShards.Stardew.Common
                     //get a random tile.
                     int xTile = Game1.random.Next(spawnLoc.map.DisplayWidth / Game1.tileSize);
                     int yTile = Game1.random.Next(spawnLoc.map.DisplayHeight / Game1.tileSize);
-                    Vector2 randomVector = new Vector2((float)xTile, (float)yTile);
+                    Vector2 randomVector = new Vector2(xTile, yTile);
                     spawnLoc.objects.TryGetValue(randomVector, out SObject @object);
 
                     if (SDVUtilities.TileIsClearForSpawning(spawnLoc, randomVector, @object))

@@ -7,7 +7,7 @@ namespace StardewNotification
 {
     public class HarvestNotification
     {
-        private ITranslationHelper Trans;
+        private readonly ITranslationHelper Trans;
 
         public HarvestNotification(ITranslationHelper Helper)
         {
@@ -37,15 +37,11 @@ namespace StardewNotification
 
                 if (numReadyForHarvest > 0)
                 {
-                    var sampleObj = farmcave.Objects.Values.Where(c => c.readyForHarvest.Value).FirstOrDefault();
-                    if (sampleObj != null) { 
-                        StardewValley.Object sObj = new StardewValley.Object(sampleObj.ParentSheetIndex, sampleObj.Stack, false, sampleObj.Price, sampleObj.Quality);
-                        sObj.bigCraftable.Value = sampleObj.bigCraftable.Value;
-                        sObj.TileLocation = sampleObj.TileLocation;
-                        sObj.Type = sampleObj.Type;
-                        sObj.name = Game1.player.caveChoice.Value == MUSHROOM_CAVE ? Trans.Get("CaveMushroom") : Trans.Get("CaveFruit");
-                        Game1.addHUDMessage(new HUDMessage(sObj.Type, numReadyForHarvest, true, Color.OrangeRed, sObj));
-                    }
+                    HUDMessage h = new HUDMessage(Trans.Get("CaveMushroom"), Color.OrangeRed, 3000, true)
+                    {
+                        whatType = 2
+                    };
+                    Game1.addHUDMessage(h);
                 }
             }
 
@@ -56,13 +52,11 @@ namespace StardewNotification
 
                 if (iCount > 1)
                 {
-                    StardewValley.Object sObj = new StardewValley.Object(objList[1].ParentSheetIndex, objList[1].Stack, false, objList[1].Price, objList[1].Quality)
+                    HUDMessage h = new HUDMessage(Trans.Get("CaveFruit"), Color.OrangeRed, 3000, true)
                     {
-                        Type = objList[1].Type,
-                        name = Game1.player.caveChoice.Value == MUSHROOM_CAVE ? Trans.Get("CaveMushroom") : Trans.Get("CaveFruit")
-                    };
-                    Game1.addHUDMessage(new HUDMessage(sObj.Type, iCount, true, Color.OrangeRed, sObj));
-
+                        whatType = 2
+                    };                    
+                    Game1.addHUDMessage(h);
                 }            
             }
         }

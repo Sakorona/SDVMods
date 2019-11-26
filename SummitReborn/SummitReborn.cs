@@ -24,8 +24,19 @@ namespace SummitReborn
         public override void Entry(IModHelper helper)
         {
             ModConfig = Helper.ReadConfig<SummitConfig>();
+            helper.Events.GameLoop.GameLaunched += OnLaunched;
             helper.Events.GameLoop.UpdateTicked += OnUpdateTicked;
             helper.Events.Display.RenderingHud += OnRenderingHudEvent;
+        }
+
+        private void OnLaunched(object sender, GameLaunchedEventArgs e)
+        {
+            var api = Helper.ModRegistry.GetApi<Integrations.GenericModConfigMenuAPI>("spacechase0.GenericModConfigMenu");
+            if (api != null)
+            {
+                api.RegisterModConfig(ModManifest, () => ModConfig = new SummitConfig(), () => Helper.WriteConfig(ModConfig));
+                api.RegisterSimpleOption(ModManifest, "Clouds", "Displays clouds in the summit", () => ModConfig.Clouds, (bool val) => ModConfig.Clouds = val);
+            }
         }
 
         /// <summary>Get whether this instance can load the initial version of the given asset.</summary>
@@ -40,9 +51,9 @@ namespace SummitReborn
         public T Load<T>(IAssetInfo asset)
         {
             if (asset.AssetNameEquals(@"Maps\Railroad"))
-                return this.Helper.Content.Load<T>(@"assets\Railroad_alt.tbin");
+                return Helper.Content.Load<T>(@"assets\Railroad_alt.tbin");
             if (asset.AssetNameEquals(@"Maps\Summit"))
-                return this.Helper.Content.Load<T>(@"assets\Summit_alt.tbin");
+                return Helper.Content.Load<T>(@"assets\Summit_alt.tbin");
             throw new NotSupportedException($"Unexpected asset name: {asset.AssetName}");
         }
 
@@ -53,7 +64,7 @@ namespace SummitReborn
         {
             if (Game1.currentGameTime != null)
             {
-                this.weatherX = this.weatherX + (float)Game1.currentGameTime.ElapsedGameTime.Milliseconds * 0.03f;
+                weatherX += Game1.currentGameTime.ElapsedGameTime.Milliseconds * 0.03f;
             }
         }
 
@@ -71,7 +82,7 @@ namespace SummitReborn
         private void OnRenderingHudEvent(object sender, RenderingHudEventArgs e)
         {
             //draw weather in the summit map
-            if (Game1.isRaining && Game1.currentLocation.IsOutdoors && (Game1.currentLocation is Summit) && (!Game1.eventUp || Game1.currentLocation.isTileOnMap(new Vector2((float)(Game1.viewport.X / Game1.tileSize), (float)(Game1.viewport.Y / Game1.tileSize)))))
+            if (Game1.isRaining && Game1.currentLocation.IsOutdoors && (Game1.currentLocation is Summit) && (!Game1.eventUp || Game1.currentLocation.isTileOnMap(new Vector2(Game1.viewport.X / Game1.tileSize, Game1.viewport.Y / Game1.tileSize))))
             {
                 for (int index = 0; index < Game1.rainDrops.Length; ++index)
                 {
@@ -83,7 +94,7 @@ namespace SummitReborn
                     int num2 = -61 * GetPixelZoom();
                     while (num2 < Game1.viewport.Width + 61 * GetPixelZoom())
                     {
-                        Game1.spriteBatch.Draw(Game1.mouseCursors, new Vector2((float)num2 + this.weatherX % (float)(61 * GetPixelZoom()), (float)(-Game1.tileSize / 2)), new Rectangle?(new Rectangle(643, 1142, 61, 53)), Color.DarkSlateGray * 1f, 0.0f, Vector2.Zero, (float)GetPixelZoom(), SpriteEffects.None, 1f);
+                        Game1.spriteBatch.Draw(Game1.mouseCursors, new Vector2(num2 + weatherX % (61 * GetPixelZoom()), -Game1.tileSize / 2), new Rectangle?(new Rectangle(643, 1142, 61, 53)), Color.DarkSlateGray * 1f, 0.0f, Vector2.Zero, GetPixelZoom(), SpriteEffects.None, 1f);
                         num2 += 61 * GetPixelZoom();
                     }
                 }

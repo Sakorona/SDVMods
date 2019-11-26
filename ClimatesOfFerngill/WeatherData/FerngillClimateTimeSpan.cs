@@ -11,17 +11,24 @@ namespace ClimatesOfFerngillRebuild
         public int BeginDay;
         public int EndDay;
         public double EveningFogChance;
+        public double HeatwaveChance;
+        public double ChillwaveChance;
         public List<WeatherParameters> WeatherChances;
+        public List<WeatherSystems> SystemChances;
 
         public FerngillClimateTimeSpan()
         {
             this.WeatherChances = new List<WeatherParameters>();
+            this.SystemChances = new List<WeatherSystems>();
         }
 
-        public FerngillClimateTimeSpan(string BeginSeason, string EndSeason, int BeginDay, int EndDay, List<WeatherParameters> wp)
+        public FerngillClimateTimeSpan(string BeginSeason, string EndSeason, int BeginDay, int EndDay, double Heatwave, double Chillwave, List<WeatherParameters> wp, List<WeatherSystems> ws)
         {
             this.BeginSeason = BeginSeason;
             this.EndSeason = EndSeason;
+
+            this.HeatwaveChance = Heatwave;
+            this.ChillwaveChance = Chillwave;
 
             this.BeginDay = BeginDay;
             this.EndDay = EndDay;
@@ -32,6 +39,11 @@ namespace ClimatesOfFerngillRebuild
                 this.WeatherChances.Add(new WeatherParameters(w));
             }
 
+            this.SystemChances = new List<WeatherSystems>();
+            foreach (WeatherSystems w in ws)
+            {
+                this.SystemChances.Add(new WeatherSystems(w));
+            }
         }
 
         public FerngillClimateTimeSpan(FerngillClimateTimeSpan CTS)
@@ -40,10 +52,16 @@ namespace ClimatesOfFerngillRebuild
             this.EndSeason = CTS.EndSeason;
             this.BeginDay = CTS.BeginDay;
             this.EndDay = CTS.EndDay;
+            this.ChillwaveChance = CTS.ChillwaveChance;
+            this.HeatwaveChance = CTS.HeatwaveChance;
 
             this.WeatherChances = new List<WeatherParameters>();
             foreach (WeatherParameters w in CTS.WeatherChances)
                 this.WeatherChances.Add(new WeatherParameters(w));
+
+            this.SystemChances = new List<WeatherSystems>();
+            foreach (WeatherSystems w in CTS.SystemChances)
+                this.SystemChances.Add(new WeatherSystems(w));
         }
 
         public void AddWeatherChances(WeatherParameters wp)
@@ -54,7 +72,14 @@ namespace ClimatesOfFerngillRebuild
             WeatherChances.Add(new WeatherParameters(wp));
         }
 
-        public double RetrieveOdds(MersenneTwister dice, string weather, int day)
+        public RangePair GetTemperatures(MersenneTwister dice, int day)
+        {
+            var temps = new RangePair(RetrieveTemp(dice, "lowtemp", day), RetrieveTemp(dice, "hightemp", day), true);
+            ClimatesOfFerngill.Logger.Log($"We are gathering temperatures from the climate file. Temps is {temps.LowerBound}, {temps.HigherBound}");
+            return temps;
+        }
+
+        public double RetrieveOdds(MersenneTwister dice, string weather, int day, bool EnforceHigherOverLower = true)
         {
             double Odd = 0;
 
@@ -64,8 +89,8 @@ namespace ClimatesOfFerngillRebuild
               return 0;
 
             Odd = wp[0].BaseValue + (wp[0].ChangeRate * day);
-            RangePair range = new RangePair(wp[0].VariableLowerBound, wp[0].VariableHigherBound);
-            Odd = Odd + range.RollInRange(dice);
+            RangePair range = new RangePair(wp[0].VariableLowerBound, wp[0].VariableHigherBound, EnforceHigherOverLower);
+            Odd += range.RollInRange(dice);
 
             //sanity check.
             if (Odd < 0) Odd = 0;
@@ -74,7 +99,59 @@ namespace ClimatesOfFerngillRebuild
             return Odd;
         }
 
-        public double RetrieveTemp(MersenneTwister dice, string temp, int day)
+        public double RetrieveSystemOdds(string weather)
+        {
+            List<WeatherSystems> ws = this.SystemChances.Where(w => w.WeatherType == weather).ToList();
+            //this.WeatherChances.Where(w => w.WeatherType == weather).ToList();
+
+            if (ws.Count == 0)
+                return 0;
+
+            return ws[0].TypeChances;
+        }
+
+        public double RetrieveMeanTemp(string weat,int day)
+        {
+            double Temp = 0;
+            List<WeatherParameters> wp = this.WeatherChances.Where(w => w.WeatherType == weat).ToList<WeatherParameters>();
+
+            if (wp.Count == 0)
+                return 0;
+
+            Temp = wp[0].BaseValue + (wp[0].ChangeRate * day);
+
+            return Temp;
+        }
+
+        public double RetrieveMaxTemp(string weat, int day)
+        {
+            double Temp = 0;
+            List<WeatherParameters> wp = this.WeatherChances.Where(w => w.WeatherType == weat).ToList<WeatherParameters>();
+
+            if (wp.Count == 0)
+                return 0;
+
+            Temp = wp[0].BaseValue + (wp[0].ChangeRate * day);
+            Temp += wp[0].VariableHigherBound;
+
+            return Temp;
+        }
+
+        public double RetrieveMinTemp(string weat, int day)
+        {
+            double Temp = 0;
+            List<WeatherParameters> wp = this.WeatherChances.Where(w => w.WeatherType == weat).ToList<WeatherParameters>();
+
+            if (wp.Count == 0)
+                return 0;
+
+            Temp = wp[0].BaseValue + (wp[0].ChangeRate * day);
+            Temp += wp[0].VariableLowerBound;
+
+            return Temp;
+        }
+
+        public double RetrieveTemp(MersenneTwister dice, string temp, int day, bool EnforceHigherOverLower = true)
         {
             double Temp = 0;
             List<WeatherParameters> wp = this.WeatherChances.Where(w => w.WeatherType == temp).ToList<WeatherParameters>();
@@ -83,8 +160,8 @@ namespace ClimatesOfFerngillRebuild
                 return 0;
 
             Temp = wp[0].BaseValue + (wp[0].ChangeRate * day);
-            RangePair range = new RangePair(wp[0].VariableLowerBound, wp[0].VariableHigherBound);
-            Temp = Temp + range.RollInRange(dice);
+            RangePair range = new RangePair(wp[0].VariableLowerBound, wp[0].VariableHigherBound, EnforceHigherOverLower);
+            Temp += range.RollInRange(dice);
 
             return Temp;
         }

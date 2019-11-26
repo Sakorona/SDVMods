@@ -2,14 +2,13 @@
 using StardewValley;
 using StardewValley.Locations;
 using System;
-using System.Collections.Generic;
 
-namespace CustomizableCartRedux
+namespace CustomizableTravelingCart
 {
     public interface ICustomizableCart
     {
         event EventHandler CartProcessingComplete;
-        void AddItem(Item item, int price, int quality);
+        void AddItem(StardewValley.Object item, int price, int quality);
     }
 
     public class CustomizableCartAPI : ICustomizableCart
@@ -24,24 +23,19 @@ namespace CustomizableCartRedux
 
         internal void InvokeCartProcessingComplete()
         {
-            Log.trace("Event: CartProcessingComplete");
+            CustomizableCartRedux.Logger.Log("Event: CartProcessingComplete", LogLevel.Trace);
             if (CartProcessingComplete == null)
                 return;
             Util.invokeEvent("CustomizableCartAPI.CartProcessingComplete", CartProcessingComplete.GetInvocationList(), null);
         }
 
-        public void AddItem(Item item, int price, int quantity = 1)
+        public void AddItem(StardewValley.Object item, int price, int quantity = 1)
         {
             Forest f = Game1.getLocationFromName("Forest") as Forest;
             bool travelingMerchantDay = f.travelingMerchantDay;
             if (travelingMerchantDay)
             {
-                var travelerStock = Reflector.GetField<Dictionary<Item, int[]>>(f, "travelerStock").GetValue();
-                travelerStock?.Add(item, new int[]
-                {
-                    price,
-                    quantity
-                });
+                CustomizableCartRedux.APIItemsToBeAdded.Add(item, new int[] { price, quantity });
             }
         }
     }

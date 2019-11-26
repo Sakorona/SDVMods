@@ -1,10 +1,11 @@
-﻿using System;
+﻿using StardewModdingAPI;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace CustomizableCartRedux
+namespace CustomizableTravelingCart
 {
     public static class Util
     {
@@ -19,7 +20,7 @@ namespace CustomizableCartRedux
                 }
                 catch (Exception e)
                 {
-                    Log.error($"Exception while handling event {name}:\n{e}");
+                    CustomizableCartRedux.Logger.Log($"Exception while handling event {name}:\n{e}", LogLevel.Trace);
                 }
             }
         }
@@ -34,7 +35,7 @@ namespace CustomizableCartRedux
                 }
                 catch (Exception e)
                 {
-                    Log.error($"Exception while handling event {name}:\n{e}");
+                    CustomizableCartRedux.Logger.Log($"Exception while handling event {name}:\n{e}", LogLevel.Trace);
                 }
             }
         }
