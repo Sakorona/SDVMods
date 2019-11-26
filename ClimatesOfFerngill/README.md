@@ -1,6 +1,6 @@
 ﻿# Climates of Ferngill
 
-Current Version (12 September 2019): 1.5-gamma
+Current Version: 1.5
 
 ## What's New
 - Variable Rain and snow.
@@ -30,6 +30,22 @@ This mod does the following:
 - Changes the text for the TV weather channel
 - Adds Variable rain and custom debris sprites
 
+## MAJOR CHANGES
+1.5 implements a full variable rain system. This means that on any day it rains, there are now chances for the rain to not remain constant throughout the day, or even chances for it to become overcast with no rain. 
+
+In addition, it adds a new feature: weather systems.  Weather systems are written to be biased towards sunny days for the first 10 days of spring. 
+
+## ENHANCED v NORMAL
+
+Enhanced adds in debris in seasons not present in vanilla weather, as well as other factors. 
+
+NOTE: 
+- If you need to trigger a sunny day for the community center event (especially important if you use enhanced_monsoon or monsoon), I recommend using the command world_tmrwweather sun in the SMAPI console.
+
+## IMPORTANT NOTE
+If you have a custom climate, you'll need to update it to match the changes to climates in 1.5 (and move it to assets/climates/)
+
+
 ## Notices
 
 This mod uses harmony to patch functions to allow it to draw custom rain and snow colors.
@@ -50,309 +66,20 @@ This mod uses harmony to patch functions to allow it to draw custom rain and sno
 If I have left you out of acknowledgements, please contact me so I can get you added to the acknowledgement list
 
 
-## Changelog
-v1.5-gamma4
- - Adjusted chances of rain adjusting
- - messages no longer show up in the desert
-
-v1.5-gamma3
- - Variable rain won't display messages indicating rain fall when you sleep
- - Weather systems no longer have a +1400% chance to run. :|
-
-v1.5-gamma2
- - Updated for latest SMAPI changes
- - Fixes to .gamma version
-
-v1.5-gamma
- - Variable Rain will show popups when it changes (currently set to 20%) or a category changes.
- - Fixes a potential issue with internal rain calculation
-
-v1.5-beta16
- - SMAPI patch update
- - fix for a NRE. I think.
- - Severe rain blocks egrees to going outside
- - Removed all watering code.
-
-v1.5-beta14
- - Variable rain fixes some more (for watering issues)
- - overcast fixes to work properly 
- - fix for a badly coded check of rain
- - SDV 1.4 Support
- - Variable Rain may now start with a lower level of rain to start with.
-
-v1.5-beta9
- - Bug fix added to the sync that should finally kill the get low error.
- - Fix for Farenheit display
- - Manifest name fix for better log parsing
- - Lighter Fog option now further lightens the fog in rain
- - An option was included to display fog in the desert
- - Frosts now apply in Winter except for crops that are meant to grow in winter, or if the crop is a winter forgable. This can be turned off in the config
- - Variable Rain now will alter if crops are watered until a certain threshold (the vanilla amount) is reached. This can be turned off in the config
- - Overcast code will not show up as precipitation.
-
-v1.5-beta8
- - updated bundled SDVUtilities to use code that should work better in some locations
-
-v1.5-beta7
- - removes some debug code that made it silent hill, all the time
-
-v1.5-beta6
- - fixes to fog
- - moon text restored if Lunar Disturbances is installed
-
-v1.5-beta3
- - Fixes to white outs and blizzards
- - Letting the days go by, living underwater~
-
-v1.5-beta2
- - Variable Rain will no longer have a 1/3 in chance of becoming torrential every 30 minutes, so less invisible flash flooding.
- -- The chance of ramping up massively is now halved every step above 200 raindrops (vanilla is 70)
- - adds in a config option to disable all fog
- - Moves snow check for spring (and extends it to fall) in front of other special weathers
- - Chance of rain -> snow conversion is now a config option
- - Sandstorms will now kill crops if the option is enabled
- - Crop death warnings will say how many crops are affected
- - If Summit Reborn isn't installed, it will enable code to allow rain rendering on the summit map.
- - Fixed MP sync issues with fog
- - Some small fixes to all weathers
- - added more thunder frenzy options
- - fixed a thundersnow and wedding issue
-
-v1.5
- - MP sync added in. 
- - Custom sprites added, adding in summer wind to the game (21%(-8,+6), (19%(-8,+6), 23%(-4%+8%))
- - Thunder Frenzy weather improperly not clearing out on day reset causing issues with weather display has been fixed.
- - Variable Rain! Overcast weather and variable rain fall has been added.
- - Sandstorms now spawn in windy weather when it hasn't rained for a while
- - New config option for Farenheit: "SetScaletoF"
- - New config option to control cursor redrawing: "RedrawCursor"
-
-v1.4.2
- - removed extra Harmony debug line
- - Corrected issue with checking the TV before the wedding tomorrow (badly formatted line)
-
-v1.4.1
- - Updated for SDV 1.3.32
- - Updated for newest LunarDisturbances API
- - Updated TV lines.
-
-v1.4
- - lighter fog implemented
- - option to disable the weather icon
- - red snow!
- - Now uses harmony for some various features
-
-v1.4.0-beta13
- - blood weather during a blood moon
- - fixed a bug blocking many icons from being properly seen. Fixed now
-
-v1.4.0-beta12
- - API expansion
- - Fix for thundersnow + fog with no frost
- - updated to be coompatible with SDV 1.3.20+
-
-v1.4.0-beta11
- - updated to be compatible with SDV 1.3.16
-
-v1.4.0-beta10
- - enabled dynamic night time integration
-
-v1.4.0-beta9
-- some fixes for MP. Well, a lot of fixes for MP
-- readjusted fog. If you want the old foggy amounts in spring, add "foggy" to enhanced and normal.
-- readjusted night fog calculations.
-
-v1.4.0-beta4
-- fixed console command issues
-
-v1.4.0-beta3
-- fixed some API integrations
-
-v1.4.0-beta2
-- Removed unneeded options, cleaned up the readme
-- Added Thunder Frenzy weather
-- Whiteouts will respect hazardous weather flags
-- some refactoring
-
-v1.4.0-beta1
-- Mod split into three - moon is now Lunar Disturbances, stamina is now WeatherIllnesses.
-- fix for the weather icon in Climates.
-
-v1.3.4
-- Blood Moon implementation (see README notes)
-- Refactored the weather object to be easier to debug and extend
-- Fixed issue with stamina clearer not requiring drinking the item.
-- Updated and expanded some of the dialogue
-- Dry lightning will no longer happen period when it's frost conditions
-- After consideration, wind will still restrict fog from spawning.
-- Flag to stop the light from changing (if the stutter bothers you)
-
-v1.3.3
-- Harvey's 8-heart scene gives the temp scale. C now is Kraggs, the in-game scale.
-- Dual lightning strikes removed (was erroneously triggering additional lightning on stormy daysaw)
-- Apparently I never actually wrote in the code to spawn ghosts. :| Due to engine limitations, occurs only on wilderness farms.
-
-v1.3.2
-- the moon also disappears now when the rest of the shipping menu fades
-- hazardous moon events can be turned off.
-
-v1.3.1
-- fixed the evening fog. Forgot to remove the debug line.
-
-v1.3
-- custom popup text on first and last day of the year
-
-v1.3beta8
- - updated descriptors for (sunny, at night)
- - updated evening fog descriptor to not show the fog beginning once started
- - added special descriptors for the easter egg.
- - some differnation done on current descriptors
- - fixed some issues lingering with fog lines not spacing correctly
- - refined some of the text to read more cleanly
- - added conversion chance for snow in spring if it's cold enough
-
-v1.3beta7
- - Updated the console command code to be more.. proper.
- - Added a easter egg blizzard mode.
-
-v1.3beta6
- - ISDVWeather now implements a EndWeather 
- - Console commands can now arbitarily trigger blizzards
- - Fog code cleaned up to remove old code
- - Sprites cleaned up to remove old sprite code.
- - Festival text fixes
-
-v1.3beta5
-- fog text fixes (remove duplicate fog text, evening fog properly display)
-
-v1.3beta4
-- text fixes (fog Time not appearing, temperature string incomplete)
-- modified the menu screen to work properly over fog.
-
-v1.3beta3
-- .. somehow the text fixes didn't take?
-- cleaned up various elements of the code - no longer attempts to IAssetEditor
-- fixes the spring wind icon not appearing on the TV.
-
-v1.3beta2
-- text fixes: spring wind may not display properly on the TV
-- fix for the mouse not properly redrawing
-
-v1.3beta1
-- merged in the solar eclipse mod.
-- text fixes
-- added in weather popup
-- solar eclipse will now only trigger on full moons and will prohibit fog formation.
-- updated manifest to require PyTK to prevent any issues with it not loading before this mod.
-
-v1.3alpha41
-- fixes tv icon
-- text fixes
-
--v1.3alpha40
-- reimplemented the text for the TV.
-- fixed the heatwave icons
-- fixed stamina issue with getting sick more than once
-- fixed a bug where frost kills didn't respect allow crop death
-
-v1.3alpha29
-- moved to PyTK 
-- thanks to ChefRude's new neight icons, we now have night icons!
-- refined the mod's definition of night to be TrulyDarkTime
-- made the stamina drain mesages more descriptive to the reason induced
-- fixed some weather status icons to properly appear
-
-v1.3alpha28
- - evening fog will now respect the fact it's windy and stay away
- - some of the debug output updated to be more useful
-
-v1.3alpha27
-- The weather icon is working, and the pointer properly draws over it now
-- fixed the cold repeating itself
-- fog fade in/out is slowed down
-- easter egg removed
-
-v1.3alpha3
-- easter egg added - the desert has snow in real time Dec 15 til Jan 4.
-- a new fade in/out method of fog has been added, and the lighting system should work normally
-
-v1.3alpha2
-- Architecture change - now uses an interface to streamline adding new weathers to draw mechanics
-- Fog can now also be at night also. 
-
-v1.2rc2-2 (v1.3-beta1)
-- refactoring
-- began push to improve TV text
-- new fog texture
-- now reuses CustomTV to make sure it's compatible with stuff like DailyNews
-- #%@%@%@@@@%@%@@%@%@
-
-v1.2rc2 (v1.3-beta1)
-- fog is now properly dark and either way, the fog fades over time.
-- fall climates in normal and enhanced from Fall 19 to Fall 28 produced way too much fog
-- frosts now get full resistance on crops
-- the frost death message will now tell you how many died
-- stamina system overhauled that you won't get sick from something you can't suffer from events at the time.
-- bad moon rising: blood moons will appear.
-- new sprites, thanks to eemie, that more closely match the vanilla ones!
-- lunar events now have a 20% chance to not trigger
-- stamina system now factors in luck and a few other things.
-
-v1.1.12p5
- - overhauled stamina system to correct an odd error. See writeup for more details.
- - updated the console command to actually update the internal tracker. :v
- - possiblity of all day fog (.1%) added to fog time
-
-v1.1.12p4
- - the hud overdraw code is now disabled on festival days
- - the hud overdraw code that was unneccesary was removed
- - it should properly not darken on inventory menu (and others, by using the right event)
- - error fixed on normal and enhanced climates during the second week of spring
- - corrected an incorrect filter causing wind to never be added
-
-v1.1.12p3 
-- Text tweaks to make it flow properly
-- The TV and popup will have some lines about fog now
-- The popup will scroll.
-- The probability of dark fog will be lowered to 8.75% and configurable in the settings option. It will also now default to having day 1 not having dark fog (probably hard coded to prevent option bloat)
-- Cleaned up some of the code, removed some debug spam
-- Rain Totems override chance isn't just the first one now, although that means if you get it to set a Storm totem, the next use might override it..
-- fixed issue where festival name would never appear in the popup, and the wrong text was called for the TV.
-- fixed issue where summer drylightning tried to call for thundersnow (!)
-- added fog icons to the weather hud, as well as a blizzard one
-- the window will be dark while it is foggy outside
-- fixed a path display error in Linux
-- fixed the path being capitlization inspecific
-- the mouse will draw over the icon again, and the weather icon darkens properly
-  when menus draw.
- - No longer darkens for dialogue when it shouldn't.
-- fixed fog and snow drawing over hud code.
-
-v1.1.12p2
-- removed fog testing code.
-
-v1.1.12p1
-- replaced the totem detection code to make it a bit more tolerant of fault
-
-v1.1.12 beta
-- fixed an issue with festivals
-- added stamina drains back in
-- heatwaves and frosts are back in, and now it triggers during certain times.
-
 ## Config Options
+
+- Temperature is now controlled by the three settings
+'ShowBothScales' (false/true, default: false),  'FirstTempScale' and 'SecondTempScale' 
+
+The last two can be configured to be any of "Farenheit", "Kelvin", "Rankine", "Delisle", "Romer", "Reaumur", with the first defaulting to Kraggs (Which is functionally identical to Celsius.)
+
 
 - `ShowLighterFog` - Changes the fog opacity to be lower. Default is `false`. Valid values: `false, true`
 
 - 'EnableCustomWeatherIcon' - This enables the custom weather icons. Default is `true`. Valid values are `false` and `true`
 
 - `ClimateType` - set to weather that has a corresponding file in `data\weather\`. Packaged with the mod is
-`normal`, `extended`, `arid`, `dry`, `wet`, `monsoon`. Default: `normal`.
-
-- `ThundersnowOdds` - This controls the odds of thundersnow. (Custom weather available during the snow.) Valid: 0-1, but it's 
-recommended that this is kept low. Default: `.001` (.1%)
-
-- `BlizzardOdds` - This controls the odds of blizzards (Custom weather available during the snow.). Valid 0-1, but it's 
-recommended that this is kept low. Default: `.08` (8%)
+`normal`, `enhanced`, `arid`, `dry`, `wet`, `monsoon`, `enhanced_wet`, `enhanced_arid`, `enhanced_monsoon`, `enhanced_dry`. Enhanced and normal variants also have a 'foggy' and `lowfog` version Default: `enhanced`.
 
 - `DryLightning` - This controls the odds of dry lightning (Custom weather available during any clear day, as long as the temperature is 
 over a certain value.). Valid 0-1, but it's recommended that this is kept low. Default: `.1` (10%)

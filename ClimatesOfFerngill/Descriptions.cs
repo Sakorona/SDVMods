@@ -419,7 +419,7 @@ namespace ClimatesOfFerngillRebuild
                 dWeather = Translator.Get("weather-tv.weat.wedding");
 
             if (Current.HasWeather(CurrentWeather.Sunny))
-                dWeather = Translator.Get("weather-tv.weat.wedding");
+                dWeather = Translator.Get("weather-tv.weat.sunny");
 
             if (Current.HasWeather(CurrentWeather.Rain) && !Current.HasWeather(CurrentWeather.Lightning))
             {
@@ -462,7 +462,10 @@ namespace ClimatesOfFerngillRebuild
             string fog = "";
             if (Current.HasWeather(CurrentWeather.Fog))
             {
-                fog = Translator.Get("weather-tv.weat.fog", new { time = Current.GetFogTime() });
+                if (!Current.HasWeather(CurrentWeather.Wedding))
+                    fog = Translator.Get("weather-tv.weat.fog", new { time = Current.GetFogTime() });
+                else
+                    fog = Translator.Get("weather-tv.weat.fogWed", new { time = Current.GetFogTime() });
             }
 
             //ending up the current conditions.

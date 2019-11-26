@@ -29,11 +29,11 @@ _Want a dynamic day/night cycle? Look here!_
 
   
 ## Depricated Mods
-* **[Solar Eclipse Event](http://www.nexusmods.com/stardewvalley/mods/897)** <small>([source](SolarEclipseEvent))</small>  
+* **[Solar Eclipse Event]** <small>([source](SolarEclipseEvent))</small>  
 
-_This adds the possibility of a solar eclipse to your game! Configurable chance. Also will spawn monsters if you have a wilderness farm in line with the same percentages as the base game. Now implemented into Lunar Disturbances, and as of SDV 1.3, no longer maintained.._
+_This adds the possibility of a solar eclipse to your game! Configurable chance. Also will spawn monsters if you have a wilderness farm in line with the same percentages as the base game. Now implemented into Lunar Disturbances, and as of SDV 1.3, no longer maintained, and as of SDV 1.4: no longer available.
     
-* **[StardewNotification](https://github.com/JohnsonNicholas/SDVMods/releases/download/stardew-notifcation/StardewNotification.1.7.2-kylindraUpdate.zip)** <small>([source](StardewNotification))</small>
+* **[StardewNotification]()** <small>([source](StardewNotification))</small>
 
 _Source code for Stardew Notification, currently maintained by me. MIT License. Original author is monopandora_
 
