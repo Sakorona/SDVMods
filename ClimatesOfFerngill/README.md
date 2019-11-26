@@ -3,12 +3,10 @@
 Current Version: 1.5
 
 ## What's New
-- Variable Rain and snow.
-- Fog!
-- Blizzards, Thundersnow
+- Variable Rain.
 - A more customizable weather system
-- More descriptive and varied weather reports
-- Thundersnow!
+- Weather Systems!
+- Temperature variation chances
 
 ## Multiplayer
 Supports MP, with most features locked out to main player. However, most weathers will render on farmhands screen.
@@ -29,6 +27,8 @@ This mod does the following:
 - Adds a weather menu option, which will display information about the weather
 - Changes the text for the TV weather channel
 - Adds Variable rain and custom debris sprites
+- Adds weather systems!
+- Adds current temperature displays where relevant
 
 ## MAJOR CHANGES
 1.5 implements a full variable rain system. This means that on any day it rains, there are now chances for the rain to not remain constant throughout the day, or even chances for it to become overcast with no rain. 
@@ -72,7 +72,6 @@ If I have left you out of acknowledgements, please contact me so I can get you a
 'ShowBothScales' (false/true, default: false),  'FirstTempScale' and 'SecondTempScale' 
 
 The last two can be configured to be any of "Farenheit", "Kelvin", "Rankine", "Delisle", "Romer", "Reaumur", with the first defaulting to Kraggs (Which is functionally identical to Celsius.)
-
 
 - `ShowLighterFog` - Changes the fog opacity to be lower. Default is `false`. Valid values: `false, true`
 
