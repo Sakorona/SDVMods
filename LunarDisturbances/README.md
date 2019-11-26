@@ -27,11 +27,10 @@ Price alterations under the blood moon may be incompatible with other mods that 
 
 ## Documentation
 
-(these are mock links)
-
-- Detailed breakdown of mechanics: [wikilink\Lunar Disturbances\Advanced]
-- Configuration options: [wikilink\Lunar Disturbances\Configuration]
-- Changelog: [CHANGELOG.md]
+- Detailed breakdown of mechanics: [Advanced](https://github.com/Sakorona/SDVMods/wiki/Lunar-Disturbances-Advanced)
+- Configuration options: [Configuration](https://github.com/Sakorona/SDVMods/wiki/Lunar-Disturbances-Configuration)
+- API: [API](https://github.com/Sakorona/SDVMods/wiki/Lunar-Disturbances-API)
+- Changelog: [CHANGELOG](https://github.com/Sakorona/SDVMods/blob/master/LunarDisturbances/CHANGELOG.md)
 
 ## Acknowledgements
 
