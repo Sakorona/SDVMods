@@ -1,5 +1,6 @@
 ## Changelog
 
+### 1.5
 - Updated for current SMAPI/SDV
 - API updated to add new functionality
 - Translation file updated to no longer have unused strings
@@ -42,24 +43,18 @@
 - temperature display simplified in an effort to allow for a better variety of options.
 - The default weather for Climates is now 'enhanced'.
 - Reorganized and refactored some code
-
 - Adjusted chances of rain adjusting
 - messages no longer show up in the desert
-
 - Variable rain won't display messages indicating rain fall when you sleep
 - Weather systems no longer have a +1400% chance to run. :|
-
 - Variable Rain will show popups when it changes (currently set to 20%) or a category changes.
 - Fixes a potential issue with internal rain calculation
-
 - Severe rain blocks egrees to going outside
 - Removed all watering code.
-
 - Variable rain fixes some more (for watering issues)
 - overcast fixes to work properly 
 - fix for a badly coded check of rain
 - Variable Rain may now start with a lower level of rain to start with.
-
 - Bug fix added to the sync that should finally kill the get low error.
 - Fix for Farenheit display
 - Manifest name fix for better log parsing
@@ -68,9 +63,7 @@
 - Frosts now apply in Winter except for crops that are meant to grow in winter, or if the crop is a winter forgable. This can be turned off in the config
 - Variable Rain now will alter if crops are watered until a certain threshold (the vanilla amount) is reached. This can be turned off in the config
 - Overcast code will not show up as precipitation.
-
 - updated bundled SDVUtilities to use code that should work better in some locations
-
 - removes some debug code that made it silent hill, all the time
 
 v1.5-beta6
