@@ -1078,7 +1078,7 @@ namespace ClimatesOfFerngillRebuild
         /// <param name="a">The RangePair that contains the generated temperatures</param>
         public void SetTomorrowTemps(RangePair a){
 			TomorrowTemps = new RangePair(a, EnforceHigherOverLower: true);
-			if (trackerModel.TempsOnNextDay is null)
+			if (trackerModel?.TempsOnNextDay is null)
 				trackerModel.TempsOnNextDay = new RangePair(TomorrowTemps);
 			else
 				trackerModel.TempsOnNextDay.UpdateRangePair(TomorrowTemps.LowerBound, TomorrowTemps.HigherBound);
