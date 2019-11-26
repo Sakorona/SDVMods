@@ -1,4 +1,4 @@
-﻿#Dynamic Night Time
+# Dynamic Night Time
 Version: 1.3
 
 ## Requirements
