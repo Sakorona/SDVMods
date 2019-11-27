@@ -100,10 +100,15 @@
         {
             return ((LowerBound + HigherBound) / 2.0);
         }
-	    
-	public bool IsDefault()
-	{
-		return (LowerBound == HigherBound == 0);
-	}
+
+        public bool IsDefault()
+        {
+            if (LowerBound == HigherBound)
+                if (LowerBound == 0)
+                {
+                    return true;
+                }
+            return false;
+        }
     }
 }

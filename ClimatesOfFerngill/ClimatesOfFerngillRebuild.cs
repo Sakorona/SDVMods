@@ -256,7 +256,7 @@ namespace ClimatesOfFerngillRebuild
 	    	Conditions.trackerModel = new ClimateTracker();
 	    
                 Conditions.trackerModel = Helper.Data.ReadSaveData<ClimateTracker>("climate-tracker");
-                if (Conditions.trackerModel?.TempsOnNextDay != null || Conditions.trackerModel?.TempsOnNextDay )
+                if (Conditions.trackerModel?.TempsOnNextDay != null || !Conditions.trackerModel.TempsOnNextDay.IsDefault() )
                     Conditions.SetTodayTemps(Conditions.trackerModel.TempsOnNextDay);
             }
         } 

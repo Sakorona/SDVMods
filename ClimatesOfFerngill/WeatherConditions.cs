@@ -56,10 +56,10 @@ namespace ClimatesOfFerngillRebuild
         {
             TenMCounter = 0;
             Weathers = PopulateWeathers();
-	    isOvercast = false;
-            isAbnormalHeat = false;
-	    isAbnormalChill = false;
-            isVariableRain = false;
+  	        IsOvercast = false;
+            IsAbnormalHeat = false;
+	        IsAbnormalChill = false;
+            IsVariableRain = false;
 		
 	    trackerModel = new ClimateTracker();
 		
