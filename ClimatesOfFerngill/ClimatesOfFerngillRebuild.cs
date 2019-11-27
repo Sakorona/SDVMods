@@ -252,10 +252,11 @@ namespace ClimatesOfFerngillRebuild
 
             if (Context.IsMainPlayer)
             {
-	    if (Conditions.trackerModel is null)
-	    	Conditions.trackerModel = new ClimateTracker();
-	    
-                Conditions.trackerModel = Helper.Data.ReadSaveData<ClimateTracker>("climate-tracker");
+	            Conditions.trackerModel = Helper.Data.ReadSaveData<ClimateTracker>("climate-tracker");
+
+                if (Conditions.trackerModel is null)
+                    Conditions.trackerModel = new ClimateTracker();
+
                 if (Conditions.trackerModel?.TempsOnNextDay != null || !Conditions.trackerModel.TempsOnNextDay.IsDefault() )
                     Conditions.SetTodayTemps(Conditions.trackerModel.TempsOnNextDay);
             }
