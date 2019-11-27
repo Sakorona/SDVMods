@@ -1152,12 +1152,14 @@ namespace ClimatesOfFerngillRebuild
             }
 
             if (Game1.isRaining) { 
+		RemoveWeather(CurrentWeather.Overcast);
                 AddWeather(CurrentWeather.Rain);
                 if (IsVariableRain)
                 {
                     SetRainAmt(AmtOfRainDrops);
                 }
             }
+		
             if (Game1.isDebrisWeather)
                 AddWeather(CurrentWeather.Wind);
             if (Game1.isLightning)
