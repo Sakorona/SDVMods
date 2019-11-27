@@ -1,5 +1,9 @@
 ## Changelog
 
+### 1.5.1
+ - some fixes for the climate tracker not being created properly if null
+ - some fixes for unset weather still cropping up when it really shouldn't
+ 
 ### 1.5
 - Updated for current SMAPI/SDV
 - API updated to add new functionality
