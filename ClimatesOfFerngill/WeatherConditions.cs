@@ -1205,6 +1205,9 @@ namespace ClimatesOfFerngillRebuild
 
         internal void OnSaving()
         {
+	    if (trackerModel is null)
+		    trackerModel = new ClimateTracker();
+		
             //check for rain accumulation         
             int numTotals = (int)Math.Floor(SDVTime.MinutesBetweenTwoIntTimes(2600, Game1.timeOfDay) / 10.0);
             if (IsVariableRain)
