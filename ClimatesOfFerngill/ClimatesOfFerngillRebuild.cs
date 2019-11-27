@@ -115,7 +115,7 @@ namespace ClimatesOfFerngillRebuild
             Monitor.Log($"Patching {GameLocationDAAFL} with Transpiler: {DAAFLTranspiler}", LogLevel.Trace); ;
             harmony.Patch(GameLocationDAAFL, transpiler: DAAFLTranspiler);
 			
-			MethodInfo GameDrawW = AccessTools.Method(typeof(Game1), "drawWeather");
+	    MethodInfo GameDrawW = AccessTools.Method(typeof(Game1), "drawWeather");
             HarmonyMethod DrawWeatherPrefix = new HarmonyMethod(AccessTools.Method(typeof(Game1Patches), "DrawWeatherPrefix"));
             Monitor.Log($"Patching {GameDrawW} with Prefix: {DrawWeatherPrefix}", LogLevel.Trace); ;
             harmony.Patch(GameDrawW, prefix: DrawWeatherPrefix);
@@ -252,8 +252,11 @@ namespace ClimatesOfFerngillRebuild
 
             if (Context.IsMainPlayer)
             {
+	    if (Conditions.trackerModel is null)
+	    	Conditions.trackerModel = new ClimateTracker();
+	    
                 Conditions.trackerModel = Helper.Data.ReadSaveData<ClimateTracker>("climate-tracker");
-                if (Conditions.trackerModel?.TempsOnNextDay != null)
+                if (Conditions.trackerModel?.TempsOnNextDay != null || Conditions.trackerModel?.TempsOnNextDay )
                     Conditions.SetTodayTemps(Conditions.trackerModel.TempsOnNextDay);
             }
         } 
@@ -347,6 +350,9 @@ namespace ClimatesOfFerngillRebuild
         {
             if (!Context.IsMainPlayer) return;
             Conditions.OnSaving();           
+	    if (Conditions.trackerModel is null)
+	    	Conditions.trackerModel = new ClimateTracker();
+	    
             this.Helper.Data.WriteSaveData("climate-tracker", Conditions.trackerModel);
             queuedMsg = WeatherProcessing.HandleOnSaving(Conditions, Dice); //handles crop death and any other weather conditions that need to be handled on save.
         }
