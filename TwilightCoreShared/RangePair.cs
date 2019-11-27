@@ -20,7 +20,8 @@
         /// </summary>
         public RangePair()
         {
-
+    	   this.LowerBound = 0;
+           this.HigherBound = 0;
         }
 
         /// <summary>
@@ -99,5 +100,10 @@
         {
             return ((LowerBound + HigherBound) / 2.0);
         }
+	    
+	public bool IsDefault()
+	{
+		return (LowerBound == HigherBound == 0);
+	}
     }
 }
