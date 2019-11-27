@@ -56,7 +56,13 @@ namespace ClimatesOfFerngillRebuild
         {
             TenMCounter = 0;
             Weathers = PopulateWeathers();
-
+	    isOvercast = false;
+            isAbnormalHeat = false;
+	    isAbnormalChill = false;
+            isVariableRain = false;
+		
+	    trackerModel = new ClimateTracker();
+		
             CurrentConditionsN = CurrentWeather.Unset;
             StartingRain = RainLevels.None;
             CurrentWeathers = new List<ISDVWeather>
@@ -1133,7 +1139,7 @@ namespace ClimatesOfFerngillRebuild
         {
            CurrentConditionsN = CurrentWeather.Unset; //reset the flag.
             
-            if (!Game1.isDebrisWeather && !Game1.isRaining && !Game1.isSnowing && !IsOvercast)
+            if (!Game1.isDebrisWeather && !Game1.isRaining && !Game1.isSnowing)
             {
                 AddWeather(CurrentWeather.Sunny);
             }
@@ -1141,6 +1147,7 @@ namespace ClimatesOfFerngillRebuild
             if (IsOvercast)
             {
                 SDVUtilities.AlterWaterStatusOfCrops(false);
+		RemoveWeather(CurrentWeather.Sunny);
                 AddWeather(CurrentWeather.Overcast);
             }
 
@@ -1185,6 +1192,7 @@ namespace ClimatesOfFerngillRebuild
             string ret = "";
             ret += $"Low for today is {TodayTemps?.LowerBound:N3} with the high being {TodayTemps?.HigherBound:N3}. The current conditions are {Weathers[(int)CurrentConditionsN].ConditionName}.";
 
+	    ret += Environment.NewLine;
             foreach (ISDVWeather weather in CurrentWeathers)
                 ret += weather.ToString() + Environment.NewLine;
             
