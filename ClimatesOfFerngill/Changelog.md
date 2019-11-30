@@ -1,5 +1,21 @@
 ## Changelog
 
+### 1.5.4
+ - Fixes to rainfall amount display to be more proper.
+ - The weather menu shouldn't display text off the edge of the screen.
+ - Improved integration messages that should be easier to read, and makes it clear they're optional features
+
+### 1.5.3
+- added German translation thanks to jahangmar 
+- Fixes for the violent rain feature not letting you go from outside area to outside area to get inside
+- Fixes for the failsafe not properly triggering at 11pm.
+- Fixes for the extremely violent rain happening too often.
+- Some internal refactoring
+- It will now properly tell you it is going to storm, instead of snow, when it is going to storm. 
+
+### 1.5.2
+- some fixes for a NRE issue
+
 ### 1.5.1
  - some fixes for the climate tracker not being created properly if null
  - some fixes for unset weather still cropping up when it really shouldn't

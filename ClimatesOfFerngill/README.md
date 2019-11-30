@@ -1,6 +1,6 @@
 ﻿# Climates of Ferngill
 
-Current Version: 1.5.1
+Current Version: 1.5.3
 
 ## What's New
 - Variable Rain.
@@ -17,6 +17,10 @@ Supports MP, with most features locked out to main player. However, most weather
 - Stardew Valley 1.4+
 - PyTK: latest
  
+## Incompatibilities
+ This mod is not compatible with More Rain or Weather Machine or Snow on Fall 28 (albeit, the last only on Fall 28). (i.e: weather mods do not work well together). 
+ For people who may want to use Snow on Fall 28, there is a config option to set this mod to spawn snow on fall 28.
+
 ## Overview
 
 This mod does the following:
@@ -53,6 +57,7 @@ This mod uses harmony to patch functions to allow it to draw custom rain and sno
 ## Acknowledgements
 - Prismuth for the fog sprite
 - Pathoschild for ideas
+- jahangmar for the German translation
 - Sky for the Korean translation
 - ChefRude for testing and the night icon sprites (as well as better fog textures)
 - Pan for the new base debris sprites
