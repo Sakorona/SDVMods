@@ -86,7 +86,7 @@ namespace ClimatesOfFerngillRebuild
                 {
                     if (rain > 0 && rain <= ReturnMidPoint(RainLevels.Sunshower))
                         multiplier *= 5.4;
-                    if (rain > ReturnMidPoint(RainLevels.Sunshower) && rain <= ReturnMidPoint(RainLevels.Light) / 2)
+                    else if (rain > ReturnMidPoint(RainLevels.Sunshower) && rain <= ReturnMidPoint(RainLevels.Light) / 2)
                         multiplier *= 3.2;
                     else if (rain > (ReturnMidPoint(RainLevels.Light) / 2) && rain <= (ReturnMidPoint(RainLevels.Light)))
                         multiplier *= 1.8;
@@ -113,7 +113,7 @@ namespace ClimatesOfFerngillRebuild
                 {
                     if (rain > 0 && rain <= ReturnMidPoint(RainLevels.Sunshower))
                         multiplier /= 5.4;
-                    if (rain > ReturnMidPoint(RainLevels.Sunshower) && rain <= ReturnMidPoint(RainLevels.Light) / 2)
+                    else if (rain > ReturnMidPoint(RainLevels.Sunshower) && rain <= ReturnMidPoint(RainLevels.Light) / 2)
                         multiplier /= 3.2;
                     else if (rain > (ReturnMidPoint(RainLevels.Light) / 2) && rain <= (ReturnMidPoint(RainLevels.Light)))
                         multiplier /= 1.8;
