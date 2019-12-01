@@ -82,7 +82,7 @@ The last two can be configured to be any of "Farenheit", "Kelvin", "Rankine", "D
 
 - 'EnableCustomWeatherIcon' - This enables the custom weather icons. Default is `true`. Valid values are `false` and `true`
 
-- `ClimateType` - set to weather that has a corresponding file in `data\weather\`. Packaged with the mod is
+- `ClimateType` - set to weather that has a corresponding file in `assets\weather\`. Packaged with the mod is
 `normal`, `enhanced`, `arid`, `dry`, `wet`, `monsoon`, `enhanced_wet`, `enhanced_arid`, `enhanced_monsoon`, `enhanced_dry`. Enhanced and normal variants also have a 'foggy' and `lowfog` version Default: `enhanced`.
 
 - `DryLightning` - This controls the odds of dry lightning (Custom weather available during any clear day, as long as the temperature is 

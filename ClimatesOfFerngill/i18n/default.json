@@ -177,6 +177,7 @@
   "weather-tv.rain.torrential": "torrential rainfall",
   "weather-tv.rain.typhoon": "violent rainfall",
   "weather-tv.rain.noahsflood": "the heavens pouring down",
+  "weather-tv.rain.unknown": "showers",
   
   //hazard text
   "weather-tv.twoHazardString": "{{hazardOne}} and {{hazardTwo}}",

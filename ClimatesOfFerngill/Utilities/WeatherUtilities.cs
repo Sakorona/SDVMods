@@ -129,13 +129,13 @@ namespace ClimatesOfFerngillRebuild
                     else if (rain > (ReturnMidPoint(RainLevels.Severe)) && rain <= (ReturnMidPoint(RainLevels.Severe) + ReturnMidPoint(RainLevels.Heavy)))
                         multiplier *= 1.95;
                     else if (rain > (ReturnMidPoint(RainLevels.Torrential) + ReturnMidPoint(RainLevels.Severe)) && rain <= (ReturnMidPoint(RainLevels.Torrential) + ReturnMidPoint(RainLevels.Severe)))
-                        multiplier *= 2.15;
-                    else if (rain > (ReturnMidPoint(RainLevels.Typhoon)) && rain <= (ReturnMidPoint(RainLevels.Typhoon) + ReturnMidPoint(RainLevels.Torrential)))
                         multiplier *= 3.15;
+                    else if (rain > (ReturnMidPoint(RainLevels.Typhoon)) && rain <= (ReturnMidPoint(RainLevels.Typhoon) + ReturnMidPoint(RainLevels.Torrential)))
+                        multiplier *= 4.5;
                     else if (rain > (ReturnMidPoint(RainLevels.Typhoon) + ReturnMidPoint(RainLevels.Torrential)) && rain <= (ReturnMidPoint(RainLevels.NoahsFlood)))
-                        multiplier *= 3.5;
-                    else if (rain > (ReturnMidPoint(RainLevels.NoahsFlood)) && rain <= MaxRain)
                         multiplier *= 5.4;
+                    else if (rain > (ReturnMidPoint(RainLevels.NoahsFlood)) && rain <= MaxRain)
+                        multiplier *= 8.5;
                 }
             }
             multiplier *= 1.18;

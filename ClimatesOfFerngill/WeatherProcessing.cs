@@ -104,6 +104,11 @@ namespace ClimatesOfFerngillRebuild
                     //drop the rain to at least allow the person to return home if they aren't.
                     rain = WeatherUtilities.ReturnMidPoint(RainLevels.Severe);
                 }                    
+
+                if (!ClimatesOfFerngill.WeatherOpt.HazardousWeather)
+                {
+                    rain = WeatherUtilities.ReturnMidPoint(RainLevels.Severe);
+                }
             }
 
             if (rain > WeatherUtilities.MaxRain)
