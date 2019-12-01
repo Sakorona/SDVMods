@@ -331,13 +331,13 @@ namespace ClimatesOfFerngillRebuild
                 ProbabilityDistribution<RainLevels> RainSpread = new ProbabilityDistribution<RainLevels>(RainLevels.Normal);
                 RainSpread.AddNewCappedEndPoint(.12, RainLevels.Sunshower);
                 RainSpread.AddNewCappedEndPoint(.28, RainLevels.Light);
-                RainSpread.AddNewCappedEndPoint(.341, RainLevels.Normal);
-                RainSpread.AddNewCappedEndPoint(.12, RainLevels.Moderate);
-                RainSpread.AddNewCappedEndPoint(.08063, RainLevels.Heavy);
-                RainSpread.AddNewCappedEndPoint(.0302, RainLevels.Severe);
-                RainSpread.AddNewCappedEndPoint(.0174, RainLevels.Torrential);
-                RainSpread.AddNewCappedEndPoint(.0099, RainLevels.Typhoon);
-                RainSpread.AddNewCappedEndPoint(.00087, RainLevels.NoahsFlood);
+                RainSpread.AddNewCappedEndPoint(.351, RainLevels.Normal);
+                RainSpread.AddNewCappedEndPoint(.1362, RainLevels.Moderate);
+                RainSpread.AddNewCappedEndPoint(.09563, RainLevels.Heavy);
+                RainSpread.AddNewCappedEndPoint(.0382, RainLevels.Severe);
+                RainSpread.AddNewCappedEndPoint(.0094, RainLevels.Torrential);
+                RainSpread.AddNewCappedEndPoint(.0049, RainLevels.Typhoon);
+                RainSpread.AddNewCappedEndPoint(.00287, RainLevels.NoahsFlood);
 
                 if (!(RainSpread.GetEntryFromProb(newRainOdds, out RainLevels Result)))
                 {

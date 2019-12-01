@@ -270,8 +270,6 @@ namespace ClimatesOfFerngillRebuild
         public bool IsTomorrowTempSet => TomorrowTemps != null;
         public bool IsFestivalToday => CurrentConditionsN.HasFlag(CurrentWeather.Festival);
         public bool IsWeddingToday => CurrentConditionsN.HasFlag(CurrentWeather.Wedding);
-
-
         /// <summary> This returns the high for today </summary>
         public double TodayHigh => TodayTemps.HigherBound;
 

@@ -74,7 +74,6 @@ namespace ClimatesOfFerngillRebuild
             else if (rl == RainLevels.NoahsFlood)
                 return dice.Next((ReturnMidPoint(RainLevels.Typhoon) + ReturnMidPoint(RainLevels.Torrential)), MaxRain);
 
-
             return dice.Next((ReturnMidPoint(RainLevels.Normal) / 2), (ReturnMidPoint(RainLevels.Normal) + ReturnMidPoint(RainLevels.Light)));
         }
 
