@@ -102,10 +102,9 @@ namespace ClimatesOfFerngillRebuild
                         multiplier *= 1.5;
                     else if (RainCategories[RainLevels.Normal].IsWithinLowerRange(rain))
                         multiplier *= 1.4;
-                    else if (RainCategories[RainLevels.Normal].IsWithinUpperRange(rain))
-                        multiplier /= 1.1;
+
                     else if (RainCategories[RainLevels.Heavy].IsWithinUpperRange(rain) || RainCategories[RainLevels.Severe].IsWithinLowerRange(rain))
-                        multiplier /= 1.65;
+                        multiplier /= 1.4;
                     else if (RainCategories[RainLevels.Severe].IsWithinUpperRange(rain)))
                         multiplier /= 1.95;
                     else if (RainCategories[RainLevels.Torrential].IsWithinFullRange(rain))
@@ -131,8 +130,6 @@ namespace ClimatesOfFerngillRebuild
                         multiplier /= 1.5;
                     else if (RainCategories[RainLevels.Normal].IsWithinLowerRange(rain))
                         multiplier /= 1.4;
-                    else if (RainCategories[RainLevels.Normal].IsWithinUpperRange(rain))
-                        multiplier *= 1.1;
                     else if (RainCategories[RainLevels.Heavy].IsWithinUpperRange(rain) || RainCategories[RainLevels.Severe].IsWithinLowerRange(rain))
                         multiplier *= 1.65;
                     else if (RainCategories[RainLevels.Severe].IsWithinUpperRange(rain)))
