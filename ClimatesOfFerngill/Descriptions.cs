@@ -352,7 +352,7 @@ namespace ClimatesOfFerngillRebuild
                             break;
                     }
 
-                    rainfallW = Translator.Get("weather-tv.rainfallW");
+                    rainfallW = Translator.Get("weather-tv.hazard.rainfallW");
                 }
 
                 if (!String.IsNullOrEmpty(hazard) && !String.IsNullOrEmpty(hazardT))
