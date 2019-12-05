@@ -13,24 +13,24 @@ namespace ClimatesOfFerngillRebuild
 {
     internal static class WeatherUtilities
     {
-		internal static Dictionary<RainLevels,StaticRange> RainCategories{
-			{(RainLevel.None,new StaticRange(0,0,0))},
-			{(RainLevel.Sunshower, new StaticRange(0,9,17.5))},
-			{(RainLevel.Light, new StaticRange(17.5,35,52.5))},
-			{(RainLevel.Normal, new StaticRange(52.5,70,105))},
-			{(RainLevel.Moderate, new StaticRange(105,140,210))},
-			{(RainLevel.Heavy, new StaticRange(210,280,420))},
-			{(RainLevel.Severe, new StaticRange(420,560,840))},
-		        {(RainLevel.Torrential, new StaticRange(840,1120,1680))},
-			{(RainLevel.Typhoon, new StaticRange(1680,2240,3360))},
-			{(RainLevel.NoahsFlood, new StaticRange(3360,3680,6720))},
-		};
-		
+        internal readonly static Dictionary<RainLevels, StaticRange> RainCategories = new Dictionary<RainLevels, StaticRange>{
+                { RainLevels.None,new StaticRange(0, 0, 0)},
+                { RainLevels.Sunshower, new StaticRange(0, 9, 17.5)},
+                { RainLevels.Light, new StaticRange(17.5, 35, 52.5)},
+                { RainLevels.Normal, new StaticRange(52.5, 70, 105)},
+                { RainLevels.Moderate, new StaticRange(105, 140, 210)},
+                { RainLevels.Heavy, new StaticRange(210, 280, 420)},
+                { RainLevels.Severe, new StaticRange(420, 560, 840)},
+                { RainLevels.Torrential, new StaticRange(840, 1120, 1680)},
+                { RainLevels.Typhoon, new StaticRange(1680, 2240, 3360)},
+                { RainLevels.NoahsFlood, new StaticRange(3360, 3680, 6720)},
+        };    
+
         internal static int MaxRain = 4000;
 
         internal static int ReturnMidPoint(RainLevels level)
         {
-            return RainCategories[level].MidPoint;
+            return (int)Math.Round(RainCategories[level].MidPoint,0);
         }
 
         internal static RainLevels GetCategory(int rain)
@@ -55,9 +55,8 @@ namespace ClimatesOfFerngillRebuild
 
         internal static int ReturnRndRainAmtInLevel(MersenneTwister dice, RainLevels rl)
         {
-			return RainCategories[rl].RandomInFullRange(dice);
+			return (int)(Math.Round(RainCategories[rl].RandomInFullRange(dice),0));
         }
-
 
         internal static string DescCategory(int rain)
         {
@@ -92,7 +91,7 @@ namespace ClimatesOfFerngillRebuild
             {
                 if (increase)
                 {
-		    if (RainCategories[RainLevels.Sunshower].IsWithinLowerRange(rain))
+		            if (RainCategories[RainLevels.Sunshower].IsWithinLowerRange(rain))
                         multiplier *= 5.4;
                     else if (RainCategories[RainLevels.Sunshower].IsWithinUpperRange(rain))
                         multiplier *= 3.2;
@@ -102,10 +101,9 @@ namespace ClimatesOfFerngillRebuild
                         multiplier *= 1.5;
                     else if (RainCategories[RainLevels.Normal].IsWithinLowerRange(rain))
                         multiplier *= 1.4;
-
                     else if (RainCategories[RainLevels.Heavy].IsWithinUpperRange(rain) || RainCategories[RainLevels.Severe].IsWithinLowerRange(rain))
                         multiplier /= 1.4;
-                    else if (RainCategories[RainLevels.Severe].IsWithinUpperRange(rain)))
+                    else if (RainCategories[RainLevels.Severe].IsWithinUpperRange(rain))
                         multiplier /= 1.95;
                     else if (RainCategories[RainLevels.Torrential].IsWithinFullRange(rain))
                         multiplier /= 2.25;
@@ -113,14 +111,15 @@ namespace ClimatesOfFerngillRebuild
                         multiplier /= 3.15;
                     else if (RainCategories[RainLevels.Typhoon].IsWithinUpperRange(rain))
                         multiplier /= 3.5;
-		    else if (RainCategories[RainLevels.NoahsFlood].IsWithinLowerRange(rain)))
+		            else if (RainCategories[RainLevels.NoahsFlood].IsWithinLowerRange(rain))
                         multiplier /= 5.4;
-                    else if (RainCategories[RainLevels.NoahsFlood].IsWithinUpperRange(rain)))
+                    else if (RainCategories[RainLevels.NoahsFlood].IsWithinUpperRange(rain))
                         multiplier /= 7.8;
                 }
+
                 if (!increase)
                 {
-		    if (RainCategories[RainLevels.Sunshower].IsWithinLowerRange(rain))
+		            if (RainCategories[RainLevels.Sunshower].IsWithinLowerRange(rain))
                         multiplier /= 5.4;
                     else if (RainCategories[RainLevels.Sunshower].IsWithinUpperRange(rain))
                         multiplier /= 3.2;
@@ -132,7 +131,7 @@ namespace ClimatesOfFerngillRebuild
                         multiplier /= 1.4;
                     else if (RainCategories[RainLevels.Heavy].IsWithinUpperRange(rain) || RainCategories[RainLevels.Severe].IsWithinLowerRange(rain))
                         multiplier *= 1.65;
-                    else if (RainCategories[RainLevels.Severe].IsWithinUpperRange(rain)))
+                    else if (RainCategories[RainLevels.Severe].IsWithinUpperRange(rain))
                         multiplier *= 1.95;
                     else if (RainCategories[RainLevels.Torrential].IsWithinFullRange(rain))
                         multiplier *= 2.25;
@@ -140,9 +139,9 @@ namespace ClimatesOfFerngillRebuild
                         multiplier *= 3.15;
                     else if (RainCategories[RainLevels.Typhoon].IsWithinUpperRange(rain))
                         multiplier *= 3.5;
-		    else if (RainCategories[RainLevels.NoahsFlood].IsWithinLowerRange(rain)))
+		            else if (RainCategories[RainLevels.NoahsFlood].IsWithinLowerRange(rain))
                         multiplier *= 5.4;
-                    else if (RainCategories[RainLevels.NoahsFlood].IsWithinUpperRange(rain)))
+                    else if (RainCategories[RainLevels.NoahsFlood].IsWithinUpperRange(rain))
                         multiplier *= 7.8;
                 }
             }

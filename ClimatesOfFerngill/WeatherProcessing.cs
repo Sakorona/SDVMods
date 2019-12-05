@@ -29,8 +29,8 @@ namespace ClimatesOfFerngillRebuild
                 VRChangeChance += .20;
             if (rain > WeatherUtilities.ReturnMidPoint(RainLevels.Torrential))
                 VRChangeChance += .10;
-	    if (WeatherUtilities.GetCategory(rain) == RainLevels.NoahsFlood)
-		VRChangeChance += .15;
+	        if (WeatherUtilities.GetCategory(rain) == RainLevels.NoahsFlood)
+		        VRChangeChance += .15;
 
             double FlipChance = .5;
 
@@ -43,15 +43,15 @@ namespace ClimatesOfFerngillRebuild
                 FlipChance += .1456; //.44% chance remaning of increasing.
             if (WeatherUtilities.GetCategory(rain) == RainLevels.NoahsFlood)
                 FlipChance += .0018; //.26% chance remaning of increasing.
-	    if (rain == MaxRain)
-		FlipChance = 1; //you must go ddown.
+	        if (rain == WeatherUtilities.MaxRain)
+		        FlipChance = 1; //you must go ddown.
 
             if (rain <= WeatherUtilities.ReturnMidPoint(RainLevels.Light))
                 FlipChance -= .2; //70% chance of increasing
             if (rain <= WeatherUtilities.ReturnMidPoint(RainLevels.Sunshower))
                 FlipChance -= .1; //80% chance of increasing
-	    if (rain == 0)
-		FlipChance -= .15; //95% chance of increasing
+	        if (rain == 0)
+		        FlipChance -= .15; //95% chance of increasing
 		
             if (ClimatesOfFerngill.WeatherOpt.Verbose)
             {

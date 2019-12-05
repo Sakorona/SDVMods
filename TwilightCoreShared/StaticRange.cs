@@ -14,7 +14,7 @@ namespace TwilightShards.Common
 		MidPoint = mp;
 	  }	
 	  
-	  public StaticRange(StaticRange c) : 
+	  public StaticRange(StaticRange c) 
 	  {
 	    LowerBound = c.LowerBound;
 		UpperBound = c.UpperBound;
