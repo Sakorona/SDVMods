@@ -115,8 +115,6 @@ namespace ClimatesOfFerngillRebuild
                 }
             }
 
-
-
             if (!ClimatesOfFerngill.WeatherOpt.HazardousWeather)
             {
                 if (ClimatesOfFerngill.WeatherOpt.Verbose)
@@ -139,6 +137,7 @@ namespace ClimatesOfFerngillRebuild
 
             if (currRain < 0) currRain = 0;
 
+            //notifications time
             if (currRain != prevRain && Game1.timeOfDay != 600 && showRain && !(Game1.currentLocation is Desert))
             {
                 if (WeatherUtilities.GetRainCategory(currRain) == RainLevels.None)

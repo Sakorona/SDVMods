@@ -8,6 +8,7 @@
 - Hazardous Weather will now block Torrential rain as well properly. (Resolves issue 75)
 - NRE fixed when farmhands attempt to perform checks on non loaded materials. (Resolves issue 64.)
 - System is readjusted to make high amounts of rain rarer... again. (Resolves issue 73.)
+- Resolved a typo in the description for weather (#83)
 - internal tweaks to make the code base more legiible
 
 ### 1.5.4
