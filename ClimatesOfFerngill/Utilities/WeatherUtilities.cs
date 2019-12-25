@@ -197,6 +197,30 @@ namespace ClimatesOfFerngillRebuild
                 f.minutesElapsed(0, l);
         }
 
+        public static double GetRainfallAmt(int rainFall)
+        {
+            double rain;
+
+            //70, or normal rain, should be about 4mm. 280 should be 12? 
+            //It gives violent as >50mm, so if we use these two, we get a slope of [12-4/280-70] or [8/210] = 0.03809 with a b intercept of 
+            //4 = (70)(.03809) + b; 4 = 2.663 + b; b  = 1.3337; testing this, 7 is 1.6003 mm, and we cross the light threshold at 30-35. 
+            //Expanded testing: Midpoint of the sunshower is 1.67nm, light is 2.6nm, normal is 4nm, moderate is 6.66nm, heavy is 11.99nm
+            //severe is 22.66nm, torrential is 43.99nm, typhoon is 86.65nm, and noahsflood is 141.5049nm. The cap (at 4000) is 153.69nm
+            rain = (rainFall) * (0.0380952381) + 1.3337;
+
+            if (ClimatesOfFerngill.WeatherOpt.UseImperialForRainfall)
+                return rain / 25.4;
+            else
+                return rain;
+        }
+
+
+        internal static string GetUnitAmt(int val)
+        {
+            return WeatherUtilities.GetRainfallAmt(val) + " mm/hr";
+
+        }
+
         internal static void SetWeatherRain()
         {
             Game1.isSnowing = Game1.isLightning = Game1.isDebrisWeather = false;
@@ -280,6 +304,7 @@ namespace ClimatesOfFerngillRebuild
             if (Game1.currentLocation is DecoratableLocation)
                 UpdateFurniture(Game1.currentLocation as DecoratableLocation);
         }
+
 
         internal static void SetWeatherDebris()
         {

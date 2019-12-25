@@ -9,6 +9,9 @@
 - NRE fixed when farmhands attempt to perform checks on non loaded materials. (Resolves issue 64.)
 - System is readjusted to make high amounts of rain rarer... again. (Resolves issue 73.)
 - Resolved a typo in the description for weather (#83)
+- Rain amount increases only appear when the category changes (#80)
+- Rain amount popup now uses units properly (#79)
+- Some config settings that were unused were removed (#31, cont.)
 - internal tweaks to make the code base more legiible
 
 ### 1.5.4
