@@ -15,14 +15,14 @@ namespace ClimatesOfFerngillRebuild
     {
         internal readonly static Dictionary<RainLevels, StaticRange> RainCategories = new Dictionary<RainLevels, StaticRange>{
                 { RainLevels.None,new StaticRange(0, 0, 0)},
-                { RainLevels.Sunshower, new StaticRange(0, 9, 17.5)},
-                { RainLevels.Light, new StaticRange(17.5, 35, 52.5)},
-                { RainLevels.Normal, new StaticRange(52.5, 70, 105)},
-                { RainLevels.Moderate, new StaticRange(105, 140, 210)},
-                { RainLevels.Heavy, new StaticRange(210, 280, 420)},
-                { RainLevels.Severe, new StaticRange(420, 560, 840)},
-                { RainLevels.Torrential, new StaticRange(840, 1680, 2520)},
-                { RainLevels.Typhoon, new StaticRange(2520, 5040, 7560)},
+                { RainLevels.Sunshower, new StaticRange(0, 17.5, 9)},
+                { RainLevels.Light, new StaticRange(17.5, 52.5, 35)},
+                { RainLevels.Normal, new StaticRange(52.5, 105, 70)},
+                { RainLevels.Moderate, new StaticRange(105, 210, 140)},
+                { RainLevels.Heavy, new StaticRange(210, 420, 280)},
+                { RainLevels.Severe, new StaticRange(420, 840, 560)},
+                { RainLevels.Torrential, new StaticRange(840, 2520, 1680)},
+                { RainLevels.Typhoon, new StaticRange(2520, 7560, 5040)},
                 { RainLevels.NoahsFlood, new StaticRange(7560, 15120, 30240)},
         };    
 

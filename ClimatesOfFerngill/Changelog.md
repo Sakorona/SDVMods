@@ -1,5 +1,9 @@
 ## Changelog
 
+### 1.5.6
+- Resolve improperly set categories causing errors on displaying descriptions (#85)
+- Spacing issues are fixed when retrieving rain category descriptors
+
 ### 1.5.5
 - The system will *properly* respect the config option for max rain
 - Default max rain is now 11k. 

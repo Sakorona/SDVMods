@@ -21,9 +21,7 @@ namespace ClimatesOfFerngillRebuild
             Opt = O;
             Translator = T;
         }
-
-
-
+               
         public string DescRainfallAmt(int rainFall)
         {
             return WeatherUtilities.GetRainfallAmt(rainFall).ToString("N2");
@@ -407,8 +405,8 @@ namespace ClimatesOfFerngillRebuild
 
             if (Current.HasWeather(CurrentWeather.Rain) && !Current.HasWeather(CurrentWeather.Lightning))
             {
-                dWeather = (Current.IsVariableRain ? Translator.Get("weather-tv.weat.rain.variable", new { rainDesc = GetRainDesc(Current.AmtOfRainDrops) }) 
-                                                   : Translator.Get("weather-tv.weat.rain", new { rainDesc = GetRainDesc(Current.AmtOfRainDrops) }));
+                dWeather = (Current.IsVariableRain ? Translator.Get("weather-tv.weat.rain.variable", new { rainDesc = GetRainDesc(Current.AmtOfRainDrops).Trim() }) 
+                                                   : Translator.Get("weather-tv.weat.rain", new { rainDesc = GetRainDesc(Current.AmtOfRainDrops).Trim() }));
             }
 
             if (Current.HasWeather(CurrentWeather.Rain) && Current.HasWeather(CurrentWeather.Lightning) && !Current.HasWeather(CurrentWeather.ThunderFrenzy))
