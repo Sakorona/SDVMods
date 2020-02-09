@@ -95,16 +95,9 @@ namespace ClimatesOfFerngillRebuild
 
         public void ForceWeatherStart()
         {
-            this.FogAlpha = 1f;
+            SetFogTargetAlpha();
+            this.FogAlpha = this.FogTargetAlpha;
             CurrentFogType = FogType.Normal;
-
-            if (ClimatesOfFerngill.WeatherOpt.ShowLighterFog)
-            {
-                if (Game1.isRaining) 
-                    this.FogAlpha = .2f;
-                else
-                    this.FogAlpha = .3f;
-            }
 
 
             
@@ -154,16 +147,9 @@ namespace ClimatesOfFerngillRebuild
         /// <summary>This function creates the fog </summary>
         public void CreateWeather()
         {
-            this.FogAlpha = 1f;
+            SetFogTargetAlpha();
+            this.FogAlpha = this.FogTargetAlpha;
             CurrentFogType = FogType.Normal;
-
-            if (ClimatesOfFerngill.WeatherOpt.ShowLighterFog)
-            {
-                if (Game1.isRaining)
-                    this.FogAlpha = .2f;
-                else
-                    this.FogAlpha = .3f;
-            }
 
             //now determine the fog expiration time
             double FogChance = ClimatesOfFerngill.Dice.NextDoublePositive();
