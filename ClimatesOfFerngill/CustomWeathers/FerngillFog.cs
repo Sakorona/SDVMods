@@ -17,6 +17,8 @@ namespace ClimatesOfFerngillRebuild
         /// <summary> The Current Fog Type </summary>
         internal FogType CurrentFogType { get; set; }
         public bool BloodMoon { get; set; }
+        /// <summary> The calculated alpha attribute of fog to use when fading fog in/out. </summary>
+        private float FogTargetAlpha { get; set; }
         /// <summary> The currently-shown alpha attribute of the fog. </summary>
         private float FogAlpha { get; set; }
         /// <summary> Fog Position. For drawing. </summary>
@@ -45,6 +47,20 @@ namespace ClimatesOfFerngillRebuild
         private bool FadeOutFog { get; set; }
         private bool FadeInFog { get; set; }
         private Stopwatch FogElapsed { get; set; }
+        public void SetFogTargetAlpha()
+        {
+            if (ClimatesOfFerngill.WeatherOpt.ShowLighterFog)
+            {
+                if (Game1.isRaining)
+                    this.FogTargetAlpha = .2f;
+                else
+                    this.FogTargetAlpha = .3f;
+            }
+            else
+            {
+                this.FogTargetAlpha = 1f;
+            }
+        }
 
         /// <summary> Default constructor. </summary>
         internal FerngillFog(SDVTimePeriods FogPeriod)
@@ -71,6 +87,7 @@ namespace ClimatesOfFerngillRebuild
             ExpirTime = new SDVTime(0600);
             BloodMoon = false;
             FogAlpha = 0f;
+            FogTargetAlpha = 0f;
             FadeOutFog = false;
             FadeInFog = false;
             FogElapsed.Reset(); 
