@@ -17,7 +17,7 @@ namespace ClimatesOfFerngillRebuild
         /// <summary> The Current Fog Type </summary>
         internal FogType CurrentFogType { get; set; }
         public bool BloodMoon { get; set; }
-        /// <summary> The alpha attribute of the fog. </summary>
+        /// <summary> The currently-shown alpha attribute of the fog. </summary>
         private float FogAlpha { get; set; }
         /// <summary> Fog Position. For drawing. </summary>
         private Vector2 FogPosition { get; set; }
