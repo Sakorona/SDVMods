@@ -109,6 +109,7 @@ namespace ClimatesOfFerngillRebuild
             ExpirTime = new SDVTime(SDVTime.CurrentTime - 10);
             CurrentFogType = FogType.None;
             FadeOutFog = true;
+            SetFogTargetAlpha();
             FogElapsed.Start();
             UpdateStatus(WeatherType, false);
         }
@@ -209,6 +210,7 @@ namespace ClimatesOfFerngillRebuild
                 ExpirTime = new SDVTime(SDVTime.CurrentTime - 10);
                 CurrentFogType = FogType.None;
                 FadeOutFog = true;
+                SetFogTargetAlpha();
                 FogElapsed.Start();
                 UpdateStatus(WeatherType, false);
             }
@@ -234,6 +236,7 @@ namespace ClimatesOfFerngillRebuild
             {            
                 CurrentFogType = FogType.Normal;
                 FadeInFog = true;
+                SetFogTargetAlpha();
                 FogElapsed.Start();
                 UpdateStatus(WeatherType, true);
             }
@@ -241,6 +244,7 @@ namespace ClimatesOfFerngillRebuild
             if (SDVTime.CurrentTime >= WeatherExpirationTime && IsWeatherVisible)
             {
                 FadeOutFog = true;
+                SetFogTargetAlpha();
                 FogElapsed.Start();
                 UpdateStatus(WeatherType, false);
             }
@@ -319,11 +323,12 @@ namespace ClimatesOfFerngillRebuild
                 // So, 3000ms for 55% or 54.45 repeating. But this is super fast....
                 // let's try 955ms.. or 1345..
                 // or 2690.. so no longer 3s. :<
-                FogAlpha = 1 - (FogElapsed.ElapsedMilliseconds / FogFadeTime);
+                FogAlpha = FogTargetAlpha * (1 - (FogElapsed.ElapsedMilliseconds / FogFadeTime));
                
                 if (FogAlpha <= 0)
                 {
                     FogAlpha = 0;
+                    FogTargetAlpha = 0;
                     CurrentFogType = FogType.None;
                     FadeOutFog = false;
                     FogElapsed.Stop();
@@ -334,10 +339,10 @@ namespace ClimatesOfFerngillRebuild
             if (FadeInFog)
             {
                 //as above, but the reverse.
-                FogAlpha = (FogElapsed.ElapsedMilliseconds / FogFadeTime);
-                if (FogAlpha >= 1)
+                FogAlpha = FogTargetAlpha * (FogElapsed.ElapsedMilliseconds / FogFadeTime);
+                if (FogAlpha >= FogTargetAlpha)
                 {
-                    FogAlpha = 1;
+                    FogAlpha = FogTargetAlpha;
                     FadeInFog = false;
                     FogElapsed.Stop();
                     FogElapsed.Reset();
