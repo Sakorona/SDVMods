@@ -108,8 +108,8 @@ namespace ClimatesOfFerngillRebuild
         {
             ExpirTime = new SDVTime(SDVTime.CurrentTime - 10);
             CurrentFogType = FogType.None;
-            FogElapsed.Start();
             FadeOutFog = true;
+            FogElapsed.Start();
             UpdateStatus(WeatherType, false);
         }
 
@@ -208,8 +208,8 @@ namespace ClimatesOfFerngillRebuild
             {
                 ExpirTime = new SDVTime(SDVTime.CurrentTime - 10);
                 CurrentFogType = FogType.None;
-                FogElapsed.Start();
                 FadeOutFog = true;
+                FogElapsed.Start();
                 UpdateStatus(WeatherType, false);
             }
         }
