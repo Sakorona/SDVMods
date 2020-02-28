@@ -1,5 +1,9 @@
 ## Changelog
 
+### 1.1.1
+- Eclipses should now: sync to MP farmhands, clear for MP farmhands (#90, #91)
+- Eclipses will no longer occur on festival days. (#92)
+
 ### 1.1
 
 - Blood moons change the moon in the HUD.

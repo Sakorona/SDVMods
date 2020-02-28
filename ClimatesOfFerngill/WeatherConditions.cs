@@ -282,6 +282,38 @@ namespace ClimatesOfFerngillRebuild
         /// <summary> This returns the low for tomorrow </summary>
         public double TomorrowLow => TomorrowTemps.LowerBound;
 		
+        public bool IsFoggy()
+        {
+            if (ClimatesOfFerngill.Conditions.GetWeatherMatchingType("Fog").First().IsWeatherVisible)
+                return true;
+
+            return false;
+        }
+
+        public bool IsThunderFrenzy()
+        {
+            if (ClimatesOfFerngill.Conditions.GetWeatherMatchingType("ThunderFrenzy").First().IsWeatherVisible)
+                return true;
+
+            return false;
+        }
+
+        public bool IsBlizzard()
+        {
+            if (ClimatesOfFerngill.Conditions.GetWeatherMatchingType("Blizzard").First().IsWeatherVisible)
+                return true;
+
+            return false;
+        }
+        
+        public bool IsWhiteOut()
+        {
+            if (ClimatesOfFerngill.Conditions.GetWeatherMatchingType("WhiteOut").First().IsWeatherVisible)
+                return true;
+
+            return false;
+        }
+
         public double GetCurrentTemperature(int timeOfDay)
         {
             double temp;
@@ -743,6 +775,8 @@ namespace ClimatesOfFerngillRebuild
         {
             if (!Context.IsMainPlayer)
                 return;
+            /* if (!Context.IsMultiplayer)
+                return; */
 
             WeatherSync Message = GenerateWeatherSyncMessage();
 
@@ -849,16 +883,16 @@ namespace ClimatesOfFerngillRebuild
 
             Game1.updateWeatherIcon();
 
-            if (ws.isFoggy && ws.fogWeatherEndTime <= Game1.timeOfDay)
+            if (ws.isFoggy && ws.fogWeatherEndTime <= Game1.timeOfDay && this.IsFoggy())
                 ForceWeatherEnd("Fog");
 
-            if (ws.isBlizzard && ws.blizzWeatherEndTime <= Game1.timeOfDay)
+            if (ws.isBlizzard && ws.blizzWeatherEndTime <= Game1.timeOfDay && this.IsBlizzard())
                 ForceWeatherEnd("Blizzard");
 
-            if (ws.isWhiteOut && ws.whiteWeatherEndTime <= Game1.timeOfDay)
+            if (ws.isWhiteOut && ws.whiteWeatherEndTime <= Game1.timeOfDay && this.IsWhiteOut())
                 ForceWeatherEnd("WhiteOut");
 
-            if (ws.isThunderFrenzy && ws.thunWeatherEndTime <= Game1.timeOfDay)
+            if (ws.isThunderFrenzy && ws.thunWeatherEndTime <= Game1.timeOfDay && this.IsThunderFrenzy())
                 ForceWeatherEnd("ThunderFrenzy");
 
             if (ws.isAbnormalHeat)

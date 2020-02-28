@@ -31,6 +31,8 @@ namespace TwilightShards.LunarDisturbances
         private Integrations.IJsonAssetsApi JAAPi;
         internal int ResetTicker { get; set; }
         private int SecondCount;
+        private bool HasGottenSync = false;
+        internal static IMultiplayerHelper MPHandler;
 
         private ILunarDisturbancesAPI API;
 
@@ -68,6 +70,7 @@ namespace TwilightShards.LunarDisturbances
             ModConfig = Helper.ReadConfig<MoonConfig>();
             OurMoon = new SDVMoon(ModConfig, Dice, Helper.Translation);
             ContentManager = Helper.Content;
+            MPHandler = Helper.Multiplayer;
             OurIcons = new Sprites.Icons(Helper.Content);
             queuedMsg = null;
             BloodMoonTracker = new List<string>();
@@ -83,10 +86,32 @@ namespace TwilightShards.LunarDisturbances
             helper.Events.Display.MenuChanged += OnMenuChanged;
             helper.Events.Player.Warped += OnWarped;
             helper.Events.GameLoop.ReturnedToTitle += OnReturnedToTitle;
+            helper.Events.Multiplayer.ModMessageReceived += OnModMessageRecieved;
 
             helper.ConsoleCommands.Add("force_bloodmoon", "Forces a bloodmoon", ForceBloodMoon)
                                   .Add("force_bloodmoonoff", "Turns bloodmoon off.", TurnBloodMoonOff)
 								  .Add("force_eclipseOn", "Turns eclipse on.", TurnEclipseOn);
+        }
+
+        private void OnModMessageRecieved(object sender, ModMessageReceivedEventArgs e)
+        {
+            if (e.FromModID == "KoihimeNakamura.LunarDisturbances" && e.Type == "NewFarmHandJoin" && Context.IsMainPlayer && !HasGottenSync)
+            {
+
+                MoonMessage message = GenerateLunarSync();
+                MPHandler.SendMessage<MoonMessage>(message, "MoonMessage", new[] { "KoihimeNakamura.LunarDisturbances" }, new[] { e.FromPlayerID });
+                HasGottenSync = true;
+            }
+
+            if (e.FromModID == "KoihimeNakamura.LunarDisturbances" && e.Type == "MoonMessage")
+            {
+                MoonMessage message = e.ReadAs<MoonMessage>();
+                if (ModConfig.Verbose)
+                {
+                    Monitor.Log($"Message contents at {Game1.timeOfDay} : Eclipse Setting: {message.isEclipse})");
+                }
+                SetLunarSync(message);
+            }
         }
 
         private void GameLoop_DayEnding(object sender, DayEndingEventArgs e)
@@ -179,6 +204,9 @@ namespace TwilightShards.LunarDisturbances
         /// <param name="e">The event arguments.</param>
         private void OnSaving(object sender, SavingEventArgs e)
         {
+            if (IsEclipse)
+                IsEclipse = false;
+
             if (!Context.IsMainPlayer)
                 return;
 
@@ -194,8 +222,7 @@ namespace TwilightShards.LunarDisturbances
 
             BloodMoonTracker.Clear();
 
-            if (IsEclipse)
-                IsEclipse = false;          
+              
         }
 
         /// <summary>Raised after a game menu is opened, closed, or replaced.</summary>
@@ -268,7 +295,7 @@ namespace TwilightShards.LunarDisturbances
             }
 
             if (Dice.NextDouble() < ModConfig.EclipseChance && ModConfig.EclipseOn && OurMoon.CurrentPhase == MoonPhase.NewMoon &&
-                SDate.Now().DaysSinceStart > 2)
+                SDate.Now().DaysSinceStart > 2 && !Utility.isFestivalDay(Game1.dayOfMonth,Game1.currentSeason))
             {
                 IsEclipse = true;
                 var n = new HUDMessage(Helper.Translation.Get("moon-text.solareclipse"))
@@ -279,12 +306,27 @@ namespace TwilightShards.LunarDisturbances
                     noIcon = true
                 };
                 Game1.addHUDMessage(n);
-
+                MoonMessage message = GenerateLunarSync();
+                MPHandler.SendMessage<MoonMessage>(message, "MoonMessage", new[] { "KoihimeNakamura.LunarDisturbances" });
                 Monitor.Log("There's a solar eclipse today!", LogLevel.Info);
             }
 
             OurMoon.OnNewDay();
             OurMoon.HandleMoonAfterWake();
+        }
+
+        MoonMessage GenerateLunarSync()
+        {
+            var m = new MoonMessage
+            {
+                isEclipse = IsEclipse
+            };
+            return m;
+        }
+
+        void SetLunarSync(MoonMessage m)
+        {
+            IsEclipse = m.isEclipse;
         }
 
         /// <summary>Raised after the in-game clock time changes.</summary>

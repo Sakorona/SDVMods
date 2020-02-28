@@ -2,7 +2,7 @@
 
 ## Current Version:
 
-1.1
+1.1.1
 
 ## Requirements
 
@@ -39,3 +39,4 @@ Price alterations under the blood moon may be incompatible with other mods that 
 - ChefRude for testing
 - Sky for the Korean translation
 - FarAways for the Chinese? translation
+- LeeCanIt for the Italian translation

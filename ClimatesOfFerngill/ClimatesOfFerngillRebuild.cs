@@ -106,41 +106,35 @@ namespace ClimatesOfFerngillRebuild
             if (Disabled) return;
 
             var harmony = HarmonyInstance.Create("koihimenakamura.climatesofferngill");
-            harmony.PatchAll(Assembly.GetExecutingAssembly());
-            
-            ConsoleCommands.Init();
+            harmony.Patch(
+                original: AccessTools.Method(typeof(GameLocation), "drawAboveAlwaysFrontLayer"),
+                transpiler: new HarmonyMethod(AccessTools.Method(typeof(GameLocationPatches), "DAAFLTranspiler")));
+            Monitor.Log("Patching GameLocation::drawAboveAlwaysFrontLayer with a Transpiler.", LogLevel.Trace);
 
-            MethodInfo GameLocationDAAFL = AccessTools.Method(typeof(GameLocation), "drawAboveAlwaysFrontLayer");
-            HarmonyMethod DAAFLTranspiler = new HarmonyMethod(AccessTools.Method(typeof(GameLocationPatches), "DAAFLTranspiler"));
-            Monitor.Log($"Patching {GameLocationDAAFL} with Transpiler: {DAAFLTranspiler}", LogLevel.Trace); ;
-            harmony.Patch(GameLocationDAAFL, transpiler: DAAFLTranspiler);
-			
-	        MethodInfo GameDrawW = AccessTools.Method(typeof(Game1), "drawWeather");
-            HarmonyMethod DrawWeatherPrefix = new HarmonyMethod(AccessTools.Method(typeof(Game1Patches), "DrawWeatherPrefix"));
-            Monitor.Log($"Patching {GameDrawW} with Prefix: {DrawWeatherPrefix}", LogLevel.Trace); ;
-            harmony.Patch(GameDrawW, prefix: DrawWeatherPrefix);
+            harmony.Patch(
+                original: AccessTools.Method(typeof(Game1), "drawWeather"),
+                prefix: new HarmonyMethod(AccessTools.Method(typeof(Game1Patches), "DpdateWeatherPrefix")));
+            Monitor.Log("Patching Game1::drawWeather with a prefix method.", LogLevel.Trace);
 
-            Type t = AccessTools.TypeByName("StardewModdingAPI.Framework.SGame");
-            MethodInfo SGameDrawImpl = AccessTools.Method(t, "DrawImpl");
-            HarmonyMethod DrawTrans = new HarmonyMethod(AccessTools.Method(typeof(SGamePatches), "DrawImplTranspiler"));
-            Monitor.Log($"Patching {SGameDrawImpl} with Transpiler: {DrawTrans}", LogLevel.Trace);
-            harmony.Patch(SGameDrawImpl,transpiler: DrawTrans);
-     
-            t = AccessTools.TypeByName("StardewValley.WeatherDebris");
-            var DebrisConstructor = AccessTools.Constructor(t, new[] { typeof(Vector2), typeof (int), typeof(float), typeof(float), typeof(float)});
-            HarmonyMethod CtorPatch = new HarmonyMethod(AccessTools.Method(typeof(WeatherDebrisPatches), "CtorPostfix"));
-            Monitor.Log($"Patching {DebrisConstructor} with Postfix: {CtorPatch}", LogLevel.Trace);
-            harmony.Patch(DebrisConstructor, postfix: CtorPatch);
+            harmony.Patch(
+                original: AccessTools.Method(AccessTools.TypeByName("StardewModdingAPI.Framework.SGame"), "DrawImpl"),
+                transpiler: new HarmonyMethod(AccessTools.Method(typeof(SGamePatches), "DrawImplTranspiler")));
+            Monitor.Log("Patching SMAPI (SGame::DrawImpl) with a transpiler.", LogLevel.Trace);
 
-            MethodInfo DebrisDraw = AccessTools.Method(typeof(WeatherDebris), "draw");
-            HarmonyMethod DebrisPatch = new HarmonyMethod(AccessTools.Method(typeof(WeatherDebrisPatches), "DrawPrefix"));
-            Monitor.Log($"Patching {DebrisDraw} with Prefix: {DebrisDraw}", LogLevel.Trace);
-            harmony.Patch(DebrisDraw,prefix: DebrisPatch);
+            harmony.Patch(
+                original: AccessTools.Constructor(AccessTools.TypeByName("StardewValley.WeatherDebris"), new[] { typeof(Vector2), typeof(int), typeof(float), typeof(float), typeof(float) }),
+                postfix: new HarmonyMethod(AccessTools.Method(typeof(WeatherDebrisPatches), "CtorPostfix")));
+            Monitor.Log("Patching WeatherDebris's constructor method with a postfix method.", LogLevel.Trace);
 
-            MethodInfo DebrisUpdate = AccessTools.Method(typeof(WeatherDebris), "update", new[] { typeof(bool) });
-            HarmonyMethod DebrisUpdatePatch = new HarmonyMethod(AccessTools.Method(typeof(WeatherDebrisPatches), "UpdatePrefix"));
-            Monitor.Log($"Patching {DebrisUpdate} with Prefix: {DebrisUpdatePatch}", LogLevel.Trace);
-            harmony.Patch(DebrisUpdate, prefix: DebrisUpdatePatch);
+            harmony.Patch(
+                original: AccessTools.Method(typeof(WeatherDebris), "draw"),
+                prefix: new HarmonyMethod(AccessTools.Method(typeof(WeatherDebrisPatches), "DrawPrefix")));
+            Monitor.Log("Patching WeatherDebris::draw with a prefix method.", LogLevel.Trace);
+
+            harmony.Patch(
+                original: AccessTools.Method(typeof(WeatherDebris), "update", new[] { typeof(bool) }),
+                prefix: new HarmonyMethod(AccessTools.Method(typeof(WeatherDebrisPatches), "UpdatePrefix")));
+            Monitor.Log("Patching WeatherDebris::draw with a prefix method.", LogLevel.Trace);
 
             //INSERT DNT CHECKS HERE
             var modManifest = Helper.ModRegistry.Get("knakamura.dynamicnighttime");
@@ -153,13 +147,13 @@ namespace ClimatesOfFerngillRebuild
             }
             else
             {
-                //Normal Climates patch goes here.
-                MethodInfo UpdateGameClock = helper.Reflection.GetMethod(SDVUtilities.GetSDVType("Game1"), "UpdateGameClock").MethodInfo;
-                MethodInfo postfixClock = helper.Reflection.GetMethod(typeof(Patches.GameClockPatch), "Postfix").MethodInfo;
-                Monitor.Log($"Postfixing {UpdateGameClock} with {postfixClock}", LogLevel.Trace);
-                harmony.Patch(UpdateGameClock, null, new HarmonyMethod(postfixClock));
+                harmony.Patch(
+                    original: AccessTools.Method(typeof(Game1), "UpdateGameClock"),
+                    postfix: new HarmonyMethod(AccessTools.Method(typeof(GameClockPatch), "Postfix")));
+                Monitor.Log("Patching Game1::UpdateGameClock with a Postfix method. (Used only when Climates is installed and DNT is not.)", LogLevel.Trace);
             }
 
+            ConsoleCommands.Init();
             SanityCheckConfigOptions();
 
             //subscribe to events
@@ -198,7 +192,6 @@ namespace ClimatesOfFerngillRebuild
             if (WeatherOpt.MaxRainFall > WeatherUtilities.GetRainCategoryUpperBound(RainLevels.NoahsFlood))
                 WeatherOpt.MaxRainFall = WeatherUtilities.GetRainCategoryUpperBound(RainLevels.NoahsFlood);
         }
-
 
         private static int GetPixelZoom()
         {
