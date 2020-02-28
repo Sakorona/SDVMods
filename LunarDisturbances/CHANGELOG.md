@@ -1,6 +1,7 @@
 ## Changelog
 
 ### 1.1.1
+- Text fixes (#93)
 - Eclipses should now: sync to MP farmhands, clear for MP farmhands (#90, #91)
 - Eclipses will no longer occur on festival days. (#92)
 
