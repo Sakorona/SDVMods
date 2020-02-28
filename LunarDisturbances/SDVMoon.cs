@@ -21,7 +21,7 @@ namespace TwilightShards.LunarDisturbances
         private readonly ITranslationHelper Translations;
 
         //internal trackers
-        private static readonly int cycleLength = 14;
+        private const int cycleLength = 14;
 
         //chances for various things
         public Color BloodMoonWater = Color.Red * 0.8f;

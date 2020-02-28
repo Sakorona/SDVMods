@@ -3,7 +3,7 @@
   <PropertyGroup>
     <AssemblyName>LunarDisturbances</AssemblyName>
     <RootNamespace>LunarDisturbances</RootNamespace>
-    <Version>1.1</Version>
+    <Version>1.1.1</Version>
     <TargetFramework>net452</TargetFramework>
   </PropertyGroup>
 

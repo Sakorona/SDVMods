@@ -120,9 +120,9 @@ namespace TwilightShards.LunarDisturbances
             if (cropCount != 0)
             {
                 if (OurMoon.CurrentPhase == MoonPhase.NewMoon)
-                    queuedMsg = new HUDMessage(Helper.Translation.Get("moon-text.newmoon_eff", new { cropCount }));
+                    queuedMsg = new HUDMessage(Helper.Translation.Get("moon-text.newmoon_eff", new { cropsAffected = cropCount }));
                 if (OurMoon.CurrentPhase == MoonPhase.FullMoon)
-                    queuedMsg = new HUDMessage(Helper.Translation.Get("moon-text.fullmoon_eff", new { cropCount }));
+                    queuedMsg = new HUDMessage(Helper.Translation.Get("moon-text.fullmoon_eff", new { cropsAffected = cropCount }));
             }
         }
 		
