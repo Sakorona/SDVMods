@@ -1,5 +1,10 @@
 ## Changelog
 
+### 1.1.2
+- API expanded for plain text moon phase not tied to loc.
+- CP tokens provided. See API documentation for both changes
+- Blood Moon debug message removed
+
 ### 1.1.1
 - Text fixes (#93)
 - Eclipses should now: sync to MP farmhands, clear for MP farmhands (#90, #91)

@@ -12,6 +12,7 @@ using StardewValley.Objects;
 using StardewValley.Locations;
 using StardewValley.Monsters;
 using TwilightShards.Stardew.Common;
+using TwilightShards.LunarDisturbances.Integrations;
 
 namespace TwilightShards.LunarDisturbances
 {
@@ -474,6 +475,14 @@ namespace TwilightShards.LunarDisturbances
                 api.RegisterClampedOption(ModManifest, "Beach Removal Chance", "The chance for items on the beach to be removed on a new moon", () => (float)ModConfig.BeachRemovalChance, (float val) => ModConfig.BeachRemovalChance = val, 0f, 1f);
                 api.RegisterClampedOption(ModManifest, "Beach Spawn Chance", "The chance for items on the beach to be spawned on a full moon", () => (float)ModConfig.BeachSpawnChance, (float val) => ModConfig.BeachSpawnChance = val, 0f, 1f);
                 api.RegisterClampedOption(ModManifest, "Ghost Spawn Chance", "The chance for ghosts to spawn on a full moon", () => (float)ModConfig.GhostSpawnChance, (float val) => ModConfig.GhostSpawnChance = val, 0f, 1f);
+            }
+
+            var cpAPI = this.Helper.ModRegistry.GetApi<IContentPatcherAPI>("Pathoschild.ContentPatcher");
+            if (cpAPI != null)
+            {
+                cpAPI.RegisterToken(this.ModManifest, "MoonPhase", new[] { OurMoon.SimpleMoonPhase() });
+                cpAPI.RegisterToken(this.ModManifest, "MoonRise", new[] { OurMoon.GetMoonRiseTime() });
+                cpAPI.RegisterToken(this.ModManifest, "MoonSet", new[] { OurMoon.GetMoonSetTime() });
             }
         }
         

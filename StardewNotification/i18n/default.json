@@ -2,6 +2,7 @@
   // Notification messages
   "travelingMerchant": "Traveling Merchant has arrived",
   "queenSauce": "Queen of Sauce airs today",
+  "checkLiving": "Living off the Land airs today!",
   "luckyDay": "Lucky Day!",
   "unluckyDay":  "Unlucky Day!", 
 
@@ -23,11 +24,21 @@
   "Seashells": "Seashells on the seashore",
   "Blackberry": "Blackberry season",
 
+  // Weathers
+  "weather-rain": "rain",
+  "weather-sunny": "sunny",
+  "weather-tstorm": "thunderstorms",
+  "weather-snow": "snow",
+  "weather-wind": "windy",
+  "weather-festival": "festival",
+  "weather-wedding": "wedding",
+
   // Locations
   "CaveMushroom": "Cave Mushrooms ready for harvest",
   "CaveFruit": "Cave Fruits ready for harvest",
 
   "birthday": "{{charName}}'s birthday!",
+  "weather" : "Tommorow's weather is {{weather}}'",
   "birthdayReminder": "Don't forget to give {{charName}} a birthday gift today!",
   "toolPickup": "{{toolName}} is ready for pickup",
 

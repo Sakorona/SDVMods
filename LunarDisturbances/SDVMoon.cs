@@ -247,8 +247,6 @@ namespace TwilightShards.LunarDisturbances
                     willDestroyObjectsUnderfoot = false,
                 };
                 characters.Add((NPC)ghost);
-
-                Game1.addHUDMessage(new HUDMessage("DEBUG: Ghost spawned"));
             }
         }
 
@@ -315,6 +313,11 @@ namespace TwilightShards.LunarDisturbances
             }
         }
 
+        public string SimpleMoonPhase()
+        {
+            return SDVMoon.DescribeMoonPhase(this.CurrentPhase);
+        }
+
         public static string DescribeMoonPhase(MoonPhase mp, ITranslationHelper Helper)
         {
             switch (mp)
@@ -341,6 +344,35 @@ namespace TwilightShards.LunarDisturbances
                     return Helper.Get("moon-text.phase-blood");
                 default:
                     return Helper.Get("moon-text.error");
+            }
+        }
+
+        public static string DescribeMoonPhase(MoonPhase mp)
+        {
+            switch (mp)
+            {
+                case MoonPhase.ErrorPhase:
+                    return "ErrorPhase";
+                case MoonPhase.FirstQuarter:
+                    return "FirstQuarter";
+                case MoonPhase.FullMoon:
+                    return "FullMoon";
+                case MoonPhase.NewMoon:
+                    return "NewMoon";
+                case MoonPhase.ThirdQuarter:
+                    return "ThirdQuarter";
+                case MoonPhase.WaningCrescent:
+                    return "WaningCrescent";
+                case MoonPhase.WaningGibbeous:
+                    return "WaningGibbous";
+                case MoonPhase.WaxingCrescent:
+                    return "WaxingCrescent";
+                case MoonPhase.WaxingGibbeous:
+                    return "WaxingGibbous";
+                case MoonPhase.BloodMoon:
+                    return "BloodMoon";
+                default:
+                    return "ErrorMoon";
             }
         }
 
