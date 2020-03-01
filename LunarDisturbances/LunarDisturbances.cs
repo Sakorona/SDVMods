@@ -231,7 +231,7 @@ namespace TwilightShards.LunarDisturbances
         /// <param name="e">The event arguments.</param>
         private void OnMenuChanged(object sender, MenuChangedEventArgs e)
         {
-			if (e.NewMenu is DialogueBox dBox && OurMoon.CurrentPhase == MoonPhase.BloodMoon)
+		if (e.NewMenu is DialogueBox dBox && OurMoon.CurrentPhase == MoonPhase.BloodMoon)
 			{
                  if (!(BloodMoonTracker.Contains(Game1.currentSpeaker.Name)))
                 {
@@ -362,8 +362,8 @@ namespace TwilightShards.LunarDisturbances
                 if ((Game1.farmEvent == null && Game1.random.NextDouble() < (0.25 - Game1.player.team.AverageDailyLuck() / 2.0))
                     && Game1.spawnMonstersAtNight && Context.IsMainPlayer)
                 {
-					if (ModConfig.Verbose)
-						Monitor.Log("Spawning a monster, or attempting to.", LogLevel.Debug);
+		    if (ModConfig.Verbose)
+			Monitor.Log("Spawning a monster, or attempting to.", LogLevel.Debug);
 					
                     if (Game1.random.NextDouble() < 0.25)
                     {
