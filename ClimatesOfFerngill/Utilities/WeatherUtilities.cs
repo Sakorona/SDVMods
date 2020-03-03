@@ -342,14 +342,13 @@ namespace ClimatesOfFerngillRebuild
         {
             Game1.isSnowing = Game1.isDebrisWeather = false;
             Game1.isLightning = Game1.isRaining = false;
-            Game1.debrisWeather.Clear();
-
             Game1.isDebrisWeather = true;
             ClimatesOfFerngill.WindCap = -50f;
             ClimatesOfFerngill.WindMin = -30f;
             ClimatesOfFerngill.Conditions.GetWeatherMatchingType("Blizzard").First().EndWeather();
             ClimatesOfFerngill.Conditions.GetWeatherMatchingType("Sandstorm").First().ForceWeatherStart();
             ClimatesOfFerngill.Conditions.GetWeatherMatchingType("Sandstorm").First().SetWeatherExpirationTime(new SDVTime(2600));
+            Game1.populateDebrisWeatherArray();
             ClimatesOfFerngill.Conditions.GetWeatherMatchingType("WhiteOut").First().EndWeather();
             ClimatesOfFerngill.Conditions.GetWeatherMatchingType("Fog").First().EndWeather();
             Game1.updateWeather(Game1.currentGameTime);

@@ -314,6 +314,14 @@ namespace ClimatesOfFerngillRebuild
             return false;
         }
 
+        public bool IsSandstorm()
+        {
+            if (ClimatesOfFerngill.Conditions.GetWeatherMatchingType("Sandstorm").First().IsWeatherVisible)
+                return true;
+
+            return false;
+        }
+
         public double GetCurrentTemperature(int timeOfDay)
         {
             double temp;

@@ -498,6 +498,7 @@ namespace ClimatesOfFerngillRebuild
                     curr.AddWeather(CurrentWeather.Sandstorm);
                     specialWeatherTriggered = true;
                     curr.CreateWeather("Sandstorm");
+                    Game1.populateDebrisWeatherArray(); //repopulate for sandstorm weather
                     //code here to set wind conditions for heavy!
                     SetWindToHeavy();
                 }

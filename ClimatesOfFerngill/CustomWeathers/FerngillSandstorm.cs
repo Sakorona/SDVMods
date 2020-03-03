@@ -31,7 +31,7 @@ namespace ClimatesOfFerngillRebuild.Weathers
 
         public void ForceWeatherStart()
         {
-            SandstormAlpha = 1f;
+            SandstormAlpha = .75f;
             BeginTime = new SDVTime(0600);
             ExpirTime = new SDVTime(0600);
 
