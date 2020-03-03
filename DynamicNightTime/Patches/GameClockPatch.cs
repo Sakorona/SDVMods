@@ -26,7 +26,19 @@ namespace DynamicNightTime.Patches
                 moonLight = DynamicNightTime.GetLunarLightDifference();
             }
 
-            bool ShouldDarken = Game1.isRaining || ((DynamicNightTime.ClimatesLoaded && DynamicNightTime.ClimatesAPI.GetCurrentWeatherName().Contains("overcast")));
+            string weather;
+
+            try
+            {
+                weather = DynamicNightTime.ClimatesAPI.GetCurrentWeatherName();
+            }
+            catch (Exception ex)
+            {
+               DynamicNightTime.Logger.Log($"Exception encountered when trying to get weather in API call. Exception text is as follows {ex.ToString()}.", StardewModdingAPI.LogLevel.Error);
+                weather = "error";                
+            }
+        
+            bool ShouldDarken = Game1.isRaining || ((DynamicNightTime.ClimatesLoaded && weather.Contains("overcast")));
 
             if (Game1.timeOfDay <= astronTime)
             {

@@ -123,7 +123,7 @@ namespace StardewNotification
             {
                 case "Mon":
                 case "Thu":
-                    Util.ShowMessage(Trans.Get("showLiving"));
+                    Util.ShowMessage(Trans.Get("checkLiving"));
                     break;
                 default:
                     break;

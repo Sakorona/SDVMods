@@ -1,5 +1,8 @@
 ## Changelog
 
+### 1.3.1
+ - DNT should be more resilliant to nulls from Climates
+
 ### 1.3
  - In the morning, the music will now update as the sun rises
  - Assorted fixes to various elements

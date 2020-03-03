@@ -1192,12 +1192,12 @@ namespace ClimatesOfFerngillRebuild
             if (IsOvercast)
             {
                 SDVUtilities.AlterWaterStatusOfCrops(false);
-		RemoveWeather(CurrentWeather.Sunny);
+		        RemoveWeather(CurrentWeather.Sunny);
                 AddWeather(CurrentWeather.Overcast);
             }
 
             if (Game1.isRaining) { 
-		RemoveWeather(CurrentWeather.Overcast);
+		        RemoveWeather(CurrentWeather.Overcast);
                 AddWeather(CurrentWeather.Rain);
                 if (IsVariableRain)
                 {
@@ -1227,6 +1227,8 @@ namespace ClimatesOfFerngillRebuild
                     CurrentConditionsN |= CurrentWeather.Blizzard;
                 if (weat.WeatherType == "WhiteOut" && weat.IsWeatherVisible)
                     CurrentConditionsN |= CurrentWeather.WhiteOut;
+                if (weat.WeatherType == "Sandstorm" && weat.IsWeatherVisible)
+                    CurrentConditionsN |= CurrentWeather.Sandstorm;
             }
         }
 
@@ -1239,7 +1241,7 @@ namespace ClimatesOfFerngillRebuild
             string ret = "";
             ret += $"Low for today is {TodayTemps?.LowerBound:N3} with the high being {TodayTemps?.HigherBound:N3}. The current conditions are {Weathers[(int)CurrentConditionsN].ConditionName}.";
 
-	    ret += Environment.NewLine;
+	        ret += Environment.NewLine;
             foreach (ISDVWeather weather in CurrentWeathers)
                 ret += weather.ToString() + Environment.NewLine;
             

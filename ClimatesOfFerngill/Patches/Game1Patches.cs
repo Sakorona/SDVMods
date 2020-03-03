@@ -9,6 +9,86 @@ namespace ClimatesOfFerngillRebuild.Patches
 {
     public static class Game1Patches
     {
+        public static bool UpdateWeatherPrefix(GameTime time)
+        {
+            if (Game1.isSnowing && Game1.currentLocation.IsOutdoors && !(Game1.currentLocation is Desert))
+            {
+                Vector2 current = new Vector2(Game1.viewport.X, Game1.viewport.Y);
+                Game1.snowPos = Game1.updateFloatingObjectPositionForMovement(Game1.snowPos, current, Game1.previousViewportPosition, -1f);
+            }
+            if (Game1.isRaining && Game1.currentLocation.IsOutdoors)
+            {
+                for (int index = 0; index < Game1.rainDrops.Length; ++index)
+                {
+                    if (Game1.rainDrops[index].frame == 0)
+                    {
+                        Game1.rainDrops[index].accumulator += time.ElapsedGameTime.Milliseconds;
+                        if (Game1.rainDrops[index].accumulator > 70)
+                        {
+                            Game1.rainDrops[index].position += new Vector2(index * 8 / Game1.rainDrops.Length - 16 + ClimatesOfFerngill.RainX, 32 - index * 8 / Game1.rainDrops.Length + ClimatesOfFerngill.RainY);
+                            Game1.rainDrops[index].accumulator = 0;
+                            if (Game1.random.NextDouble() < 0.1)
+                                ++Game1.rainDrops[index].frame;
+                            if (Game1.rainDrops[index].position.Y > (double)(Game1.viewport.Height + 64))
+                                Game1.rainDrops[index].position.Y = -64f;
+                        }
+                    }
+                    else
+                    {
+                        Game1.rainDrops[index].accumulator += time.ElapsedGameTime.Milliseconds;
+                        if (Game1.rainDrops[index].accumulator > 70)
+                        {
+                            Game1.rainDrops[index].frame = (Game1.rainDrops[index].frame + 1) % 4;
+                            Game1.rainDrops[index].accumulator = 0;
+                            if (Game1.rainDrops[index].frame == 0)
+                                Game1.rainDrops[index].position = new Vector2(Game1.random.Next(Game1.viewport.Width), Game1.random.Next(Game1.viewport.Height));
+                        }
+                    }
+                }
+            }
+            if (Game1.isDebrisWeather && Game1.currentLocation.IsOutdoors && !Game1.currentLocation.ignoreDebrisWeather.Value)
+            {
+                //Game1.currentSeason.Equals("fall") && Game1.random.NextDouble() < 0.001 
+                //default windthreshold is -0.5f
+                if (Game1.random.NextDouble() < ClimatesOfFerngill.WindChance && (Game1.windGust == 0.0 && (double)WeatherDebris.globalWind >= ClimatesOfFerngill.WindThreshold))
+                {
+                    Game1.windGust += Game1.random.Next(-10, -1) / 100f;
+                    if (Game1.soundBank != null)
+                    {
+                        Game1.wind = Game1.soundBank.GetCue("wind");
+                        Game1.wind.Play();
+                    }
+                }
+                else if (Game1.windGust != 0.0)
+                {
+                    //Game1.windGust = Math.Max(-5f, Game1.windGust * 1.02f);
+                    if (ClimatesOfFerngill.WindOverrideSpeed == 0.0)
+                        Game1.windGust = Math.Max(ClimatesOfFerngill.WindCap, ClimatesOfFerngill.WindMin);
+                    else
+                        Game1.windGust = ClimatesOfFerngill.WindOverrideSpeed;
+
+                    WeatherDebris.globalWind = Game1.windGust - 0.5f;
+                    if (Game1.windGust < -0.200000002980232 && Game1.random.NextDouble() < 0.007)
+                        Game1.windGust = 0.0f;
+
+                    if (Game1.random.NextDouble() < 0.004) //kill long gusts, potentially, .4% every update tick
+                        Game1.windGust = 0.0f;
+                }
+                foreach (WeatherDebris weatherDebris in Game1.debrisWeather)
+                    weatherDebris.update();
+            }
+            if (WeatherDebris.globalWind >= -0.5 || Game1.wind == null)
+                return false;
+            WeatherDebris.globalWind = Math.Min(-0.5f, WeatherDebris.globalWind + 0.015f);
+            Game1.wind.SetVariable("Volume", (float)(-WeatherDebris.globalWind * 20.0));
+            Game1.wind.SetVariable("Frequency", (float)(-WeatherDebris.globalWind * 20.0));
+            if (WeatherDebris.globalWind != -0.5)
+                return false;
+            Game1.wind.Stop(AudioStopOptions.AsAuthored);
+
+            return false;
+        }
+
 #pragma warning disable IDE0060 
         public static bool DrawWeatherPrefix(Game1 __instance, GameTime time, RenderTarget2D target_screen)
 #pragma warning restore IDE0060 

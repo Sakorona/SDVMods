@@ -481,8 +481,8 @@ namespace TwilightShards.LunarDisturbances
             if (cpAPI != null)
             {
                 cpAPI.RegisterToken(this.ModManifest, "MoonPhase", () => new[] { OurMoon.SimpleMoonPhase() });
-                cpAPI.RegisterToken(this.ModManifest, "MoonRise", () => new[] { OurMoon.GetMoonRiseTime() });
-                cpAPI.RegisterToken(this.ModManifest, "MoonSet", () => new[] { OurMoon.GetMoonSetTime() });
+                cpAPI.RegisterToken(this.ModManifest, "MoonRise", () => new[] { OurMoon.GetMoonRiseTime().ToString() }); 
+                cpAPI.RegisterToken(this.ModManifest, "MoonSet", () => new[] { OurMoon.GetMoonSetTime().ToString() });
             }
         }
         

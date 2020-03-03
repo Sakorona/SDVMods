@@ -98,10 +98,6 @@ namespace ClimatesOfFerngillRebuild
             SetFogTargetAlpha();
             this.FogAlpha = this.FogTargetAlpha;
             CurrentFogType = FogType.Normal;
-
-
-            
-                
         }
 
         public void ForceWeatherEnd()
@@ -351,11 +347,19 @@ namespace ClimatesOfFerngillRebuild
 
             if (IsWeatherVisible && Game1.shouldTimePass() )
             {
-                //Game1.outdoorLight = fogLight;
-                this.FogPosition = Game1.updateFloatingObjectPositionForMovement(FogPosition,
-                    new Vector2(Game1.viewport.X, Game1.viewport.Y), Game1.previousViewportPosition, -1f);
-                FogPosition = new Vector2((FogPosition.X + 0.5f) % (64 * Game1.pixelZoom),
-                    (FogPosition.Y + 0.5f) % (64 * Game1.pixelZoom));
+                if (Game1.isDebrisWeather) {
+                    this.FogPosition = Game1.updateFloatingObjectPositionForMovement(FogPosition,
+                        new Vector2(Game1.viewport.X, Game1.viewport.Y), Game1.previousViewportPosition, -1f);
+                    FogPosition = new Vector2((FogPosition.X + 0.5f) % (64 * Game1.pixelZoom) + WeatherDebris.globalWind,
+                        (FogPosition.Y + 0.5f) % (64 * Game1.pixelZoom));
+                }
+                else {
+                    //Game1.outdoorLight = fogLight;
+                    this.FogPosition = Game1.updateFloatingObjectPositionForMovement(FogPosition,
+                        new Vector2(Game1.viewport.X, Game1.viewport.Y), Game1.previousViewportPosition, -1f);
+                    FogPosition = new Vector2((FogPosition.X + 0.5f) % (64 * Game1.pixelZoom),
+                        (FogPosition.Y + 0.5f) % (64 * Game1.pixelZoom));
+                }
             }
         }
     }

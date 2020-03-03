@@ -54,7 +54,16 @@ namespace ClimatesOfFerngillRebuild
         private static bool IsBloodMoon = false;
         private float weatherX;
         private bool SummitRebornLoaded;
-        
+
+        //experimental var.
+        public static float RainX = 0f;
+        public static float RainY = 0f;
+        public static float WindCap = -120f;
+        public static float WindMin = -1.4f;
+        public static float WindChance = .01f;
+        public static float WindThreshold = -0.5f;
+
+
         //Integrations
         internal static bool UseLunarDisturbancesApi = false;
         internal static Integrations.ILunarDisturbancesAPI MoonAPI;
@@ -113,8 +122,13 @@ namespace ClimatesOfFerngillRebuild
 
             harmony.Patch(
                 original: AccessTools.Method(typeof(Game1), "drawWeather"),
-                prefix: new HarmonyMethod(AccessTools.Method(typeof(Game1Patches), "DpdateWeatherPrefix")));
+                prefix: new HarmonyMethod(AccessTools.Method(typeof(Game1Patches), "DrawWeatherPrefix")));
             Monitor.Log("Patching Game1::drawWeather with a prefix method.", LogLevel.Trace);
+
+            harmony.Patch(
+                original: AccessTools.Method(typeof(Game1), "updateWeather"),
+                prefix: new HarmonyMethod(AccessTools.Method(typeof(Game1Patches), "UpdateWeatherPrefix")));
+            Monitor.Log("Patching Game1::updateWeather with a prefix method.", LogLevel.Trace);
 
             harmony.Patch(
                 original: AccessTools.Method(AccessTools.TypeByName("StardewModdingAPI.Framework.SGame"), "DrawImpl"),
@@ -180,9 +194,17 @@ namespace ClimatesOfFerngillRebuild
                 .Add("debug_weatherstatus", "!", ConsoleCommands.OutputWeather)
                 .Add("debug_sswa", "Show Special Weather", ConsoleCommands.ShowSpecialWeather)
                 .Add("debug_vrainc", "Set Rain Amt.", ConsoleCommands.SetRainAmt)
+                .Add("debug_raindef", "Set Rain Deflection.", ConsoleCommands.SetRainDef)
+                .Add("debug_setwindchance", "Set Wind Chance", ConsoleCommands.SetWindChance)
+                .Add("debug_setwindtresh", "Set Wind Threshold", ConsoleCommands.SetWindThreshold)
+                .Add("debug_setwindrange", "Set Wind Range", ConsoleCommands.SetWindRange)
                 .Add("debug_raintotal", "Get Rain Total", ConsoleCommands.DisplayRainTotal)
+                .Add("debug_getcurrentwind", "Show wind values", ConsoleCommands.ShowWind)
+                .Add("debug_resetwind", "Reset Global Wind", ConsoleCommands.ResetGlobalWind)
                 .Add("debug_printClimate", "Print Climate Tracker Data", ConsoleCommands.DisplayClimateTrackerData);
         }
+
+        public static float WindOverrideSpeed = 0f;
 
         private void SanityCheckConfigOptions()
         {
@@ -408,6 +430,8 @@ namespace ClimatesOfFerngillRebuild
             }
 
             WeatherProcessing.ProcessHazardousCropWeather(Conditions, Game1.timeOfDay, Dice);
+
+            ClimatesOfFerngill.WindOverrideSpeed = 0f; //reset once time has passed.
         }
 
         /// <summary>Raised after drawing the HUD (item toolbar, clock, etc) to the sprite batch, but before it's rendered to the screen. The vanilla HUD may be hidden at this point (e.g. because a menu is open).</summary>

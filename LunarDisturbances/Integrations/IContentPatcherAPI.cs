@@ -1,4 +1,6 @@
 ﻿using StardewModdingAPI;
+using System;
+using System.Collections.Generic;
 
 namespace TwilightShards.LunarDisturbances.Integrations
 {

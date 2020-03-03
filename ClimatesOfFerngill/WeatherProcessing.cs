@@ -498,6 +498,8 @@ namespace ClimatesOfFerngillRebuild
                     curr.AddWeather(CurrentWeather.Sandstorm);
                     specialWeatherTriggered = true;
                     curr.CreateWeather("Sandstorm");
+                    //code here to set wind conditions for heavy!
+                    SetWindToHeavy();
                 }
             }
 
@@ -516,6 +518,18 @@ namespace ClimatesOfFerngillRebuild
             }
 
             return specialWeatherTriggered;
+        }
+
+        internal static void SetWindToTyphoon()
+        {
+            ClimatesOfFerngill.WindCap = -120f;
+            ClimatesOfFerngill.WindMin = -100f;
+        }
+
+        internal static void SetWindToHeavy()
+        {
+            ClimatesOfFerngill.WindCap = -50f;
+            ClimatesOfFerngill.WindMin = -30f;
         }
 
         internal static void Reset()
