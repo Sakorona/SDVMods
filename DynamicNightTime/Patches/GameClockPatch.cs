@@ -72,7 +72,10 @@ namespace DynamicNightTime.Patches
                     float tgtColorR = 255 - sunrise.R;
                     float tgtColorG = 255 - sunrise.G;
                     float tgtColorB = 255 - sunrise.B;
-                    Color destColor = new Color((byte)(255 - (tgtColorR*percentage)), (byte)(255 - (tgtColorG* percentage)), (byte)(tgtColorB * percentage),(255 - (95 * percentage)));
+                    
+                    Color destColor = new Color((byte)(255 - (tgtColorR*percentage)), (byte)(255 - (tgtColorG* percentage)), (byte)(tgtColorB * percentage),(byte)(255 - (95 * percentage)));
+                    DynamicNightTime.Logger.Log($"Debug: Percentage {percentage}, destColor {destColor.ToString()}, tgtColor is ({tgtColorR},{tgtColorG},{tgtColorB})", StardewModdingAPI.LogLevel.Info);
+                    DynamicNightTime.Logger.Log($"AAAARGH. R: {255 - (tgtColorR * percentage)}, G: {(255 - (tgtColorG * percentage))}, B: {(255 - (95 * percentage))}", StardewModdingAPI.LogLevel.Info);
                     Game1.outdoorLight = destColor;
                 }
             }

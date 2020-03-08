@@ -312,16 +312,16 @@ namespace DynamicNightTime
 
         private void OutputLight(string arg1, string[] arg2)
         {
-            Monitor.Log($"The outdoor light is {Game1.outdoorLight.ToString()}. The ambient light is {Game1.ambientLight.ToString()}");
+            Monitor.Log($"The outdoor light is {Game1.outdoorLight.ToString()}. The ambient light is {Game1.ambientLight.ToString()}",LogLevel.Info);
         }
 
         private void OutputInformation(string arg1, string[] arg2)
         {
-            Monitor.Log($"Game date is {SDate.Now().ToString()}, with config'd latitude being {NightConfig.Latitude}");
-            Monitor.Log($"Sunrise : {GetSunrise().ToString()}, Sunset: {GetSunset().ToString()}. Solar Noon {GetSolarNoon().ToString()}");
-            Monitor.Log($"Early Morning ends at {GetEndOfEarlyMorning().ToString()}, Late Afternoon begins at {GetBeginningOfLateAfternoon().ToString()}");
-            Monitor.Log($"Morning Twilight: {GetMorningAstroTwilight().ToString()}, Evening Twilight: {GetAstroTwilight().ToString()}");
-            Monitor.Log($"Game Interval Time is {Game1.gameTimeInterval}");
+            Monitor.Log($"Game date is {SDate.Now().ToString()}, with config'd latitude being {NightConfig.Latitude}", LogLevel.Info);
+            Monitor.Log($"Sunrise : {GetSunrise().ToString()}, Sunset: {GetSunset().ToString()}. Solar Noon {GetSolarNoon().ToString()}", LogLevel.Info);
+            Monitor.Log($"Early Morning ends at {GetEndOfEarlyMorning().ToString()}, Late Afternoon begins at {GetBeginningOfLateAfternoon().ToString()}", LogLevel.Info);
+            Monitor.Log($"Morning Twilight: {GetMorningAstroTwilight().ToString()}, Evening Twilight: {GetAstroTwilight().ToString()}", LogLevel.Info);
+            Monitor.Log($"Game Interval Time is {Game1.gameTimeInterval}", LogLevel.Info);
         }
 
         public static Color GetLunarLightDifference()
