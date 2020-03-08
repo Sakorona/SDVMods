@@ -4,7 +4,7 @@
   "queenSauce": "Queen of Sauce airs today",
   "checkLiving": "Living off the Land airs today!",
   "luckyDay": "Lucky Day!",
-  "unluckyDay":  "Unlucky Day!", 
+  "unluckyDay": "Unlucky Day!",
 
   // Festivals
   "fMsg": "{{fest}} Today!",
@@ -17,7 +17,7 @@
   "SpiritsEve": "Spirit's Eve",
   "IceFestival": "Festival of Ice",
   "WinterStar": "Feast of the Winter Star",
-  "NightMarket":  "Night Market",
+  "NightMarket": "Night Market",
   "SecretSantaReminder": "{{charName}} is your secret santa",
 
   "Salmonberry": "Salmonberry season",
@@ -38,14 +38,14 @@
   "CaveFruit": "Cave Fruits ready for harvest",
 
   "birthday": "{{charName}}'s birthday!",
-  "weather" : "Tommorow's weather is {{weather}}'",
+  "weather": "Tommorow's weather is {{weather}}",
   "birthdayReminder": "Don't forget to give {{charName}} a birthday gift today!",
   "toolPickup": "{{toolName}} is ready for pickup",
-
+  "springOnion": "{{count}} spring onions growing in the Forest",
   "readyHarvest": "{{cropName}} ready for harvest",
   "greenhouse_crops": "Greenhouse crops ready for harvest",
-  "autoGrabber" :  "The auto grabber has items for harvest",
-  "hayMessage" : "Silos report {{hayAmt}} pieces of hay",
+  "autoGrabber": "The auto grabber has items for harvest",
+  "hayMessage": "Silos report {{hayAmt}} pieces of hay",
   "noHayMessage": "No hay in the silos.",
-  "FishPond" : "Fish Ponds ready for harvest."
+  "FishPond": "Fish Ponds ready for harvest."
 }

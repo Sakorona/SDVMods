@@ -4,6 +4,7 @@
 - Fixes to a bad descriptor (dry thunder)
 - A lot of experimental work
 - Some console command fixes
+- It can apparently rain and snow at the same time. Fixed. (#100)
 
 ### 1.5.6
 - Resolve improperly set categories causing errors on displaying descriptions (#85)

@@ -95,7 +95,6 @@ namespace ClimatesOfFerngillRebuild
             }
         }
 
-
         public WeatherIcon CurrentWeatherIconBasic
         {
             get
@@ -257,8 +256,7 @@ namespace ClimatesOfFerngillRebuild
                 { (int)(CurrentWeather.Overcast | CurrentWeather.Fog | CurrentWeather.Heatwave), new WeatherData(WeatherIcon.IconOvercast, WeatherIcon.IconOvercast, "overcastHeatwaveFog", ClimatesOfFerngill.Translator.Get("weather_fog", new {condition = ClimatesOfFerngill.Translator.Get("weather_overcast")}))},
                 { (int)(CurrentWeather.Overcast | CurrentWeather.Frost | CurrentWeather.Fog), new WeatherData(WeatherIcon.IconOvercast, WeatherIcon.IconOvercast, "overcastFrostFog",  ClimatesOfFerngill.Translator.Get("weather_fog", new {condition = ClimatesOfFerngill.Translator.Get("weather_overcast")}))},
                 { (int)(CurrentWeather.Overcast | CurrentWeather.Fog), new WeatherData(WeatherIcon.IconOvercast, WeatherIcon.IconOvercast, "overcastFog",  ClimatesOfFerngill.Translator.Get("weather_fog", new {condition = ClimatesOfFerngill.Translator.Get("weather_overcast")}))}
-
-    };
+            };
         }
 
         /// *************************************************************************
@@ -468,8 +466,7 @@ namespace ClimatesOfFerngillRebuild
             {
                 UpdateDynamicRain();
                 TenMCounter = 0;
-            }
-            
+            }            
         }
 
         public void SecondUpdate()
@@ -527,8 +524,6 @@ namespace ClimatesOfFerngillRebuild
 
             else if (newWeather == CurrentWeather.Wind)
             {
-                //unset sunny, rain, snow and blizzard, if it's debris.
-                CurrentConditionsN = CurrentConditionsN.RemoveFlags(CurrentWeather.Rain);
                 CurrentConditionsN = CurrentConditionsN.RemoveFlags(CurrentWeather.Snow);
                 CurrentConditionsN = CurrentConditionsN.RemoveFlags(CurrentWeather.Blizzard);
                 CurrentConditionsN = CurrentConditionsN.RemoveFlags(CurrentWeather.Sunny);
@@ -538,7 +533,6 @@ namespace ClimatesOfFerngillRebuild
 
             else if (newWeather == CurrentWeather.Snow)
             {
-                //unset debris, sunny, snow and blizzard, if it's raining.
                 CurrentConditionsN = CurrentConditionsN.RemoveFlags(CurrentWeather.Sunny);
                 CurrentConditionsN = CurrentConditionsN.RemoveFlags(CurrentWeather.Rain);
                 CurrentConditionsN = CurrentConditionsN.RemoveFlags(CurrentWeather.Wind);

@@ -1,8 +1,10 @@
 ## Changelog
 
 ### 1.3.1
- - DNT should be more resilliant to nulls from Climates
-
+ - DNT should be more resilliant to Climates throwing stuff it doesn't understand
+ - DNT now has a less-orange sunrise color option
+ - Some smoother light curves when it rains
+ 
 ### 1.3
  - In the morning, the music will now update as the sun rises
  - Assorted fixes to various elements

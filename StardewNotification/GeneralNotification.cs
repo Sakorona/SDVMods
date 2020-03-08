@@ -3,6 +3,7 @@ using StardewValley;
 using StardewValley.Locations;
 using StardewModdingAPI;
 using System.Linq;
+using StardewValley.TerrainFeatures;
 
 namespace StardewNotification
 {
@@ -18,6 +19,24 @@ namespace StardewNotification
             CheckForToolUpgrade(Trans);
             CheckForTravelingMerchant(Trans);
             CheckForHayLevel(Trans);
+            CheckForSpringOnions(Trans);
+        }
+
+        public static void CheckForSpringOnions(ITranslationHelper Trans)
+        {
+            //they really only grow in the forest, thankfully.
+            var loc = Game1.locations.Where(n => n is Forest).First();
+            int count = 0;
+            foreach (var l in loc.terrainFeatures.Values)
+            {
+                if (l is HoeDirt h && h.crop != null && h.crop.forageCrop.Value == true && h.crop.whichForageCrop.Value == 1)
+                    count++;
+            }
+
+            if (count > 0)
+            {
+                Util.ShowMessage(Trans.Get("springOnion", new { count}));
+            }
         }
 
         public static void DoWeatherReminder(ITranslationHelper trans)
@@ -64,7 +83,7 @@ namespace StardewNotification
         public static void DoBirthdayReminder(ITranslationHelper Trans)
         {
             var character = Utility.getTodaysBirthdayNPC(Game1.currentSeason, Game1.dayOfMonth);
-            if (!(character is null) && Game1.player.friendshipData[character.Name].GiftsToday != 1)
+            if (!(character is null) && Game1.player.friendshipData.Keys.Contains(character.Name) && Game1.player.friendshipData[character.Name].GiftsToday != 1)
             {
                 Util.ShowMessage(Trans.Get("birthdayReminder", new { charName = character.displayName }));
             }

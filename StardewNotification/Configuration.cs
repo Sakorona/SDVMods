@@ -19,6 +19,7 @@
         public bool ShowWeatherNextDay { get; set; } = true;
         public int WeatherNextDayTime { get; set; } = 1700;  //5pm
         public bool NotifyTVChannels { get; set; } = true;
+        public bool ShowSpringOnionCount { get; set; } = true;
 
         // Harvest Notifications
         public bool NotifyFarmCave { get; set; } = true;

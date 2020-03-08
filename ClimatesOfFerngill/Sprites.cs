@@ -34,7 +34,7 @@ namespace ClimatesOfFerngillRebuild
                 WeatherSource = helper.Load<Texture2D>(Path.Combine("assets","WeatherIcons.png"));
                 FogTexture = helper.Load<Texture2D>(Path.Combine("assets", "ThickerFog.png"));
                 // DarudeTexture = helper.Load<Texture2D>(Path.Combine("assets", "Sandstorm.png"));
-                DarudeTexture = helper.Load<Texture2D>(Path.Combine("assets", "sandyglowyglowy_l.png"));
+                DarudeTexture = helper.Load<Texture2D>(Path.Combine("assets", "low_sand.png"));
                 source2 = Game1.mouseCursors;
             }
 

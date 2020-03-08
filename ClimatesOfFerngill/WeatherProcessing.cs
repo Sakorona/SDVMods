@@ -427,12 +427,18 @@ namespace ClimatesOfFerngillRebuild
                 && ClimatesOfFerngill.Dice.NextDoublePositive() <= ClimatesOfFerngill.WeatherOpt.RainToSnowConversion)
             {
                 curr.RemoveWeather(CurrentWeather.Rain);
+
+                if (curr.HasWeather(CurrentWeather.Lightning))
+                {
+                    curr.RemoveWeather(CurrentWeather.Lightning);
+                    Game1.isLightning = false;
+                }
+
                 curr.AddWeather(CurrentWeather.Snow);
                 Game1.isRaining = false;
                 Game1.isSnowing = true;
                 specialWeatherTriggered = true;
             }
-
 
             if (curr.HasWeather(CurrentWeather.Snow))
             {

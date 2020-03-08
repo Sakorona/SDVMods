@@ -58,11 +58,10 @@ namespace ClimatesOfFerngillRebuild
         //experimental var.
         public static float RainX = 0f;
         public static float RainY = 0f;
-        public static float WindCap = -120f;
+        public static float WindCap = -40f;
         public static float WindMin = -1.4f;
         public static float WindChance = .01f;
         public static float WindThreshold = -0.5f;
-
 
         //Integrations
         internal static bool UseLunarDisturbancesApi = false;
