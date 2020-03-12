@@ -1,4 +1,9 @@
 ## Changelog
+### 1.3.3
+ - More bug fixing
+
+### 1.3.2
+ - Fixes a reversion bug
 
 ### 1.3.1
  - DNT should be more resilliant to Climates throwing stuff it doesn't understand

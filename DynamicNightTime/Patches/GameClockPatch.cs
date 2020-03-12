@@ -13,9 +13,7 @@ namespace DynamicNightTime.Patches
             int astronTime = DynamicNightTime.GetMorningAstroTwilight().ReturnIntTime();
 
             //sunrise colors
-            Color sunrise = new Color(0,96,175);
-            if (DynamicNightTime.NightConfig.LessOrangeSunrise)
-                sunrise = new Color(0, 40, 112);
+            Color sunrise = new Color(0, 96, 175);
 
             if (DynamicNightTime.LunarDisturbancesLoaded && DynamicNightTime.MoonAPI.IsSolarEclipse())
             {
@@ -36,12 +34,14 @@ namespace DynamicNightTime.Patches
             {
                 weather = DynamicNightTime.ClimatesAPI.GetCurrentWeatherName();
             }
+#pragma warning disable CA1031 // Do not catch general exception types
             catch (Exception ex)
             {
                DynamicNightTime.Logger.Log($"Exception encountered when trying to get weather in API call. Exception text is as follows {ex.ToString()}.", StardewModdingAPI.LogLevel.Error);
                 weather = "error";                
             }
-        
+#pragma warning restore CA1031 // Do not catch general exception types
+
             bool ShouldDarken = Game1.isRaining || ((DynamicNightTime.ClimatesLoaded && weather.Contains("overcast")));
 
             if (Game1.timeOfDay <= astronTime)
@@ -69,13 +69,8 @@ namespace DynamicNightTime.Patches
                     float percentage = (minEff / SDVTime.MinutesBetweenTwoIntTimes(sunriseTime, astronTime));
                     //means delta r is -255, delta g is -159, delta b is +175 from evening to sunrise
                     //Normal sunrise is 0,96,175. Rainy sunrises are.. 0,50,148?
-                    float tgtColorR = 255 - sunrise.R;
-                    float tgtColorG = 255 - sunrise.G;
-                    float tgtColorB = 255 - sunrise.B;
-                    
-                    Color destColor = new Color((byte)(255 - (tgtColorR*percentage)), (byte)(255 - (tgtColorG* percentage)), (byte)(tgtColorB * percentage),(byte)(255 - (95 * percentage)));
-                    DynamicNightTime.Logger.Log($"Debug: Percentage {percentage}, destColor {destColor.ToString()}, tgtColor is ({tgtColorR},{tgtColorG},{tgtColorB})", StardewModdingAPI.LogLevel.Info);
-                    DynamicNightTime.Logger.Log($"AAAARGH. R: {255 - (tgtColorR * percentage)}, G: {(255 - (tgtColorG * percentage))}, B: {(255 - (95 * percentage))}", StardewModdingAPI.LogLevel.Info);
+
+                    Color destColor = new Color((byte)(255 - (255 * percentage)), (byte)(255 - (159 * percentage)), (byte)(175 * percentage));
                     Game1.outdoorLight = destColor;
                 }
             }
@@ -96,7 +91,7 @@ namespace DynamicNightTime.Patches
                         float tgtColorR = sunrise.R - 0;
                         float tgtColorG = sunrise.G - 5;
                         float tgtColorB = sunrise.B - 1;
-                        Color destColor = new Color(0, (byte)(96 -(tgtColorG*percentage)),(byte)(175 -(tgtColorB*percentage)));
+                        Color destColor = new Color((byte)(0 - (tgtColorR*percentage)), (byte)(96 -(tgtColorG*percentage)),(byte)(175 -(tgtColorB*percentage)));
                         Game1.outdoorLight = destColor;
                     }
                     if (Game1.timeOfDay == solarNoon)

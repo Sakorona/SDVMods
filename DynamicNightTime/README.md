@@ -1,5 +1,5 @@
 # Dynamic Night Time
-Version: 1.3.1
+Version: 1.3.3
 
 ## Requirements
 - SMAPI 3.0+
