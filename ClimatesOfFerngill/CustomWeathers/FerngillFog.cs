@@ -52,13 +52,13 @@ namespace ClimatesOfFerngillRebuild
             if (ClimatesOfFerngill.WeatherOpt.ShowLighterFog)
             {
                 if (Game1.isRaining)
-                    this.FogTargetAlpha = .3f;
+                    this.FogTargetAlpha = .25f;
                 else
-                    this.FogTargetAlpha = .4f;
+                    this.FogTargetAlpha = .35f;
             }
             else
             {
-                this.FogTargetAlpha = .8f;
+                this.FogTargetAlpha = .7f;
             }
         }
 
@@ -280,7 +280,7 @@ namespace ClimatesOfFerngillRebuild
                             
                             if (Game1.isStartingToGetDarkOut())
                             {
-                                FogColor = Color.LightSeaGreen;
+                                FogColor = Color.LightSteelBlue;
                             }
                             if (BloodMoon)
                             {
@@ -318,7 +318,7 @@ namespace ClimatesOfFerngillRebuild
                 // So, 3000ms for 55% or 54.45 repeating. But this is super fast....
                 // let's try 955ms.. or 1345..
                 // or 2690.. so no longer 3s. :<
-                FogAlpha = FogTargetAlpha * (.8f - (FogElapsed.ElapsedMilliseconds / FogFadeTime));
+                FogAlpha = FogTargetAlpha * (this.FogTargetAlpha - (FogElapsed.ElapsedMilliseconds / FogFadeTime));
        
                 if (FogAlpha <= 0)
                 {
