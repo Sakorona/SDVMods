@@ -319,7 +319,7 @@ namespace ClimatesOfFerngillRebuild
                 // let's try 955ms.. or 1345..
                 // or 2690.. so no longer 3s. :<
                 FogAlpha = FogTargetAlpha * (.8f - (FogElapsed.ElapsedMilliseconds / FogFadeTime));
-               
+       
                 if (FogAlpha <= 0)
                 {
                     FogAlpha = 0;
