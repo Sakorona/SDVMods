@@ -25,7 +25,8 @@ namespace ClimatesOfFerngillRebuild.Patches
                         Game1.rainDrops[index].accumulator += time.ElapsedGameTime.Milliseconds;
                         if (Game1.rainDrops[index].accumulator > 70)
                         {
-                            Game1.rainDrops[index].position += new Vector2(index * 8 / Game1.rainDrops.Length - 16 + ClimatesOfFerngill.RainX, 32 - index * 8 / Game1.rainDrops.Length + ClimatesOfFerngill.RainY);
+                            //   Game1.rainDrops[index].position += new Vector2(index * 8 / Game1.rainDrops.Length - 16 + ClimatesOfFerngill.RainX, 32 - index * 8 / Game1.rainDrops.Length + ClimatesOfFerngill.RainY);
+                            Game1.rainDrops[index].position += new Vector2(index * 8 / Game1.rainDrops.Length - 16, 32 - index * 8 / Game1.rainDrops.Length);
                             Game1.rainDrops[index].accumulator = 0;
                             if (Game1.random.NextDouble() < 0.1)
                                 ++Game1.rainDrops[index].frame;
@@ -50,7 +51,7 @@ namespace ClimatesOfFerngillRebuild.Patches
             {
                 //Game1.currentSeason.Equals("fall") && Game1.random.NextDouble() < 0.001 
                 //default windthreshold is -0.5f
-                if (Game1.random.NextDouble() < ClimatesOfFerngill.WindChance && (Game1.windGust == 0.0 && (double)WeatherDebris.globalWind >= ClimatesOfFerngill.WindThreshold))
+                if (Game1.currentSeason.Equals("fall") && Game1.random.NextDouble() < 0.001 && (Game1.windGust == 0.0 && (double)WeatherDebris.globalWind >= -0.5f))
                 {
                     Game1.windGust += Game1.random.Next(-10, -1) / 100f;
                     if (Game1.soundBank != null)
@@ -62,10 +63,10 @@ namespace ClimatesOfFerngillRebuild.Patches
                 else if (Game1.windGust != 0.0)
                 {
                     //Game1.windGust = Math.Max(-5f, Game1.windGust * 1.02f);
-                    if (ClimatesOfFerngill.WindOverrideSpeed == 0.0)
+                    /*if (ClimatesOfFerngill.WindOverrideSpeed == 0.0)
                         Game1.windGust = Math.Max(ClimatesOfFerngill.WindCap, ClimatesOfFerngill.WindMin);
-                    else
-                        Game1.windGust = ClimatesOfFerngill.WindOverrideSpeed;
+                    else*/
+                    Game1.windGust = Math.Max(-5f, Game1.windGust * 1.02f);
 
                     WeatherDebris.globalWind = Game1.windGust - 0.5f;
                     if (Game1.windGust < -0.200000002980232 && Game1.random.NextDouble() < 0.007)

@@ -52,13 +52,13 @@ namespace ClimatesOfFerngillRebuild
             if (ClimatesOfFerngill.WeatherOpt.ShowLighterFog)
             {
                 if (Game1.isRaining)
-                    this.FogTargetAlpha = .2f;
-                else
                     this.FogTargetAlpha = .3f;
+                else
+                    this.FogTargetAlpha = .4f;
             }
             else
             {
-                this.FogTargetAlpha = .6f;
+                this.FogTargetAlpha = .8f;
             }
         }
 
@@ -287,8 +287,7 @@ namespace ClimatesOfFerngillRebuild
                                 FogColor = Color.DarkRed;
                             }
 
-                            Game1.spriteBatch.Draw(fogTexture, position, new Microsoft.Xna.Framework.Rectangle?
-                                    (FogSource), FogAlpha > 0.0 ? FogColor * FogAlpha : Color.Black * 0.95f, 0.0f, Vector2.Zero, Game1.pixelZoom + 1f / 1000f, SpriteEffects.None, 1f);
+                            Game1.spriteBatch.Draw(fogTexture, position, new Rectangle?(FogSource), FogAlpha > 0.0 ? FogColor * FogAlpha : Color.Black * 0.95f, 0.0f, Vector2.Zero, Game1.pixelZoom + 1f / 1000f, SpriteEffects.None, 1f);
                             num2 += 64 * Game1.pixelZoom;
                         }
                         num1 += 64 * Game1.pixelZoom;
@@ -319,7 +318,7 @@ namespace ClimatesOfFerngillRebuild
                 // So, 3000ms for 55% or 54.45 repeating. But this is super fast....
                 // let's try 955ms.. or 1345..
                 // or 2690.. so no longer 3s. :<
-                FogAlpha = FogTargetAlpha * (.4f - (FogElapsed.ElapsedMilliseconds / FogFadeTime));
+                FogAlpha = FogTargetAlpha * (.8f - (FogElapsed.ElapsedMilliseconds / FogFadeTime));
                
                 if (FogAlpha <= 0)
                 {

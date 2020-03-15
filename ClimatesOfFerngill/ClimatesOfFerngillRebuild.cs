@@ -194,12 +194,14 @@ namespace ClimatesOfFerngillRebuild
                 .Add("debug_sswa", "Show Special Weather", ConsoleCommands.ShowSpecialWeather)
                 .Add("debug_vrainc", "Set Rain Amt.", ConsoleCommands.SetRainAmt)
                 .Add("debug_raindef", "Set Rain Deflection.", ConsoleCommands.SetRainDef)
+            /*
                 .Add("debug_setwindchance", "Set Wind Chance", ConsoleCommands.SetWindChance)
                 .Add("debug_setwindtresh", "Set Wind Threshold", ConsoleCommands.SetWindThreshold)
                 .Add("debug_setwindrange", "Set Wind Range", ConsoleCommands.SetWindRange)
                 .Add("debug_raintotal", "Get Rain Total", ConsoleCommands.DisplayRainTotal)
                 .Add("debug_getcurrentwind", "Show wind values", ConsoleCommands.ShowWind)
                 .Add("debug_resetwind", "Reset Global Wind", ConsoleCommands.ResetGlobalWind)
+            */
                 .Add("debug_printClimate", "Print Climate Tracker Data", ConsoleCommands.DisplayClimateTrackerData);
         }
 

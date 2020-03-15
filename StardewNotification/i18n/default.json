@@ -38,7 +38,7 @@
   "CaveFruit": "Cave Fruits ready for harvest",
 
   "birthday": "{{charName}}'s birthday!",
-  "weather": "Tommorow's weather is {{weather}}",
+  "weather": "Tommorow's weather is {{weather}}.",
   "birthdayReminder": "Don't forget to give {{charName}} a birthday gift today!",
   "toolPickup": "{{toolName}} is ready for pickup",
   "springOnion": "{{count}} spring onions growing in the Forest",
