@@ -15,16 +15,6 @@
     <PackageReference Include="Platonymous.PyTK" Version="1.12.40" />
   </ItemGroup>
 
-  <ItemGroup>
-    <None Update="assets\climates\enhancedlowfog.json">
-      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
-    </None>
-    <None Update="i18n\default.json">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-  </ItemGroup>
-
-
   <Import Project="..\TwilightCoreShared\TwilightCoreShared.projitems" Label="Shared" />
   <Import Project="$(SolutionDir)\deploy-mod.targets" />
 
