@@ -61,15 +61,15 @@
   "category-noahsflood": "世界を沈めてしまうほどに長く続く大雨",
 
   //Ferngill Locations
-  "fern-loc.0": "キャッスル村",
+  "fern-loc.0": "城下の村",
   "fern-loc.1": "バスケットタウン",
   "fern-loc.2": "パインメサシティ",
-  "fern-loc.3": "ポイントブレイク",
-  "fern-loc.4": "ミニスター渓谷",
+  "fern-loc.3": "ポイントドレイク",
+  "fern-loc.4": "ミニスターバレー",
   "fern-loc.5": "グランプルトン",
   "fern-loc.6": "ズズシティ",
-  "fern-loc.7": "ジョサ要塞",
-  "fern-loc.8": "チェスターバレ",
+  "fern-loc.7": "ジョサ砦",
+  "fern-loc.8": "チェスターベイル",
   "fern-loc.9": "フェーン諸島",
   "fern-loc.10": "タンカーグローブ",
   "fern-loc.11": "パトス島",
@@ -98,9 +98,9 @@
   "weather-stayinside": "こんな豪雨では出かけられそうにない。",
 
   //Weather Menu strings
-  "weather-menu.opening":      "こんにちは、KZAM Radioのキリエです。{{descDay}}、今日もパトス島から Stardew Valley の天気をお届けします。",
-  "weather-menu.openingS1D1":  "こんにちは、KZAM Radioのキリエです。{{descDay}}、一年の始まりの日で すね！今日もパトス島から Stardew Valley の天気をお届けします。",
-  "weather-menu.openingS4D28": "こんにちは、KZAM Radioのキリエです。{{descDay}}、今日で今年もおしま いです！今日もパトス島から Stardew Valley の天気をお届けします。",
+  "weather-menu.opening":      "こんにちは、KZAM Radioのキリエです。{{descDay}}、今日もパトス島から スターデューバレーの天気をお届けします。",
+  "weather-menu.openingS1D1":  "こんにちは、KZAM Radioのキリエです。{{descDay}}、一年の始まりの日で すね！今日もパトス島からスターデューバレーの天気をお届けします。",
+  "weather-menu.openingS4D28": "こんにちは、KZAM Radioのキリエです。{{descDay}}、今日で今年もおしま いです！今日もパトス島からスターデューバレーの天気をお届けします。",
   "weather-menu.condition.frost":         "霜注意報: 今夜は霜のおそれがあります。",
   "weather-menu.condition.heatwave":      "熱波警報: 今日は一日、熱波が予想されます。",
   "weather-menu.condition.sandstorm":     "砂嵐警報: 砂嵐が近づいています。屋外での作業や外出を控えましょう。 外出しなければならない場合は必ずマスクを着用してください。",
@@ -165,7 +165,7 @@
   "weather-tv.fogChance": "また、午前中は濃い霧が出る予報です。",
 
   //tv weather strings -  for current conditions
-  "weather-tv.weat.festival": "すみきった快晴、Stardew Valley の {{festivalName}} には絶好の一日です",
+  "weather-tv.weat.festival": "すみきった快晴、スターデューバレーの {{festivalName}} には絶好の一日です",
   "weather-tv.weat.wedding": "すみきった快晴。ご結婚おめでとうございます！今日は絶好の結婚式びよりです",
   "weather-tv.weat.sunny": "快晴",
   "weather-tv.weat.rain.variable": "雨量の一定しない{{rainDesc}}",
@@ -219,9 +219,9 @@
 
   //player locations
   "weather-location.player.0": "ペリカンタウン",
-  "weather-location.player.1": "Stardew Valley",
+  "weather-location.player.1": "スターデューバレー",
   "weather-location.player.2": "ズズシティ地方東部",
-  "weather-location.player.3": "ジェム海内陸域",
+  "weather-location.player.3": "ジェム湾内陸域",
 
   //weather reporter locations
   "weather-location.reporter.0": "ペリカンタウン",
