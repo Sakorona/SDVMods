@@ -3,6 +3,11 @@ using System;
 
 namespace TwilightShards.Stardew.Common
 {
+    public enum SDVTimeOptions
+    {
+        TimeNormal,
+        TimePlayable
+    }
 
     public enum SDVTimePeriods
     {
@@ -18,8 +23,15 @@ namespace TwilightShards.Stardew.Common
     public class SDVTime
     {
         public static bool IsNight => Game1.isDarkOut();
+        private readonly SDVTime _Time; 
         
-        public static SDVTimePeriods CurrentTimePeriod => CurrentTime.TimePeriod;
+        public static SDVTimePeriods CurrentTimePeriod
+        {
+            get
+            {
+                return CurrentTime.TimePeriod;
+            }
+        }
 
         public SDVTimePeriods TimePeriod
         {
@@ -66,6 +78,12 @@ namespace TwilightShards.Stardew.Common
         int hour;
         int minute;
 
+        //******************************* CONSTRUCTORS
+
+        /// <summary>
+        /// Constructor with an int time.
+        /// </summary>
+        /// <param name="t">Int time</param>
         public SDVTime(int t)
         {
             hour = t / 100;
@@ -97,8 +115,15 @@ namespace TwilightShards.Stardew.Common
                     }
                 }
             }
+
+            _Time = new SDVTime(hour, minute);
         }
 
+        /// <summary>
+        /// Constructor for an time in hours minutes (i.e (10,30)
+        /// </summary>
+        /// <param name="h">The current hour</param>
+        /// <param name="m">The current minute</param>
         public SDVTime(int h, int m)
         {
             hour = h;
@@ -111,11 +136,20 @@ namespace TwilightShards.Stardew.Common
 
             if (m >= MINPERHR)
                 throw new ArgumentOutOfRangeException("There are only 60 minutes in an hour.");
+
+            _Time = new SDVTime(hour, minute);
         }
 
-        public static int ConvertTimeToMinutes(int intTime)
+
+        /// <summary>
+        /// Copy constructor
+        /// </summary>
+        /// <param name="c">Time being copied</param>
+        public SDVTime(SDVTime c)
         {
-            return (intTime / 100) * 60 + (intTime % 100);
+            hour = c.hour;
+            minute = c.minute;
+            _Time = new SDVTime(hour, minute);
         }
 
         /// <summary>
@@ -126,47 +160,75 @@ namespace TwilightShards.Stardew.Common
         /// <returns>Amount of minutes between the two times</returns>
         public static int MinutesBetweenTwoIntTimes(int t1, int t2)
         {
-            return Math.Abs(SDVTime.ConvertIntTimeToMinutes(t1) - SDVTime.ConvertIntTimeToMinutes(t2));
+            return Math.Abs(SDVTime.ConvertTimeToMinutes(t1) - SDVTime.ConvertTimeToMinutes(t2));
         }
 
-        public SDVTime(SDVTime c)
+        /// <summary>
+        /// This function updates the internal time object
+        /// </summary>
+        /// <param name="h">The new hour</param>
+        /// <param name="m">The new minute</param>
+        private void Update(int h, int m)
         {
-            hour = c.hour;
-            minute = c.minute;
+            _Time.hour = h;
+            _Time.minute = m;
         }
 
-            public void ClampToTenMinutes()
+        /// <summary>
+        /// This function clamps the time to a ten minute interval, since SDV works in a ten-minute interval.
+        /// </summary>
+        public SDVTime ClampToTenMinutes()
+        {
+            if (minute % 10 >= 5)
             {
-                if (minute % 10 >= 5)
-                {
-                    minute = ((minute / 10) + 1) * 10;
+                minute = ((minute / 10) + 1) * 10;
 
-                    if (minute >= MINPERHR)
+                if (minute >= 60)
+                {
+                    hour++;
+                    minute -= 60;
+                }
+
+                if (hour > MAXHOUR)
+                    hour -= MAXHOUR;
+            }
+            if (minute % 10 < 5 && (minute % 10 != 0))
+            {
+                    minute = ((minute / 10) - 1) * 10;
+
+                    if (minute < 0)
                     {
-                        hour++;
-                        minute -= MINPERHR;
+                        hour--;
+                        minute += 60;
                     }
+            }
 
-                    if (hour > MAXHOUR)
-                        hour -= MAXHOUR;
-                }
-                if (minute % 10 < 5 && (minute % 10 != 0))
-                {
-                        minute = ((minute / 10) - 1) * 10;
+            Update(hour, minute);
 
-                        if (minute < 0)
-                        {
-                            hour--;
-                            minute += MINPERHR;
-                        }
-                    }
-                }
+            return this;
+        }
 
+        /// <summary>
+        /// This function adds minutes. Can be negative to represent removing minutes. 
+        /// </summary>
+        /// <param name="time">The amount of minutes being added</param>
+        /// <returns>The new time</returns>
+        public SDVTime AddMinutes(int time)
+        {
+            _Time.AddTime(time);
+            return this;
+        }
+
+        /// <summary>
+        /// This function adds a time. Can be negative to represent removing minutes
+        /// </summary>
+        /// <param name="hour">The hours being added</param>
+        /// <param name="minute">The minutes being added</param>
         public void AddTime(int hour, int minute)
         {
             this.hour += hour;
             this.minute += minute;
-            while (minute > (MINPERHR -1))
+            while (minute > 59)
             {
                 this.hour++;
                 this.minute -= MINPERHR;
@@ -175,13 +237,17 @@ namespace TwilightShards.Stardew.Common
             while (minute < 0)
             {
                 hour--;
-                minute += MINPERHR;
+                minute += 60;
             }
 
             if (hour > MAXHOUR)
-                this.hour -= MAXHOUR;
+                this.hour -= 28;
         }
 
+        /// <summary>
+        /// This function adds an int time.
+        /// </summary>
+        /// <param name="time">The int time being added</param>
         public void AddTime(int time)
         {
             int addhr = time / MINPERHR;
@@ -190,7 +256,7 @@ namespace TwilightShards.Stardew.Common
             hour += addhr;
 
             minute += addmin;
-            while (minute > (MINPERHR-1))
+            while (minute > 59)
             {
                 hour++;
                 minute -= MINPERHR;
@@ -206,12 +272,16 @@ namespace TwilightShards.Stardew.Common
                 hour -= MAXHOUR;
         }
 
+        /// <summary>
+        /// This function adds another SDVTime object
+        /// </summary>
+        /// <param name="sTime">The time being added in SDVTime format</param>
         public void AddTime(SDVTime sTime)
         {
             hour += sTime.hour;
             minute += sTime.minute;
 
-            while (minute > (MINPERHR - 1))
+            while (minute > 59)
             {
                 hour++;
                 minute -= MINPERHR;
@@ -220,20 +290,13 @@ namespace TwilightShards.Stardew.Common
             while (minute < 0)
             {
                 hour--;
-                minute += MAXHOUR;
+                minute += MINPERHR;
             }
 
             if (hour >= MAXHOUR)
             {
                 hour -= MAXHOUR;
             }
-        }
-
-        public static int AddTimeToIntTime(int s1, int s2)
-        {
-            SDVTime sTime = new SDVTime(s1);
-            sTime.AddTime(s2);
-            return sTime.ReturnIntTime();
         }
 
         //operator functions
@@ -250,7 +313,7 @@ namespace TwilightShards.Stardew.Common
             s1.hour += s2.hour;
             s1.minute += s2.minute;
 
-            while (s1.minute > (MINPERHR - 1))
+            while (s1.minute > 59)
             {
                 s1.hour++;
                 s1.minute -= MINPERHR;
@@ -259,7 +322,7 @@ namespace TwilightShards.Stardew.Common
             while (s1.minute < 0)
             {
                 s1.hour--;
-                s1.minute += MINPERHR;
+                s1.minute += 60;
             }
 
             if (s1.hour >= MAXHOUR)
@@ -356,6 +419,10 @@ namespace TwilightShards.Stardew.Common
             return false;
         }
 
+        /// <summary>
+        /// This function gets the number of minutes from midnight. Supports times beyond 2400 (note that 1am (2500) returns 60)
+        /// </summary>
+        /// <returns>The number of minutes from midnight</returns>
         public int GetNumberOfMinutesFromMidnight()
         {
            if (hour > 24)
@@ -368,12 +435,30 @@ namespace TwilightShards.Stardew.Common
            }
         }
 
+        /// <summary>
+        /// This function gets the number of minutes from day start. 
+        /// </summary>
+        /// <returns>The number of minutes from day start</returns>
+        public int GetNumberOfMinutesFromDayStart()
+        {
+            return  ((hour - 6) * MINPERHR) + minute;
+        }
+
         //description and return functions
+        /// <summary>
+        /// This function returns the integer time 
+        /// </summary>
+        /// <returns>The time in integer format (i.e 1034, 934, 2510)</returns>
         public int ReturnIntTime()
         {
             return (hour * 100) + minute;
         }
 
+        /// <summary>
+        /// A basic function to validate the time is within a valid base-game SDV format
+        /// </summary>
+        /// <param name="time">The time being validated</param>
+        /// <returns>Whether or not it is valid</returns>
         public static bool VerifyValidIntTime(int time)
         {
             //basic bounds first
@@ -385,6 +470,10 @@ namespace TwilightShards.Stardew.Common
             return true;
         }
 
+        /// <summary>
+        /// Format the time in 12 hours.
+        /// </summary>
+        /// <returns>The time in 00:00 xm format</returns>
         public string Get12HourTime()
         {
             if (hour < 12)
@@ -397,6 +486,10 @@ namespace TwilightShards.Stardew.Common
             return "99:99 99";
         }
 
+        /// <summary>
+        /// Returns a 24-hour formatted time string
+        /// </summary>
+        /// <returns>The time in 24 hour format</returns>
         public override string ToString()
         {
             if (hour < 24)
@@ -421,12 +514,27 @@ namespace TwilightShards.Stardew.Common
                    minute == other.minute;
         }
 
-        public static int ConvertIntTimeToMinutes(int time)
+        /// <summary>
+        /// Convert the time to minutes from integer. 
+        /// </summary>
+        /// <param name="time">The number of minutes from 0000 previous day.</param>
+        /// <returns></returns>
+        public static int ConvertTimeToMinutes(int time)
         {
             int hour = time / 100;
             int min = time % 100;
 
-            return ((hour * MINPERHR) + min);
+            return ((hour * 60) + min);
+        }
+
+        /// <summary>
+        /// Convert the time to minutes from SDVTime
+        /// </summary>
+        /// <param name="time">The number of minutes from 0000 previous day.</param>
+        /// <returns></returns>
+        public static int ConvertTimeToMinutes(SDVTime time)
+        {
+            return ((time.hour * 60) + time.minute);
         }
 
         public override int GetHashCode()
@@ -438,3 +546,4 @@ namespace TwilightShards.Stardew.Common
         }
     }
 }
+
