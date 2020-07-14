@@ -1,11 +1,10 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <AssemblyName>ClimatesOfFerngill</AssemblyName>
-    <RootNamespace>ClimatesOfFerngillRebuild</RootNamespace>
-    <Version>1.5.11</Version>
+    <AssemblyName>ClimatesOfFerngillV2</AssemblyName>
+    <RootNamespace>TwilightShards.ClimatesOfFerngillV2</RootNamespace>
+    <Version>2.0.0-alpha.1</Version>
     <TargetFramework>net452</TargetFramework>
-
     <EnableHarmony>true</EnableHarmony>
   </PropertyGroup>
 
@@ -14,13 +13,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <None Remove="Sprites.cs~RF4b5f6016.TMP" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <PackageReference Include="Enums.NET" Version="3.0.3" />
     <PackageReference Include="Pathoschild.Stardew.ModBuildConfig" Version="3.1.0" />
-    <PackageReference Include="Platonymous.PyTK" Version="1.12.40" />
   </ItemGroup>
 
   <Import Project="..\TwilightCoreShared\TwilightCoreShared.projitems" Label="Shared" />

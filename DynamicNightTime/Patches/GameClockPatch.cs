@@ -36,21 +36,9 @@ namespace DynamicNightTime.Patches
                 moonLight = DynamicNightTime.GetLunarLightDifference();
             }
 
-            string weather;
+            var weather = DynamicNightTime.ClimatesAPI?.GetCurrentWeatherName() ?? "error";
 
-            try
-            {
-                weather = DynamicNightTime.ClimatesAPI.GetCurrentWeatherName();
-            }
-#pragma warning disable CA1031 // Do not catch general exception types
-            catch (Exception ex)
-            {
-               DynamicNightTime.Logger.Log($"Exception encountered when trying to get weather in API call. Exception text is as follows {ex}.", StardewModdingAPI.LogLevel.Error);
-                weather = "error";                
-            }
-#pragma warning restore CA1031 // Do not catch general exception types
-
-            bool ShouldDarken = Game1.isRaining || ((DynamicNightTime.ClimatesLoaded && weather.Contains("overcast")));
+            bool shouldDarken = Game1.isRaining || ((DynamicNightTime.ClimatesLoaded && weather.Contains("overcast")));
 
             if (Game1.timeOfDay <= astronTime)
             {
@@ -66,7 +54,7 @@ namespace DynamicNightTime.Patches
 
             else if (Game1.timeOfDay >= astronTime && Game1.timeOfDay < sunriseTime)
             {
-                if (ShouldDarken) { 
+                if (shouldDarken) { 
                     float minEff = SDVTime.MinutesBetweenTwoIntTimes(astronTime, Game1.timeOfDay) + (float)Math.Min(10.0, Game1.gameTimeInterval / 700);
                     float percentage = (minEff / SDVTime.MinutesBetweenTwoIntTimes(sunriseTime, astronTime));
                     Game1.outdoorLight = new Color((byte)(237 - (158 * percentage)), (byte)(185 - (126 * percentage)), (byte)(74 - (51 * percentage)), (byte)(237 - (161 * percentage)));
@@ -104,7 +92,7 @@ namespace DynamicNightTime.Patches
             }
             else if (Game1.timeOfDay >= sunriseTime && Game1.timeOfDay <= Game1.getStartingToGetDarkTime())
             {
-                if (ShouldDarken)
+                if (shouldDarken)
                 {
                     Game1.outdoorLight = Game1.ambientLight * 0.3f;
                 }
@@ -150,7 +138,7 @@ namespace DynamicNightTime.Patches
                 int sunsetEnding = DynamicNightTime.GetSunset().ReturnIntTime();
                 int astroTwilight = DynamicNightTime.GetAstroTwilight().ReturnIntTime();
                 //Color navalColor = new Color(120,178,113);
-                if (ShouldDarken)
+                if (shouldDarken)
                 {
                     if (Game1.timeOfDay >= Game1.getTrulyDarkTime())
                     {

@@ -136,7 +136,7 @@ namespace TwilightShards.WeatherIllnesses
             }
             wasEating = Game1.player.isEating;
 
-            if (Game1.currentLocation.IsOutdoors)
+            if (!(Game1.currentLocation is null) && Game1.currentLocation.IsOutdoors)
             {
                 TicksOutside++;
             }
