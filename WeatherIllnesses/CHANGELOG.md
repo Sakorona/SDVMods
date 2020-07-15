@@ -1,4 +1,10 @@
 ﻿### Changelog
+
+#### 1.1.2
+  - Cleans up some spam (moving it to verbose)
+  - Now displays a status icon when sick
+  - Requires SpaceCore
+
 #### 1.1.1
   - fixes NRE.
 
