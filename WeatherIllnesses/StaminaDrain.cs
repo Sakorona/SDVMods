@@ -59,18 +59,6 @@ namespace TwilightShards.WeatherIllnesses
             if (IllOptions.Verbose)
                 Monitor.Log("Adding buff icon!!");
 
-            int buffId = UniqueStaID;
-            Buff WeatherBuff = Game1.buffsDisplay.otherBuffs.FirstOrDefault(p => p.which == buffId);
-            if (WeatherBuff == null)
-            {
-                Game1.buffsDisplay.addOtherBuff(
-                    WeatherBuff = new Buff(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-                        "You are sick due to the inclement weather!", "Weather Illnesses"));
-                WeatherBuff.which = buffId;
-                WeatherBuff.sheetIndex = 17;
-                WeatherBuff.millisecondsDuration = 800000;
-            }
-
             switch (ReasonSick)
             {
                 case IllCauses.InclementWeather:
@@ -114,8 +102,14 @@ namespace TwilightShards.WeatherIllnesses
         public void ClearDrain(int reason = 1)
         {
             FarmerSick = false;
-            int i = Game1.buffsDisplay.otherBuffs.FindIndex(p => p.which == UniqueStaID);
-            Game1.buffsDisplay.otherBuffs.RemoveAt(i);
+            if (Game1.buffsDisplay.otherBuffs.Any())
+            {
+                int i = Game1.buffsDisplay.otherBuffs.FindIndex(p => p.which == UniqueStaID);
+                Monitor.Log($"The index of this is {i}", LogLevel.Debug);
+                if (i != 0)
+                    Game1.buffsDisplay.otherBuffs.RemoveAt(i);
+            }
+
             if (IllOptions.Verbose)
                 Monitor.Log("Removing buff icon!!");
 
@@ -337,6 +331,21 @@ namespace TwilightShards.WeatherIllnesses
             }
 
             return staminaAffect;
+        }
+
+        public void OnUpdateTicked()
+        {
+            int buffId = UniqueStaID;
+            Buff WeatherBuff = Game1.buffsDisplay.otherBuffs.FirstOrDefault(p => p.which == buffId);
+            if (WeatherBuff == null && this.IsSick())
+            {
+                Game1.buffsDisplay.addOtherBuff(
+                    WeatherBuff = new Buff(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+                        "You are sick due to the inclement weather!", "Weather Illnesses"));
+                WeatherBuff.which = buffId;
+                WeatherBuff.sheetIndex = 17;
+                WeatherBuff.millisecondsDuration = 0;
+            }
         }
     }
 }

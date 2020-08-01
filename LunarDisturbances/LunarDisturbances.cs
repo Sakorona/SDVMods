@@ -71,7 +71,7 @@ namespace TwilightShards.LunarDisturbances
             Dice = new MersenneTwister();
             Translation = Helper.Translation;
             ModConfig = Helper.ReadConfig<MoonConfig>();          
-            OurMoon = new SDVMoon(ModConfig, Dice, Helper.Translation);
+            OurMoon = new SDVMoon(ModConfig, Dice, Helper.Translation, Monitor);
             ContentManager = Helper.Content;
             MPHandler = Helper.Multiplayer;
             OurIcons = new Sprites.Icons(Helper.Content);
@@ -399,6 +399,7 @@ namespace TwilightShards.LunarDisturbances
         {
             IsEclipse = m.isEclipse;
             OurMoon.MoonTracker = new LunarInfo(m.currentMoonTracker);
+            OurMoon.MoonTrackerUpdate();
         }
 
         /// <summary>Raised after the in-game clock time changes.</summary>

@@ -1,9 +1,9 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <AssemblyName>SummitReborn</AssemblyName>
-    <RootNamespace>SummitReborn</RootNamespace>
-    <Version>1.5.2</Version>
+    <AssemblyName>HappyFishJump</AssemblyName>
+    <RootNamespace>HappyFishJump</RootNamespace>
+    <Version>1.0.1</Version>
     <TargetFramework>net452</TargetFramework>
   </PropertyGroup>
 
@@ -15,6 +15,7 @@
     <PackageReference Include="Pathoschild.Stardew.ModBuildConfig" Version="3.1.0" />
   </ItemGroup>
 
+  <Import Project="..\TwilightCoreShared\TwilightCoreShared.projitems" Label="Shared" />
   <Import Project="$(SolutionDir)\deploy-mod.targets" />
 
 </Project>

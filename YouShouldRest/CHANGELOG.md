@@ -1,7 +1,4 @@
 ## Changelog
-### 1.3.3.
- - Fixes issues with sync not working properly
- - Blue Moons triggered too often, due to a flag not being reset properly.
 
 ### 1.3.2
  - fixes an issue with shop replacers

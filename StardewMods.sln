@@ -36,6 +36,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "YouShouldRest", "YouShouldR
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ClimatesOfFerngillV2", "ClimatesOfFerngillV2\ClimatesOfFerngillV2.csproj", "{C58121E1-29E5-4F02-A6E6-4C81E0A91B1B}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "HappyFishJump", "HappyFishJump\HappyFishJump.csproj", "{BC6B24CB-E5E6-4DEB-863F-7CB5BE95F9A7}"
+EndProject
 Global
 	GlobalSection(SharedMSBuildProjectFiles) = preSolution
 		TwilightCoreShared\TwilightCoreShared.projitems*{01da90d0-eec8-427b-9409-3168a8089f20}*SharedItemsImports = 13
@@ -46,6 +48,7 @@ Global
 		TwilightCoreShared\TwilightCoreShared.projitems*{548156a4-534f-45d6-9659-1828b5c32fa5}*SharedItemsImports = 5
 		TwilightCoreShared\TwilightCoreShared.projitems*{6660c087-67fd-453a-bd05-8b313eb21a5f}*SharedItemsImports = 5
 		TwilightCoreShared\TwilightCoreShared.projitems*{9433ac91-87c7-42a8-a594-34cf88bfe01b}*SharedItemsImports = 5
+		TwilightCoreShared\TwilightCoreShared.projitems*{bc6b24cb-e5e6-4deb-863f-7cb5be95f9a7}*SharedItemsImports = 5
 		TwilightCoreShared\TwilightCoreShared.projitems*{c58121e1-29e5-4f02-a6e6-4c81e0a91b1b}*SharedItemsImports = 5
 	EndGlobalSection
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -143,6 +146,14 @@ Global
 		{C58121E1-29E5-4F02-A6E6-4C81E0A91B1B}.Release|Any CPU.Build.0 = Release|Any CPU
 		{C58121E1-29E5-4F02-A6E6-4C81E0A91B1B}.Release|x86.ActiveCfg = Release|Any CPU
 		{C58121E1-29E5-4F02-A6E6-4C81E0A91B1B}.Release|x86.Build.0 = Release|Any CPU
+		{BC6B24CB-E5E6-4DEB-863F-7CB5BE95F9A7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{BC6B24CB-E5E6-4DEB-863F-7CB5BE95F9A7}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{BC6B24CB-E5E6-4DEB-863F-7CB5BE95F9A7}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{BC6B24CB-E5E6-4DEB-863F-7CB5BE95F9A7}.Debug|x86.Build.0 = Debug|Any CPU
+		{BC6B24CB-E5E6-4DEB-863F-7CB5BE95F9A7}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{BC6B24CB-E5E6-4DEB-863F-7CB5BE95F9A7}.Release|Any CPU.Build.0 = Release|Any CPU
+		{BC6B24CB-E5E6-4DEB-863F-7CB5BE95F9A7}.Release|x86.ActiveCfg = Release|Any CPU
+		{BC6B24CB-E5E6-4DEB-863F-7CB5BE95F9A7}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

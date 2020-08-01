@@ -38,11 +38,18 @@ namespace TwilightShards.WeatherIllnesses
             helper.Events.GameLoop.TimeChanged += OnTimeChanged;
             helper.Events.GameLoop.GameLaunched += OnGameLaunched;
             SpaceCore.Events.SpaceEvents.OnItemEaten += OnItemEaten;
+
+            Helper.ConsoleCommands.Add("debug_forceillness", "Force an illness.", ForceIllness);
+        }
+
+        private void ForceIllness(string arg1, string[] arg2)
+        {
+            StaminaMngr.MakeSick();
         }
 
         private void OnItemEaten(object sender, EventArgs e)
         {
-            if (Game1.player.itemToEat.ParentSheetIndex == 351)
+            if (Game1.player?.itemToEat?.ParentSheetIndex == 351 && StaminaMngr.IsSick())
                 StaminaMngr.ClearDrain();
         }
 
@@ -87,8 +94,9 @@ namespace TwilightShards.WeatherIllnesses
                     Monitor.Log($"In the BathHouse Pool for {TimeInBathHouse}");
             }
 
-            if (TimeInBathHouse > 30)
+            if (TimeInBathHouse > 30 && StaminaMngr.IsSick())
             {
+                //Monitor.Log("Sick, clearing sickness.");
                 StaminaMngr.ClearDrain(StaminaDrain.BathHouseClear);
                 TimeInBathHouse = 0;
             }
@@ -139,6 +147,8 @@ namespace TwilightShards.WeatherIllnesses
             }
 
             TicksTotal++;
+
+            StaminaMngr.OnUpdateTicked();
         }
 
         /// <summary>Raised after the game begins a new day (including when the player loads a save).</summary>
