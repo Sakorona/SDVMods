@@ -93,7 +93,6 @@ namespace TwilightShards.LunarDisturbances
             helper.Events.Multiplayer.ModMessageReceived += OnModMessageRecieved;
             SpaceEvents.ChooseNightlyFarmEvent += SpaceEvents_ChooseNightlyFarmEvent;
 
-
             helper.ConsoleCommands.Add("force_bloodmoon", "Forces a bloodmoon", ForceBloodMoon)
                                   .Add("force_bloodmoonoff", "Turns bloodmoon off.", TurnBloodMoonOff)
                                   .Add("show_mooninfo", "Show moon info", ShowMoonInfo)
@@ -340,7 +339,12 @@ namespace TwilightShards.LunarDisturbances
         {
             Helper.Content.InvalidateCache("LooseSprites/Cursors");
             if (OurMoon.GetMoonRiseTime() <= 0600 || OurMoon.GetMoonRiseTime() >= 2600 && ModConfig.ShowMoonPhase)
-                Game1.addHUDMessage(new TCHUDMessage(Helper.Translation.Get("moon-text.moonriseBefore6", new { moonPhase = OurMoon.DescribeMoonPhase(), riseTime = OurMoon.GetMoonRiseDisplayTime() }), OurMoon.CurrentPhase()));
+            {
+                Game1.addHUDMessage(new TCHUDMessage(
+                    Helper.Translation.Get("moon-text.moonriseBefore6",
+                        new {moonPhase = OurMoon.DescribeMoonPhase(), riseTime = OurMoon.GetMoonRiseDisplayTime()}),
+                    OurMoon.CurrentPhase()));
+            }
 
             if (OurMoon == null)
             {
@@ -407,8 +411,13 @@ namespace TwilightShards.LunarDisturbances
         /// <param name="e">The event arguments.</param>
         private void OnTimeChanged(object sender, TimeChangedEventArgs e)
         {
-            if (Game1.timeOfDay == OurMoon.GetMoonRiseTime() && ModConfig.ShowMoonPhase)
-                Game1.addHUDMessage(new TCHUDMessage(Helper.Translation.Get("moon-text.moonrise", new { moonPhase = OurMoon.DescribeMoonPhase() }),OurMoon.CurrentPhase()));
+
+            if (Game1.timeOfDay == OurMoon.GetMoonRiseTime() && Game1.timeOfDay > 0600 && ModConfig.ShowMoonPhase)
+            {
+                Game1.addHUDMessage(new TCHUDMessage(
+                    Helper.Translation.Get("moon-text.moonrise", new {moonPhase = OurMoon.DescribeMoonPhase(), moonSet = OurMoon.GetMoonSetTime()}),
+                    OurMoon.CurrentPhase()));
+            }
 
             if (Game1.timeOfDay == OurMoon.GetMoonSetTime() && ModConfig.ShowMoonPhase)
                 Game1.addHUDMessage(new TCHUDMessage(Helper.Translation.Get("moon-text.moonset", new { moonPhase = OurMoon.DescribeMoonPhase() }), OurMoon.CurrentPhase()));
@@ -450,7 +459,6 @@ namespace TwilightShards.LunarDisturbances
                         Game1.getFarm().spawnGroundMonsterOffScreen();
                     }
                 }
-
             }
 
             //moon 10-minute
@@ -536,7 +544,7 @@ namespace TwilightShards.LunarDisturbances
                 JAAPi.AddedItemsToShop += JAAPi_AddedItemsToShop;
             }
 
-            var api = Helper.ModRegistry.GetApi<Integrations.GenericModConfigMenuAPI>("spacechase0.GenericModConfigMenu");
+            var api = Helper.ModRegistry.GetApi<Integrations.IGenericModConfigMenuAPI>("spacechase0.GenericModConfigMenu");
             if (api != null)
             {
                 api.RegisterModConfig(ModManifest, () => ModConfig = new MoonConfig(), () => Helper.WriteConfig(ModConfig));

@@ -3,9 +3,9 @@ using Microsoft.Xna.Framework.Graphics;
 using StardewModdingAPI;
 using System;
 
-namespace TwilightShards.LunarDisturbances.Integrations
+namespace TwilightShards.TheStarsIncline.Integrations
 {
-    public interface GenericModConfigMenuAPI
+    public interface IGenericModConfigMenuAPI
     {
         void RegisterModConfig(IManifest mod, Action revertToDefault, Action saveToFile);
         void RegisterSimpleOption(IManifest mod, string optionName, string optionDesc, Func<bool> optionGet, Action<bool> optionSet);
@@ -17,8 +17,8 @@ namespace TwilightShards.LunarDisturbances.Integrations
         void RegisterClampedOption(IManifest mod, string optionName, string optionDesc, Func<float> optionGet, Action<float> optionSet, float min, float max);
         void RegisterChoiceOption(IManifest mod, string optionName, string optionDesc, Func<string> optionGet, Action<string> optionSet, string[] choices);
         void RegisterComplexOption(IManifest mod, string optionName, string optionDesc,
-                                   Func<Vector2, object, object> widgetUpdate,
-                                   Func<SpriteBatch, Vector2, object, object> widgetDraw,
-                                   Action<object> onSave);
+            Func<Vector2, object, object> widgetUpdate,
+            Func<SpriteBatch, Vector2, object, object> widgetDraw,
+            Action<object> onSave);
     }
 }

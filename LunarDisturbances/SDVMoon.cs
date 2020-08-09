@@ -83,7 +83,7 @@ namespace TwilightShards.LunarDisturbances
 
             if (MoonTracker is null)
             {
-                Monitor.Log("Error: Moon Tracker is not null", LogLevel.Info);
+                Monitor.Log("Error: Moon Tracker is null", LogLevel.Info);
             }
             else
             {

@@ -1,5 +1,9 @@
 ## Changelog
-### 1.3.3.
+### 1.3.4
+ - Moon rise will now say moon set time
+ - No more duplicate moon rise messages if the moon rises at 6am.
+
+### 1.3.3
  - Fixes issues with sync not working properly
  - Blue Moons triggered too often, due to a flag not being reset properly.
 
