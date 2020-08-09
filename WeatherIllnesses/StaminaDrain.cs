@@ -4,6 +4,7 @@ using TwilightShards.Stardew.Common;
 using TwilightShards.Common;
 using System;
 using System.Collections.Generic;
+using System.Drawing.Design;
 using System.Linq;
 using StardewValley.Locations;
 using StardewValley.Objects;
@@ -35,6 +36,8 @@ namespace TwilightShards.WeatherIllnesses
         public bool FarmerHasBeenSick;
         public bool IssuedInHouseWarning;
         private readonly IMonitor Monitor;
+
+        private int timeInBathHouse;
 
         public const int MedicineClear = 1;
         public const int BathHouseClear = 2;
@@ -105,8 +108,8 @@ namespace TwilightShards.WeatherIllnesses
             if (Game1.buffsDisplay.otherBuffs.Any())
             {
                 int i = Game1.buffsDisplay.otherBuffs.FindIndex(p => p.which == UniqueStaID);
-                Monitor.Log($"The index of this is {i}", LogLevel.Debug);
-                if (i != 0)
+                //of course a not found is a negative index.
+                if (i > 0)
                     Game1.buffsDisplay.otherBuffs.RemoveAt(i);
             }
 
@@ -333,19 +336,37 @@ namespace TwilightShards.WeatherIllnesses
             return staminaAffect;
         }
 
+        public int GetBathHouseDuration()
+        {
+            if (timeInBathHouse == 0)
+                return 0;
+            Monitor.Log($"Time Of Day: {Game1.timeOfDay}, Time In Bath House: {timeInBathHouse}");
+            return SDVTime.MinutesBetweenTwoIntTimes(this.timeInBathHouse, Game1.timeOfDay);
+        }
+
         public void OnUpdateTicked()
         {
             int buffId = UniqueStaID;
-            Buff WeatherBuff = Game1.buffsDisplay.otherBuffs.FirstOrDefault(p => p.which == buffId);
-            if (WeatherBuff == null && this.IsSick())
-            {
-                Game1.buffsDisplay.addOtherBuff(
-                    WeatherBuff = new Buff(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-                        "You are sick due to the inclement weather!", "Weather Illnesses"));
-                WeatherBuff.which = buffId;
-                WeatherBuff.sheetIndex = 17;
-                WeatherBuff.millisecondsDuration = 0;
-            }
+
+
+            //buff!
+            Buff weatherBuff = Game1.buffsDisplay.otherBuffs.FirstOrDefault(p => p.which == buffId);
+
+            if (weatherBuff != null || !this.IsSick()) return;
+            Game1.buffsDisplay.addOtherBuff(
+                weatherBuff = new Buff(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+                    "You are sick due to the inclement weather!", "Weather Illnesses"));
+            weatherBuff.which = buffId;
+            weatherBuff.sheetIndex = 17;
+            weatherBuff.millisecondsDuration = 0;
+        }
+
+        public void PoolhouseFlip()
+        {
+            if (timeInBathHouse == 0)
+                timeInBathHouse = Game1.timeOfDay;
+            else
+                timeInBathHouse = 0;
         }
     }
 }

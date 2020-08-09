@@ -5,6 +5,7 @@ using StardewValley;
 using StardewValley.Locations;
 using TwilightShards.Common;
 using SpaceCore;
+using SpaceCore.Events;
 using TwilightShards.Stardew.Common;
 
 namespace TwilightShards.WeatherIllnesses
@@ -18,7 +19,6 @@ namespace TwilightShards.WeatherIllnesses
         private int TicksOutside;
         private int TicksTotal;
         private int TicksInLocation;
-        private int TimeInBathHouse = 0;
 
         private bool UseClimates = false;
         private Integrations.IClimatesOfFerngillAPI climatesAPI;
@@ -37,9 +37,21 @@ namespace TwilightShards.WeatherIllnesses
             helper.Events.GameLoop.UpdateTicked += OnUpdateTicked;
             helper.Events.GameLoop.TimeChanged += OnTimeChanged;
             helper.Events.GameLoop.GameLaunched += OnGameLaunched;
-            SpaceCore.Events.SpaceEvents.OnItemEaten += OnItemEaten;
+
+            SpaceEvents.TouchActionActivated += TouchActionActivated;
+            SpaceEvents.OnItemEaten += OnItemEaten;
 
             Helper.ConsoleCommands.Add("debug_forceillness", "Force an illness.", ForceIllness);
+        }
+
+        private void TouchActionActivated(object sender, EventArgsAction e)
+        {
+            Monitor.Log($"Event params: Touch Action {e.TouchAction}, Action.ToString: {e.Action}, ActionString {e.ActionString}", LogLevel.Info);
+            if (e.TouchAction && (e.ActionString == "PoolhouseEntry" || e.ActionString == "PoolEntrance"))
+            {
+                Monitor.Log("Poolhouse entered/exited!!!", LogLevel.Info);
+                StaminaMngr.PoolhouseFlip();
+            }
         }
 
         private void ForceIllness(string arg1, string[] arg2)
@@ -86,7 +98,7 @@ namespace TwilightShards.WeatherIllnesses
         {
             if (!Game1.hasLoadedGame)
                 return;
-
+            /*
             if (Game1.currentLocation is BathHousePool && Game1.player.swimming.Value)
             {
                 TimeInBathHouse += 10;
@@ -99,7 +111,14 @@ namespace TwilightShards.WeatherIllnesses
                 //Monitor.Log("Sick, clearing sickness.");
                 StaminaMngr.ClearDrain(StaminaDrain.BathHouseClear);
                 TimeInBathHouse = 0;
+            }*/
+
+            Monitor.Log($"Bath house duration is {StaminaMngr.GetBathHouseDuration()}");
+            if (StaminaMngr.GetBathHouseDuration() >= 30)
+            {
+                StaminaMngr.ClearDrain(StaminaDrain.BathHouseClear);
             }
+
 
             string weatherStatus;
             //get current weather string
@@ -158,7 +177,6 @@ namespace TwilightShards.WeatherIllnesses
         {
             TicksOutside = TicksTotal = TicksInLocation = 0;
             StaminaMngr.OnNewDay();
-            TimeInBathHouse = 0;
         }
 
         /// <summary>Raised after the game returns to the title screen.</summary>
@@ -168,7 +186,6 @@ namespace TwilightShards.WeatherIllnesses
         {
             TicksTotal = TicksOutside = TicksInLocation = 0;
             StaminaMngr.Reset();
-            TimeInBathHouse = 0;
         }
     }
 }

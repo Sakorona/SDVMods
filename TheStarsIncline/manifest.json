@@ -7,8 +7,8 @@
   "EntryDll": "TheStarsIncline.dll",
   "Dependencies": [
     {
-        "UniqueID": "Pathoschild.ContentPatcher",
-        "IsRequired": false
+      "UniqueID": "Pathoschild.ContentPatcher",
+      "IsRequired": false
     }
   ],
   "MinimumApiVersion": "3.0",

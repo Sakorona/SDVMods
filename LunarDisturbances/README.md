@@ -1,8 +1,6 @@
 # Lunar Disturbances
 
-## Current Version:
-
-1.3.4
+## Current Version: 1.4
 
 ## Requirements
 

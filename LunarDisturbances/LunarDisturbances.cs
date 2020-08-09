@@ -28,7 +28,6 @@ namespace TwilightShards.LunarDisturbances
         private MoonConfig ModConfig;
         private HUDMessage queuedMsg;
         public static Sprites.Icons OurIcons { get; set; }
-        internal static bool IsEclipse { get; set; }
         private List<string> BloodMoonTracker;
         private bool UseJsonAssetsApi = false;
         private Color nightColor = new Color((int)byte.MaxValue, (int)byte.MaxValue, 0);
@@ -91,13 +90,15 @@ namespace TwilightShards.LunarDisturbances
             helper.Events.Player.Warped += OnWarped;
             helper.Events.GameLoop.ReturnedToTitle += OnReturnedToTitle;
             helper.Events.Multiplayer.ModMessageReceived += OnModMessageRecieved;
+
             SpaceEvents.ChooseNightlyFarmEvent += SpaceEvents_ChooseNightlyFarmEvent;
 
             helper.ConsoleCommands.Add("force_bloodmoon", "Forces a bloodmoon", ForceBloodMoon)
                                   .Add("force_bloodmoonoff", "Turns bloodmoon off.", TurnBloodMoonOff)
                                   .Add("show_mooninfo", "Show moon info", ShowMoonInfo)
-								  .Add("force_eclipseOn", "Turns eclipse on.", TurnEclipseOn);
+								  .Add("force_eclipseOn", "Turns eclipse on.", OurMoon.TurnEclipseOn);
         }
+
 
         private void ShowMoonInfo(string arg1, string[] arg2)
         {
@@ -167,14 +168,10 @@ namespace TwilightShards.LunarDisturbances
                 if (OurMoon.CurrentPhase() == MoonPhase.FullMoon)
                     queuedMsg = new TCHUDMessage(Helper.Translation.Get("moon-text.fullmoon_eff", new { cropsAffected = cropCount }),OurMoon.CurrentPhase());
             }
-        }
-		
-		private void TurnEclipseOn(string arg1, string[] arg2)
-        {
-            Monitor.Log("Turning the eclipse on!");
-            IsEclipse = true;
-        }
 
+            OurMoon.DayEnding();
+        }
+        
         private void TurnBloodMoonOff(string arg1, string[] arg2)
         {
             Monitor.Log("Turning the blood moon off!");
@@ -232,9 +229,8 @@ namespace TwilightShards.LunarDisturbances
         /// <param name="e">The event arguments.</param>
         private void OnUpdateTicked(object sender, UpdateTickedEventArgs e)
         {
-            if (IsEclipse && ResetTicker > 0)
+            if (OurMoon.IsEclipse && ResetTicker > 0)
             {
-                Monitor.Log("Eclipse code firing");
                 Game1.globalOutdoorLighting = .5f;
                 Game1.ambientLight = nightColor;
                 Game1.currentLocation.switchOutNightTiles();
@@ -247,9 +243,6 @@ namespace TwilightShards.LunarDisturbances
         /// <param name="e">The event arguments.</param>
         private void OnSaving(object sender, SavingEventArgs e)
         {
-            if (IsEclipse)
-                IsEclipse = false;
-
             if (!Context.IsMainPlayer)
                 return;
 
@@ -367,10 +360,9 @@ namespace TwilightShards.LunarDisturbances
                 }
             }
 
-            if (Dice.NextDouble() < ModConfig.EclipseChance && ModConfig.EclipseOn && OurMoon.CurrentPhase() == MoonPhase.NewMoon &&
-                SDate.Now().DaysSinceStart > 2 && !Utility.isFestivalDay(Game1.dayOfMonth,Game1.currentSeason))
+            if (ModConfig.EclipseOn && OurMoon.MoonTracker.IsEclipseTomorrow)
             {
-                IsEclipse = true;
+                OurMoon.IsEclipse = true;
                 var n = new HUDMessage(Helper.Translation.Get("moon-text.solareclipse"))
                 {
                     color = Color.SeaGreen,
@@ -382,8 +374,10 @@ namespace TwilightShards.LunarDisturbances
                 MoonMessage message = GenerateLunarSync();
                 MPHandler.SendMessage<MoonMessage>(message, "MoonMessage", new[] { "KoihimeNakamura.LunarDisturbances" });
                 Monitor.Log("There's a solar eclipse today!", LogLevel.Info);
+                OurMoon.MoonTracker.IsEclipseTomorrow = false; 
             }
 
+            
             OurMoon.UpdateForBloodMoon();
             OurMoon.OnNewDay();
             OurMoon.HandleMoonAfterWake();
@@ -393,7 +387,7 @@ namespace TwilightShards.LunarDisturbances
         {
             var m = new MoonMessage
             {
-                isEclipse = IsEclipse,
+                isEclipse = OurMoon.IsEclipse,
                 currentMoonTracker = OurMoon.MoonTracker
             };
             return m;
@@ -401,7 +395,7 @@ namespace TwilightShards.LunarDisturbances
 
         void SetLunarSync(MoonMessage m)
         {
-            IsEclipse = m.isEclipse;
+            OurMoon.IsEclipse = m.isEclipse;
             OurMoon.MoonTracker = new LunarInfo(m.currentMoonTracker);
             OurMoon.MoonTrackerUpdate();
         }
@@ -422,7 +416,7 @@ namespace TwilightShards.LunarDisturbances
             if (Game1.timeOfDay == OurMoon.GetMoonSetTime() && ModConfig.ShowMoonPhase)
                 Game1.addHUDMessage(new TCHUDMessage(Helper.Translation.Get("moon-text.moonset", new { moonPhase = OurMoon.DescribeMoonPhase() }), OurMoon.CurrentPhase()));
 
-            if (IsEclipse)
+            if (OurMoon.IsEclipse)
             {
                 Game1.globalOutdoorLighting = .5f;
                 Game1.ambientLight = nightColor;
@@ -475,7 +469,7 @@ namespace TwilightShards.LunarDisturbances
                 return;
             }
 
-            if (IsEclipse)
+            if (OurMoon.IsEclipse)
             {
                 Game1.globalOutdoorLighting = .5f;
                 Game1.currentLocation.switchOutNightTiles();
@@ -552,7 +546,7 @@ namespace TwilightShards.LunarDisturbances
                 api.RegisterSimpleOption(ModManifest, "Allow Eclipse", "This option controls if eclipses will happen", () => ModConfig.EclipseOn, (bool val) => ModConfig.EclipseOn = val);
                 api.RegisterSimpleOption(ModManifest, "Show Moon Phase", "Show the moon phase popups on moon rise and set", () => ModConfig.ShowMoonPhase, (bool val) => ModConfig.ShowMoonPhase = val);
                 api.RegisterSimpleOption(ModManifest, "Spawn Monsters", "This option controls if monsters spawn during eclipses on a wilderness farm. NOTE: They don't spawn if you've turned off monster spawns in game.", () => ModConfig.SpawnMonsters, (bool val) => ModConfig.SpawnMonsters = val);
-                api.RegisterSimpleOption(ModManifest, "Hazardous Moon Events", "This controls the moon events that can hinder the player, or spawn monsters. No monsters will spawn ( the blood moon won't even happen) while this is false. This also stops the crop deadvancement on the new moon.", () => ModConfig.HazardousMoonEvents, (bool val) => ModConfig.HazardousMoonEvents = val);
+                api.RegisterSimpleOption(ModManifest, "Hazardous Moon Events", "This controls the moon events that can hinder the player, or spawn monsters. No monsters will spawn ( the blood moon won't even happen) while this is false. This also stops the crop de advancement on the new moon.", () => ModConfig.HazardousMoonEvents, (bool val) => ModConfig.HazardousMoonEvents = val);
                 api.RegisterSimpleOption(ModManifest, "Verbose Logging", "This controls if the mod is verbose when logging for debug purposes", () => ModConfig.Verbose, (bool val) => ModConfig.Verbose = val);
                 api.RegisterSimpleOption(ModManifest, "Use More Monthly Cycle", "When true, the mod uses a 25-day cycle.", () => ModConfig.UseMoreMonthlyCycle, (bool val) => ModConfig.UseMoreMonthlyCycle = val);
                 api.RegisterClampedOption(ModManifest, "Eclipse Chance", "The chance for an eclipse", () => (float)ModConfig.EclipseChance, (float val) => ModConfig.EclipseChance = val, 0f, 1f);
@@ -571,6 +565,7 @@ namespace TwilightShards.LunarDisturbances
                 cpAPI.RegisterToken(this.ModManifest, "MoonPhase", () => new[] { OurMoon.SimpleMoonPhase() });
                 cpAPI.RegisterToken(this.ModManifest, "MoonRise", () => new[] { OurMoon.GetMoonRiseTime().ToString() }); 
                 cpAPI.RegisterToken(this.ModManifest, "MoonSet", () => new[] { OurMoon.GetMoonSetTime().ToString() });
+                cpAPI.RegisterToken(this.ModManifest, name:"IsEclipse", () => new[] {OurMoon.IsEclipse.ToString()});
             }
         }
         

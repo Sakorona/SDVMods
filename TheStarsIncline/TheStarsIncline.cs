@@ -1,14 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using StardewModdingAPI;
+﻿using StardewModdingAPI;
 
 namespace TwilightShards.TheStarsIncline
 {
     public class TheStarsIncline : Mod
     {
+        private readonly int UniqueBaseID = 49134570;
+
         public override void Entry(IModHelper helper)
         {
             //woo!

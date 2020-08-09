@@ -1,4 +1,11 @@
 ## Changelog
+### 1.4
+ - Refactoring. API expanded for eclipse stuff
+ - Tokens now include 'IsEclipse'
+ - Documentation again up to date.
+ - Eclipses are now calculated a day in advance.
+ - The API now contains a function for other SMAPI mods to alter it's chances.
+
 ### 1.3.4
  - Moon rise will now say moon set time
  - No more duplicate moon rise messages if the moon rises at 6am.

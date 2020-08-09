@@ -6,6 +6,7 @@ using StardewValley.TerrainFeatures;
 using System;
 using System.Linq;
 using System.Collections.Generic;
+using System.Threading;
 using TwilightShards.Common;
 using xTile.Dimensions;
 using SObject = StardewValley.Object;
@@ -186,9 +187,7 @@ namespace TwilightShards.Stardew.Common
                 default:
                     return $"";
             }
-
             return $"";
-
         }
 
         public static T GetModApi<T>(IMonitor Monitor, IModHelper Helper, string name, string minVersion, string friendlyName="") where T : class
@@ -477,77 +476,111 @@ namespace TwilightShards.Stardew.Common
 		}
 
         /// <summary>
+        /// This function prints crop data in detail.
+        /// </summary>
+        /// <param name="loc">Location of the crop</param>
+        /// <param name="h">Hoe Dirt of the crop</param>
+        /// <param name="position">The position of the crop</param>
+        /// <returns>A string description of the crop</returns>
+        public static string PrintCropData(GameLocation loc, HoeDirt h, Vector2 position)
+        {
+            Crop currentCrop = h.crop;
+            string desc = "";
+
+            if (currentCrop is null)
+                return $"This is not a crop at {loc} and {position}";
+
+            //load crop data
+            string objName = Game1.objectInformation[currentCrop.indexOfHarvest.Value].Split('/')[0];
+
+            //describe crop data.
+            desc += $"This crop has harvest index: {currentCrop.indexOfHarvest.Value} ({objName}).{Environment.NewLine} Current Phase: {currentCrop.currentPhase}, phase calendar: {currentCrop.phaseDays}, final phase: {(currentCrop.phaseDays.Count)-1}";
+
+            desc +=
+                $"{Environment.NewLine} Day of Current Phase: {currentCrop.dayOfCurrentPhase}, Valid Seasons: {currentCrop.seasonsToGrowIn}. Regrowth after Harvest: {currentCrop.regrowAfterHarvest.Value}";
+
+            return desc;
+        }
+
+        /// <summary>
         /// This function deadvances crops
         /// </summary>
         /// <param name="loc">Location of the crop</param>
         /// <param name="h">Hoe Dirt of the crop</param>
         /// <param name="position">The position of the crop</param>
         /// <param name="numSteps">The number of steps being deadvanced by</param>
-        /// <param name="giantCropRequiredSteps">The number of minumum steps to affect the giant crop (default: 4)</param>
+        /// <param name="giantCropRequiredSteps">The number of minimum steps to affect the giant crop (default: 4)</param>
         /// <param name="giantCropDestructionOdds">The chance of the giant crop being affected (default: 50%)</param>
         /// <exception cref="">Throws a generic exception if it finds a giant crop that doesn't have an actual crop backing.</exception>
-        public static void DeAdvanceCrop(GameLocation loc, HoeDirt h, Vector2 position, int numSteps, int giantCropRequiredSteps = 4, double giantCropDestructionOdds = .5)
+        public static void DeAdvanceCrop(GameLocation loc, HoeDirt h, Vector2 position, int numSteps, IMonitor Logger, int giantCropRequiredSteps = 4, double giantCropDestructionOdds = .5)
         {
             //determine the phase of the crop
-            Crop currCrop = h.crop;
+            Crop currentCrop = h.crop;
 
-            if (!(currCrop is null))
+            //data on the crop. Outputting to debug.
+            Logger.Log($"BEFORE CROP DEADVANCEMENT: {PrintCropData(loc, h, position)}", LogLevel.Debug);
+
+            if (!(currentCrop is null))
             {
-                int countPhases = currCrop.phaseDays.Count;
+                int countPhases = currentCrop.phaseDays.Count;
                 int finalPhase = countPhases - 1;
 
                 for (int i = 0; i < numSteps; i++)
                 {
                     //now, check the phase - handle the final phase.
-                    if (currCrop.currentPhase.Value == finalPhase && currCrop.regrowAfterHarvest.Value == -1)
+                    if (currentCrop.currentPhase.Value == finalPhase && currentCrop.regrowAfterHarvest.Value == -1)
                     {
-                        if (currCrop.dayOfCurrentPhase.Value > 0){ 
-							currCrop.dayOfCurrentPhase.Value--;
+                        if (currentCrop.dayOfCurrentPhase.Value > 0){ 
+							currentCrop.dayOfCurrentPhase.Value--;
 						}
-                        else if (currCrop.dayOfCurrentPhase.Value == 0)
+                        else if (currentCrop.dayOfCurrentPhase.Value == 0)
                         {
-                            currCrop.fullyGrown.Value = false;
-                            currCrop.currentPhase.Value--;
-                            currCrop.dayOfCurrentPhase.Value = currCrop.phaseDays[currCrop.currentPhase.Value];
+                            currentCrop.fullyGrown.Value = false;
+                            currentCrop.currentPhase.Value--;
+                            currentCrop.dayOfCurrentPhase.Value = currentCrop.phaseDays[currentCrop.currentPhase.Value];
                         }
+                        Logger.Log($"AFTER CROP DEADVANCEMENT: {PrintCropData(loc, h, position)}", LogLevel.Debug);
                         continue;
                     }
 
                     //handle regrowth crops.
-                    else if (currCrop.regrowAfterHarvest.Value != -1 && currCrop.currentPhase.Value  == finalPhase)
+                    if (currentCrop.regrowAfterHarvest.Value != -1 && currentCrop.currentPhase.Value  == finalPhase)
                     {
-                        currCrop.dayOfCurrentPhase.Value++;
+                        currentCrop.dayOfCurrentPhase.Value++;
+                        Logger.Log($"AFTER CROP DEADVANCEMENT: {PrintCropData(loc, h, position)}", LogLevel.Debug);
                         continue;
                     }
 
                     //now handle it being any phase but 0.
-                    else if (currCrop.currentPhase.Value != finalPhase || currCrop.currentPhase.Value != 0)
+                    if (currentCrop.currentPhase.Value != finalPhase || currentCrop.currentPhase.Value != 0)
                     {
-                        if (currCrop.dayOfCurrentPhase.Value >= currCrop.phaseDays[currCrop.currentPhase.Value] && currCrop.currentPhase.Value > 0)
+                        if (currentCrop.dayOfCurrentPhase.Value >= currentCrop.phaseDays[currentCrop.currentPhase.Value] && currentCrop.currentPhase.Value > 0)
                         {
-                            currCrop.currentPhase.Value--;
-                            currCrop.dayOfCurrentPhase.Value = currCrop.phaseDays[currCrop.currentPhase.Value];
+                            currentCrop.currentPhase.Value--;
+                            currentCrop.dayOfCurrentPhase.Value = currentCrop.phaseDays[currentCrop.currentPhase.Value];
                         }
                         else
                         {
-                            currCrop.dayOfCurrentPhase.Value++;
+                            currentCrop.dayOfCurrentPhase.Value++;
                         }
+                        Logger.Log($"AFTER CROP DEADVANCEMENT: {PrintCropData(loc, h, position)}", LogLevel.Debug);
                         continue;
                     }
 
                     //final check. Phase 0.
-                    else if (currCrop.currentPhase.Value == 0)
+                    if (currentCrop.currentPhase.Value == 0)
                     {
-                        if (currCrop.dayOfCurrentPhase.Value != 0 && currCrop.dayOfCurrentPhase.Value > 0)
+                        if (currentCrop.dayOfCurrentPhase.Value != 0 && currentCrop.dayOfCurrentPhase.Value > 0)
                         {
-                            currCrop.dayOfCurrentPhase.Value--;
+                            currentCrop.dayOfCurrentPhase.Value--;
                         }
+                        Logger.Log($"AFTER CROP DEADVANCEMENT: {PrintCropData(loc, h, position)}", LogLevel.Debug);
                         continue;
                     }
 
                     //Sanity check here.
-                    else if (currCrop.currentPhase.Value < 0){
-                        currCrop.currentPhase.Value = 0;
+                    if (currentCrop.currentPhase.Value < 0){
+                        currentCrop.currentPhase.Value = 0;
 					}
                 }
             }
@@ -588,29 +621,10 @@ namespace TwilightShards.Stardew.Common
                     }
                 }
             }
+            Logger.Log($"AFTER CROP DEADVANCEMENT: {PrintCropData(loc, h, position)}", LogLevel.Debug);
             //we aren't handling forage crops here.
         }
         
-        /*
-        /// <summary>
-        /// This function checks if the crop has multiple harvests
-        /// </summary>
-        /// <param name="cropSeed">The crop seed</param>
-        /// <returns>If the crop has multiple harvests</returns>
-        private static bool CheckCropMultipleHarvests(int cropSeed)
-        {
-            Dictionary<int, string> dictionary = Game1.content.Load<Dictionary<int, string>>("Data\\Crops");
-            foreach (var c in dictionary)
-            {
-                string[] strArray1 = c.Value.Split('/');
-                if (strArray1[4] != "-1")
-                    return true;
-            }
-
-            return false;
-        }
-        */
-
         /// <summary>
         /// This function returns a crop seed given the harvested crop ID
         /// </summary>
@@ -636,70 +650,70 @@ namespace TwilightShards.Stardew.Common
         public static bool CheckIfPositionIsWithinGiantCrop(Vector2 position, GiantCrop g)
         {
           if (position.X >= g.tile.Value.X && position.X <= g.tile.Value.X + g.width.Value)
-            {
-                if (position.Y >= g.tile.Value.Y && position.Y < g.tile.Value.Y + g.height.Value)
-                {
-                    return true;
-                }
-            }
+          {
+              if (position.Y >= g.tile.Value.Y && position.Y < g.tile.Value.Y + g.height.Value)
+              {
+                  return true;
+              }
+          }
 
-            return false;
+          return false;
         }
 
         private static void AdvanceCropOneStep(GameLocation loc, HoeDirt h, Vector2 position)
         {
-            Crop currCrop = h.crop;
+            Crop currentCrop = h.crop;
             int xPos = (int)position.X;
             int yPos = (int)position.Y;
 
-            if (currCrop == null)
+            if (currentCrop == null)
                 return;
 
             //due to how this will be called, we do need to some checking
-            if (!loc.IsGreenhouse && (currCrop.dead.Value || !currCrop.seasonsToGrowIn.Contains(Game1.currentSeason)))
+            if (!loc.IsGreenhouse && (currentCrop.dead.Value || !currentCrop.seasonsToGrowIn.Contains(Game1.currentSeason)))
             {
-                currCrop.dead.Value = true;
+                currentCrop.dead.Value = true;
             }
             else
             {
                 if (h.state.Value == HoeDirt.watered)
                 {
                     //get the day of the current phase - if it's fully grown, we can just leave it here.
-                    if (currCrop.fullyGrown.Value)
-                        currCrop.dayOfCurrentPhase.Value -= 1;
+                    if (currentCrop.fullyGrown.Value)
+                        currentCrop.dayOfCurrentPhase.Value -= 1;
                     else
                     {
                         //check to sere what the count of current days is
 
                         int phaseCount; //get the count of days in the current phase
-                        if (currCrop.phaseDays.Count > 0)
-                            phaseCount = currCrop.phaseDays[Math.Min(currCrop.phaseDays.Count - 1, currCrop.currentPhase.Value)];
+                        if (currentCrop.phaseDays.Count > 0)
+                            phaseCount = currentCrop.phaseDays[Math.Min(currentCrop.phaseDays.Count - 1, currentCrop.currentPhase.Value)];
                         else
                             phaseCount = 0;
 
-                        currCrop.dayOfCurrentPhase.Value = Math.Min(currCrop.dayOfCurrentPhase.Value + 1, phaseCount);
+                        currentCrop.dayOfCurrentPhase.Value = Math.Min(currentCrop.dayOfCurrentPhase.Value + 1, phaseCount);
 
                         //check phases
-                        if (currCrop.dayOfCurrentPhase.Value >= phaseCount && currCrop.currentPhase.Value < currCrop.phaseDays.Count - 1)
+                        if (currentCrop.dayOfCurrentPhase.Value >= phaseCount && currentCrop.currentPhase.Value < currentCrop.phaseDays.Count - 1)
                         {
-                            currCrop.currentPhase.Value++;
-                            currCrop.dayOfCurrentPhase.Value = 0;
+                            currentCrop.currentPhase.Value++;
+                            currentCrop.dayOfCurrentPhase.Value = 0;
                         }
 
                         //skip negative day or 0 day crops.
-                        while (currCrop.currentPhase.Value < currCrop.phaseDays.Count - 1 && currCrop.phaseDays.Count > 0 && currCrop.phaseDays[currCrop.currentPhase.Value] <= 0)
+                        while (currentCrop.currentPhase.Value < currentCrop.phaseDays.Count - 1 && currentCrop.phaseDays.Count > 0 && currentCrop.phaseDays[currentCrop.currentPhase.Value] <= 0)
                         {
-                            currCrop.currentPhase.Value++;
+                            currentCrop.currentPhase.Value++;
                         }
 
                         //handle wild crops
-                        if (currCrop.isWildSeedCrop() && currCrop.phaseToShow.Value == -1 && currCrop.currentPhase.Value > 0)
-                            currCrop.phaseToShow.Value = Game1.random.Next(1, 7);
+                        if (currentCrop.isWildSeedCrop() && currentCrop.phaseToShow.Value == -1 && currentCrop.currentPhase.Value > 0)
+                            currentCrop.phaseToShow.Value = Game1.random.Next(1, 7);
 
                         //and now giant crops
                         double giantChance = new Random((int)Game1.uniqueIDForThisGame + (int)Game1.stats.daysPlayed + xPos * 2000 + yPos).NextDouble();
 
-                        if (loc is Farm && currCrop.currentPhase.Value == currCrop.phaseDays.Count - 1 && IsValidGiantCrop(currCrop.indexOfHarvest.Value) &&
+                        if (loc is Farm && currentCrop.currentPhase.Value == currentCrop.phaseDays.Count - 1 && IsValidGiantCrop(currentCrop.indexOfHarvest.Value) &&
                             giantChance <= 0.01)
                         {
                             for (int i = xPos - 1; i <= xPos + 1; i++)
@@ -707,8 +721,8 @@ namespace TwilightShards.Stardew.Common
                                 for (int j = yPos - 1; j <= yPos + 1; j++)
                                 {
                                     Vector2 tile = new Vector2(i, j);
-                                    if (!loc.terrainFeatures.ContainsKey(tile) || !(loc.terrainFeatures[tile] is HoeDirt) ||
-                                        (loc.terrainFeatures[tile] as HoeDirt).crop?.indexOfHarvest == currCrop.indexOfHarvest)
+                                    if (!loc.terrainFeatures.ContainsKey(tile) || !(loc.terrainFeatures[tile] is HoeDirt hDirt) ||
+                                        hDirt?.crop?.indexOfHarvest == currentCrop.indexOfHarvest)
                                     {
                                         return; //no longer needs to process.
                                     }
@@ -722,19 +736,21 @@ namespace TwilightShards.Stardew.Common
                                 for (int j = yPos - 1; j <= yPos + 1; j++)
                                 {
                                     Vector2 tile = new Vector2(i, j);
-                                    (loc.terrainFeatures[tile] as HoeDirt).crop = null;
+                                    if (!(loc.terrainFeatures[tile] is null) && loc.terrainFeatures[tile] is HoeDirt hDirt)
+                                        hDirt.crop = null;
                                 }
                             }
 
-                        (loc as Farm).resourceClumps.Add(new GiantCrop(currCrop.indexOfHarvest.Value, new Vector2(xPos - 1, yPos - 1)));
+                            if (loc is Farm f)
+                                f.resourceClumps.Add(new GiantCrop(currentCrop.indexOfHarvest.Value, new Vector2(xPos - 1, yPos - 1)));
 
                         }
                     }
                 }
                 //process some edge cases for non watered crops.
-                if (currCrop.fullyGrown.Value && currCrop.dayOfCurrentPhase.Value > 0 ||
-                    currCrop.currentPhase.Value < currCrop.phaseDays.Count - 1 ||
-                    !currCrop.isWildSeedCrop())
+                if (currentCrop.fullyGrown.Value && currentCrop.dayOfCurrentPhase.Value > 0 ||
+                    currentCrop.currentPhase.Value < currentCrop.phaseDays.Count - 1 ||
+                    !currentCrop.isWildSeedCrop())
 
                     return; //stop processing
 
@@ -744,7 +760,7 @@ namespace TwilightShards.Stardew.Common
                 loc.objects.Remove(position);
 
                 string season = Game1.currentSeason;
-                switch (currCrop.whichForageCrop.Value)
+                switch (currentCrop.whichForageCrop.Value)
                 {
                     case 495:
                         season = "spring";
@@ -759,7 +775,7 @@ namespace TwilightShards.Stardew.Common
                         season = "winter";
                         break;
                 }
-                loc.objects.Add(position, new SObject(position, currCrop.getRandomWildCropForSeason(season), 1)
+                loc.objects.Add(position, new SObject(position, currentCrop.getRandomWildCropForSeason(season), 1)
                 {
                     IsSpawnedObject = true,
                     CanBeGrabbed = true
