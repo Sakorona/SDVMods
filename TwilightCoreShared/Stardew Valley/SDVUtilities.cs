@@ -503,12 +503,12 @@ namespace TwilightShards.Stardew.Common
         }
 
         /// <summary>
-        /// This function deadvances crops
+        /// This function regresses crops
         /// </summary>
         /// <param name="loc">Location of the crop</param>
         /// <param name="h">Hoe Dirt of the crop</param>
         /// <param name="position">The position of the crop</param>
-        /// <param name="numSteps">The number of steps being deadvanced by</param>
+        /// <param name="numSteps">The number of steps the crop is being regressed by</param>
         /// <param name="giantCropRequiredSteps">The number of minimum steps to affect the giant crop (default: 4)</param>
         /// <param name="giantCropDestructionOdds">The chance of the giant crop being affected (default: 50%)</param>
         /// <exception cref="">Throws a generic exception if it finds a giant crop that doesn't have an actual crop backing.</exception>

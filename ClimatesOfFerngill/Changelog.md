@@ -1,4 +1,7 @@
 ## Changelog
+### 1.5.12
+ - some api improvements, blinding fog!!
+
 ### 1.5.11
  - fix for seasonal limits. (patch-fix)
 

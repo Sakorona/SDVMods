@@ -101,7 +101,12 @@ namespace TwilightShards.LunarDisturbances
                 }
             }
 
-            MoonTracker.IsEclipseTomorrow = SetEclipseTomorrow();
+            if (!(MoonTracker is null))
+                MoonTracker.IsEclipseTomorrow = SetEclipseTomorrow();
+            else
+            {
+                Monitor.Log("MoonTracker is null! Eclipse tomorrow not set", LogLevel.Error);
+            }
         }
 
         public void TurnEclipseOn()

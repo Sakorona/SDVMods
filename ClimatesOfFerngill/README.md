@@ -1,6 +1,6 @@
 ﻿# Climates of Ferngill
 
-Current Version: 1.5.9
+Current Version: 1.5.12
 
 ## What's New
 - Variable Rain.

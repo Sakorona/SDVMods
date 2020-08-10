@@ -1,7 +1,8 @@
 ﻿### Changelog
 
 #### 1.1.5
-  - Anything using the same tileactions as the bath house pool should now clear illnesses 
+  - Anything using the same tileactions as the bath house pool should now clear illnesses
+  - CoF integration: blinding fog displays a debuff
 
 #### 1.1.4
   - fix to issues with clearing illnesses

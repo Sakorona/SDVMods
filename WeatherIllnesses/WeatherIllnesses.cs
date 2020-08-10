@@ -1,4 +1,6 @@
 ﻿using System;
+using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
 using StardewModdingAPI;
 using StardewModdingAPI.Events;
 using StardewValley;
@@ -10,7 +12,7 @@ using TwilightShards.Stardew.Common;
 
 namespace TwilightShards.WeatherIllnesses
 {
-    public class WeatherIllnesses : Mod
+    public class WeatherIllnesses : Mod, IAssetEditor
     {
         private IllnessConfig IllnessConfig { get; set; }
         private MersenneTwister Dice { get; set; }
@@ -20,8 +22,8 @@ namespace TwilightShards.WeatherIllnesses
         private int TicksTotal;
         private int TicksInLocation;
 
-        private bool UseClimates = false;
-        private Integrations.IClimatesOfFerngillAPI climatesAPI;
+        internal static bool UseClimates = false;
+        internal static Integrations.IClimatesOfFerngillAPI climatesAPI;
 
         /// <summary>The mod entry point, called after the mod is first loaded.</summary>
         /// <param name="helper">Provides simplified APIs for writing mods.</param>
@@ -44,12 +46,31 @@ namespace TwilightShards.WeatherIllnesses
             Helper.ConsoleCommands.Add("debug_forceillness", "Force an illness.", ForceIllness);
         }
 
+        public bool CanEdit<T>(IAssetInfo asset)
+        {
+            if (asset.AssetNameEquals("Tilesheets/BuffsIcons"))
+            {
+                return true;
+            }
+
+            return false;
+        }
+
+        public void Edit<T>(IAssetData asset)
+        {
+            Texture2D customTexture = this.Helper.Content.Load<Texture2D>("assets/BuffsInsert.png", ContentSource.ModFolder);
+
+            asset
+                .AsImage()
+                .ExtendImage(192,48);
+            asset.AsImage()
+                .PatchImage(customTexture, targetArea: new Rectangle(0, 32, 192, 16));
+        }
+
         private void TouchActionActivated(object sender, EventArgsAction e)
         {
-            Monitor.Log($"Event params: Touch Action {e.TouchAction}, Action.ToString: {e.Action}, ActionString {e.ActionString}", LogLevel.Info);
             if (e.TouchAction && (e.ActionString == "PoolhouseEntry" || e.ActionString == "PoolEntrance"))
             {
-                Monitor.Log("Poolhouse entered/exited!!!", LogLevel.Info);
                 StaminaMngr.PoolhouseFlip();
             }
         }
@@ -70,7 +91,7 @@ namespace TwilightShards.WeatherIllnesses
         /// <param name="e">The event arguments.</param>
         private void OnGameLaunched(object sender, GameLaunchedEventArgs e)
         {
-            climatesAPI = SDVUtilities.GetModApi<Integrations.IClimatesOfFerngillAPI>(Monitor, Helper, "KoihimeNakamura.ClimatesOfFerngill", "1.5-beta.2", "Climates of Ferngill");
+            climatesAPI = SDVUtilities.GetModApi<Integrations.IClimatesOfFerngillAPI>(Monitor, Helper, "KoihimeNakamura.ClimatesOfFerngill", "1.5.12", "Climates of Ferngill");
 
             if (climatesAPI != null)
             {
