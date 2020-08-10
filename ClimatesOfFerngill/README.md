@@ -72,6 +72,7 @@ This mod uses harmony to patch functions to allow it to draw custom rain and sno
 - kdau and Strobe for testing
 - Corrin, Hadi and Mae for suggestions
 - The SDV discord #modding channel for discussions and encouragement.
+- Kaya for debuff/buff icon sprites
 
 If I have left you out of acknowledgements, please contact me so I can get you added to the acknowledgement list
 
