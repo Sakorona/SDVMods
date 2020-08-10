@@ -374,24 +374,15 @@ namespace TwilightShards.WeatherIllnesses
         {
             if (this.FogDebuffValid)
             {
-                if (WeatherIllnesses.UseClimates && !(WeatherIllnesses.climatesAPI is null) && WeatherIllnesses.climatesAPI.GetCurrentFogType() != "BlindingFog")
+                if (WeatherIllnesses.UseClimates && !(WeatherIllnesses.climatesAPI is null) && WeatherIllnesses.climatesAPI.GetCurrentFogType() != "Blinding")
                 {
                     Monitor.Log("Clearing the fog",LogLevel.Info);
                     ClearFog();
                 }
-
-                if (!WeatherIllnesses.UseClimates)
-                {
-                    if (Game1.timeOfDay > 1000)
-                    {
-                        Monitor.Log("Clearing the fog",LogLevel.Info);
-                        ClearFog();
-                    }
-                }
             }
 
             if (WeatherIllnesses.UseClimates && !(WeatherIllnesses.climatesAPI is null) && 
-                WeatherIllnesses.climatesAPI.GetCurrentFogType() == "BlindingFog")
+                WeatherIllnesses.climatesAPI.GetCurrentFogType() == "Blinding")
             {
                 FogDebuffValid = true;
             }

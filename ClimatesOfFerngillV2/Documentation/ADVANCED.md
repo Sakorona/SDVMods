@@ -3,7 +3,7 @@
 ## 1. General Notes
 
 ### 1a. Frost
-Frost, defined as when a freeze is left on plants, is a difficult thing to pin down. Some say it's below 2.2C, others below 0C. We define it here as 2.2C by default, and if I ever need to, a *hard* frost is below -3.33C.
+Frost, defined as when a freeze is left on plants, is a difficult thing to pin down. Some say it's below 2.2C (~36 F), others below 0C (32 F). We define it here as 2.2C(~36 F) by default, and if I ever need to, a *hard* frost is below -3.33C.
 
 This matters because we want to say what the default max chance of frost is in the mod. Without the hazardous events toggle, this does nothing, however.
 

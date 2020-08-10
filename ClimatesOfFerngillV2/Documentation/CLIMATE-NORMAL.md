@@ -39,4 +39,5 @@ Jumino Weather: Random chance that a sunny day will be jumino instead: .75% pre 
 ## 3. Fall
 
 
+
 ## 4. Winter
