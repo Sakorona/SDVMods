@@ -836,5 +836,59 @@ namespace TwilightShards.Stardew.Common
             return CreatedWeeds;
         }
 
+        public static StardewValley.Object GetRandomFish(GameLocation loc)
+        {
+            int parentSheetIndex = 372;
+            Dictionary<string, string> locationListing = Game1.content.Load<Dictionary<string, string>>("Data\\Locations");
+            string key = loc.Name;
+
+            if (locationListing.ContainsKey(key))
+            {
+                string[] locationData = locationListing[key].Split('/')[4 + Utility.getSeasonNumber(Game1.currentSeason)].Split(' ');
+                Dictionary<string, string> dictionary2 = new Dictionary<string, string>();
+                if (locationData.Length > 1)
+                {
+                    for (int index = 0; index < locationData.Length; index += 2)
+                        dictionary2.Add(locationData[index], locationData[index + 1]);
+                }
+
+                string[] array = dictionary2.Keys.ToArray<string>();
+                Utility.Shuffle<string>(Game1.random, array);
+                Dictionary<int, string> dictionary3 = Game1.content.Load<Dictionary<int, string>>("Data\\Fish");
+                for (int index1 = 0; index1 < array.Length; ++index1)
+                {
+                    bool flag2 = true;
+                    string[] strArray2 = dictionary3[Convert.ToInt32(array[index1])].Split('/');
+                    string[] strArray3 = strArray2[5].Split(' ');
+                    int int32 = Convert.ToInt32(dictionary2[array[index1]]);
+                    if (int32 == -1)
+                    {
+                        for (int index2 = 0; index2 < strArray3.Length; index2 += 2)
+                        {
+                            if (Game1.timeOfDay >= Convert.ToInt32(strArray3[index2]) && Game1.timeOfDay < Convert.ToInt32(strArray3[index2 + 1]))
+                            {
+                                flag2 = false;
+                                break;
+                            }
+                        }
+                    }
+                    if (!strArray2[7].Equals("both"))
+                    {
+                        if (strArray2[7].Equals("rainy") && !Game1.isRaining)
+                            flag2 = true;
+                        else if (strArray2[7].Equals("sunny") && Game1.isRaining)
+                            flag2 = true;
+                    }
+                    
+                    if (!flag2)
+                    {
+                        parentSheetIndex = Convert.ToInt32(array[index1]);
+                    }
+                }
+                return new StardewValley.Object(parentSheetIndex, 1, false, -1, 0);
+            }
+
+            return new StardewValley.Object(parentSheetIndex, 1, false, -1, 0);
+        }
     }
 }
