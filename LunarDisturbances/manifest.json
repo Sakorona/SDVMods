@@ -15,10 +15,16 @@
       "IsRequired": true
     },
     {
-        "UniqueID": "Pathoschild.ContentPatcher",
-        "IsRequired": false
+      "UniqueID": "Pathoschild.ContentPatcher",
+      "IsRequired": false
     }
   ],
   "MinimumApiVersion": "3.0",
+  "ModUpdater": {
+    "Repository": "SDVMods",
+    "User": "Sakorona",
+    "Directory": "_releases",
+    "ModFolder": "LunarDisturbances"
+  },
   "UpdateKeys": [ "Nexus:2208" ]
 }

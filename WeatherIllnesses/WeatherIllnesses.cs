@@ -135,7 +135,7 @@ namespace TwilightShards.WeatherIllnesses
             }*/
 
             Monitor.Log($"Bath house duration is {StaminaMngr.GetBathHouseDuration()}");
-            if (StaminaMngr.GetBathHouseDuration() >= 30)
+            if (StaminaMngr.GetBathHouseDuration() >= 30 && StaminaMngr.IsSick())
             {
                 StaminaMngr.ClearDrain(StaminaDrain.BathHouseClear);
             }

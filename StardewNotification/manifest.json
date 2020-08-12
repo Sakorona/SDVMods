@@ -6,5 +6,11 @@
   "UniqueID": "mondopandora.stardewnotification",
   "EntryDll": "StardewNotification.dll",
   "MinimumApiVersion": "3.0",
+  "ModUpdater": {
+    "Repository": "SDVMods",
+    "User": "Sakorona",
+    "Directory": "_releases",
+    "ModFolder": "StardewNotification"
+  },
   "UpdateKeys": [ "Nexus:4713" ]
 }

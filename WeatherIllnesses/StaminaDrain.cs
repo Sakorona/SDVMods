@@ -394,11 +394,12 @@ namespace TwilightShards.WeatherIllnesses
                 if (weatherBuff == null)
                 {
                     Game1.buffsDisplay.addOtherBuff(
-                        weatherBuff = new Buff(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-                            "You are sick due to the inclement weather!", "Weather Illnesses"));
+                        weatherBuff = new Buff(0, 0, 0, 0, 0, 0, 0, 0, 0, -2, 0, 0, 0,
+                            "Weather Illnesses", "Weather Illnesses"));
                     weatherBuff.which = buffId;
                     weatherBuff.sheetIndex = SicknessBuffID;
                     weatherBuff.millisecondsDuration = 0;
+                    weatherBuff.description = "You are sick due to the inclement weather!";
                 }
             }
 
@@ -410,10 +411,11 @@ namespace TwilightShards.WeatherIllnesses
                 {
                     Game1.buffsDisplay.addOtherBuff(
                         weatherBuff = new Buff(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-                            "The inclement weather is severely limiting visibility.", "Weather Illnesses"));
+                            "Weather Illnesses", "Weather Illnesses"));
                     weatherBuff.which = buffId;
                     weatherBuff.sheetIndex = FogBuffID;
                     weatherBuff.millisecondsDuration = 0;
+                    weatherBuff.description = "The inclement weather is severely limiting visibility.";
                 }
 
                 if (!WeatherIllnesses.UseClimates)

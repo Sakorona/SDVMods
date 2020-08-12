@@ -139,6 +139,9 @@ namespace HappyFishJump
         private void PopulateValidFishLocations()
         {
             //get starting position
+            if (Game1.currentLocation.waterTiles is null)
+                return;
+
             for (int j = 0; j < Game1.currentLocation.waterTiles.GetLength(0); j++)
             {
                 for (int k = 0; k < Game1.currentLocation.waterTiles.GetLength(1); k++)

@@ -38,6 +38,7 @@ Jumino Weather: Random chance that a sunny day will be jumino instead: .75% pre 
 
 ## 3. Fall
 
+Fall is the best season. I mean, Fall is a time when it gets chilly out there.
 
 
 ## 4. Winter
