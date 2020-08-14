@@ -4,6 +4,7 @@ using StardewValley;
 using StardewValley.Locations;
 using System;
 using System.Diagnostics;
+using System.Runtime.InteropServices.WindowsRuntime;
 using TwilightShards.Stardew.Common;
 
 namespace ClimatesOfFerngillRebuild
@@ -11,8 +12,9 @@ namespace ClimatesOfFerngillRebuild
     /// <summary> This tracks fog details </summary>
     internal class FerngillFog : ISDVWeather
     {
+        private const int Texturesize = 128;
         public event EventHandler<WeatherNotificationArgs> OnUpdateStatus;
-        public static Rectangle FogSource = new Rectangle(0, 0, 64, 64);
+        public static Rectangle FogSource = new Rectangle(0, 0, Texturesize, Texturesize);
         private Color _fogColor = Color.White * 1.25f;
         /// <summary> The Current Fog Type </summary>
         internal FogType CurrentFogType { get; set; }
@@ -61,8 +63,11 @@ namespace ClimatesOfFerngillRebuild
                 this.FogTargetAlpha = .7f;
             }
 
+            if (CurrentFogType == FogType.Light)
+                this.FogTargetAlpha = .6f; //.4f is barely visible
+
             if (CurrentFogType == FogType.Blinding)
-                this.FogTargetAlpha = .85f;
+                this.FogTargetAlpha = .95f; 
         }
 
         /// <summary> Default constructor. </summary>
@@ -117,7 +122,7 @@ namespace ClimatesOfFerngillRebuild
         {
             string s = "";
             s += $"Weather {WeatherType} is {IsWeatherVisible}, Progress: {WeatherInProgress}, Begin Time {BeginTime} to End Time {ExpirationTime}. Alpha is {FogAlpha}.";
-            s += $"{Environment.NewLine} Color is {_fogColor}. Position is {FogPosition.ToString()}, with Fade Out Timer being {FadeOutFog} and In {FadeInFog}";
+            s += $"{Environment.NewLine} Color is {_fogColor}. Position is {FogPosition}, with Fade Out Timer being {FadeOutFog} and In {FadeInFog}";
             s += $"{Environment.NewLine} Fog Type is {CurrentFogType}";
             return s;
         }
@@ -131,6 +136,8 @@ namespace ClimatesOfFerngillRebuild
             {
                 case FogType.None:
                     return "None";
+                case FogType.Light:
+                    return "Light";
                 case FogType.Blinding:
                     return "Blinding";
                 case FogType.Normal:
@@ -144,12 +151,25 @@ namespace ClimatesOfFerngillRebuild
         {
         }
 
-        /// <summary>This function creates the fog </summary>
         public void CreateWeather()
         {
+            CreateWeather(FogType.Normal, false);
+        }
+
+        /// <summary>This function creates the fog </summary>
+        public void CreateWeather(FogType fType, bool force)
+        {
             CurrentFogType = FogType.Normal;
-            if (ClimatesOfFerngill.Dice.NextDoublePositive() < 1)
+
+            if (ClimatesOfFerngill.Dice.NextDoublePositive() < .25)
+                CurrentFogType = FogType.Light;
+            
+            else if (ClimatesOfFerngill.Dice.NextDoublePositive() > .90)
                 CurrentFogType = FogType.Blinding;
+
+            if (force)
+                CurrentFogType = fType;
+
             SetFogTargetAlpha();
 
             this.FogAlpha = this.FogTargetAlpha;
@@ -273,11 +293,13 @@ namespace ClimatesOfFerngillRebuild
                 {
                     Texture2D fogTexture = ClimatesOfFerngill.OurIcons.FogTexture;
                     Texture2D blindingTexture = ClimatesOfFerngill.OurIcons.BlindingFogTexture;
+                    Texture2D lightTexture = ClimatesOfFerngill.OurIcons.LightFogTexture;
+
                     Vector2 position = new Vector2();
-                    float num1 = -64* Game1.pixelZoom + (int)(FogPosition.X % (double)(64 * Game1.pixelZoom));
+                    float num1 = -Texturesize* Game1.pixelZoom + (int)(FogPosition.X % (double)(Texturesize * Game1.pixelZoom));
                     while (num1 < (double)Game1.graphics.GraphicsDevice.Viewport.Width)
                     {
-                        float num2 = -64 * Game1.pixelZoom + (int)(FogPosition.Y % (double)(64 * Game1.pixelZoom));
+                        float num2 = -Texturesize * Game1.pixelZoom + (int)(FogPosition.Y % (double)(Texturesize * Game1.pixelZoom));
                         while ((double)num2 < Game1.graphics.GraphicsDevice.Viewport.Height)
                         {
                             position.X = (int)num1;
@@ -294,9 +316,15 @@ namespace ClimatesOfFerngillRebuild
 
                             if (CurrentFogType == FogType.Blinding)
                             {
-                                _fogColor = Color.Black;
+                                //_fogColor = Color.Black;
 
                                 Game1.spriteBatch.Draw(blindingTexture, position, new Rectangle?(FogSource),
+                                    FogAlpha > 0.0 ? _fogColor * FogAlpha : Color.Black * 0.95f, 0.0f, Vector2.Zero,
+                                    Game1.pixelZoom + 1f / 1000f, SpriteEffects.None, 1f);
+                            }
+                            else if (CurrentFogType == FogType.Light)
+                            {
+                                Game1.spriteBatch.Draw(lightTexture, position, new Rectangle?(FogSource),
                                     FogAlpha > 0.0 ? _fogColor * FogAlpha : Color.Black * 0.95f, 0.0f, Vector2.Zero,
                                     Game1.pixelZoom + 1f / 1000f, SpriteEffects.None, 1f);
                             }
@@ -305,9 +333,9 @@ namespace ClimatesOfFerngillRebuild
                                 Game1.spriteBatch.Draw(fogTexture, position, new Rectangle?(FogSource), FogAlpha > 0.0 ? _fogColor * FogAlpha : Color.Black * 0.95f, 0.0f, Vector2.Zero, Game1.pixelZoom + 1f / 1000f, SpriteEffects.None, 1f);
                             }
 
-                            num2 += 64 * Game1.pixelZoom;
+                            num2 += Texturesize * Game1.pixelZoom;
                         }
-                        num1 += 64 * Game1.pixelZoom;
+                        num1 += Texturesize * Game1.pixelZoom;
                     }
                 }
             }
@@ -366,15 +394,15 @@ namespace ClimatesOfFerngillRebuild
                 if (Game1.isDebrisWeather) {
                     this.FogPosition = Game1.updateFloatingObjectPositionForMovement(FogPosition,
                         new Vector2(Game1.viewport.X, Game1.viewport.Y), Game1.previousViewportPosition, -1f);
-                    FogPosition = new Vector2((FogPosition.X + 0.5f) % (64 * Game1.pixelZoom) + WeatherDebris.globalWind,
-                        (FogPosition.Y + 0.5f) % (64 * Game1.pixelZoom));
+                    FogPosition = new Vector2((FogPosition.X + 0.5f) % (Texturesize * Game1.pixelZoom) + WeatherDebris.globalWind,
+                        (FogPosition.Y + 0.5f) % (Texturesize * Game1.pixelZoom));
                 }
                 else {
                     //Game1.outdoorLight = fogLight;
                     this.FogPosition = Game1.updateFloatingObjectPositionForMovement(FogPosition,
                         new Vector2(Game1.viewport.X, Game1.viewport.Y), Game1.previousViewportPosition, -1f);
-                    FogPosition = new Vector2((FogPosition.X + 0.5f) % (64 * Game1.pixelZoom),
-                        (FogPosition.Y + 0.5f) % (64 * Game1.pixelZoom));
+                    FogPosition = new Vector2((FogPosition.X + 0.5f) % (Texturesize * Game1.pixelZoom),
+                        (FogPosition.Y + 0.5f) % (Texturesize * Game1.pixelZoom));
                 }
             }
         }
