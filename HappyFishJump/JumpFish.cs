@@ -35,11 +35,14 @@ namespace HappyFishJump
             if (HappyFishJump.ModConfig.SplashSound)
                 Game1.playSound("dropItemInWater");
 
-            Game1.currentLocation.TemporarySprites.Add(new TemporaryAnimatedSprite(28, 100f, 2, 1, this.position + new Vector2(-0.5f, -0.5f) * 64f, false, false)
+            if (!(Game1.currentLocation is null))
             {
-                delayBeforeAnimationStart = 0,
-                layerDepth = this.startPosition.Y / 10000f
-            });
+                Game1.currentLocation.TemporarySprites.Add(new TemporaryAnimatedSprite(28, 100f, 2, 1, this.position + new Vector2(-0.5f, -0.5f) * 64f, false, false)
+                {
+                    delayBeforeAnimationStart = 0,
+                    layerDepth = this.startPosition.Y / 10000f
+                });
+            }
         }
 
         public bool Update(float time)
