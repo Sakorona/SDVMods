@@ -1,4 +1,9 @@
-﻿#Ver 1.1.1
+﻿# Ver 1.1.2
+- fix for multiplayer - locations may not be loaded when splash is called
+- legendary fish jump. Includes support for some mods.
+- Fish will jump only from proper locations.
+
+#Ver 1.1.1
 - NRE fix on maps with no water
 
 # Ver 1.1.0

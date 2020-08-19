@@ -836,6 +836,62 @@ namespace TwilightShards.Stardew.Common
             return CreatedWeeds;
         }
 
+        public static Dictionary<int,int> GetFishListing(GameLocation loc)
+        {
+            var fish = new Dictionary<int, int>();
+            Dictionary<string, string> locationListing = Game1.content.Load<Dictionary<string, string>>("Data\\Locations");
+            string key = loc.Name;
+
+            if (locationListing.ContainsKey(key))
+            {
+                string[] rawData = locationListing[key].Split('/')[4 + Utility.getSeasonNumber(Game1.currentSeason)].Split(' ');
+
+                Dictionary<string, string> processedData = new Dictionary<string, string>();
+                if (rawData.Length > 1)
+                {
+                    for (int index = 0; index < rawData.Length; index += 2)
+                        processedData.Add(rawData[index], rawData[index + 1]);
+                }
+                string[] locationFish = processedData.Keys.ToArray<string>();
+
+                Dictionary<int, string> fishData = Game1.content.Load<Dictionary<int, string>>("Data\\Fish");
+                Utility.Shuffle<string>(Game1.random, locationFish);
+                for (int index1 = 0; index1 < locationFish.Length; ++index1)
+                {
+                    //iterate through the fish
+                    bool isValid = true;
+                    //get the fish data
+                    string[] fishParsed = fishData[Convert.ToInt32(array[index1])].Split('/');
+                    int zoneData = Convert.ToInt32(processedData[locationFish[index1]]);
+
+                    //check time requirements
+                    string[] timeSpawned = fishParsed[5].Split(' ');
+                    for (int index2 = 0; index2 < timeSpawned.Length; index2 += 2)
+                    {
+                        if (Game1.timeOfDay < Convert.ToInt32(timeSpawned[index2]) && Game1.timeOfDay >= Convert.ToInt32(timeSpawned[index2 + 1]))
+                        {
+                            isValid = false;
+                            break;
+                        }
+                    }
+                    
+                    //check weather requirements
+                    if (!fishParsed[7].Equals("both"))
+                    {
+                        if (fishParsed[7].Equals("rainy") && !Game1.isRaining)
+                            isValid = false;
+                        else if (fishParsed[7].Equals("sunny") && Game1.isRaining)
+                            isValid = false;
+                    }
+
+                    if (isValid)
+                        fish.Add(locationFish[index1], zoneData);
+
+                }
+            }
+            return fish;
+        }
+
         public static StardewValley.Object GetRandomFish(GameLocation loc)
         {
             int parentSheetIndex = 372;
