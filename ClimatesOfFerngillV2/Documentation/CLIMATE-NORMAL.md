@@ -4,11 +4,20 @@ This shows off all of the features of Climates. In versions before 2.0 these wer
 
 ## 1. Spring
 
-Springs start at 48 F/37F (8.89C /2.78 C) with about +4.5F/-2.3 F(+2.5 C/-1.28 C) variation in temperature for the first week, and rise to about 62.3F/52 F(16.83 C/11.11 C) by mid Spring. Variation dies down, to about +2.6F/-2.9 F (1.44C/-1.61 C). As the Spring dies down, it rises to 70F/59 F (21.11 C/15 C) and ends the season about 76 F/64 F (24.44 C/17.78C), with a variation of +4/-3 F (+2.22C/-1.67 C). Lows are more variant, to -5F (-2.78 C). 
+Springs start at 
+ * 48 F/37F (8.89C /2.78 C) with about +4.5F/-2.3 F(+2.5 C/-1.28 C) variation in temperature for the first week
+ * In the second week, it rises to about 62.3F/52 F(16.83 C/11.11 C) by mid Spring. Variation dies down, to about +2.6F/-2.9 F (1.44C/-1.61 C). 
+ * As the Spring dies down, it rises to 70F/59 F (21.11 C/15 C) and ends the season about 76 F/64 F (24.44 C/17.78C), with a variation of +4 F/-3 F (+2.22C/-1.67 C). Lows are more variant, to -5F (-2.78 C). 
+
+
+ Abnormal cold and heat is about 20% likely throughout the season, with more chances of cold (35% to 20%) vs hot (20% flat) in the beginning. In this season, abnormal cold is -7 F (-3.89 C), and abnormal heat is +9 F (5 C)
+
+For a visual breakdown, see:
+![Temperature Chart (Spring, Farenheit)](images/tempSpringF.png)
+
+![Temperature Chart (Spring, Celsius)](images/tempSpringC.png)
 
 While the season starts out wet (~40% chance of rain), the chances of rain drop throughout the season. Storms start moving in towards the end as often as rain. Days have a good chance to be windy, with mostly gentle winds. With the season, fogs are somewhat frequent, mostly around the beginning of the season, while evening fogs are infrequent.
-
-Abnormal cold and heat is about 20% likely throughout the season, with more chances of cold (35% to 20%) vs hot (20% flat) in the beginning. In this season, abnormal cold is -6 F (-3.33 C), and abnormal heat is +4 F(2.22 C)
 
 Sandstorms are likelier towards the end of the season, but never exceed 5%. Blizzards are 10% possible, but white outs never. 
 
