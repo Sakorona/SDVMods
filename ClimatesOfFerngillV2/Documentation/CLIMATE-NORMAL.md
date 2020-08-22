@@ -34,7 +34,7 @@ Summers are warm, starting at 80 F/66 F (26.67 C/18.89 C) with a variation of +3
 
 The season is somewhat dry, with rain chances never really exceeding 25%. Due to the temperature, winds are somewhat gentle. Storms are as likely as rain throughout the season. Fogs are extremely rare in this season. 
 
-Abnormal cold and heat is about 40% likely throughout the season, with more chances of hot (flat 40%) vs cold (20%) throughout. In this season, abnormal cold is -4 F (-2.22 C), and abnormal heat is +7 F(3.89 C)
+Abnormal cold and heat is about 40% likely throughout the season, with more chances of hot (flat 40%) vs cold (20%) throughout. In this season, abnormal cold is -9 F (-5 C), and abnormal heat is +9 F(5 C)
 
 Sandstorms have a flat chance of 10%, although heavy winds raise this by 5% for every 1.5 kph (.932 mph) over 16kph (10 mph). Blizzards are 1% possible. Somehow. 
 
@@ -49,5 +49,26 @@ Jumino Weather: Random chance that a sunny day will be jumino instead: .75% pre 
 
 Fall is the best season. I mean, Fall is a time when it gets chilly out there.
 
+Fall is the best season. I mean, Fall is a time when it gets chilly out there.
+
+The weather starts at 71 F/62 F (21.67 C/16.67 C), falling to 64 F/56 F (17.78 C/13.33 C) in the first week, with varations of +2 F/-4.5 F(+1.11 C/-2.5 C). These variations remain constant throughout the season. The temperature continues falling, and by the end of the middle of the season - the temperature is 48F/39F (8.89 C/3.89C), and frosts become possible. In the end of the season, the temperature average is 34F/27F (1.11 C/-2.78 C).
+
+The season gets wet rapidly, with rain chances starting at 30% and rising to 55% by the end of the season. Storms drop from 50% to 10% as likely. Fogs are very common throught the season, with sandstorms dropping to 5% likely.  Blizzards become more possible, although unlikely, rising to 10% by the end of the season.
+
+Rain continues to be variable as summer, with the wind changing from NW-W to E-SE as the season goes through. Major lightning storms drop to 5%. Wind can reach a fresh gale often.
+
+Chances of typhoons are normal.
+
+Flower Rain conversion: 15%
+Jumino Weather: Random chance that a sunny day will be jumino instead: .75% pre CC completion, 5% pre Movie Theatre completion, 10% post both.
 
 ## 4. Winter
+
+Winters are cold, starting at 34F/27F (1.11 C/-2.78C), with variations of +2.2 F/-5.5 F (???). By the end of the middle, it falls to 21F/14 F (-6.11 C/-10 C), with particularly cold days falling into the teens (18 F/10 F [-7.78 C/-12.22 C] before variations. It begins to warm again in the last part of the season rising to 36 F/29 F(2.22 C/-1.67 C). 
+
+The season is intermittenly snowy, at roughly 55%. Storms are vanishingly rare (at 1%). Fogs are reasonbly unlikely (10%), but will be freezing fogs. Wind is always from the E-SE, and will be gentle to a light gale. Blizzards are likely
+
+Chances of typhoons are 1%. 
+
+Flower Rain conversion: 1%
+Jumino Weather: Random chance that a sunny day will be jumino instead: .25% pre CC completion, 1% pre Movie Theatre completion, 5% post both.
