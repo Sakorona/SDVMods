@@ -247,8 +247,8 @@ namespace TwilightShards.Stardew.Common
         public static SDVTime operator -(SDVTime s1, SDVTime s2)
         {
             SDVTime ret = new SDVTime(s1);
-            s1.hour += s2.hour;
-            s1.minute += s2.minute;
+            s1.hour -= s2.hour;
+            s1.minute -= s2.minute;
 
             while (s1.minute > (MINPERHR - 1))
             {
