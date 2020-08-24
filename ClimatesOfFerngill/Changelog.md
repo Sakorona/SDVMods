@@ -1,6 +1,7 @@
 ## Changelog
 ### 1.5.12
  - some api improvements, blinding fog!!
+ - weather now renders in screenshot mode.
 
 ### 1.5.11
  - fix for seasonal limits. (patch-fix)

@@ -861,7 +861,7 @@ namespace TwilightShards.Stardew.Common
                     //iterate through the fish
                     bool isValid = true;
                     //get the fish data
-                    string[] fishParsed = fishData[Convert.ToInt32(array[index1])].Split('/');
+                    string[] fishParsed = fishData[Convert.ToInt32(locationFish[index1])].Split('/');
                     int zoneData = Convert.ToInt32(processedData[locationFish[index1]]);
 
                     //check time requirements
@@ -885,7 +885,7 @@ namespace TwilightShards.Stardew.Common
                     }
 
                     if (isValid)
-                        fish.Add(locationFish[index1], zoneData);
+                        fish.Add(Convert.ToInt32(locationFish[index1]), zoneData);
 
                 }
             }

@@ -99,7 +99,9 @@ namespace HappyFishJump
             }
         }
 
+#pragma warning disable IDE0060 // Remove unused parameter - it's not unused, for one thing. :V
         public static void PlaySound(string cueName)
+#pragma warning restore IDE0060 // Remove unused parameter
         {
             if (ModConfig.SplashSound)
             {
@@ -128,7 +130,10 @@ namespace HappyFishJump
             if (Game1.currentLocation != null && Game1.currentLocation.IsOutdoors && _validFishLocations.Count >= ModConfig.NumberOfJumpingFish)
             {
                 //get fish
-                Dictionary<int,int> fishLocation = SDVUtilities.GetFishList(Game1.currentLocation);
+                Dictionary<int, int> fishLocation = SDVUtilities.GetFishListing(Game1.currentLocation);
+
+                if (fishLocation.Keys.Count <= 0)
+                    return;
 
                 //legendaries!
                 List<int> legendaryFishAdded = new List<int>();
@@ -136,13 +141,13 @@ namespace HappyFishJump
                     switch (Game1.currentLocation.Name)
                     {
                         case "ExteriorMuseum":
-                        for(var v in Game1.objectInformation)
+                            foreach(var v in Game1.objectInformation)
                             {
-                                if (v.Value.Split('/')[0] == "Pufferchick" && Game1.player.fishCaught.ContainsKey(v.Key))
-                                {
-                                    legendaryFishAdded.Add(v.Key);
-                                    fishLocation.Add(v.Key, -1);
-                                }
+                                    if (v.Value.Split('/')[0] == "Pufferchick" && Game1.player.fishCaught.ContainsKey(v.Key))
+                                    {
+                                        legendaryFishAdded.Add(v.Key);
+                                        fishLocation.Add(v.Key, -1);
+                                    }
                             }
                             break;
                         case "Mountain":
@@ -172,9 +177,7 @@ namespace HappyFishJump
                             break;
                         case "Sewer":
                             if (Game1.player.fishCaught.ContainsKey(682))
-                                fishLocation.Add(682. - 1);
-                            break;
-                        default:
+                                fishLocation.Add(682, - 1);
                             break;
                     }
                 }
@@ -186,23 +189,22 @@ namespace HappyFishJump
                 {
                     if (Game1.random.NextDouble() > ModConfig.JumpChance)
                         continue;
-                    //StardewValley.Object fish = SDVUtilities.GetRandomFish(Game1.currentLocation);
-                    //var startPosition = _validFishLocations[Game1.random.Next(0, _validFishLocations.Count - 1)];
-                    int rndFish = Game1.random.Next(0, fishIDs.Count - 1);
+
+                    int rndFish = Game1.random.Next(0, fishIDs.Count() - 1);
 
                     if (legendaryFishAdded.Contains(rndFish) && Game1.random.NextDouble() < ModConfig.LegendaryJumpChance)
                     {
-                        int i = 0;
+                        int loopCheck = 0;
                         do
                         {
-                            int rndFish = Game1.random.Next(0, fishIDs.Count - 1);
+                            rndFish = Game1.random.Next(0, fishIDs.Count() - 1);
                             i++;
-                        } while (legendaryFishAdded.Contains(rndFish) && i < 12000);
+                        } while (legendaryFishAdded.Contains(rndFish) && loopCheck < 12000);
                     }
 
-                    int rndLoc = Game1.random.Next(0, validLocs.Count - 1);
-                    if (fishLocation[fishIDs[rndFish]].Value == -1 ||
-                        fishLocation[fishIDs[rndFish]].Value == _validFishLocations[validLocs[rndLoc]].Value)
+                    int rndLoc = Game1.random.Next(0, validLocs.Count() - 1);
+                    if (fishLocation[fishIDs[rndFish]] == -1 ||
+                        fishLocation[fishIDs[rndFish]] == _validFishLocations[validLocs[rndLoc]] && rndFish != 0)
                     {
                         StardewValley.Object fish = new StardewValley.Object(fishIDs[rndFish],1, false, -1, 0);
                         var startPosition = validLocs[rndLoc];

@@ -40,6 +40,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "HappyFishJump", "HappyFishJ
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TheStarsIncline", "TheStarsIncline\TheStarsIncline.csproj", "{8DB4F568-B5D9-442A-AE3D-A3AEE9BB9877}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WashAwayForage", "WashAwayForage\WashAwayForage.csproj", "{426E93E6-DA81-4B25-AF0E-5C20B79D039F}"
+EndProject
 Global
 	GlobalSection(SharedMSBuildProjectFiles) = preSolution
 		TwilightCoreShared\TwilightCoreShared.projitems*{01da90d0-eec8-427b-9409-3168a8089f20}*SharedItemsImports = 13
@@ -219,6 +221,18 @@ Global
 		{8DB4F568-B5D9-442A-AE3D-A3AEE9BB9877}.x86|Any CPU.Build.0 = Release|Any CPU
 		{8DB4F568-B5D9-442A-AE3D-A3AEE9BB9877}.x86|x86.ActiveCfg = Release|Any CPU
 		{8DB4F568-B5D9-442A-AE3D-A3AEE9BB9877}.x86|x86.Build.0 = Release|Any CPU
+		{426E93E6-DA81-4B25-AF0E-5C20B79D039F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{426E93E6-DA81-4B25-AF0E-5C20B79D039F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{426E93E6-DA81-4B25-AF0E-5C20B79D039F}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{426E93E6-DA81-4B25-AF0E-5C20B79D039F}.Debug|x86.Build.0 = Debug|Any CPU
+		{426E93E6-DA81-4B25-AF0E-5C20B79D039F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{426E93E6-DA81-4B25-AF0E-5C20B79D039F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{426E93E6-DA81-4B25-AF0E-5C20B79D039F}.Release|x86.ActiveCfg = Release|Any CPU
+		{426E93E6-DA81-4B25-AF0E-5C20B79D039F}.Release|x86.Build.0 = Release|Any CPU
+		{426E93E6-DA81-4B25-AF0E-5C20B79D039F}.x86|Any CPU.ActiveCfg = Release|Any CPU
+		{426E93E6-DA81-4B25-AF0E-5C20B79D039F}.x86|Any CPU.Build.0 = Release|Any CPU
+		{426E93E6-DA81-4B25-AF0E-5C20B79D039F}.x86|x86.ActiveCfg = Release|Any CPU
+		{426E93E6-DA81-4B25-AF0E-5C20B79D039F}.x86|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
