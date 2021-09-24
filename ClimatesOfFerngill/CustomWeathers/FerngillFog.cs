@@ -4,7 +4,6 @@ using StardewValley;
 using StardewValley.Locations;
 using System;
 using System.Diagnostics;
-using System.Runtime.InteropServices.WindowsRuntime;
 using TwilightShards.Stardew.Common;
 
 namespace ClimatesOfFerngillRebuild
