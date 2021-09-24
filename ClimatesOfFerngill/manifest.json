@@ -14,7 +14,7 @@
   },
   "Dependencies": [
     {
-      "UniqueID": "Platonymous Toolkit",
+      "UniqueID": "Platonymous.Toolkit",
       "MinimumVersion": "0.7.0"
     }
   ],
