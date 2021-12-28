@@ -10,13 +10,14 @@ using System.Linq;
 using StardewValley.Monsters;
 using TwilightShards.Common;
 using TwilightShards.Stardew.Common;
+using System;
 
 namespace TwilightShards.LunarDisturbances
 {
     public class SDVMoon
     {
         //encapsulated members
-        private readonly MersenneTwister Dice;
+        private readonly Random Dice;
         private readonly MoonConfig ModConfig;
         private readonly ITranslationHelper Translations;
 
@@ -41,7 +42,7 @@ namespace TwilightShards.LunarDisturbances
         internal readonly int[] beachItems = new int[] { 393, 397, 392, 394 };
         internal readonly int[] moonBeachItems = new int[] { 393, 394, 560, 586, 587, 589, 397 };
 
-        public SDVMoon(MoonConfig config, MersenneTwister rng, ITranslationHelper Trans, IMonitor Logger)
+        public SDVMoon(MoonConfig config, Random rng, ITranslationHelper Trans, IMonitor Logger)
         {
             Dice = rng;
             ModConfig = config;
@@ -248,7 +249,7 @@ namespace TwilightShards.LunarDisturbances
 
         public void UpdateForBloodMoon()
         {
-            if (CurrentPhase() == MoonPhase.FullMoon && Dice.NextDoublePositive() <= ModConfig.BadMoonRising && !Game1.isFestival() && !Game1.weddingToday && ModConfig.HazardousMoonEvents)
+            if (CurrentPhase() == MoonPhase.FullMoon && Dice.NextDouble() <= ModConfig.BadMoonRising && !Game1.isFestival() && !Game1.weddingToday && ModConfig.HazardousMoonEvents)
             {
                 IsBloodMoon = true;
                 DoBloodMoonAlert();
@@ -467,7 +468,7 @@ namespace TwilightShards.LunarDisturbances
             Beach b = Game1.getLocationFromName("Beach") as Beach;
             int itemsChanged = 0;
 
-            if (Dice.NextDoublePositive() < .20)
+            if (Dice.NextDouble() < .20)
                 return;
 
             //new moon processing

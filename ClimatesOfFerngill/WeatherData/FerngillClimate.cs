@@ -1,4 +1,5 @@
 ﻿using StardewModdingAPI.Utilities;
+using System;
 using System.Collections.Generic;
 using TwilightShards.Common;
 
@@ -53,7 +54,7 @@ namespace ClimatesOfFerngillRebuild
         /// <param name="target">The day being looked at</param>
         /// <param name="dice">The PRNG object</param>
         /// <returns>The temperature range</returns>
-        public RangePair GetTemperatures(SDate target, MersenneTwister dice)
+        public RangePair GetTemperatures(SDate target, Random dice)
         {
             var weather = GetClimateForDate(target);
             var temps = new RangePair(weather.RetrieveTemp(dice, "lowtemp", target.Day), 
@@ -62,7 +63,7 @@ namespace ClimatesOfFerngillRebuild
             return temps;
         }
 
-        public double GetStormOdds(SDate target, MersenneTwister dice)
+        public double GetStormOdds(SDate target,Random dice)
         {
             return GetClimateForDate(target).RetrieveOdds(dice, "storm", target.Day);
         }
