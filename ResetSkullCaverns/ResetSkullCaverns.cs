@@ -1,5 +1,4 @@
-﻿using System.Collections.Generic;
-using StardewModdingAPI;
+﻿using StardewModdingAPI;
 using StardewValley.Locations;
 
 namespace ResetSkullCaverns
@@ -13,19 +12,12 @@ namespace ResetSkullCaverns
 
         private void GameLoop_DayEnding(object sender, StardewModdingAPI.Events.DayEndingEventArgs e)
         {
-            List<int> KeyValues = new List<int>();
-
             foreach (var v in MineShaft.permanentMineChanges)
             {
                 if (v.Key > 120)
                 {
-                    KeyValues.Add(v.Key);
+                   MineShaft.permanentMineChanges[v.Key].coalCartsLeft = 1;
                 }
-            }
-
-            foreach (var i in KeyValues)
-            {
-                MineShaft.permanentMineChanges.Remove(i);
             }
         }
     }
