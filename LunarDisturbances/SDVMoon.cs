@@ -90,7 +90,7 @@ namespace TwilightShards.LunarDisturbances
             }
             else
             {
-                if (MoonTracker.FullMoonThisSeason && CurrentPhase() == MoonPhase.FullMoon || CurrentPhase() == MoonPhase.BloodMoon)
+                if (MoonTracker.FullMoonThisSeason && CurrentPhase() == MoonPhase.FullMoon || CurrentPhase() != MoonPhase.BloodMoon)
                 {
                     IsBlueMoon = true;
                     Game1.addHUDMessage(new TCHUDMessage(Translations.Get("moon-text.bluemoon"), CurrentPhase()));
@@ -249,7 +249,7 @@ namespace TwilightShards.LunarDisturbances
 
         public void UpdateForBloodMoon()
         {
-            if (CurrentPhase() == MoonPhase.FullMoon && Dice.NextDouble() <= ModConfig.BadMoonRising && !Game1.isFestival() && !Game1.weddingToday && ModConfig.HazardousMoonEvents)
+            if (CurrentPhase() == MoonPhase.FullMoon && Dice.NextDouble() <= ModConfig.BadMoonRising && !Game1.isFestival() && !Game1.weddingToday && ModConfig.HazardousMoonEvents && !IsBlueMoon)
             {
                 IsBloodMoon = true;
                 DoBloodMoonAlert();
@@ -715,7 +715,7 @@ namespace TwilightShards.LunarDisturbances
 
         public void MoonTrackerUpdate()
         {
-            if (MoonTracker.FullMoonThisSeason && this.CurrentPhase() == MoonPhase.FullMoon)
+            if (MoonTracker.FullMoonThisSeason && this.CurrentPhase() == MoonPhase.FullMoon && !IsBloodMoon)
             {
                 IsBlueMoon = true;
                 Game1.addHUDMessage(new TCHUDMessage(Translations.Get("moon-text.bluemoon"), CurrentPhase()));
