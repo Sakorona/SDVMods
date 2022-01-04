@@ -1,6 +1,7 @@
 ## Changelog
 
 ### 1.4.1
+- Updated to SDV 1.5.5
 - Some trace spam removed
 
 ### 1.4

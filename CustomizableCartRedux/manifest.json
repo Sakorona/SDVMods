@@ -6,11 +6,5 @@
   "UniqueID": "KoihimeNakamura.CCR",
   "EntryDll": "CustomizableCartRedux.dll",
   "MinimumApiVersion": "3.0.0",
-  "ModUpdater": {
-    "Repository": "SDVMods",
-    "User": "Sakorona",
-    "Directory": "_releases",
-    "ModFolder": "CustomizableCartRedux"
-  },
   "UpdateKeys": [ "Nexus:1402", "Moddrop:664037" ]
 }

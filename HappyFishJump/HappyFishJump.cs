@@ -195,6 +195,7 @@ namespace HappyFishJump
                         {
                             rndFish = Game1.random.Next(0, fishIDs.Count() - 1);
                             i++;
+                            loopCheck++;
                         } while (legendaryFishAdded.Contains(rndFish) && loopCheck < 12000);
                     }
 
