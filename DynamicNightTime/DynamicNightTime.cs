@@ -1,5 +1,4 @@
-﻿using HarmonyLib;
-using StardewModdingAPI;
+﻿using StardewModdingAPI;
 using StardewModdingAPI.Utilities;
 using StardewValley;
 using System;
@@ -10,6 +9,7 @@ using StardewModdingAPI.Events;
 using StardewValley.Locations;
 using TwilightShards.Stardew.Common;
 using DynamicNightTime.Integrations;
+using HarmonyLib;
 using xTile.ObjectModel;
 
 namespace DynamicNightTime
@@ -20,15 +20,11 @@ namespace DynamicNightTime
         public bool SunsetTimesAreMinusThirty = true;
         public int NightDarknessLevel = 1;
         public bool MoreOrangeSunrise = false;
+        public float IslandLatDifference = 25.0f;
     }
 
     public class DynamicNightTime : Mod
     {
-        public static double SunriseTemp = 2500;
-        public static double SunsetTemp = 2700;
-        public static double NoonTemp = 6300;
-        public static double LateAfternoonTemp = 4250;
-        public static double EarlyMorningTemp = 4250;
         public static DynamicNightConfig NightConfig;
         public static IMonitor Logger;
         public static bool LunarDisturbancesLoaded;
@@ -57,8 +53,8 @@ namespace DynamicNightTime
                 NightConfig.Latitude = 64;
             if (NightConfig.Latitude < -64)
                 NightConfig.Latitude = -64;
-    
-            var harmony = new Harmony("koihimenakamura.dynamicnighttime");
+
+            var harmony = new Harmony(this.ModManifest.UniqueID);
             harmony.PatchAll(Assembly.GetExecutingAssembly());
 
             //patch getStartingToGetDarkTime
@@ -101,6 +97,9 @@ namespace DynamicNightTime
         private void OnUpdateTicking(object sender, UpdateTickingEventArgs e)
         {
             if (!Context.IsWorldReady)
+                return;
+
+            if (Game1.currentLocation is null)
                 return;
 
             if (Game1.isDarkOut() && Game1.currentSong.Name.Contains(Game1.currentSeason) && !Game1.currentSong.Name.Contains("ambient"))
@@ -185,7 +184,7 @@ namespace DynamicNightTime
 
                         if (Game1.isRaining || Game1.isLightning || (Game1.eventUp || Game1.dayOfMonth <= 0) || Game1.currentLocation.Name.Equals("Desert"))
                             return;
-                        Game1.changeMusicTrack(Game1.currentSeason + Math.Max(1, Game1.currentSongIndex),true,Game1.MusicContext.Default);
+                        Game1.changeMusicTrack(Game1.currentSeason + Math.Max(1, Game1.currentSongIndex),true);
                     }
                 }
                 Helper.Reflection.GetMethod(Game1.currentLocation, "_updateAmbientLighting").Invoke();
@@ -194,7 +193,7 @@ namespace DynamicNightTime
                 {
                     string[] strArray = propertyValue2.ToString().Split(' ');
                     for (int index = 0; index < strArray.Length; index += 3)
-                        Game1.currentLightSources.Add(new LightSource(Convert.ToInt32(strArray[index + 2]), new Vector2((float)(Convert.ToInt32(strArray[index]) * 64 + 32), (float)(Convert.ToInt32(strArray[index + 1]) * 64 + 32)), 1f, LightSource.LightContext.MapLight, 0L));                      
+                        Game1.currentLightSources.Add(new LightSource(Convert.ToInt32(strArray[index + 2]), new Vector2(Convert.ToInt32(strArray[index]) * 64 + 32, Convert.ToInt32(strArray[index + 1]) * 64 + 32), 1f, LightSource.LightContext.MapLight, 0L));                      
                 }
                 isNightOut = false;
             }
@@ -263,11 +262,12 @@ namespace DynamicNightTime
 
             if (MoonAPI != null)
                 LunarDisturbancesLoaded = true;
-
+/*
             ClimatesAPI = SDVUtilities.GetModApi<IClimatesOfFerngillAPI>(Monitor, Helper, "KoihimeNakamura.ClimatesOfFerngill", "1.5.0-beta15", "Climates of Ferngill");
 
             if (ClimatesAPI != null)
                 ClimatesLoaded = true;
+*/
 
             //GMCM interaction
             var GMCMapi = Helper.ModRegistry.GetApi<GenericModConfigMenuAPI>("spacechase0.GenericModConfigMenu");
@@ -276,13 +276,33 @@ namespace DynamicNightTime
                 GMCMapi.RegisterModConfig(ModManifest, () => NightConfig = new DynamicNightConfig(), () => Helper.WriteConfig(NightConfig));
                 GMCMapi.RegisterClampedOption(ModManifest, "Latitude", "Latitude used to generate the sunrise and sunset times", () => NightConfig.Latitude,
                     (float val) => NightConfig.Latitude = val, -63.5f, 63.5f);
+                GMCMapi.RegisterClampedOption(ModManifest, "Island Latitude", "This value will be subtracted or added to get the latitude of Ginger Island. It is clamped to be no more than 40 degrees away.", () => NightConfig.IslandLatDifference,
+                    (float val) => NightConfig.IslandLatDifference = val, 0f, 40f);
                 GMCMapi.RegisterSimpleOption(ModManifest, "Sunset Times", "This option controls if you subtract a half hour from the generated time", () => NightConfig.SunsetTimesAreMinusThirty, (bool val) => NightConfig.SunsetTimesAreMinusThirty = val);
                 GMCMapi.RegisterSimpleOption(ModManifest, "More Orange Sunrise", "This option controls if you want a more orange sunrise", () => NightConfig.MoreOrangeSunrise, (bool val) => NightConfig.MoreOrangeSunrise = val);
                 GMCMapi.RegisterClampedOption(ModManifest, "Night Darkness Level", "Controls the options for how dark it is at night. Higher is darker.", () => NightConfig.NightDarknessLevel,
                     (int val) => NightConfig.NightDarknessLevel = val, 1, 4);
             }
         }
-        
+
+        public static float GetCurrentLocationLat()
+        {
+            float baseLat = NightConfig.Latitude;
+
+            if (Game1.currentLocation != null && Game1.currentLocation is IslandLocation && NightConfig.IslandLatDifference != 0f)
+            {
+                baseLat = (NightConfig.Latitude > 0
+                    ? NightConfig.Latitude - NightConfig.IslandLatDifference
+                    : NightConfig.Latitude + NightConfig.IslandLatDifference);
+
+                //sanity check it.
+                if ((NightConfig.Latitude > 0 && baseLat < 0) || (NightConfig.Latitude < 0 && baseLat > 0))
+                    baseLat = 0;
+            }
+
+            return baseLat;
+        }
+
         private void SetLatitude(string arg1, string[] arg2)
         {
            if (arg2.Length > 0)
@@ -475,7 +495,22 @@ namespace DynamicNightTime
         {
             int astroTwN;
             int dayOfYear = day.DaysSinceStart % 112;
-            double lat = MathHelper.ToRadians((float)NightConfig.Latitude);
+
+            //handle lat changes
+            float baseLat = NightConfig.Latitude;
+
+            if (Game1.currentLocation != null && Game1.currentLocation is IslandLocation && NightConfig.IslandLatDifference != 0f)
+            {
+                baseLat = (NightConfig.Latitude > 0
+                    ? NightConfig.Latitude - NightConfig.IslandLatDifference
+                    : NightConfig.Latitude + NightConfig.IslandLatDifference);
+
+                //sanity check it.
+                if ((NightConfig.Latitude > 0 && baseLat < 0) || (NightConfig.Latitude < 0 && baseLat > 0))
+                    baseLat = 0;
+            }
+
+            double lat = MathHelper.ToRadians(baseLat);
             //23.45 deg * sin(2pi / 112 * (dayOfYear - 1))
             double solarDeclination = .40927971 * Math.Sin((2 * Math.PI / 112) * (dayOfYear - 1));
             double noon = 720 - 10 * Math.Sin(4 * (Math.PI / 112) * (dayOfYear - 1)) + 8 * Math.Sin(2 * (Math.PI / 112) * dayOfYear);

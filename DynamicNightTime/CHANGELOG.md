@@ -1,4 +1,11 @@
 ## Changelog
+### 1.3.8
+ - Island set to 30 degrees south (or north) of the valley. This difference is customizable
+ - CoF integration temporarily disabled
+
+### 1.3.7
+ - Updated for SDV 1.5
+
 ### 1.3.6
  - fix to dawn icon timing
  - less orange sunrise is now more orange sunrise

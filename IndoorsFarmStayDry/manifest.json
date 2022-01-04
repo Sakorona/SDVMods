@@ -1,0 +1,10 @@
+﻿{
+  "Name": "Indoors Farm Stay Dry",
+  "Author": "Sakorona",
+  "Version": "1.0.0",
+  "Description": "indoor farms stay dry in rain.",
+  "UniqueID": "KoihimeNakamura.IndoorsFarmStayDry",
+  "EntryDll": "IndoorsFarmStayDry.dll",
+  "MinimumApiVersion": "3.0",
+  "UpdateKeys": [ "Nexus:????" ]
+}
