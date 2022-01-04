@@ -1,4 +1,11 @@
-﻿1.8.6
+﻿1.8.8
+- fixes silo showing notifications when under construction
+
+1.8.7
+- updated for 1.5.5
+- fixes config option for spring onions not working
+
+1.8.6
  - fixes a greenhouse bug with tea leaves.
 
 1.8.5
