@@ -33,7 +33,7 @@ namespace StardewNotification
                     count++;
             }
 
-            if (count > 0)
+            if (count > 0 && StardewNotification.Config.ShowSpringOnionCount)
             {
                 Util.ShowMessage(Trans.Get("springOnion", new { count}));
             }

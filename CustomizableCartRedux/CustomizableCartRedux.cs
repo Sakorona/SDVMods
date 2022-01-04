@@ -5,7 +5,6 @@ using StardewModdingAPI.Events;
 using StardewValley.Locations;
 using StardewModdingAPI.Utilities;
 using Microsoft.Xna.Framework;
-using TwilightShards.Common;
 using HarmonyLib;
 using System.Reflection;
 using CustomizableTravelingCart.Patches;
