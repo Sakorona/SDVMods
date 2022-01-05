@@ -6,5 +6,5 @@
   "UniqueID": "knakamura.dynamicnighttime",
   "EntryDll": "DynamicNightTime.dll",
   "MinimumApiVersion": "3.9.0",
-  "UpdateKeys": [ "Nexus:2072" ]
+  "UpdateKeys": [ "Nexus:2072", "ModDrop:664041" ]
 }

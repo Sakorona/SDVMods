@@ -1,6 +1,7 @@
 ## Changelog
 ### 1.3.8
  - Island set to 30 degrees south (or north) of the valley. This difference is customizable
+ - Fixes 1.5 issue introduced by parallax calculations assuming only sunset changes on the hour
  - CoF integration temporarily disabled
 
 ### 1.3.7
