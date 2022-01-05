@@ -1,6 +1,5 @@
 ﻿using System;
 using Microsoft.Xna.Framework;
-using StardewModdingAPI;
 using StardewValley;
 using TwilightShards.Stardew.Common;
 
@@ -17,7 +16,7 @@ namespace DynamicNightTime.Patches
             sunsetT.AddTime(-20);
             
             int astronTime = DynamicNightTime.GetMorningAstroTwilight().ReturnIntTime();
-            DynamicNightTime.Logger.Log($"Latitude for calc is {DynamicNightTime.GetCurrentLocationLat()}", LogLevel.Info);
+            //DynamicNightTime.Logger.Log($"Latitude for calc is {DynamicNightTime.GetCurrentLocationLat()}", LogLevel.Info);
 
             //colors
             //sunrise 255,159,80

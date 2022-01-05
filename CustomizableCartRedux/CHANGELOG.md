@@ -1,8 +1,11 @@
 ## Changelog
 
-### 1.4.1
-- Updated to SDV 1.5.5
+### 1.4.4
+- Updated to SDV 1.5.5 (including some 1.5 world gen options now fully supported)
 - Some trace spam removed
+
+### 1.4.3
+- Version increment for updates.
 
 ### 1.4
  - Updated to.. SDV 1.4

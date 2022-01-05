@@ -60,26 +60,31 @@ namespace DynamicNightTime
             //patch getStartingToGetDarkTime
             MethodInfo setStartingToGetDarkTime = SDVUtilities.GetSDVType("Game1").GetMethods(BindingFlags.Static | BindingFlags.Public).ToList().Find(m => m.Name == "getStartingToGetDarkTime");
             MethodInfo postfix = typeof(Patches.GettingDarkPatch).GetMethods(BindingFlags.Static | BindingFlags.Public).ToList().Find(m => m.Name == "Postfix");
-            Monitor.Log($"Postfixing {setStartingToGetDarkTime} with {postfix}", LogLevel.Trace);
+            Monitor.Log($"Postfixing Game1.getStartingToGetDarkTime with {postfix}", LogLevel.Trace);
             harmony.Patch(setStartingToGetDarkTime, postfix: new HarmonyMethod(postfix));
 
             //patch getTrulyDarkTime
             MethodInfo setTrulyDarkTime = SDVUtilities.GetSDVType("Game1").GetMethods(BindingFlags.Static | BindingFlags.Public).ToList().Find(m => m.Name == "getTrulyDarkTime");
             MethodInfo postfixDark = typeof(Patches.GetFullyDarkPatch).GetMethods(BindingFlags.Static | BindingFlags.Public).ToList().Find(m => m.Name == "Postfix");
-            Monitor.Log($"Postfixing {setTrulyDarkTime} with {postfixDark}", LogLevel.Trace);
+            Monitor.Log($"Postfixing Game1.getTrulyDarkTime with {postfixDark}", LogLevel.Trace);
             harmony.Patch(setTrulyDarkTime, postfix: new HarmonyMethod(postfixDark));
 
             //patch isDarkOut
             MethodInfo isDarkOut = SDVUtilities.GetSDVType("Game1").GetMethods(BindingFlags.Static | BindingFlags.Public).ToList().Find(m => m.Name == "isDarkOut");
             MethodInfo postfixIsDarkOut = typeof(Patches.IsDarkOutPatch).GetMethods(BindingFlags.Static | BindingFlags.Public).ToList().Find(m => m.Name == "Postfix");
-            Monitor.Log($"Postfixing {isDarkOut} with {postfixIsDarkOut}", LogLevel.Trace);
+            Monitor.Log($"Postfixing Gam1.isDarkOut with {postfixIsDarkOut}", LogLevel.Trace);
             harmony.Patch(isDarkOut, postfix: new HarmonyMethod(postfixIsDarkOut));
 
             //patch UpdateGameClock
             MethodInfo UpdateGameClock = helper.Reflection.GetMethod(SDVUtilities.GetSDVType("Game1"), "UpdateGameClock").MethodInfo;
             MethodInfo postfixClock = helper.Reflection.GetMethod(typeof(Patches.GameClockPatch), "Postfix").MethodInfo;
-            Monitor.Log($"Postfixing {UpdateGameClock} with {postfixClock}", LogLevel.Trace);
+            Monitor.Log($"Postfixing Game1.UpdateGameClock with {postfixClock}", LogLevel.Trace);
             harmony.Patch(UpdateGameClock, postfix: new HarmonyMethod(postfixClock));
+
+            harmony.Patch(
+                original: AccessTools.Method(AccessTools.TypeByName("StardewValley.Locations.IslandLocation"), "DrawParallaxHorizon"),
+                transpiler: new HarmonyMethod(AccessTools.Method(typeof(Patches.IslandLocationPatches), "DrawParallaxHorizonTranspiler")));
+            Monitor.Log("Patching IslandLocation::DrawParallaxHorizon with a transpiler.", LogLevel.Trace);
 
             helper.Events.GameLoop.GameLaunched += OnGameLaunched;
             helper.Events.GameLoop.DayStarted += OnDayStarted;
@@ -92,6 +97,7 @@ namespace DynamicNightTime
             Helper.ConsoleCommands.Add("debug_setlatitude", "Sets Latitude", SetLatitude);
             Helper.ConsoleCommands.Add("debug_setnightlevel", "Set Night Level", SetNightLevel);
             Helper.ConsoleCommands.Add("debug_printplayingsong", "Print Playing Song", PrintPlayingSong);
+            Helper.ConsoleCommands.Add("debug_printparallaxcalc", "Show Parallax Ratio", ShowParallaxRatio);
         }
 
         private void OnUpdateTicking(object sender, UpdateTickingEventArgs e)
@@ -150,6 +156,18 @@ namespace DynamicNightTime
         private void PrintPlayingSong(string arg1, string[] arg2)
         {
             Console.WriteLine($"Playing song is {Game1.currentSong.Name}, stopped? {Game1.currentSong.IsStopped} playing {Game1.currentSong.IsPlaying}");
+        }
+
+        private void ShowParallaxRatio(string arg1, string[] arg2)
+        {
+            float ratio = CalculateDayNightRatio();
+            float ratioClamped = Utility.Clamp(ratio, 0f, 1f);
+
+            float numer = Utility.CalculateMinutesBetweenTimes(Game1.getStartingToGetDarkTime(), (Game1.timeOfDay + (int)(Game1.gameTimeInterval / 7000f * 10f % 10f)));
+            int gameTimeInterval = (int)(Game1.gameTimeInterval / 7000f * 10f % 10f);
+            float denom = Utility.CalculateMinutesBetweenTimes(Game1.getStartingToGetDarkTime(), Game1.getTrulyDarkTime());
+
+            Console.WriteLine($"At time {Game1.timeOfDay}, with starting to get dark time: {Game1.getStartingToGetDarkTime()}, truly dark time: {Game1.getTrulyDarkTime()}, we have a ratio of {ratio:N4} and clamped ratio of {ratioClamped:N4}. Numerator is {numer:N4}, Denominator: {denom:N4}. GameTimeInterval: {gameTimeInterval}");
         }
 
         /// <summary>Get an API that other mods can access. This is always called after <see cref="M:StardewModdingAPI.Mod.Entry(StardewModdingAPI.IModHelper)" />.</summary>
@@ -285,6 +303,13 @@ namespace DynamicNightTime
             }
         }
 
+        public static float CalculateDayNightRatio()
+        {
+            float day_night_tranisition = (Utility.CalculateMinutesBetweenTimes(Game1.getStartingToGetDarkTime(), (Game1.timeOfDay + (int)(Game1.gameTimeInterval / 7000f * 10f % 10f))) * 1.0f) / (float)(Utility.CalculateMinutesBetweenTimes(Game1.getStartingToGetDarkTime(), Game1.getTrulyDarkTime()) * 1.0f);
+
+            return day_night_tranisition;
+        }
+
         public static float GetCurrentLocationLat()
         {
             float baseLat = NightConfig.Latitude;
@@ -339,7 +364,6 @@ namespace DynamicNightTime
             Monitor.Log($"Sunrise : {GetSunrise()}, Sunset: {GetSunset()}. Solar Noon {GetSolarNoon()}", LogLevel.Info);
             Monitor.Log($"Early Morning ends at {GetEndOfEarlyMorning()}, Late Afternoon begins at {GetBeginningOfLateAfternoon()}", LogLevel.Info);
             Monitor.Log($"Morning Twilight: {GetMorningAstroTwilight()}, Evening Twilight: {GetAstroTwilight()}", LogLevel.Info);
-            Monitor.Log($"Game Interval Time is {Game1.gameTimeInterval}", LogLevel.Info);
         }
 
         public static Color GetLunarLightDifference()
@@ -417,9 +441,9 @@ namespace DynamicNightTime
             if (raw >= 0 && raw <= 255)
                 R = (byte)raw;
             else if (raw < 0)
-                R = (byte)0;
+                R = 0;
             else if (raw > 255)
-                R = (byte)255;
+                R = 255;
 
             return R;
         }
@@ -544,7 +568,7 @@ namespace DynamicNightTime
         {
             int astroTwN;
             int dayOfYear = SDate.Now().DaysSinceStart % 112;
-            double lat = MathHelper.ToRadians((float)NightConfig.Latitude);
+            double lat = MathHelper.ToRadians(NightConfig.Latitude);
             //23.45 deg * sin(2pi / 112 * (dayOfYear - 1))
             double solarDeclination = .40927971 * Math.Sin((2 * Math.PI / 112) * (dayOfYear - 1));
             double noon = 720 - 10 * Math.Sin(4 * (Math.PI / 112) * (dayOfYear - 1)) + 8 * Math.Sin(2 * (Math.PI / 112) * dayOfYear);
