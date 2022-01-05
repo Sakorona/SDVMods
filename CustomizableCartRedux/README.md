@@ -4,8 +4,12 @@ Version 1.4
 This mod is inspired by yyeahdude. It allows you to set the chances of the traveling cart appearing per day (by setting it from 0 to 1, for example, a 25% chance is .25), the items it contains, and how much it is. 
 
 ## Requires:
-SMAPI 3.0+
-SDV 1.4+
+SMAPI 3.13+
+SDV 1.5+
+
+## INCOMPATIBLITES
+- Ambient Light
+- Casual Life
 
 ## WARNING UPDATING TO 1.4
 ***The API has changed. Any mods using this should use the newer API***
