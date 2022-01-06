@@ -11,8 +11,9 @@ SDV 1.5+
 - Ambient Light
 - Casual Life
 
-## WARNING UPDATING TO 1.4
-***The API has changed. Any mods using this should use the newer API***
+## WARNING UPDATING TO 1.4.5
+***The API will not work - this is due to a temporary rewriting of the mod.
+
 
 ## Install Instructions
 Unzip the archive into the Mods folder
@@ -37,20 +38,3 @@ To configure, open up `config.json` in your mod folder.
 - UseCheaperPricing: Uses a less expensive method of determining the value.
 
 
-## API documentation
-
-This mod provides an API if people want to add items to the cart. 
-
-The interface looks like:
-
-    public interface ICustomizableCart
-    {
-        event EventHandler CartProcessingComplete;
-        void AddItem(Item item, int price, int quality);
-    }
-
-
-***Important Note***: `AddItem` is meant for more advanced uses outside of the handler, but we strongly recommend you call it only with the handler.
-The API defaults the last to 1, but it can be passed in if you want a different number. This interface is from 1.2.2+
-
-In order to add items, subscribe to the CartProcessingComplete event, and put your logic for adding items there. 

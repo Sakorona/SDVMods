@@ -38,7 +38,7 @@ namespace CustomizableTravelingCart.Patches
             Random Dice = new Xoshiro.PRNG64.XoShiRo256starstar();
             Dictionary<ISalable, int[]> stock1 = new Dictionary<ISalable, int[]>();
             HashSet<int> stockIndices1 = new HashSet<int>();
-            int numStock = (CustomizableCartRedux.OurConfig.AmountOfItems <= 3 ? 4 : CustomizableCartRedux.OurConfig.AmountOfItems);
+            int numStock = (CustomizableCartRedux.OurConfig.AmountOfItems <= 4 ? 5 : CustomizableCartRedux.OurConfig.AmountOfItems);
             int maxItemID = CustomizableCartRedux.OurConfig.UseVanillaMax ? 790 :
                 Game1.objectInformation.Keys.Max();
             var itemsToBeAdded = new List<int>();
@@ -129,6 +129,8 @@ namespace CustomizableTravelingCart.Patches
                 });
             }
 
+
+            stockIndices1.Clear(); //clear this.
             return stock1;
         }
 

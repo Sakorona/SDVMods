@@ -5,6 +5,7 @@ using System;
 
 namespace CustomizableTravelingCart
 {
+
     public interface ICustomizableCart
     {
         event EventHandler CartProcessingComplete;
@@ -28,6 +29,7 @@ namespace CustomizableTravelingCart
                 return;
             Util.invokeEvent("CustomizableCartAPI.CartProcessingComplete", CartProcessingComplete.GetInvocationList(), null);
         }
+
 
         public void AddItem(StardewValley.Object item, int price, int quantity = 1)
         {
