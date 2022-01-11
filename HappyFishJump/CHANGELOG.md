@@ -1,4 +1,7 @@
-﻿# Ver 1.1.13
+﻿#Ver 1.1.14
+- Fixes bug with entries being accidentally added twice
+
+# Ver 1.1.13
 - Code fixed, now working with SDV 1.5.6
 
 # Ver 1.1.2

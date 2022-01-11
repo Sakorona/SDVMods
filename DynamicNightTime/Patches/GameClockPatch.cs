@@ -9,6 +9,11 @@ namespace DynamicNightTime.Patches
     {
         public static void Postfix()
         {
+            //moon mod compatiblity - do not run DNT in Moon Areas.
+            if (Game1.currentLocation.Name.Contains("Moon"))
+                return;
+
+
             SDVTime sunriseSTime = DynamicNightTime.GetSunrise();
             //sunriseSTime.AddTime(-10);
             int sunriseTime = sunriseSTime.ReturnIntTime();

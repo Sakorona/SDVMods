@@ -59,7 +59,7 @@
   "gmcmNotifOnBirthRemindTitle": "Birthday Notification Reminder",
   "gmcmNotifOnBirthRemindDesc": "Turn this on to be reminded to give a gift that day",
   "gmcmNotifOnBirthRemindTimeTitle": "Birthday Reminder Time",
-  "gmcmNotifOnBirthRemindTimeDesc": "The time the birthday reminder notification will appear. Clamped between 9am and 7pm. (most NPCs will not be available after this point)",
+  "gmcmNotifOnBirthRemindTimeDesc": "The time the birthday reminder notification will appear. Clamped between 9am and 7pm. (most NPCs will not be available after this point). Note that values ending in 60-99 will not work in game.",
   "gmcmNotifOnFestivalTitle": "Festival Notifications",
   "gmcmNotifOnFestivalDesc": "Turn this on to be told it's a festival today",
   "gmcmNotifOnMerchantTitle": "Traveling Merchant Notifications",
@@ -81,7 +81,7 @@
 
   "gmcmNotifWeatNDTitle": "Show Weather Next Day",
   "gmcmNotifWeatNDDesc": "Turn this on to get notifications to see what the weather is the next day",
-  "gmcmRemindTimeForNWDTitle": "Reminder Time for Next Day Weather",
+  "gmcmRemindTimeForNWDTitle": "Reminder Time for Weather",
   "gmcmRemindTimeForNWDDesc": "The time the birthday reminder notification appear. Clamped between 9am and 2am",
 
   "gmcmNotifTVChanTitle": "Notify for TV Channels",
@@ -101,7 +101,7 @@
 
   "gmcmNotifCellarProdTitle": "Notify for Cellar Production",
   "gmcmNotifCellarProdDesc": "Turn this on to get notifications for machines in the cellar.",
-  "gmcmNotifBronProdTitle": "Notify for Barn Productio",
-  "gmcmNotifBronProdDesc": "Turn this on to get notifications for machines in the barn."
+  "gmcmNotifBarnProdTitle": "Notify for Barn Productio",
+  "gmcmNotifBarnProdDesc": "Turn this on to get notifications for machines in the barn."
 }
 

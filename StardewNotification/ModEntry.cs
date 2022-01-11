@@ -31,42 +31,39 @@ namespace StardewNotification
 
         private void OnGameLaunched(object sender, GameLaunchedEventArgs e)
         {
-            var api = Helper.ModRegistry.GetApi<Integrations.GenericModConfigMenuAPI>("spacechase0.GenericModConfigMenu");
+            var api = Helper.ModRegistry.GetApi<Integrations.IGenericModConfigMenuApi>("spacechase0.GenericModConfigMenu");
             if (api != null)
             {
                 Monitor.Log("Accessed mod-provided API for Generic Mod Config Menu.", LogLevel.Trace);
-                api.RegisterModConfig(ModManifest, () => Config = new SNConfiguration(), () => Helper.WriteConfig(Config));
+                api.Register(ModManifest, () => Config = new SNConfiguration(), () => Helper.WriteConfig(Config));
                
-                api.RegisterClampedOption(ModManifest, Helper.Translation.Get("gmcmNotDurTitle"),Helper.Translation.Get("gmcmNotDurDesc"),() => (float)Config.NotificationDuration, (float val) => Config.NotificationDuration = val, 0f,14000f);
-                api.RegisterClampedOption(ModManifest, Helper.Translation.Get("gmcmNotDurTitle"), Helper.Translation.Get("gmcmNotDurDesc"), () => Config.RunNotificationsTime, (int val) => Config.RunNotificationsTime = val, 600, 1400);
+                api.AddNumberOption(ModManifest, () => (float) Config.NotificationDuration, (float val) => Config.NotificationDuration = val,()=> Helper.Translation.Get("gmcmNotDurTitle"),() => Helper.Translation.Get("gmcmNotDurDesc"),0f, 14000f);
+                api.AddBoolOption(ModManifest, () => Config.NotifyBirthdays, (bool val) => Config.NotifyBirthdays = val, () => Helper.Translation.Get("gmcmNotifOnBirthTitle"), () => Helper.Translation.Get("gmcmNotifOnBirthDesc"));
+                api.AddBoolOption(ModManifest, () => Config.NotifyBirthdayReminder, (bool val) => Config.NotifyBirthdayReminder = val, () => Helper.Translation.Get("gmcmNotifOnBirthRemindTitle"), () => Helper.Translation.Get("gmcmNotifOnBirthRemindDesc"));
+                api.AddNumberOption(ModManifest, () => Config.BirthdayReminderTime, (int val) => Config.BirthdayReminderTime = val, () => Helper.Translation.Get("gmcmNotifOnBirthRemindTimeTitle"), () => Helper.Translation.Get("gmcmNotifOnBirthRemindTimeDesc"), 900, 1900,10);                
+                api.AddBoolOption(ModManifest, () => Config.NotifyFestivals, (bool val) => Config.NotifyFestivals = val, () => Helper.Translation.Get("gmcmNotifOnFestivalTitle"), () => Helper.Translation.Get("gmcmNotifOnFestivalDesc"));
 
-                api.RegisterSimpleOption(ModManifest, Helper.Translation.Get("gmcmNotifOnBirthTitle"), Helper.Translation.Get("gmcmNotifOnBirthDesc"), () => Config.NotifyBirthdays, (bool val) => Config.NotifyBirthdays = val);
-                api.RegisterSimpleOption(ModManifest, Helper.Translation.Get("gmcmNotifOnBirthRemindTitle"), Helper.Translation.Get("gmcmNotifOnBirthRemindDesc"), () => Config.NotifyBirthdayReminder, (bool val) => Config.NotifyBirthdayReminder = val);   
-                api.RegisterClampedOption(ModManifest, Helper.Translation.Get("gmcmNotifOnBirthRemindTimeTitle"), Helper.Translation.Get("gmcmNotifOnBirthRemindTimeDesc"), () => Config.RunNotificationsTime, (int val) => Config.RunNotificationsTime = val, 900, 1900);
-                
-                api.RegisterSimpleOption(ModManifest, Helper.Translation.Get("gmcmNotifOnFestivalTitle"), Helper.Translation.Get("gmcmNotifOnFestivalDesc"), () => Config.NotifyFestivals, (bool val) => Config.NotifyFestivals = val);
-                api.RegisterSimpleOption(ModManifest, Helper.Translation.Get("gmcmNotifOnMerchantTitle"), Helper.Translation.Get("gmcmNotifOnMerchantDesc"), () => Config.NotifyTravelingMerchant, (bool val) => Config.NotifyTravelingMerchant = val);
-                api.RegisterSimpleOption(ModManifest, Helper.Translation.Get("gmcmNotifOnToolTitle"), Helper.Translation.Get("gmcmNotifOnToolDesc"), () => Config.NotifyToolUpgrade, (bool val) => Config.NotifyToolUpgrade = val);
+                api.AddBoolOption(ModManifest, () => Config.NotifyTravelingMerchant, (bool val) => Config.NotifyTravelingMerchant = val, () => Helper.Translation.Get("gmcmNotifOnMerchantTitle"), () => Helper.Translation.Get("gmcmNotifOnMerchantDesc"));
+                api.AddBoolOption(ModManifest, () => Config.NotifyToolUpgrade, (bool val) => Config.NotifyToolUpgrade = val, () => Helper.Translation.Get("gmcmNotifOnToolTitle"), () => Helper.Translation.Get("gmcmNotifOnToolDesc"));
+                api.AddBoolOption(ModManifest, () => Config.NotifyMaxLuck, (bool val) => Config.NotifyMaxLuck = val, () => Helper.Translation.Get("gmcmNotifOnGLuckTitle"), () => Helper.Translation.Get("gmcmNotifOnGLuckDesc"));
+                api.AddBoolOption(ModManifest, () => Config.NotifyMinLuck, (bool val) => Config.NotifyMinLuck = val, () => Helper.Translation.Get("gmcmNotifOnBLuckTitle"), () => Helper.Translation.Get("gmcmNotifOnBLuckDesc"));
 
-                api.RegisterSimpleOption(ModManifest, Helper.Translation.Get("gmcmNotifOnGLuckTitle"), Helper.Translation.Get("gmcmNotifOnGLuckDesc"), () => Config.NotifyMaxLuck, (bool val) => Config.NotifyMaxLuck = val);
-                api.RegisterSimpleOption(ModManifest, Helper.Translation.Get("gmcmNotifOnBLuckTitle"), Helper.Translation.Get("gmcmNotifOnBLuckDesc"), () => Config.NotifyMinLuck, (bool val) => Config.NotifyMinLuck = val);
+                api.AddBoolOption(ModManifest, () => Config.NotifyHay, (bool val) => Config.NotifyHay = val, () => Helper.Translation.Get("gmcmNotifShowHayCountTitle"), () => Helper.Translation.Get("gmcmNotifShowHayCountDesc"));
+                api.AddBoolOption(ModManifest, () => Config.ShowEmptyhay, (bool val) => Config.ShowEmptyhay = val, () => Helper.Translation.Get("gmcmNotifEmptyHayTitle"), () => Helper.Translation.Get("gmcmNotifEmptyHayDesc"));
 
-                api.RegisterSimpleOption(ModManifest, Helper.Translation.Get("gmcmNotifShowHayCountTitle"), Helper.Translation.Get("gmcmNotifShowHayCountDesc"), () => Config.NotifyHay, (bool val) => Config.NotifyHay = val);
-                api.RegisterSimpleOption(ModManifest, Helper.Translation.Get("gmcmNotifEmptyHayTitle"), Helper.Translation.Get("gmcmNotifEmptyHayDesc"), () => Config.ShowEmptyhay, (bool val) => Config.ShowEmptyhay = val);
+                api.AddBoolOption(ModManifest, () => Config.ShowWeatherNextDay, (bool val) => Config.ShowWeatherNextDay = val, () => Helper.Translation.Get("gmcmNotifWeatNDTitle"), () => Helper.Translation.Get("gmcmNotifWeatNDDesc"));
+                api.AddNumberOption(ModManifest, () => Config.WeatherNextDayTime, (int val) => Config.WeatherNextDayTime = val, () => Helper.Translation.Get("gmcmRemindTimeForNWDTitle"), () => Helper.Translation.Get("gmcmRemindTimeForNWDDesc"), 900, 2600, 10);
 
-                api.RegisterSimpleOption(ModManifest, Helper.Translation.Get("gmcmNotifWeatNDTitle"), Helper.Translation.Get("gmcmNotifWeatNDDesc"), () => Config.ShowWeatherNextDay, (bool val) => Config.ShowWeatherNextDay = val);
-                api.RegisterClampedOption(ModManifest, Helper.Translation.Get("gmcmRemindTimeForNWDTitle"), Helper.Translation.Get("gmcmRemindTimeForNWDDesc"), () => Config.WeatherNextDayTime, (int val) => Config.WeatherNextDayTime = val, 900, 2600);
+                api.AddBoolOption(ModManifest, () => Config.NotifyTVChannels, (bool val) => Config.NotifyTVChannels = val, () => Helper.Translation.Get("gmcmNotifTVChanTitle"), () => Helper.Translation.Get("gmcmNotifTVChanDesc"));
+                api.AddBoolOption(ModManifest, () => Config.ShowSpringOnionCount, (bool val) => Config.ShowSpringOnionCount = val, () => Helper.Translation.Get("gmcmNotifSpringOnionTitle"), () => Helper.Translation.Get("gmcmNotifSpringOnionDesc"));
 
-                api.RegisterSimpleOption(ModManifest, Helper.Translation.Get("gmcmNotifTVChanTitle"), Helper.Translation.Get("gmcmNotifTVChanDesc"), () => Config.NotifyTVChannels, (bool val) => Config.NotifyTVChannels = val);
-                api.RegisterSimpleOption(ModManifest, Helper.Translation.Get("gmcmNotifSpringOnionTitle"), Helper.Translation.Get("gmcmNotifSpringOnionDesc"), () => Config.ShowSpringOnionCount, (bool val) => Config.ShowSpringOnionCount = val);
+                api.AddBoolOption(ModManifest, () => Config.NotifyFarmCave, (bool val) => Config.NotifyFarmCave = val, () => Helper.Translation.Get("gmcmNotifFarmCaveTitle"), () => Helper.Translation.Get("gmcmNotifFarmCaveDesc"));
+                api.AddBoolOption(ModManifest, () => Config.NotifyGreenhouseCrops, (bool val) => Config.NotifyGreenhouseCrops = val, () => Helper.Translation.Get("gmcmNotifGreenCropTitle"), () => Helper.Translation.Get("gmcmNotifGreenCropDesc"));
 
-                api.RegisterSimpleOption(ModManifest, Helper.Translation.Get("gmcmNotifFarmCaveTitle"), Helper.Translation.Get("gmcmNotifFarmCaveDesc"), () => Config.NotifyFarmCave, (bool val) => Config.NotifyFarmCave = val);
-                api.RegisterSimpleOption(ModManifest, Helper.Translation.Get("gmcmNotifGreenCropTitle"), Helper.Translation.Get("gmcmNotifGreenCropDesc"), () => Config.NotifyGreenhouseCrops, (bool val) => Config.NotifyGreenhouseCrops = val);
-
-                api.RegisterSimpleOption(ModManifest, Helper.Translation.Get("gmcmNotifShedProdTitle"), Helper.Translation.Get("gmcmNotifShedProdDesc"), () => Config.NotifyShed, (bool val) => Config.NotifyShed = val);
-                api.RegisterSimpleOption(ModManifest, Helper.Translation.Get("gmcmNotifGreenProdTitle"), Helper.Translation.Get("gmcmNotifGreenProdDesc"), () => Config.NotifyGreenhouse, (bool val) => Config.NotifyGreenhouse = val);
-                api.RegisterSimpleOption(ModManifest, Helper.Translation.Get("gmcmNotifCellarProdTitle"), Helper.Translation.Get("gmcmNotifCellarProdDesc"), () => Config.NotifyCellar, (bool val) => Config.NotifyCellar = val);
-                api.RegisterSimpleOption(ModManifest, Helper.Translation.Get("gmcmNotifBarnProdTitle"), Helper.Translation.Get("gmcmNotifBarnProdDesc"), () => Config.NotifyBarn, (bool val) => Config.NotifyBarn = val);
+                api.AddBoolOption(ModManifest, () => Config.NotifyShed, (bool val) => Config.NotifyShed = val, () => Helper.Translation.Get("gmcmNotifShedProdTitle"), () => Helper.Translation.Get("gmcmNotifShedProdDesc"));
+                api.AddBoolOption(ModManifest, () => Config.NotifyGreenhouse, (bool val) => Config.NotifyGreenhouse = val, () => Helper.Translation.Get("gmcmNotifGreenProdTitle"), () => Helper.Translation.Get("gmcmNotifGreenProdDesc"));
+                api.AddBoolOption(ModManifest, () => Config.NotifyCellar, (bool val) => Config.NotifyCellar = val, () => Helper.Translation.Get("gmcmNotifCellarProdTitle"), () => Helper.Translation.Get("gmcmNotifCellarProdDesc"));
+                api.AddBoolOption(ModManifest, () => Config.NotifyBarn, (bool val) => Config.NotifyBarn = val, () => Helper.Translation.Get("gmcmNotifBarnProdTitle"), () => Helper.Translation.Get("gmcmNotifBarnProdDesc"));
             }
         }
 
