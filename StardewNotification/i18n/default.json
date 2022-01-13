@@ -101,7 +101,7 @@
 
   "gmcmNotifCellarProdTitle": "Notify for Cellar Production",
   "gmcmNotifCellarProdDesc": "Turn this on to get notifications for machines in the cellar.",
-  "gmcmNotifBarnProdTitle": "Notify for Barn Productio",
+  "gmcmNotifBarnProdTitle": "Notify for Barn Production",
   "gmcmNotifBarnProdDesc": "Turn this on to get notifications for machines in the barn."
 }
 
