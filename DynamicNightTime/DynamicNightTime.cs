@@ -305,9 +305,9 @@ namespace DynamicNightTime
 
         public static float CalculateDayNightRatio()
         {
-            float day_night_tranisition = (Utility.CalculateMinutesBetweenTimes(Game1.getStartingToGetDarkTime(), (Game1.timeOfDay + (int)(Game1.gameTimeInterval / 7000f * 10f % 10f))) * 1.0f) / (float)(Utility.CalculateMinutesBetweenTimes(Game1.getStartingToGetDarkTime(), Game1.getTrulyDarkTime()) * 1.0f);
+            float day_night_transition = (Utility.CalculateMinutesBetweenTimes(Game1.getStartingToGetDarkTime(), (Game1.timeOfDay + (int)(Game1.gameTimeInterval / 7000f * 10f % 10f))) * 1.0f) / (float)(Utility.CalculateMinutesBetweenTimes(Game1.getStartingToGetDarkTime(), Game1.getTrulyDarkTime()) * 1.0f);
 
-            return day_night_tranisition;
+            return day_night_transition;
         }
 
         public static float GetCurrentLocationLat()
