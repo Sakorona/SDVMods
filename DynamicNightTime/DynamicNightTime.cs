@@ -57,29 +57,32 @@ namespace DynamicNightTime
             var harmony = new Harmony(this.ModManifest.UniqueID);
             harmony.PatchAll(Assembly.GetExecutingAssembly());
 
+            //MethodInfo CheckAction = AccessTools.Method(typeof(Forest), "checkAction");
+            //HarmonyMethod CATranspiler = new HarmonyMethod(AccessTools.Method(typeof(ForestPatches), "CheckActionTranspiler"));
+
             //patch getStartingToGetDarkTime
-            MethodInfo setStartingToGetDarkTime = SDVUtilities.GetSDVType("Game1").GetMethods(BindingFlags.Static | BindingFlags.Public).ToList().Find(m => m.Name == "getStartingToGetDarkTime");
-            MethodInfo postfix = typeof(Patches.GettingDarkPatch).GetMethods(BindingFlags.Static | BindingFlags.Public).ToList().Find(m => m.Name == "Postfix");
-            Monitor.Log($"Postfixing Game1.getStartingToGetDarkTime with {postfix}", LogLevel.Trace);
-            harmony.Patch(setStartingToGetDarkTime, postfix: new HarmonyMethod(postfix));
+            MethodInfo setStartingToGetDarkTime = AccessTools.Method(typeof(Game1),"getStartingToGetDarkTime");
+            HarmonyMethod postfix = new HarmonyMethod(AccessTools.Method(typeof(Patches.GettingDarkPatch), "Postfix"));
+            Monitor.Log($"Postfixing Game1.getStartingToGetDarkTime with a postfix method", LogLevel.Trace);
+            harmony.Patch(setStartingToGetDarkTime, postfix: postfix);
 
             //patch getTrulyDarkTime
-            MethodInfo setTrulyDarkTime = SDVUtilities.GetSDVType("Game1").GetMethods(BindingFlags.Static | BindingFlags.Public).ToList().Find(m => m.Name == "getTrulyDarkTime");
-            MethodInfo postfixDark = typeof(Patches.GetFullyDarkPatch).GetMethods(BindingFlags.Static | BindingFlags.Public).ToList().Find(m => m.Name == "Postfix");
-            Monitor.Log($"Postfixing Game1.getTrulyDarkTime with {postfixDark}", LogLevel.Trace);
-            harmony.Patch(setTrulyDarkTime, postfix: new HarmonyMethod(postfixDark));
+            MethodInfo setTrulyDarkTime = AccessTools.Method(typeof(Game1), "getTrulyDarkTime");
+            HarmonyMethod postfixDark = new HarmonyMethod(AccessTools.Method(typeof(Patches.GetFullyDarkPatch), "Postfix"));
+            Monitor.Log($"Postfixing Game1.getTrulyDarkTime with postfix method", LogLevel.Trace);
+            harmony.Patch(setTrulyDarkTime, postfix: postfixDark);
 
             //patch isDarkOut
-            MethodInfo isDarkOut = SDVUtilities.GetSDVType("Game1").GetMethods(BindingFlags.Static | BindingFlags.Public).ToList().Find(m => m.Name == "isDarkOut");
-            MethodInfo postfixIsDarkOut = typeof(Patches.IsDarkOutPatch).GetMethods(BindingFlags.Static | BindingFlags.Public).ToList().Find(m => m.Name == "Postfix");
-            Monitor.Log($"Postfixing Gam1.isDarkOut with {postfixIsDarkOut}", LogLevel.Trace);
-            harmony.Patch(isDarkOut, postfix: new HarmonyMethod(postfixIsDarkOut));
+            MethodInfo isDarkOut = AccessTools.Method(typeof(Game1), "isDarkOut");
+            HarmonyMethod postfixIsDarkOut = new HarmonyMethod(AccessTools.Method(typeof(Patches.IsDarkOutPatch), "Postfix"));
+            Monitor.Log($"Postfixing Gam1.isDarkOut with postfix method", LogLevel.Trace);
+            harmony.Patch(isDarkOut, postfix: postfixIsDarkOut);
 
             //patch UpdateGameClock
-            MethodInfo UpdateGameClock = helper.Reflection.GetMethod(SDVUtilities.GetSDVType("Game1"), "UpdateGameClock").MethodInfo;
-            MethodInfo postfixClock = helper.Reflection.GetMethod(typeof(Patches.GameClockPatch), "Postfix").MethodInfo;
+            MethodInfo UpdateGameClock = AccessTools.Method(typeof(Game1), "UpdateGameClock");
+            HarmonyMethod postfixClock = new HarmonyMethod(AccessTools.Method(typeof(Patches.GameClockPatch), "Postfix"));
             Monitor.Log($"Postfixing Game1.UpdateGameClock with {postfixClock}", LogLevel.Trace);
-            harmony.Patch(UpdateGameClock, postfix: new HarmonyMethod(postfixClock));
+            harmony.Patch(UpdateGameClock, postfix: postfixClock);
 
             harmony.Patch(
                 original: AccessTools.Method(AccessTools.TypeByName("StardewValley.Locations.IslandLocation"), "DrawParallaxHorizon"),

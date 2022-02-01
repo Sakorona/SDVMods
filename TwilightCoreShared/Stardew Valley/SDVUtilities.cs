@@ -31,10 +31,11 @@ namespace TwilightShards.Stardew.Common
             return false;
         }
 
+        /*
         internal static void SetWeather(int weather)
         {
             Game1.netWorldState.Value.WeatherForTomorrow = Game1.weatherForTomorrow = weather;
-        }
+        } 
 
         internal static bool UpdateAudio()
         {
@@ -95,7 +96,8 @@ namespace TwilightShards.Stardew.Common
         }
         public static string GetFestivalName() => GetFestivalName(Game1.dayOfMonth, Game1.currentSeason);
         public static string GetTomorrowFestivalName() => GetFestivalName(Game1.dayOfMonth + 1, Game1.currentSeason);
-        
+        */
+
         public static string PrintStringArray(string[] array)
         {
             string s = "";
@@ -107,6 +109,7 @@ namespace TwilightShards.Stardew.Common
             return s;
         }
 
+        /*
         public static Type GetSDVType(string type)
         {
             const string prefix = "StardewValley.";
@@ -160,6 +163,7 @@ namespace TwilightShards.Stardew.Common
         internal static bool IsFestivalDay => Utility.isFestivalDay(SDate.Now().Day, SDate.Now().Season);
 
         internal static string GetFestivalName(SDate date) => SDVUtilities.GetFestivalName(date.Day, date.Season);
+        */
 
         private static string GetFestivalName(int dayOfMonth, string currentSeason)
         {
@@ -227,6 +231,7 @@ namespace TwilightShards.Stardew.Common
             Game1.addHUDMessage(hudmsg);
         }
 
+ /*
         public static int CropCountInFarm(Farm f)
         {
             return f.terrainFeatures.Values.Count(c => c is HoeDirt curr && curr.crop != null);
@@ -947,5 +952,6 @@ namespace TwilightShards.Stardew.Common
 
             return new StardewValley.Object(parentSheetIndex, 1, false, -1, 0);
         }
+ */
     }
 }
