@@ -105,6 +105,8 @@ namespace HappyFishJump
             }
         }
 
+        
+
         private void GameLoop_TimeChanged(object sender, StardewModdingAPI.Events.TimeChangedEventArgs e)
         {
             if (Game1.currentLocation != null && Game1.currentLocation is Farm f)
@@ -132,7 +134,7 @@ namespace HappyFishJump
                     return;
 
                 //legendaries!
-                List<int> legendaryFishAdded = new List<int>();
+                List<int> legendaryFishAdded = new();
                 if (ModConfig.LegendariesJumpAfterCatch) {
                     switch (Game1.currentLocation.Name)
                     {
@@ -186,24 +188,24 @@ namespace HappyFishJump
                     if (Game1.random.NextDouble() > ModConfig.JumpChance)
                         continue;
 
-                    int rndFish = Game1.random.Next(0, fishIDs.Count() - 1);
+                    int rndFish = Game1.random.Next(0, fishIDs.Length - 1);
 
                     if (legendaryFishAdded.Contains(rndFish) && Game1.random.NextDouble() < ModConfig.LegendaryJumpChance)
                     {
                         int loopCheck = 0;
                         do
                         {
-                            rndFish = Game1.random.Next(0, fishIDs.Count() - 1);
+                            rndFish = Game1.random.Next(0, fishIDs.Length - 1);
                             i++;
                             loopCheck++;
                         } while (legendaryFishAdded.Contains(rndFish) && loopCheck < 12000);
                     }
 
-                    int rndLoc = Game1.random.Next(0, validLocs.Count() - 1);
+                    int rndLoc = Game1.random.Next(0, validLocs.Length - 1);
                     if (fishLocation[fishIDs[rndFish]] == -1 ||
                         fishLocation[fishIDs[rndFish]] == _validFishLocations[validLocs[rndLoc]] && rndFish != 0)
                     {
-                        StardewValley.Object fish = new StardewValley.Object(fishIDs[rndFish],1, false, -1, 0);
+                        StardewValley.Object fish = new(fishIDs[rndFish],1, false, -1, 0);
                         var startPosition = validLocs[rndLoc];
                         var endPosition = new Vector2(startPosition.X + 1.5f, startPosition.Y + 1.5f);
                         if (ValidFishForJumping(fish.ParentSheetIndex))
@@ -232,7 +234,7 @@ namespace HappyFishJump
 
                         if (Game1.currentLocation.waterTiles[j + 2, k + 2])
                         {
-                            Vector2 pos = new Vector2(j, k);
+                            Vector2 pos = new(j, k);
                             _validFishLocations.Add(pos, Game1.currentLocation.getFishingLocation(pos));
                         }
                     }
@@ -240,22 +242,13 @@ namespace HappyFishJump
             }
         }
         
-        private bool ValidFishForJumping(int index)
+        private static bool ValidFishForJumping(int index)
         {
-            switch (index)
+            return index switch
             {
-                case 372:
-                case 718:
-                case 719:
-                case 721:
-                case 152:
-                case 153:
-                case 157:
-                case 723:
-                    return false;
-                default:
-                    return true;
-            }
+                372 or 718 or 719 or 721 or 152 or 153 or 157 or 723 => false,
+                _ => true,
+            };
         }
     }
 }

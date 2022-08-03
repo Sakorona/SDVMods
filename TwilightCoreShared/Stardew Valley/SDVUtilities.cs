@@ -840,7 +840,7 @@ namespace TwilightShards.Stardew.Common
             }
             return CreatedWeeds;
         }
-
+        */
         public static Dictionary<int,int> GetFishListing(GameLocation loc)
         {
             var fish = new Dictionary<int, int>();
@@ -898,6 +898,7 @@ namespace TwilightShards.Stardew.Common
             return fish;
         }
 
+        /*
         public static StardewValley.Object GetRandomFish(GameLocation loc)
         {
             int parentSheetIndex = 372;

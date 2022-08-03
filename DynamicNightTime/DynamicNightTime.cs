@@ -62,25 +62,25 @@ namespace DynamicNightTime
 
             //patch getStartingToGetDarkTime
             MethodInfo setStartingToGetDarkTime = AccessTools.Method(typeof(Game1),"getStartingToGetDarkTime");
-            HarmonyMethod postfix = new HarmonyMethod(AccessTools.Method(typeof(Patches.GettingDarkPatch), "Postfix"));
+            HarmonyMethod postfix = new(AccessTools.Method(typeof(Patches.GettingDarkPatch), "Postfix"));
             Monitor.Log($"Postfixing Game1.getStartingToGetDarkTime with a postfix method", LogLevel.Trace);
             harmony.Patch(setStartingToGetDarkTime, postfix: postfix);
 
             //patch getTrulyDarkTime
             MethodInfo setTrulyDarkTime = AccessTools.Method(typeof(Game1), "getTrulyDarkTime");
-            HarmonyMethod postfixDark = new HarmonyMethod(AccessTools.Method(typeof(Patches.GetFullyDarkPatch), "Postfix"));
+            HarmonyMethod postfixDark = new(AccessTools.Method(typeof(Patches.GetFullyDarkPatch), "Postfix"));
             Monitor.Log($"Postfixing Game1.getTrulyDarkTime with postfix method", LogLevel.Trace);
             harmony.Patch(setTrulyDarkTime, postfix: postfixDark);
 
             //patch isDarkOut
             MethodInfo isDarkOut = AccessTools.Method(typeof(Game1), "isDarkOut");
-            HarmonyMethod postfixIsDarkOut = new HarmonyMethod(AccessTools.Method(typeof(Patches.IsDarkOutPatch), "Postfix"));
+            HarmonyMethod postfixIsDarkOut = new(AccessTools.Method(typeof(Patches.IsDarkOutPatch), "Postfix"));
             Monitor.Log($"Postfixing Gam1.isDarkOut with postfix method", LogLevel.Trace);
             harmony.Patch(isDarkOut, postfix: postfixIsDarkOut);
 
             //patch UpdateGameClock
             MethodInfo UpdateGameClock = AccessTools.Method(typeof(Game1), "UpdateGameClock");
-            HarmonyMethod postfixClock = new HarmonyMethod(AccessTools.Method(typeof(Patches.GameClockPatch), "Postfix"));
+            HarmonyMethod postfixClock = new(AccessTools.Method(typeof(Patches.GameClockPatch), "Postfix"));
             Monitor.Log($"Postfixing Game1.UpdateGameClock with {postfixClock}", LogLevel.Trace);
             harmony.Patch(UpdateGameClock, postfix: postfixClock);
 
@@ -137,7 +137,7 @@ namespace DynamicNightTime
                     if (!Game1.isRaining || !Game1.isLightning || !Game1.eventUp)
                     {
                         //check locations
-                        if ((Game1.currentLocation.IsOutdoors && !(Game1.currentLocation is Desert) || Game1.currentLocation is FarmHouse || Game1.currentLocation is AnimalHouse || Game1.currentLocation is Shed))
+                        if ((Game1.currentLocation.IsOutdoors && Game1.currentLocation is not Desert || Game1.currentLocation is FarmHouse || Game1.currentLocation is AnimalHouse || Game1.currentLocation is Shed))
                         {
                             //check game config
                             if (Game1.options.musicVolumeLevel > 0.025 && Game1.timeOfDay < 1200)
@@ -176,7 +176,7 @@ namespace DynamicNightTime
         /// <summary>Get an API that other mods can access. This is always called after <see cref="M:StardewModdingAPI.Mod.Entry(StardewModdingAPI.IModHelper)" />.</summary>
         public override object GetApi()
         {
-            return API ?? (API = new DynamicNightAPI());
+            return API ??= new DynamicNightAPI();
         }
 
         /// <summary>Raised after the in-game clock time changes.</summary>
@@ -220,7 +220,7 @@ namespace DynamicNightTime
             }
         }
 
-        private void SwitchOutDayTiles(GameLocation loc)
+        private static void SwitchOutDayTiles(GameLocation loc)
         {
             try
             {
@@ -238,9 +238,7 @@ namespace DynamicNightTime
                     }
                 }
             }
-#pragma warning disable CA1031 // Do not catch general exception types
             catch (Exception)
-#pragma warning restore CA1031 // Do not catch general exception types
             {
             }
             if (loc is MineShaft ||loc is Woods)
@@ -483,7 +481,7 @@ namespace DynamicNightTime
             int noonTime = (int)Math.Floor(noon);
 
             int hr = (int)Math.Floor(noonTime / 60.0);
-            SDVTime calcTime = new SDVTime(hr, noonTime - (hr * 60));
+            SDVTime calcTime = new(hr, noonTime - (hr * 60));
             calcTime.ClampToTenMinutes();
             return calcTime;
         }
@@ -496,7 +494,7 @@ namespace DynamicNightTime
             int numMinutes = Noon.GetNumberOfMinutesFromMidnight() - Sunrise.GetNumberOfMinutesFromMidnight();
             int endOfEarlyMorning = (int)Math.Floor(numMinutes * .38);
 
-            SDVTime EndOfEarlyMorning = new SDVTime(Sunrise);
+            SDVTime EndOfEarlyMorning = new(Sunrise);
             EndOfEarlyMorning.AddTime(endOfEarlyMorning);
             EndOfEarlyMorning.ClampToTenMinutes();
 
@@ -511,7 +509,7 @@ namespace DynamicNightTime
             int numMinutes = Sunset.GetNumberOfMinutesFromMidnight() - Noon.GetNumberOfMinutesFromMidnight();
             int lateAfternoon = (int)Math.Floor(numMinutes * .62);
 
-            SDVTime LateAfternoon  = new SDVTime(Noon);
+            SDVTime LateAfternoon = new(Noon);
             LateAfternoon.AddTime(lateAfternoon);
             LateAfternoon.ClampToTenMinutes();
 
@@ -562,7 +560,7 @@ namespace DynamicNightTime
             //Conv to an SDV compat time, then clamp it.
             int hr = (int)Math.Floor(astroTwN / 60.0);
             int min = astroTwN - (hr * 60);
-            SDVTime calcTime = new SDVTime(hr, min);
+            SDVTime calcTime = new(hr, min);
             calcTime.ClampToTenMinutes();
             return calcTime;
         }
@@ -596,7 +594,7 @@ namespace DynamicNightTime
             //Conv to an SDV compat time, then clamp it.
             int hr = (int)Math.Floor(astroTwN / 60.0);
             int min = astroTwN - (hr * 60);
-            SDVTime calcTime = new SDVTime(hr, min);
+            SDVTime calcTime = new(hr, min);
             calcTime.ClampToTenMinutes();
             return calcTime;
         }

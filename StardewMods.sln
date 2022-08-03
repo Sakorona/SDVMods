@@ -46,20 +46,11 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ResetSkullCaverns", "ResetS
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "IndoorsFarmStayDry", "IndoorsFarmStayDry\IndoorsFarmStayDry.csproj", "{9BD160B6-6B17-4132-BEDB-5780855039F7}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FerngillDynamicRainAndWind", "FerngillDynamicRainAndWind\FerngillDynamicRainAndWind\FerngillDynamicRainAndWind.csproj", "{BB2CBD4F-C170-452C-81BB-FBC0476505CE}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FerngillCustomWeathers", "FerngillDynamicRainAndWind\FerngillCustomWeathers\FerngillCustomWeathers.csproj", "{EF22F052-37B0-40C6-AC24-AB0B3B7B3FE2}"
+EndProject
 Global
-	GlobalSection(SharedMSBuildProjectFiles) = preSolution
-		TwilightCoreShared\TwilightCoreShared.projitems*{01da90d0-eec8-427b-9409-3168a8089f20}*SharedItemsImports = 13
-		TwilightCoreShared\TwilightCoreShared.projitems*{05619393-d9aa-441d-aee6-08a9867a8a8a}*SharedItemsImports = 5
-		TwilightCoreShared\TwilightCoreShared.projitems*{1f986013-16d0-4c9f-b26a-45d661c94347}*SharedItemsImports = 5
-		TwilightCoreShared\TwilightCoreShared.projitems*{2c01e33d-677b-495c-af34-c974d6a8153f}*SharedItemsImports = 5
-		TwilightCoreShared\TwilightCoreShared.projitems*{32a91ca3-caab-4e95-bae5-fbf459de6927}*SharedItemsImports = 5
-		TwilightCoreShared\TwilightCoreShared.projitems*{548156a4-534f-45d6-9659-1828b5c32fa5}*SharedItemsImports = 5
-		TwilightCoreShared\TwilightCoreShared.projitems*{6660c087-67fd-453a-bd05-8b313eb21a5f}*SharedItemsImports = 5
-		TwilightCoreShared\TwilightCoreShared.projitems*{8db4f568-b5d9-442a-ae3d-a3aee9bb9877}*SharedItemsImports = 5
-		TwilightCoreShared\TwilightCoreShared.projitems*{9433ac91-87c7-42a8-a594-34cf88bfe01b}*SharedItemsImports = 5
-		TwilightCoreShared\TwilightCoreShared.projitems*{bc6b24cb-e5e6-4deb-863f-7cb5be95f9a7}*SharedItemsImports = 5
-		TwilightCoreShared\TwilightCoreShared.projitems*{c58121e1-29e5-4f02-a6e6-4c81e0a91b1b}*SharedItemsImports = 5
-	EndGlobalSection
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
 		Debug|x86 = Debug|x86
@@ -261,11 +252,48 @@ Global
 		{9BD160B6-6B17-4132-BEDB-5780855039F7}.x86|Any CPU.Build.0 = Debug|Any CPU
 		{9BD160B6-6B17-4132-BEDB-5780855039F7}.x86|x86.ActiveCfg = Debug|Any CPU
 		{9BD160B6-6B17-4132-BEDB-5780855039F7}.x86|x86.Build.0 = Debug|Any CPU
+		{BB2CBD4F-C170-452C-81BB-FBC0476505CE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{BB2CBD4F-C170-452C-81BB-FBC0476505CE}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{BB2CBD4F-C170-452C-81BB-FBC0476505CE}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{BB2CBD4F-C170-452C-81BB-FBC0476505CE}.Debug|x86.Build.0 = Debug|Any CPU
+		{BB2CBD4F-C170-452C-81BB-FBC0476505CE}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{BB2CBD4F-C170-452C-81BB-FBC0476505CE}.Release|Any CPU.Build.0 = Release|Any CPU
+		{BB2CBD4F-C170-452C-81BB-FBC0476505CE}.Release|x86.ActiveCfg = Release|Any CPU
+		{BB2CBD4F-C170-452C-81BB-FBC0476505CE}.Release|x86.Build.0 = Release|Any CPU
+		{BB2CBD4F-C170-452C-81BB-FBC0476505CE}.x86|Any CPU.ActiveCfg = Debug|Any CPU
+		{BB2CBD4F-C170-452C-81BB-FBC0476505CE}.x86|Any CPU.Build.0 = Debug|Any CPU
+		{BB2CBD4F-C170-452C-81BB-FBC0476505CE}.x86|x86.ActiveCfg = Debug|Any CPU
+		{BB2CBD4F-C170-452C-81BB-FBC0476505CE}.x86|x86.Build.0 = Debug|Any CPU
+		{EF22F052-37B0-40C6-AC24-AB0B3B7B3FE2}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{EF22F052-37B0-40C6-AC24-AB0B3B7B3FE2}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{EF22F052-37B0-40C6-AC24-AB0B3B7B3FE2}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{EF22F052-37B0-40C6-AC24-AB0B3B7B3FE2}.Debug|x86.Build.0 = Debug|Any CPU
+		{EF22F052-37B0-40C6-AC24-AB0B3B7B3FE2}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{EF22F052-37B0-40C6-AC24-AB0B3B7B3FE2}.Release|Any CPU.Build.0 = Release|Any CPU
+		{EF22F052-37B0-40C6-AC24-AB0B3B7B3FE2}.Release|x86.ActiveCfg = Release|Any CPU
+		{EF22F052-37B0-40C6-AC24-AB0B3B7B3FE2}.Release|x86.Build.0 = Release|Any CPU
+		{EF22F052-37B0-40C6-AC24-AB0B3B7B3FE2}.x86|Any CPU.ActiveCfg = Debug|Any CPU
+		{EF22F052-37B0-40C6-AC24-AB0B3B7B3FE2}.x86|Any CPU.Build.0 = Debug|Any CPU
+		{EF22F052-37B0-40C6-AC24-AB0B3B7B3FE2}.x86|x86.ActiveCfg = Debug|Any CPU
+		{EF22F052-37B0-40C6-AC24-AB0B3B7B3FE2}.x86|x86.Build.0 = Debug|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {1EB72F81-CEFC-4B96-86E3-BAFF4280E4A1}
+	EndGlobalSection
+	GlobalSection(SharedMSBuildProjectFiles) = preSolution
+		TwilightCoreShared\TwilightCoreShared.projitems*{01da90d0-eec8-427b-9409-3168a8089f20}*SharedItemsImports = 13
+		TwilightCoreShared\TwilightCoreShared.projitems*{05619393-d9aa-441d-aee6-08a9867a8a8a}*SharedItemsImports = 5
+		TwilightCoreShared\TwilightCoreShared.projitems*{1f986013-16d0-4c9f-b26a-45d661c94347}*SharedItemsImports = 5
+		TwilightCoreShared\TwilightCoreShared.projitems*{2c01e33d-677b-495c-af34-c974d6a8153f}*SharedItemsImports = 5
+		TwilightCoreShared\TwilightCoreShared.projitems*{32a91ca3-caab-4e95-bae5-fbf459de6927}*SharedItemsImports = 5
+		TwilightCoreShared\TwilightCoreShared.projitems*{548156a4-534f-45d6-9659-1828b5c32fa5}*SharedItemsImports = 5
+		TwilightCoreShared\TwilightCoreShared.projitems*{6660c087-67fd-453a-bd05-8b313eb21a5f}*SharedItemsImports = 5
+		TwilightCoreShared\TwilightCoreShared.projitems*{8db4f568-b5d9-442a-ae3d-a3aee9bb9877}*SharedItemsImports = 5
+		TwilightCoreShared\TwilightCoreShared.projitems*{9433ac91-87c7-42a8-a594-34cf88bfe01b}*SharedItemsImports = 5
+		TwilightCoreShared\TwilightCoreShared.projitems*{bc6b24cb-e5e6-4deb-863f-7cb5be95f9a7}*SharedItemsImports = 5
+		TwilightCoreShared\TwilightCoreShared.projitems*{c58121e1-29e5-4f02-a6e6-4c81e0a91b1b}*SharedItemsImports = 5
 	EndGlobalSection
 EndGlobal
