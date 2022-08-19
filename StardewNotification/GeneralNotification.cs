@@ -62,7 +62,7 @@ namespace StardewNotification
                     Util.ShowMessage(trans.Get("weather", new { weather = trans.Get("weather-wedding") }));
                     break;
                 case 4:
-                    Util.ShowMessage(trans.Get("weather", new { weather = trans.Get("weather-festival") }));
+                    Util.ShowMessage(trans.Get("weather", new { weather = trans.Get("weather-festival", new { festivalName = GetFestivalName(trans) }) }));
                     break;
                 case 0:
                 default:
@@ -178,7 +178,7 @@ namespace StardewNotification
             Util.ShowMessage(Trans.Get("SecretSantaReminder", new { charName = santa })); 
         }
 
-        private string GetFestivalName(ITranslationHelper Trans)
+        private static string GetFestivalName(ITranslationHelper Trans)
         {
             var season = Game1.currentSeason;
             var day = Game1.dayOfMonth;

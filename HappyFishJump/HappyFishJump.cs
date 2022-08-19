@@ -17,6 +17,7 @@ namespace HappyFishJump
         public int NumberOfJumpingFish = 18;
         public bool LegendariesJumpAfterCatch = true;
         public float LegendaryJumpChance = .18f;
+        public bool LimitToCatchable = true;
     }
 
     public class HappyFishJump : Mod
@@ -92,6 +93,7 @@ namespace HappyFishJump
                 GMCMapi.RegisterClampedOption(ModManifest,"Jumping Fish","The number of jumping fish. Minimum 2. Note that large numbers may lag a computer.", () => ModConfig.NumberOfJumpingFish, (int val) => ModConfig.NumberOfJumpingFish = val,2,1000);
                 GMCMapi.RegisterSimpleOption(ModManifest,"Jump Chance","Controls the jump chance per pond every 10 minutes.", () => ModConfig.JumpChance,
                     (float val) => ModConfig.JumpChance = val);
+                GMCMapi.RegisterSimpleOption(ModManifest, "Limit to Catchable Fish","Only fish that can be caught at this time will jump",() => ModConfig.LimitToCatchable, (bool val) => ModConfig.LimitToCatchable = val);
             }
         }
 
@@ -128,7 +130,7 @@ namespace HappyFishJump
             if (Game1.currentLocation != null && Game1.currentLocation.IsOutdoors && _validFishLocations.Count >= ModConfig.NumberOfJumpingFish)
             {
                 //get fish
-                Dictionary<int, int> fishLocation = SDVUtilities.GetFishListing(Game1.currentLocation);
+                Dictionary<int, int> fishLocation = SDVUtilities.GetFishListing(Game1.currentLocation, Game1.timeOfDay,  ModConfig.LimitToCatchable);
 
                 if (fishLocation.Keys.Count <= 0)
                     return;
@@ -244,11 +246,14 @@ namespace HappyFishJump
         
         private static bool ValidFishForJumping(int index)
         {
-            return index switch
-            {
-                372 or 718 or 719 or 721 or 152 or 153 or 157 or 723 => false,
-                _ => true,
-            };
+            if (Game1.random.NextDouble() < .00001)
+                return true;
+            else
+                return index switch
+                {
+                    372 or 718 or 719 or 721 or 152 or 153 or 157 or 723 => false,
+                    _ => true,
+                };
         }
     }
 }

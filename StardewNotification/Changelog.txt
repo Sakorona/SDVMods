@@ -1,4 +1,7 @@
-﻿1.8.9
+﻿1.8.10
+- festival weather now displays a better message for festivals next day
+
+1.8.9
 - now includes support for GMCM
 - adds in an option to have notifications on day start start later
 - turns off tool upgrade notifications by default (still an option if people want it on)

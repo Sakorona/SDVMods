@@ -30,7 +30,7 @@
   "weather-tstorm": "thunderstorms",
   "weather-snow": "snow",
   "weather-wind": "windy",
-  "weather-festival": "festival",
+  "weather-festival": "sunny for the {{festivalName}}",
   "weather-wedding": "wedding",
 
   // Locations

@@ -1,4 +1,9 @@
-﻿#Ver 1.1.14
+﻿#Ver 1.1.16
+- fixes bug with with fish jumping when not catchable
+- adds in farm support
+- A little surprise may occur now and then..
+
+#Ver 1.1.14
 - Fixes bug with entries being accidentally added twice
 
 # Ver 1.1.13

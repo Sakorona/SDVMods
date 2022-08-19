@@ -1,8 +1,8 @@
 ﻿{
   "Name": "Happy Fish Jump",
   "Author": "Sakorona",
-  "Version": "1.1.14",
-  "Description": "Fish will periodically jump while you're around the farm",
+  "Version": "1.1.16",
+  "Description": "Fish will periodically jump while you're around the farm, and across the valley.",
   "UniqueID": "KoihimeNakamura.HappyFishJump",
   "EntryDll": "HappyFishJump.dll",
   "MinimumApiVersion": "3.4.0",
