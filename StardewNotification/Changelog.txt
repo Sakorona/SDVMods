@@ -1,4 +1,7 @@
-﻿1.8.10
+﻿1.8.11
+- updated for SDV 1.6/SMAPI 4.0
+
+1.8.10
 - festival weather now displays a better message for festivals next day
 
 1.8.9

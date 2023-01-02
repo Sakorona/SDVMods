@@ -136,7 +136,7 @@ namespace HappyFishJump
                     return;
 
                 //legendaries!
-                List<int> legendaryFishAdded = new();
+                List<string> legendaryFishAdded = new();
                 if (ModConfig.LegendariesJumpAfterCatch) {
                     switch (Game1.currentLocation.Name)
                     {

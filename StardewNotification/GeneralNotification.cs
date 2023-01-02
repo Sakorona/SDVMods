@@ -32,7 +32,7 @@ namespace StardewNotification
             int count = 0;
             foreach (var l in loc.terrainFeatures.Values)
             {
-                if (l is HoeDirt h && h.crop != null && h.crop.forageCrop.Value == true && h.crop.whichForageCrop.Value == 1)
+                if (l is HoeDirt h && h.crop != null && h.crop.forageCrop.Value == true && h.crop.whichForageCrop.Value == "1")
                     count++;
             }
 
@@ -46,25 +46,25 @@ namespace StardewNotification
         {
             switch (Game1.weatherForTomorrow)
             {
-                case 1:
+                case "Rain":
                     Util.ShowMessage(trans.Get("weather", new { weather = trans.Get("weather-rain") }));
                     break;
-                case 2:
+                case "Wind":
                     Util.ShowMessage(trans.Get("weather", new { weather = trans.Get("weather-wind") }));
                     break;
-                case 3:
+                case "Storm":
                     Util.ShowMessage(trans.Get("weather", new { weather = trans.Get("weather-tstorm") }));
                     break;
-                case 5:
+                case "Snow":
                     Util.ShowMessage(trans.Get("weather", new { weather = trans.Get("weather-snow") }));
                     break;
-                case 6:
+                case "Wedding":
                     Util.ShowMessage(trans.Get("weather", new { weather = trans.Get("weather-wedding") }));
                     break;
-                case 4:
+                case "Festival":
                     Util.ShowMessage(trans.Get("weather", new { weather = trans.Get("weather-festival", new { festivalName = GetFestivalName(trans) }) }));
                     break;
-                case 0:
+                case "Sun":
                 default:
                     Util.ShowMessage(trans.Get("weather", new { weather = trans.Get("weather-sunny") }));
                     break;

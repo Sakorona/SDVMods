@@ -1,5 +1,10 @@
 ## Changelog
 
+### 1.3.10
+- Updated for SMAPI 4.0/SDV 1.6
+- Removed unneccessary transpilers and code
+- Updated for GMCM 1.5. 
+
 ### 1.3.9
 - No longer runs DNT in areas installed by SpaceChase0's Moon Misadventures Mod
 

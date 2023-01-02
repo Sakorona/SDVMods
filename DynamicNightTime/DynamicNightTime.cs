@@ -84,11 +84,6 @@ namespace DynamicNightTime
             Monitor.Log($"Postfixing Game1.UpdateGameClock with {postfixClock}", LogLevel.Trace);
             harmony.Patch(UpdateGameClock, postfix: postfixClock);
 
-            harmony.Patch(
-                original: AccessTools.Method(AccessTools.TypeByName("StardewValley.Locations.IslandLocation"), "DrawParallaxHorizon"),
-                transpiler: new HarmonyMethod(AccessTools.Method(typeof(Patches.IslandLocationPatches), "DrawParallaxHorizonTranspiler")));
-            Monitor.Log("Patching IslandLocation::DrawParallaxHorizon with a transpiler.", LogLevel.Trace);
-
             helper.Events.GameLoop.GameLaunched += OnGameLaunched;
             helper.Events.GameLoop.DayStarted += OnDayStarted;
             helper.Events.GameLoop.ReturnedToTitle += OnReturnedToTitle;
@@ -97,10 +92,7 @@ namespace DynamicNightTime
            
             Helper.ConsoleCommands.Add("debug_cycleinfo", "Outputs the cycle information", OutputInformation);
             Helper.ConsoleCommands.Add("debug_outdoorlight", "Outputs the outdoor light information", OutputLight);
-            Helper.ConsoleCommands.Add("debug_setlatitude", "Sets Latitude", SetLatitude);
-            Helper.ConsoleCommands.Add("debug_setnightlevel", "Set Night Level", SetNightLevel);
             Helper.ConsoleCommands.Add("debug_printplayingsong", "Print Playing Song", PrintPlayingSong);
-            Helper.ConsoleCommands.Add("debug_printparallaxcalc", "Show Parallax Ratio", ShowParallaxRatio);
         }
 
         private void OnUpdateTicking(object sender, UpdateTickingEventArgs e)
@@ -142,11 +134,8 @@ namespace DynamicNightTime
                             //check game config
                             if (Game1.options.musicVolumeLevel > 0.025 && Game1.timeOfDay < 1200)
                             {
-                                //check song restrictions
-                                if (Game1.currentSong.Name.Contains("ambient"))
-                                {
-                                    Game1.changeMusicTrack(Game1.currentSeason + Math.Max(1, Game1.currentSongIndex), true, Game1.MusicContext.Default);
-                                }
+                                if (!Game1.IsPlayingMorningSong)
+                                    Game1.IsPlayingMorningSong = true;
                             }
 
                         }
@@ -159,18 +148,6 @@ namespace DynamicNightTime
         private void PrintPlayingSong(string arg1, string[] arg2)
         {
             Console.WriteLine($"Playing song is {Game1.currentSong.Name}, stopped? {Game1.currentSong.IsStopped} playing {Game1.currentSong.IsPlaying}");
-        }
-
-        private void ShowParallaxRatio(string arg1, string[] arg2)
-        {
-            float ratio = CalculateDayNightRatio();
-            float ratioClamped = Utility.Clamp(ratio, 0f, 1f);
-
-            float numer = Utility.CalculateMinutesBetweenTimes(Game1.getStartingToGetDarkTime(), (Game1.timeOfDay + (int)(Game1.gameTimeInterval / 7000f * 10f % 10f)));
-            int gameTimeInterval = (int)(Game1.gameTimeInterval / 7000f * 10f % 10f);
-            float denom = Utility.CalculateMinutesBetweenTimes(Game1.getStartingToGetDarkTime(), Game1.getTrulyDarkTime());
-
-            Console.WriteLine($"At time {Game1.timeOfDay}, with starting to get dark time: {Game1.getStartingToGetDarkTime()}, truly dark time: {Game1.getTrulyDarkTime()}, we have a ratio of {ratio:N4} and clamped ratio of {ratioClamped:N4}. Numerator is {numer:N4}, Denominator: {denom:N4}. GameTimeInterval: {gameTimeInterval}");
         }
 
         /// <summary>Get an API that other mods can access. This is always called after <see cref="M:StardewModdingAPI.Mod.Entry(StardewModdingAPI.IModHelper)" />.</summary>
@@ -205,7 +182,7 @@ namespace DynamicNightTime
 
                         if (Game1.isRaining || Game1.isLightning || (Game1.eventUp || Game1.dayOfMonth <= 0) || Game1.currentLocation.Name.Equals("Desert"))
                             return;
-                        Game1.changeMusicTrack(Game1.currentSeason + Math.Max(1, Game1.currentSongIndex),true);
+                        Game1.IsPlayingMorningSong= true;
                     }
                 }
                 Helper.Reflection.GetMethod(Game1.currentLocation, "_updateAmbientLighting").Invoke();
@@ -289,26 +266,18 @@ namespace DynamicNightTime
 */
 
             //GMCM interaction
-            var GMCMapi = Helper.ModRegistry.GetApi<GenericModConfigMenuAPI>("spacechase0.GenericModConfigMenu");
+            var GMCMapi = Helper.ModRegistry.GetApi<IGenericModConfigMenuApi>("spacechase0.GenericModConfigMenu");
             if (GMCMapi != null)
             {
-                GMCMapi.RegisterModConfig(ModManifest, () => NightConfig = new DynamicNightConfig(), () => Helper.WriteConfig(NightConfig));
-                GMCMapi.RegisterClampedOption(ModManifest, "Latitude", "Latitude used to generate the sunrise and sunset times", () => NightConfig.Latitude,
-                    (float val) => NightConfig.Latitude = val, -63.5f, 63.5f);
-                GMCMapi.RegisterClampedOption(ModManifest, "Island Latitude", "This value will be subtracted or added to get the latitude of Ginger Island. It is clamped to be no more than 40 degrees away.", () => NightConfig.IslandLatDifference,
-                    (float val) => NightConfig.IslandLatDifference = val, 0f, 40f);
-                GMCMapi.RegisterSimpleOption(ModManifest, "Sunset Times", "This option controls if you subtract a half hour from the generated time", () => NightConfig.SunsetTimesAreMinusThirty, (bool val) => NightConfig.SunsetTimesAreMinusThirty = val);
-                GMCMapi.RegisterSimpleOption(ModManifest, "More Orange Sunrise", "This option controls if you want a more orange sunrise", () => NightConfig.MoreOrangeSunrise, (bool val) => NightConfig.MoreOrangeSunrise = val);
-                GMCMapi.RegisterClampedOption(ModManifest, "Night Darkness Level", "Controls the options for how dark it is at night. Higher is darker.", () => NightConfig.NightDarknessLevel,
-                    (int val) => NightConfig.NightDarknessLevel = val, 1, 4);
+                GMCMapi.Register(ModManifest, () => NightConfig = new DynamicNightConfig(), () => Helper.WriteConfig(NightConfig));
+                GMCMapi.AddNumberOption(ModManifest, () => NightConfig.Latitude,
+                    (float val) => NightConfig.Latitude = val, () => "Latitude", () => "Latitude used to generate the sunrise and sunset times", -63.5f, 63.5f);
+                GMCMapi.AddNumberOption(ModManifest, () => NightConfig.IslandLatDifference, (float val) => NightConfig.IslandLatDifference = val, () => "Island Latitude", () => "This value will be subtracted or added to get the latitude of Ginger Island. It is clamped to be no more than 40 degrees away.",  0f, 40f);
+                GMCMapi.AddBoolOption(ModManifest, () => NightConfig.SunsetTimesAreMinusThirty, (bool val) => NightConfig.SunsetTimesAreMinusThirty = val , () => "Sunset Times", () => "This option controls if you subtract a half hour from the generated time");
+                GMCMapi.AddBoolOption(ModManifest, () => NightConfig.MoreOrangeSunrise, (bool val) => NightConfig.MoreOrangeSunrise = val, () => "More Orange Sunrise", () => "This option controls if you want a more orange sunrise");
+                GMCMapi.AddNumberOption(ModManifest, () => NightConfig.NightDarknessLevel,
+                    (int val) => NightConfig.NightDarknessLevel = val, () => "Night Darkness Level", () => "Controls the options for how dark it is at night. Higher is darker.", 1, 4);
             }
-        }
-
-        public static float CalculateDayNightRatio()
-        {
-            float day_night_transition = (Utility.CalculateMinutesBetweenTimes(Game1.getStartingToGetDarkTime(), (Game1.timeOfDay + (int)(Game1.gameTimeInterval / 7000f * 10f % 10f))) * 1.0f) / (float)(Utility.CalculateMinutesBetweenTimes(Game1.getStartingToGetDarkTime(), Game1.getTrulyDarkTime()) * 1.0f);
-
-            return day_night_transition;
         }
 
         public static float GetCurrentLocationLat()
@@ -327,31 +296,6 @@ namespace DynamicNightTime
             }
 
             return baseLat;
-        }
-
-        private void SetLatitude(string arg1, string[] arg2)
-        {
-           if (arg2.Length > 0)
-            {
-                float f = (float)Convert.ToDouble(arg2[0]);
-                if (f > 64) {
-                    Logger.Log("The set latitude exceeds 64 Degrees North. Resetting to 64 degrees North.", LogLevel.Info);
-                    NightConfig.Latitude = 64;
-                }
-                else if (f < -64)
-                {
-                    Logger.Log("The set latitude exceeds 64 Degrees South. Resetting to 64 degrees South.", LogLevel.Info);
-                    NightConfig.Latitude = -64;
-                }
-            }
-        }
-
-        private void SetNightLevel(string arg1, string[] arg2)
-        {
-            if (arg2.Length > 0)
-            {
-                NightConfig.NightDarknessLevel = Convert.ToInt32(arg2[0]);
-            }
         }
 
         private void OutputLight(string arg1, string[] arg2)

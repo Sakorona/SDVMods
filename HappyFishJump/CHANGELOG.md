@@ -1,4 +1,7 @@
-﻿#Ver 1.1.16
+﻿#Ver 1.1.17
+- Updated for SMAPI 4.0/SDV 1.6
+
+#Ver 1.1.16
 - fixes bug with with fish jumping when not catchable
 - adds in farm support
 - A little surprise may occur now and then..

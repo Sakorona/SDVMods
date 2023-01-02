@@ -4,7 +4,7 @@
     <AssemblyName>WashAwayForage</AssemblyName>
     <RootNamespace>WashAwayForage</RootNamespace>
     <Version>1.0.4</Version>
-    <TargetFramework>net5.0</TargetFramework>
+    <TargetFramework>net6.0</TargetFramework>
   </PropertyGroup>
 
   <ItemGroup>
