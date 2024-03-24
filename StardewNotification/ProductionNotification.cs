@@ -1,7 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using Microsoft.Xna.Framework;
 using StardewValley;
 using StardewModdingAPI;
 using StardewValley.Buildings;
@@ -17,12 +15,12 @@ namespace StardewNotification
         /// Bee House, Cheese Press, Keg, etc. 
         /// </summary>
         public void CheckProductionAroundFarm(ITranslationHelper Trans)
-        {
-            CheckFarmProductions(Trans);
-            CheckShedProductions(Trans);
-            CheckGreenhouseProductions(Trans);
-            CheckCellarProductions(Trans);
-            CheckBarnProductions(Trans);
+        { 
+            if (StardewNotification.Config.NotifyFarm) CheckFarmProductions(Trans);
+            if (StardewNotification.Config.NotifyShed) CheckShedProductions(Trans);
+            if (StardewNotification.Config.NotifyGreenhouse) CheckGreenhouseProductions(Trans);
+            if (StardewNotification.Config.NotifyCellar) CheckCellarProductions(Trans);
+            if (StardewNotification.Config.NotifyBarn) CheckBarnProductions(Trans);
         }
 
         public void CheckBarnProductions(ITranslationHelper Trans)
@@ -30,15 +28,22 @@ namespace StardewNotification
             if (StardewNotification.Config.NotifyBarn)
             {
                 //get barn(s)
-                var ags = from loc in Game1.locations
-                    where loc is AnimalHouse
-                    from ag in loc.objects.Pairs
-                    where ag.Value.bigCraftable.Value && ag.Value.ParentSheetIndex == 165
-                    let count = (ag.Value.heldObject.Value as Chest)?.items.Count ?? 0
-                    where count > 0
-                    select ag;
+                List<StardewValley.Object> autoGrabbers = new();
+                Utility.ForEachLocation(location =>
+                {
+                    if (location is AnimalHouse)
+                    {
+                        foreach (StardewValley.Object obj in location.objects.Values)
+                        {
+                            if (obj.QualifiedItemId == "(BC)165" && ((obj.heldObject.Value as Chest)?.Items.CountItemStacks() ?? 0) > 0)
+                                autoGrabbers.Add(obj);
+                        }
+                    }
 
-                foreach (var ag in ags)
+                    return true;
+                });
+
+                foreach (var ag in autoGrabbers)
                 {
                     Game1.addHUDMessage(new HUDMessage(Trans.Get("autoGrabber")));
                 }
@@ -49,14 +54,14 @@ namespace StardewNotification
         {
             if (StardewNotification.Config.NotifyFarm)
             {
-                CheckObjectsInLocation(Trans, Game1.getFarm());
+                CheckObjectsInLocation(Game1.getFarm());
                 CheckFish(Trans, Game1.getFarm());
             }
         }
 
         public void CheckFish(ITranslationHelper Trans, Farm f)
         {
-            foreach(Building b in f.buildings)
+            foreach (Building b in f.buildings)
             {
                 if (b is FishPond fish && fish.output.Value != null)
                 {
@@ -84,7 +89,7 @@ namespace StardewNotification
                 {
                     if (building.indoors.Value is Shed)
                     {
-                        CheckObjectsInLocation(Trans, building.indoors.Value);
+                        CheckObjectsInLocation(building.indoors.Value);
                     }
                 }
             }
@@ -94,7 +99,7 @@ namespace StardewNotification
         {
             if (StardewNotification.Config.NotifyGreenhouse)
             {
-                CheckObjectsInLocation(Trans, Game1.getLocationFromName("Greenhouse"));
+                CheckObjectsInLocation(Game1.getLocationFromName("Greenhouse"));
             }
         }
 
@@ -102,23 +107,33 @@ namespace StardewNotification
         {
             if (StardewNotification.Config.NotifyCellar)
             {
-                CheckObjectsInLocation(Trans, Game1.getLocationFromName("Cellar"));
+                Console.WriteLine("RUNNING CELLAR NOTIFY");
+                CheckObjectsInLocation(Game1.getLocationFromName("Cellar"));
             }
         }
 
-        private void CheckObjectsInLocation(ITranslationHelper Trans, GameLocation location)
+        private void CheckObjectsInLocation(GameLocation location)
         {
-            var counter = new Dictionary<string, Pair<StardewValley.Object, int>>();
+            var counter = new Dictionary<StardewValley.Object, int>();
 
             foreach (var pair in location.Objects.Pairs)
             {
                 if (!pair.Value.readyForHarvest.Value) continue;
-                if (counter.ContainsKey(pair.Value.Name)) counter[pair.Value.Name].Second++;
-                else counter.Add(pair.Value.Name, new Pair<StardewValley.Object, int>(pair.Value, 1));
+
+                if (pair.Value.heldObject is not null)
+                {
+                    if (counter.ContainsKey(pair.Value.heldObject.Value)) counter[pair.Value.heldObject.Value]++;
+                    else counter.Add(pair.Value.heldObject.Value, 1);
+                }
+                else
+                {
+                    if (counter.ContainsKey(pair.Value)) counter[pair.Value]++;
+                    else counter.Add(pair.Value, 1);
+                }
             }
 
             foreach (var pair in counter)
-                Util.ShowHarvestableMessage(Trans, pair);
+                Game1.addHUDMessage(HUDMessage.ForItemGained(pair.Key, pair.Value));
         }
     }
 }

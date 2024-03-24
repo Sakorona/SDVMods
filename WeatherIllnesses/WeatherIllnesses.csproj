@@ -4,11 +4,11 @@
     <AssemblyName>WeatherIllnesses</AssemblyName>
     <RootNamespace>WeatherIllnesses</RootNamespace>
     <Version>1.1.5</Version>
-    <TargetFramework>net5.0</TargetFramework>
+    <TargetFramework>net6.0</TargetFramework>
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Pathoschild.Stardew.ModBuildConfig" Version="4.0.1" />
+    <PackageReference Include="Pathoschild.Stardew.ModBuildConfig" Version="4.1.1" />
     <PackageReference Include="XoshiroPRNG.Net" Version="1.6.0" />
   </ItemGroup>
 

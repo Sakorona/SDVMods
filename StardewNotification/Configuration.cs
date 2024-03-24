@@ -9,9 +9,9 @@
         public int RunNotificationsTime { get ; set; } = 0600; // 6:00 am
         public int BirthdayReminderTime { get; set; } = 1700; // 5:00 pm
         public bool NotifyFestivals { get; set; } = true;
+        public bool NotifyBookseller { get; set; } = true;
         public bool NotifyTravelingMerchant { get; set; } = true;
         public bool NotifyToolUpgrade { get; set; } = false;
-        public bool NotifyQueenOfSauce { get; set; } = true;
         public bool NotifyMaxLuck { get; set; } = true;
         public bool NotifyMinLuck { get; set; } = true;
         public bool NotifySeasonalForage { get; set; } = true;

@@ -55,11 +55,13 @@ namespace StardewNotification
                 api.AddNumberOption(ModManifest, () => Config.WeatherNextDayTime, (int val) => Config.WeatherNextDayTime = val, () => Helper.Translation.Get("gmcmRemindTimeForNWDTitle"), () => Helper.Translation.Get("gmcmRemindTimeForNWDDesc"), 900, 2600, 10);
 
                 api.AddBoolOption(ModManifest, () => Config.NotifyTVChannels, (bool val) => Config.NotifyTVChannels = val, () => Helper.Translation.Get("gmcmNotifTVChanTitle"), () => Helper.Translation.Get("gmcmNotifTVChanDesc"));
+                api.AddBoolOption(ModManifest, () => Config.NotifyBookseller, (bool val) => Config.NotifyBookseller = val, () => Helper.Translation.Get("gmcmNotifyBooksellerTitle"), () => Helper.Translation.Get("gmcmNotifyBooksellerDesc"));
                 api.AddBoolOption(ModManifest, () => Config.ShowSpringOnionCount, (bool val) => Config.ShowSpringOnionCount = val, () => Helper.Translation.Get("gmcmNotifSpringOnionTitle"), () => Helper.Translation.Get("gmcmNotifSpringOnionDesc"));
 
                 api.AddBoolOption(ModManifest, () => Config.NotifyFarmCave, (bool val) => Config.NotifyFarmCave = val, () => Helper.Translation.Get("gmcmNotifFarmCaveTitle"), () => Helper.Translation.Get("gmcmNotifFarmCaveDesc"));
                 api.AddBoolOption(ModManifest, () => Config.NotifyGreenhouseCrops, (bool val) => Config.NotifyGreenhouseCrops = val, () => Helper.Translation.Get("gmcmNotifGreenCropTitle"), () => Helper.Translation.Get("gmcmNotifGreenCropDesc"));
 
+                api.AddBoolOption(ModManifest, () => Config.NotifyFarm, (bool val) => Config.NotifyFarm = val, () => Helper.Translation.Get("gmcmNotifFarmProdTitle"), () => Helper.Translation.Get("gmcmNotifFarmProdDesc"));
                 api.AddBoolOption(ModManifest, () => Config.NotifyShed, (bool val) => Config.NotifyShed = val, () => Helper.Translation.Get("gmcmNotifShedProdTitle"), () => Helper.Translation.Get("gmcmNotifShedProdDesc"));
                 api.AddBoolOption(ModManifest, () => Config.NotifyGreenhouse, (bool val) => Config.NotifyGreenhouse = val, () => Helper.Translation.Get("gmcmNotifGreenProdTitle"), () => Helper.Translation.Get("gmcmNotifGreenProdDesc"));
                 api.AddBoolOption(ModManifest, () => Config.NotifyCellar, (bool val) => Config.NotifyCellar = val, () => Helper.Translation.Get("gmcmNotifCellarProdTitle"), () => Helper.Translation.Get("gmcmNotifCellarProdDesc"));
@@ -75,8 +77,9 @@ namespace StardewNotification
             // send daily notifications
             if (Config.RunNotificationsTime != 600 && Config.RunNotificationsTime == e.NewTime)
             {
-                generalNotification.DoNewDayNotifications(Helper.Translation);
+                GeneralNotification.DoNewDayNotifications(Helper.Translation);
                 harvestableNotification.CheckHarvestsAroundFarm();
+                GeneralNotification.DoBookSellerReminder(Helper.Translation);
             }
 
             if (Config.NotifyBirthdayReminder && e.NewTime == Config.BirthdayReminderTime)
@@ -107,10 +110,11 @@ namespace StardewNotification
                 return;
 
             // send daily notifications
-            if (Config.RunNotificationsTime == 600) { 
-                generalNotification.DoNewDayNotifications(Helper.Translation);
+            if (Config.RunNotificationsTime == 600) {
+                GeneralNotification.DoNewDayNotifications(Helper.Translation);
                 harvestableNotification.CheckHarvestsAroundFarm();
-            }
+                GeneralNotification.DoBookSellerReminder(Helper.Translation);
+            }          
         }
     }
 }

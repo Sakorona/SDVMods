@@ -1,15 +1,14 @@
 ﻿# Ferngill Custom Weathers
 
-This mod adds fogs and blizzards to Stardew Valley
-
-# Requirements:
-SMAPI 3.8+
-SDV 1.5+
+This mod adds fogs and blizzards to Stardew Valley. It also creates alternate rainfalls.
 
 # Notes:
 - Remaining custom weathers to be implemented later.
 
 # CHANGELOG
+2.1
+ - Updated for SMAPI 4.0/SDV 1.6
+
 2.0.0-beta.4
  - fixes inadvertnet bug about fog on festival days
  - decrease chance of blinding fog by 5%

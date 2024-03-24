@@ -13,14 +13,12 @@ namespace DynamicNightTime.Patches
             if (Game1.currentLocation.Name.Contains("Moon"))
                 return;
 
-
             SDVTime sunriseSTime = DynamicNightTime.GetSunrise();
             //sunriseSTime.AddTime(-10);
             int sunriseTime = sunriseSTime.ReturnIntTime();
             SDVTime sunsetT = DynamicNightTime.GetSunset();
             sunsetT.AddTime(-20);
             
-            int astronTime = DynamicNightTime.GetMorningAstroTwilight().ReturnIntTime();
             //DynamicNightTime.Logger.Log($"Latitude for calc is {DynamicNightTime.GetCurrentLocationLat()}", LogLevel.Info);
 
             //colors
@@ -34,7 +32,7 @@ namespace DynamicNightTime.Patches
                 return;
             }
 
-            Color moonLight = new Color(0,0,0);
+            Color moonLight = new(0,0,0);
 
             if (DynamicNightTime.LunarDisturbancesLoaded && !Game1.isRaining && !Game1.isSnowing)
             {
@@ -43,59 +41,9 @@ namespace DynamicNightTime.Patches
 
             var weather = DynamicNightTime.ClimatesAPI?.GetCurrentWeatherName() ?? "error";
 
-            bool shouldDarken = Game1.isRaining || ((DynamicNightTime.ClimatesLoaded && weather.Contains("overcast")));
+            bool shouldDarken = Game1.IsRainingHere(Game1.currentLocation) || ((DynamicNightTime.ClimatesLoaded && weather.Contains("overcast")));
 
-            if (Game1.timeOfDay <= astronTime)
-            {
-                Color oldLight = (Game1.eveningColor * .93f);
-
-                if (DynamicNightTime.LunarDisturbancesLoaded && DynamicNightTime.MoonAPI.IsMoonUp(Game1.timeOfDay)) { 
-                    oldLight.R = (byte)(oldLight.R - moonLight.R);
-                    oldLight.G = (byte)(oldLight.G - moonLight.G);
-                    oldLight.B = (byte)(oldLight.B - moonLight.B);
-                }
-                Game1.outdoorLight = oldLight;
-            }
-
-            else if (Game1.timeOfDay >= astronTime && Game1.timeOfDay < sunriseTime)
-            {
-                if (shouldDarken) { 
-                    float minEff = SDVTime.MinutesBetweenTwoIntTimes(astronTime, Game1.timeOfDay) + (float)Math.Min(10.0, Game1.gameTimeInterval / 700);
-                    float percentage = (minEff / SDVTime.MinutesBetweenTwoIntTimes(sunriseTime, astronTime));
-                    Game1.outdoorLight = new Color((byte)(237 - (158 * percentage)), (byte)(185 - (126 * percentage)), (byte)(74 - (51 * percentage)), (byte)(237 - (161 * percentage)));
-                }
-                else
-                { 
-                    float minEff = SDVTime.MinutesBetweenTwoIntTimes(astronTime, Game1.timeOfDay) + (float)Math.Min(10.0, Game1.gameTimeInterval / 700);
-                    float percentage = (minEff / SDVTime.MinutesBetweenTwoIntTimes(sunriseTime, astronTime));
-                    //means delta r is -255, delta g is -159, delta b is +175 from evening to sunrise
-                    //Normal sunrise is 0,96,175. Rainy sunrises are.. 0,50,148?
-                    //However, this is set to a light blue-gray
-                    
-                    Color destColor = new Color((byte)(255 - (200 * percentage)), (byte)(255 - (205 * percentage)), (byte)(28 * percentage));
-                    Game1.outdoorLight = destColor;
-                }
-
-                /*
-                else if (Game1.timeOfDay >= sunriseTime && Game1.timeOfDay < sunriseEnd)
-                {
-                if (ShouldDarken)
-                {
-                    Game1.outdoorLight = Game1.ambientLight * 0.3f;
-                }
-                else
-                {
-                    float minEff = SDVTime.MinutesBetweenTwoIntTimes(astronTime, Game1.timeOfDay) + (float)Math.Min(10.0, Game1.gameTimeInterval / 700);
-                    float percentage = (minEff / SDVTime.MinutesBetweenTwoIntTimes(sunriseTime, astronTime));
-                    //means delta r is -255, delta g is -159, delta b is +175 from evening to sunrise
-                    //Normal sunrise is 0,96,175. Rainy sunrises are.. 0,50,148?
-                    //We're coming from 55 50 28 to 0 96 175
-                    Color destColor = new Color(55 + (200 * percentage), 50 + (109 * percentage), 28 + (62* percentage));
-                    //Color destColor = sunrise;
-                    Game1.outdoorLight = destColor;
-                }*/
-            }
-            else if (Game1.timeOfDay >= sunriseTime && Game1.timeOfDay <= Game1.getStartingToGetDarkTime())
+            if (Game1.timeOfDay >= sunriseTime && Game1.timeOfDay <= Game1.getStartingToGetDarkTime(Game1.currentLocation))
             {
                 if (shouldDarken)
                 {
@@ -119,24 +67,24 @@ namespace DynamicNightTime.Patches
                         float tgtColorR = newSunrise.R - 0;
                         float tgtColorG = newSunrise.G - 5;
                         float tgtColorB = newSunrise.B - 1;
-                        Color destColor = new Color((byte)(newSunrise.R - (tgtColorR*percentage)), (byte)(newSunrise.G -(tgtColorG*percentage)),(byte)(newSunrise.B -(tgtColorB*percentage)));
+                        Color destColor = new((byte)(newSunrise.R - (tgtColorR*percentage)), (byte)(newSunrise.G -(tgtColorG*percentage)),(byte)(newSunrise.B -(tgtColorB*percentage)));
                         Game1.outdoorLight = destColor;
                     }
                     if (Game1.timeOfDay == solarNoon)
                     {
-                        Color destColor = new Color(0,5,1);
+                        Color destColor = new(0,5,1);
                         Game1.outdoorLight = destColor;
                     }
                     if (Game1.timeOfDay > solarNoon)
                     {
                         float minEff = SDVTime.MinutesBetweenTwoIntTimes(Game1.timeOfDay, solarNoon) + (float)Math.Min(10.0, Game1.gameTimeInterval / 700);
                         float percentage = (minEff / SDVTime.MinutesBetweenTwoIntTimes(sunriseTime, solarNoon));
-                        Color destColor = new Color(0, (byte)(5 + (93 * percentage)), (byte)(1 + (192 * percentage)));
+                        Color destColor = new(0, (byte)(5 + (93 * percentage)), (byte)(1 + (192 * percentage)));
                         Game1.outdoorLight = destColor;
                     }
                 }
             }
-            else if (Game1.timeOfDay >= Game1.getStartingToGetDarkTime())
+            else if (Game1.timeOfDay >= Game1.getStartingToGetDarkTime(Game1.currentLocation))
             {
                 //Goes from [0,98,193] to [255,255,0]. We should probably space this out so that civil is still fairly bright.
                 int sunset = sunsetT.ReturnIntTime();
@@ -145,14 +93,14 @@ namespace DynamicNightTime.Patches
                 //Color navalColor = new Color(120,178,113);
                 if (shouldDarken)
                 {
-                    if (Game1.timeOfDay >= Game1.getTrulyDarkTime())
+                    if (Game1.timeOfDay >= Game1.getTrulyDarkTime(Game1.currentLocation))
                     {
-                        float num = Math.Min(0.93f, (float)(0.75 + ((double)((int)((double)(Game1.timeOfDay - Game1.timeOfDay % 100) + (double)(Game1.timeOfDay % 100 / 10) * 16.6599998474121) - Game1.getTrulyDarkTime()) + (double)Game1.gameTimeInterval / 7000.0 * 16.6000003814697) * 0.000624999986030161));
+                        float num = Math.Min(0.93f, (float)(0.75 + ((double)((int)((double)(Game1.timeOfDay - Game1.timeOfDay % 100) + (double)(Game1.timeOfDay % 100 / 10) * 16.6599998474121) - Game1.getTrulyDarkTime(Game1.currentLocation)) + (double)Game1.gameTimeInterval / 7000.0 * 16.6000003814697) * 0.000624999986030161));
                         Game1.outdoorLight = (Game1.isRaining ? Game1.ambientLight : Game1.eveningColor) * num;
                     }
-                    else if (Game1.timeOfDay >= Game1.getStartingToGetDarkTime())
+                    else if (Game1.timeOfDay >= Game1.getStartingToGetDarkTime(Game1.currentLocation))
                     {
-                        float num = Math.Min(0.93f, (float)(0.300000011920929 + ((double)((int)((double)(Game1.timeOfDay - Game1.timeOfDay % 100) + (double)(Game1.timeOfDay % 100 / 10) * 16.6599998474121) - Game1.getStartingToGetDarkTime()) + (double)Game1.gameTimeInterval / 7000.0 * 16.6000003814697) * 0.00224999990314245));
+                        float num = Math.Min(0.93f, (float)(0.300000011920929 + ((double)((int)((double)(Game1.timeOfDay - Game1.timeOfDay % 100) + (double)(Game1.timeOfDay % 100 / 10) * 16.6599998474121) - Game1.getStartingToGetDarkTime(Game1.currentLocation)) + (double)Game1.gameTimeInterval / 7000.0 * 16.6000003814697) * 0.00224999990314245));
                         Game1.outdoorLight = (Game1.isRaining ? Game1.ambientLight : Game1.eveningColor) * num;
                     }
                 }
@@ -178,6 +126,12 @@ namespace DynamicNightTime.Patches
 
                         switch (DynamicNightTime.NightConfig.NightDarknessLevel)
                         {
+                            case 0:
+                                redTarget = Game1.eveningColor.R;
+                                greenTarget = Game1.eveningColor.G;
+                                blueTarget = Game1.eveningColor.B;
+                                alphaTarget = Game1.eveningColor.A;
+                                break;
                             //42,55,127
                             case 1:
                             default:

@@ -1,10 +1,20 @@
 {
-  "Name": "Stardew Notification",
-  "Author": "monopandora, maintained by Sakorona",
-  "Version": "1.8.11",
-  "Description": "Daily Notification mod for Stardew Valley",
+  /*
+   | This file is automatically updated by ModManifestBuilder
+   | when the project is compiled.
+   | 
+   | Changes made to this file may be overwritten.
+   | 
+   */
+  "$schema": "https://smapi.io/schemas/manifest.json",
   "UniqueID": "mondopandora.stardewnotification",
-  "EntryDll": "StardewNotification.dll",
+  "Name": "StardewNotification",
+  "Author": "monopandora, maintained by Sakorona",
+  "Version": "1.8.15",
+  "Description": "Daily Notification mod for Stardew Valley",
   "MinimumApiVersion": "4.0",
-  "UpdateKeys": [ "Nexus:4713", "ModDrop:664154" ]
+  "EntryDll": "StardewNotification.dll",
+  "UpdateKeys": [
+    "Nexus:4713"
+  ]
 }

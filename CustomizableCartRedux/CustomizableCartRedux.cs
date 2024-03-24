@@ -8,18 +8,15 @@ using Microsoft.Xna.Framework;
 using HarmonyLib;
 using System.Reflection;
 using CustomizableTravelingCart.Patches;
-using System.Collections.Generic;
 
 namespace CustomizableTravelingCart
 {
     public class CustomizableCartRedux : Mod
     {
-        public static Mod instance;
-        public static IMonitor Logger;
-        public static CartConfig OurConfig;
+        internal static Mod instance;
+        internal static IMonitor Logger;
+        internal static CartConfig OurConfig;
         public Random Dice;
-        internal static Dictionary<StardewValley.Object, int[]> APIItemsToBeAdded;
-        private ICustomizableCart API;
 
         /// <summary>The mod entry point, called after the mod is first loaded.</summary>
         /// <param name="helper">Provides simplified APIs for writing mods.</param>
@@ -29,29 +26,17 @@ namespace CustomizableTravelingCart
             Dice = new Xoshiro.PRNG64.XoShiRo256starstar();
             OurConfig = helper.ReadConfig<CartConfig>();
             Logger = Monitor;
-            APIItemsToBeAdded = new Dictionary<StardewValley.Object, int[]>();
 
             helper.Events.GameLoop.DayStarted += OnDayStarted;
             helper.Events.GameLoop.GameLaunched += OnGameLanuched;
 
-            var harmony = new Harmony(this.ModManifest.UniqueID);
+            var harmony = new Harmony(ModManifest.UniqueID);
             harmony.PatchAll(Assembly.GetExecutingAssembly());
 
             MethodInfo CheckAction = AccessTools.Method(typeof(Forest), "checkAction");
-            HarmonyMethod CATranspiler = new HarmonyMethod(AccessTools.Method(typeof(ForestPatches), "CheckActionTranspiler"));
+            HarmonyMethod CATranspiler = new(AccessTools.Method(typeof(ForestPatches), "CheckActionTranspiler"));
             Monitor.Log($"Patching {CheckAction} with Transpiler: {CATranspiler}", LogLevel.Trace); ;
-            harmony.Patch(CheckAction, transpiler: CATranspiler);
-
-            MethodInfo ForestDraw = AccessTools.Method(typeof(Forest), "draw");
-            HarmonyMethod DrawTranspiler = new HarmonyMethod(AccessTools.Method(typeof(ForestPatches), "DrawTranspiler"));
-            Monitor.Log($"Patching {ForestDraw} with Transpiler: {DrawTranspiler}", LogLevel.Trace); ;
-            harmony.Patch(ForestDraw, transpiler: DrawTranspiler);
-
-            MethodInfo GenerateTMS = AccessTools.Method(typeof(Utility), "getTravelingMerchantStock");
-            HarmonyMethod LTMPrefix = new HarmonyMethod(AccessTools.Method(typeof(UtilityPatches), "getTravelingMerchantStockPrefix"));
-            Monitor.Log($"Patching {GenerateTMS} with Prefix: {LTMPrefix}", LogLevel.Trace); ;
-            harmony.Patch(GenerateTMS, prefix: LTMPrefix);            
-        
+            harmony.Patch(CheckAction, transpiler: CATranspiler);        
         }
 
         private void OnGameLanuched(object sender, GameLaunchedEventArgs e)
@@ -73,17 +58,9 @@ namespace CustomizableTravelingCart
                 api.RegisterSimpleOption(ModManifest, "Appear Only At Start and End Of Season", "If selected, the cart only appears at the beginning and end of the season", () => OurConfig.AppearOnlyAtStartAndEndOfSeason, (bool val) => OurConfig.AppearOnlyAtStartAndEndOfSeason = val);
                 api.RegisterSimpleOption(ModManifest, "Appear Only Every Other Week", "If selected, the cart only appears every other week", () => OurConfig.AppearOnlyEveryOtherWeek, (bool val) => OurConfig.AppearOnlyEveryOtherWeek = val);
                 api.RegisterSimpleOption(ModManifest, "Use Vanilla Max", "The game defaults to a max of 790. Turning this off allows PPJA assets to appear in the cart.", () => OurConfig.UseVanillaMax, (bool val) => OurConfig.UseVanillaMax = val);
-                api.RegisterClampedOption(ModManifest, "Amount of Items", "The amount of items the cart contains.", () => OurConfig.AmountOfItems, (int val) => OurConfig.AmountOfItems = val, 3, 100);
-                api.RegisterSimpleOption(ModManifest, "Use Cheaper Pricing", "Toggling this to true allows for cheaper pricing.", () => OurConfig.UseCheaperPricing, (bool val) => OurConfig.UseCheaperPricing = val);
                 api.RegisterClampedOption(ModManifest, "Opening Time", "The time the cart opens. Please select a 10-minute time.", () => OurConfig.OpeningTime, (int val) => OurConfig.OpeningTime = val, 600, 2600);
                 api.RegisterClampedOption(ModManifest, "Closing Time", "The time the cart closes for the night. Please select a 10-minute time. You don't have to go home, but you can't stay here.", () => OurConfig.ClosingTime, (int val) => OurConfig.ClosingTime = val, 600, 2600);
             }
-        }
-
-        /// <summary>Get an API that other mods can access. This is always called after <see cref="M:StardewModdingAPI.Mod.Entry(StardewModdingAPI.IModHelper)" />.</summary>
-        public override object GetApi()
-        {
-            return API ?? (API = new CustomizableCartAPI(Helper.Reflection));
         }
 
         /// <summary>Raised after the game begins a new day (including when the player loads a save).</summary>
@@ -94,42 +71,25 @@ namespace CustomizableTravelingCart
             if (!Context.IsMainPlayer)
                 return;
 
-            Random r = new Random();
+            Random r = new();
             double randChance = r.NextDouble();
 
-            if (!(Game1.getLocationFromName("Forest") is Forest f))
+            if (Game1.getLocationFromName("Forest") is not Forest f)
                 throw new Exception("The Forest is not loaded. Please verify your game is properly installed.");
             
             //get the day
             DayOfWeek day = GetDayOfWeek(SDate.Now());
-            double dayChance;
-            switch (day)
+            var dayChance = day switch
             {
-                case DayOfWeek.Monday:
-                    dayChance = OurConfig.MondayChance;
-                    break;
-                case DayOfWeek.Tuesday:
-                    dayChance = OurConfig.TuesdayChance;
-                    break;
-                case DayOfWeek.Wednesday:
-                    dayChance = OurConfig.WednesdayChance;
-                    break;
-                case DayOfWeek.Thursday:
-                    dayChance = OurConfig.ThursdayChance;
-                    break;
-                case DayOfWeek.Friday:
-                    dayChance = OurConfig.FridayChance;
-                    break;
-                case DayOfWeek.Saturday:
-                    dayChance = OurConfig.SaturdayChance;
-                    break;
-                case DayOfWeek.Sunday:
-                    dayChance = OurConfig.SundayChance;
-                    break;
-                default:
-                    dayChance = 0;
-                    break;
-            }
+                DayOfWeek.Monday => OurConfig.MondayChance,
+                DayOfWeek.Tuesday => OurConfig.TuesdayChance,
+                DayOfWeek.Wednesday => OurConfig.WednesdayChance,
+                DayOfWeek.Thursday => OurConfig.ThursdayChance,
+                DayOfWeek.Friday => OurConfig.FridayChance,
+                DayOfWeek.Saturday => OurConfig.SaturdayChance,
+                DayOfWeek.Sunday => OurConfig.SundayChance,
+                _ => 0,
+            };
 
             /* Start of the Season - Day 1. End of the Season - Day 28. Both is obviously day 1 and 28 
                Every other week is only on days 8-14 and 22-28) */
@@ -186,8 +146,6 @@ namespace CustomizableTravelingCart
                 f.travelingMerchantBounds.Add(new Rectangle(1812, 744, 104, 48));
                 foreach (Rectangle travelingMerchantBound in f.travelingMerchantBounds)
                     Utility.clearObjectsInArea(travelingMerchantBound, f);       
-
-                ((CustomizableCartAPI)API).InvokeCartProcessingComplete();
             }
             else
             {
@@ -198,27 +156,19 @@ namespace CustomizableTravelingCart
             }
         }
 
-        private DayOfWeek GetDayOfWeek(SDate Target)
+        private static DayOfWeek GetDayOfWeek(SDate Target)
         {
-            switch (Target.Day % 7)
+            return (Target.Day % 7) switch
             {
-                case 0:
-                    return DayOfWeek.Sunday;
-                case 1:
-                    return DayOfWeek.Monday;
-                case 2:
-                    return DayOfWeek.Tuesday;
-                case 3:
-                    return DayOfWeek.Wednesday;
-                case 4:
-                    return DayOfWeek.Thursday;
-                case 5:
-                    return DayOfWeek.Friday;
-                case 6:
-                    return DayOfWeek.Saturday;
-                default:
-                    return 0;
-            }
+                0 => DayOfWeek.Sunday,
+                1 => DayOfWeek.Monday,
+                2 => DayOfWeek.Tuesday,
+                3 => DayOfWeek.Wednesday,
+                4 => DayOfWeek.Thursday,
+                5 => DayOfWeek.Friday,
+                6 => DayOfWeek.Saturday,
+                _ => 0,
+            };
         }
 
         public static bool IsValidHours()

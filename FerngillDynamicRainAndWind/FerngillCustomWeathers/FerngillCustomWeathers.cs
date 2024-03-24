@@ -51,7 +51,7 @@ namespace FerngillCustomWeathers
 
         private void ForceBlizz(string arg1, string[] arg2)
         {
-            Game1.netWorldState.Value.GetWeatherForLocation(GameLocation.LocationContext.Default).isSnowing
+            Game1.netWorldState.Value.GetWeatherForLocation(Game1.location).isSnowing
                 .Value = true;
             Game1.netWorldState.Value.GetWeatherForLocation(GameLocation.LocationContext.Default).isRaining
                 .Value = false;
@@ -161,7 +161,7 @@ namespace FerngillCustomWeathers
             if (OurFog.IsWeatherVisible) return;
             if (Game1.isFestival()) return;
 
-            if ((FogToday && Game1.timeOfDay <= Utility.ModifyTime(Game1.getStartingToGetDarkTime(),-100) && Game1.random.NextDouble() <= ModOptions.EveningWeatherFogChance) || ((Game1.random.NextDouble() <= ModOptions.EveningWeatherFogChance / 4) && Game1.timeOfDay <= Utility.ModifyTime(Game1.getStartingToGetDarkTime(),-100)) && Game1.timeOfDay > 1500)
+            if ((FogToday && Game1.timeOfDay <= Utility.ModifyTime(Game1.getStartingToGetDarkTime(Game1.currentLocation),-100) && Game1.random.NextDouble() <= ModOptions.EveningWeatherFogChance) || ((Game1.random.NextDouble() <= ModOptions.EveningWeatherFogChance / 4) && Game1.timeOfDay <= Utility.ModifyTime(Game1.getStartingToGetDarkTime(Game1.currentLocation),-100)) && Game1.timeOfDay > 1500)
             {
                //Monitor.Log("Firing off evening fog chance", LogLevel.Info);
 
@@ -169,8 +169,8 @@ namespace FerngillCustomWeathers
                 var numTime = Game1.random.Next(60, 190);
                 numTime = ClampTimeToTens(numTime);
 
-                var startTime = Game1.getStartingToGetDarkTime();
-                var endTime = Utility.ModifyTime(Game1.getTrulyDarkTime(),numTime);
+                var startTime = Game1.getStartingToGetDarkTime(Game1.currentLocation);
+                var endTime = Utility.ModifyTime(Game1.getTrulyDarkTime(Game1.currentLocation),numTime);
                 var todayType = FogType.Normal;
 
                 if (Game1.random.NextDouble() > .95)
@@ -187,7 +187,7 @@ namespace FerngillCustomWeathers
         {
             if (!Context.IsMainPlayer) return;
 
-            if (!Utility.isFestivalDay(Game1.dayOfMonth, Game1.currentSeason) && !Game1.weddingToday)
+            if (!Utility.isFestivalDay(Game1.dayOfMonth, Game1.season) && !Game1.weddingToday)
             {
                 CheckAndInitFog();
                 CheckAndInitBlizzards();

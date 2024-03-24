@@ -1,8 +1,10 @@
 ﻿{
   // Notification messages
   "travelingMerchant": "Traveling Merchant has arrived",
-  "queenSauce": "Queen of Sauce airs today",
+  "queenSauce": "Queen of Sauce airs today!",
   "checkLiving": "Living off the Land airs today!",
+  "noSignal": "There is no TV signal today...",
+  "checkRerun": "Queen of Sauce (re-run) airs today!",
   "luckyDay": "Lucky Day!",
   "unluckyDay": "Unlucky Day!",
 
@@ -32,6 +34,8 @@
   "weather-wind": "windy",
   "weather-festival": "sunny for the {{festivalName}}",
   "weather-wedding": "wedding",
+  "weather-greenrain": "green rain",
+
 
   // Locations
   "CaveMushroom": "Cave Mushrooms ready for harvest",
@@ -39,6 +43,7 @@
 
   "birthday": "{{charName}}'s birthday!",
   "weather": "Tommorow's weather is {{weather}}.",
+  "bookseller": "The bookseller is in town!",
   "birthdayReminder": "Don't forget to give {{charName}} a birthday gift today!",
   "toolPickup": "{{toolName}} is ready for pickup",
   "springOnion": "{{count}} spring onions growing in the Forest",
@@ -64,6 +69,9 @@
   "gmcmNotifOnFestivalDesc": "Turn this on to be told it's a festival today",
   "gmcmNotifOnMerchantTitle": "Traveling Merchant Notifications",
   "gmcmNotifOnMerchantDesc": "Turn this on to be told if the traveling merchant has arrived",
+
+  "gmcmNotifyBooksellerTitle": "Bookseller Arrival Notification",
+  "gmcmNotifyBooksellerDesc": "Turn this on to be told if the bookseller has arrived",
 
   "gmcmNotifOnToolTitle": "Tool Upgrade Notifications",
   "gmcmNotifOnToolDesc": "Turn this on to be told if you have a tool waiting to be picked up.",
@@ -93,6 +101,9 @@
   "gmcmNotifFarmCaveDesc": "Turn this on to get notifications for farm cave harvest.",
   "gmcmNotifGreenCropTitle": "Notify for Greenhouse Crops",
   "gmcmNotifGreenCropDesc": "Turn this on to get notifications for greenhouse crops harvest.",
+
+  "gmcmNotifFarmProdTitle": "Notify for Farm Production",
+  "gmcmNotifFarmProdDesc": "Turn this on to get notifications for production on the farm",
 
   "gmcmNotifShedProdTitle": "Notify for Shed Production",
   "gmcmNotifShedProdDesc": "Turn this on to get notifications for machines in the shed",

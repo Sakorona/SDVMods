@@ -235,7 +235,7 @@ namespace TwilightShards.YouShouldRest
         {
             //json format ex: abigail[10]summer_4_4_spouse
             // name[heartlevel]season_healthstatus_staminastatus_timeofday_spousestatus
-            CharacterDetails newDetails = new CharacterDetails
+            CharacterDetails newDetails = new()
             {
                 Name = character.Name,
                 Age = character.Age,

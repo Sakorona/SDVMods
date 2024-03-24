@@ -6,10 +6,9 @@ namespace DynamicNightTime.Patches
     {
         public static void Postfix(ref bool __result)
         {
-            bool IsBeforeSunrise = Game1.timeOfDay < DynamicNightTime.GetSunriseTime();
-            bool IsPastSunset = Game1.timeOfDay > Game1.getModeratelyDarkTime();
+            bool IsPastSunset = Game1.timeOfDay > Game1.getModeratelyDarkTime(Game1.currentLocation);
 
-            __result = ((IsBeforeSunrise) || (IsPastSunset));
+            __result = IsPastSunset;
         }
     }
 }

@@ -1,5 +1,15 @@
 ## Changelog
 
+### 1.3.13
+- fixes some remanent code issues
+
+### 1.3.12
+- Removed dawn code (compat issues with 1.6 SDV)
+- Fixed SDV beta changes
+
+### 1.3.11
+- Added even lighter (vanilla?) night time - use 0 in the options
+
 ### 1.3.10
 - Updated for SMAPI 4.0/SDV 1.6
 - Removed unneccessary transpilers and code

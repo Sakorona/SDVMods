@@ -3,13 +3,19 @@
   <PropertyGroup>
     <AssemblyName>StardewNotification</AssemblyName>
     <RootNamespace>StardewNotification</RootNamespace>
-    <Version>1.8.10</Version>
+    <Version>1.8.15</Version>
+    <Authors>monopandora, maintained by Sakorona</Authors>
+    <Description>Daily Notification mod for Stardew Valley</Description>
+    <MinimumApiVersion>4.0</MinimumApiVersion>
+    <MinimumApi_Behavior>Update</MinimumApi_Behavior>
+    <UniqueID>mondopandora.stardewnotification</UniqueID>
+    <UpdateKeys>Nexus:4713</UpdateKeys>
     <TargetFramework>net6.0</TargetFramework>
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Pathoschild.Stardew.ModBuildConfig" Version="4.0.1" />
-    <PackageReference Include="XoshiroPRNG.Net" Version="1.6.0" />
+    <PackageReference Include="Leclair.Stardew.ModManifestBuilder" Version="2.1.0" />
+    <PackageReference Include="Pathoschild.Stardew.ModBuildConfig" Version="4.1.1" />
   </ItemGroup>
 
 

@@ -136,7 +136,7 @@ namespace TwilightShards.Common
 
             //clamp blue
             b = (float)Math.Min(Math.Max(b, 0), 255);
-            Color ourColor = new Color((uint)r, (uint)g, (uint)b)
+            Color ourColor = new((uint)r, (uint)g, (uint)b)
             {
                 R = (byte)r,
                 G = (byte)g,

@@ -4,12 +4,12 @@
     <AssemblyName>ClimatesOfFerngillV2</AssemblyName>
     <RootNamespace>TwilightShards.ClimatesOfFerngillV2</RootNamespace>
     <Version>2.0.0-alpha.1</Version>
-    <TargetFramework>net5.0</TargetFramework>
+    <TargetFramework>net6.0</TargetFramework>
     <EnableHarmony>true</EnableHarmony>
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Pathoschild.Stardew.ModBuildConfig" Version="4.0.1" />
+    <PackageReference Include="Pathoschild.Stardew.ModBuildConfig" Version="4.1.1" />
     <PackageReference Include="XoshiroPRNG.Net" Version="1.6.0" />
   </ItemGroup>
 

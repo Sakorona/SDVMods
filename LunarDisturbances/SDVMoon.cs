@@ -1,5 +1,4 @@
-﻿using System.Collections;
-using StardewValley;
+﻿using StardewValley;
 using StardewModdingAPI.Utilities;
 using StardewModdingAPI;
 using StardewValley.TerrainFeatures;
@@ -39,8 +38,8 @@ namespace TwilightShards.LunarDisturbances
         private bool IsHarvestMoon;
 
         //internal arrays
-        internal readonly int[] beachItems = new int[] { 393, 397, 392, 394 };
-        internal readonly int[] moonBeachItems = new int[] { 393, 394, 560, 586, 587, 589, 397 };
+        internal readonly string[] beachItems = new string[] { "(O)393", "(O)397", "(O)392", "(O)394" };
+        internal readonly string[] moonBeachItems = new string[] { "(O)393", "(O)394", "(O)560", "(O)586", "(O)587", "(O)589", "(O)397" };
 
         public SDVMoon(MoonConfig config, Random rng, ITranslationHelper Trans, IMonitor Logger)
         {
@@ -90,7 +89,7 @@ namespace TwilightShards.LunarDisturbances
             }
             else
             {
-                if (MoonTracker.FullMoonThisSeason && CurrentPhase() == MoonPhase.FullMoon || CurrentPhase() != MoonPhase.BloodMoon)
+                if (MoonTracker.FullMoonThisSeason && CurrentPhase() == MoonPhase.FullMoon && CurrentPhase() != MoonPhase.BloodMoon)
                 {
                     IsBlueMoon = true;
                     Game1.addHUDMessage(new TCHUDMessage(Translations.Get("moon-text.bluemoon"), CurrentPhase()));
@@ -102,7 +101,7 @@ namespace TwilightShards.LunarDisturbances
                 }
             }
 
-            if (!(MoonTracker is null))
+            if (MoonTracker is not null)
                 MoonTracker.IsEclipseTomorrow = SetEclipseTomorrow();
             else
             {
@@ -125,31 +124,18 @@ namespace TwilightShards.LunarDisturbances
 
         public float GetBrightnessQuotient()
         {
-            switch (CurrentPhase())
+            return CurrentPhase() switch
             {
-                case MoonPhase.BloodMoon:
-                case MoonPhase.BlueMoon:
-                    return 2f;
-                case MoonPhase.HarvestMoon:
-                    return 1.55f;
-                case MoonPhase.SpiritsMoon:
-                    return 1.15f;
-                case MoonPhase.FullMoon:
-                    return 1f;
-                case MoonPhase.ThirdQuarter:
-                case MoonPhase.FirstQuarter:
-                    return .5f;
-                case MoonPhase.WaxingCrescent:
-                case MoonPhase.WaningCrescent:
-                    return .15f;
-                case MoonPhase.WaningGibbeous:
-                case MoonPhase.WaxingGibbeous:
-                    return .65f;
-                case MoonPhase.NewMoon:
-                    return 0.02f;
-                default:
-                    return 0.0f;
-            }
+                MoonPhase.BloodMoon or MoonPhase.BlueMoon => 2f,
+                MoonPhase.HarvestMoon => 1.55f,
+                MoonPhase.SpiritsMoon => 1.15f,
+                MoonPhase.FullMoon => 1f,
+                MoonPhase.ThirdQuarter or MoonPhase.FirstQuarter => .5f,
+                MoonPhase.WaxingCrescent or MoonPhase.WaningCrescent => .15f,
+                MoonPhase.WaningGibbeous or MoonPhase.WaxingGibbeous => .65f,
+                MoonPhase.NewMoon => 0.02f,
+                _ => 0.0f,
+            };
         }
 
         public void Reset()
@@ -214,7 +200,7 @@ namespace TwilightShards.LunarDisturbances
 
         private bool SetEclipseTomorrow()
         {
-            bool validEclipseDate = (SDate.Now().DaysSinceStart > 2 && !Utility.isFestivalDay(Game1.dayOfMonth, Game1.currentSeason));
+            bool validEclipseDate = (SDate.Now().DaysSinceStart > 2 && !Utility.isFestivalDay(Game1.dayOfMonth, Game1.season));
             bool validEclipsePhase = (this.CurrentPhase() == MoonPhase.NewMoon);
                     
             if (validEclipsePhase && validEclipseDate)
@@ -244,7 +230,6 @@ namespace TwilightShards.LunarDisturbances
             IsBloodMoon = true;
             DoBloodMoonAlert();
             Game1.currentLocation.waterColor.Value = BloodMoonWater;
-            LunarDisturbances.ContentManager.InvalidateCache("LooseSprites/Cursors");
         }
 
         public void UpdateForBloodMoon()
@@ -254,7 +239,6 @@ namespace TwilightShards.LunarDisturbances
                 IsBloodMoon = true;
                 DoBloodMoonAlert();
                 Game1.currentLocation.waterColor.Value = BloodMoonWater;
-                LunarDisturbances.ContentManager.InvalidateCache("LooseSprites/Cursors");
             }
         }
 
@@ -267,61 +251,35 @@ namespace TwilightShards.LunarDisturbances
         {
             if (cycleLength == 14)
             {
-                switch (day)
+                return day switch
                 {
-                    case 0:
-                        return MoonPhase.NewMoon;
-                    case 1:
-                    case 2:
-                    case 3:
-                        return MoonPhase.WaxingCrescent;
-                    case 4:
-                        return MoonPhase.FirstQuarter;
-                    case 5:
-                    case 6:
-                        return MoonPhase.WaxingGibbeous;
-                    case 7:
-                        return MoonPhase.FullMoon;
-                    case 8:
-                    case 9:
-                        return MoonPhase.WaningGibbeous;
-                    case 10:
-                        return MoonPhase.ThirdQuarter;
-                    case 11:
-                    case 12:
-                    case 13:
-                        return MoonPhase.WaningCrescent;
-                    case 14:
-                        return MoonPhase.NewMoon;
-                    default:
-                        return MoonPhase.ErrorPhase;
-                }
+                    0 => MoonPhase.NewMoon,
+                    1 or 2 or 3 => MoonPhase.WaxingCrescent,
+                    4 => MoonPhase.FirstQuarter,
+                    5 or 6 => MoonPhase.WaxingGibbeous,
+                    7 => MoonPhase.FullMoon,
+                    8 or 9 => MoonPhase.WaningGibbeous,
+                    10 => MoonPhase.ThirdQuarter,
+                    11 or 12 or 13 => MoonPhase.WaningCrescent,
+                    14 => MoonPhase.NewMoon,
+                    _ => MoonPhase.ErrorPhase,
+                };
             }
             else
             {
-                switch (day)
+                return day switch
                 {
-                    case 0:
-                        return MoonPhase.NewMoon;
-                    case int n when (n >= 1 && n <= 5):
-                        return MoonPhase.WaxingCrescent;
-                    case int n when (n == 6 || n == 7):
-                        return MoonPhase.FirstQuarter;
-                    case int n when (n >= 8 && n <= 12):
-                        return MoonPhase.WaxingGibbeous;
-                    case 13:
-                        return MoonPhase.FullMoon;
-                    case int n when (n >= 14 && n <= 18):
-                        return MoonPhase.WaningGibbeous;
-                    case 19:
-                        return MoonPhase.ThirdQuarter;
-                    case int n when (n >= 20 && n <= 24):
-                        return MoonPhase.WaningCrescent;
-                    case 25:
-                        return MoonPhase.NewMoon;
-                    default:
-                        return MoonPhase.ErrorPhase;
-                }
+                    0 => MoonPhase.NewMoon,
+                    int n when (n >= 1 && n <= 5) => MoonPhase.WaxingCrescent,
+                    int n when (n == 6 || n == 7) => MoonPhase.FirstQuarter,
+                    int n when (n >= 8 && n <= 12) => MoonPhase.WaxingGibbeous,
+                    13 => MoonPhase.FullMoon,
+                    int n when (n >= 14 && n <= 18) => MoonPhase.WaningGibbeous,
+                    19 => MoonPhase.ThirdQuarter,
+                    int n when (n >= 20 && n <= 24) => MoonPhase.WaningCrescent,
+                    25 => MoonPhase.NewMoon,
+                    _ => MoonPhase.ErrorPhase,
+                };
             }            
         }
 
@@ -399,7 +357,7 @@ namespace TwilightShards.LunarDisturbances
 
         public void TenMinuteUpdate()
         {
-            if (CheckForGhostSpawn() && SDVTime.CurrentIntTime > Game1.getStartingToGetDarkTime() && Game1.currentLocation is Farm && Game1.whichFarm == Farm.combat_layout)
+            if (CheckForGhostSpawn() && SDVTime.CurrentIntTime > Game1.getStartingToGetDarkTime(Game1.currentLocation) && Game1.currentLocation is Farm && Game1.whichFarm == Farm.combat_layout)
             {
                 GameLocation f = Game1.currentLocation;
                 Vector2 zero = Vector2.Zero;
@@ -424,7 +382,7 @@ namespace TwilightShards.LunarDisturbances
                     zero.X -= Game1.viewport.Width;
 
                 List<NPC> characters = f.characters.ToList();
-                Ghost ghost = new Ghost(zero * Game1.tileSize)
+                Ghost ghost = new(zero * Game1.tileSize)
                 {
                     focusedOnFarmers = true,
                     wildernessFarmMonster = false,
@@ -453,7 +411,7 @@ namespace TwilightShards.LunarDisturbances
         public int GetMoonZenith()
         {
             int moonDuration = SDVTime.MinutesBetweenTwoIntTimes(GetMoonSetTime(), GetMoonRiseTime());
-            SDVTime mr = new SDVTime(GetMoonRiseTime());
+            SDVTime mr = new(GetMoonRiseTime());
             mr.AddTime(moonDuration / 2);
             return mr.ReturnIntTime();
         }
@@ -472,10 +430,10 @@ namespace TwilightShards.LunarDisturbances
                 return;
 
             //new moon processing
-            if (CurrentPhase() == MoonPhase.NewMoon && ModConfig.HazardousMoonEvents && !(b is null))
+            if (CurrentPhase() == MoonPhase.NewMoon && ModConfig.HazardousMoonEvents && b is not null)
             {
                 List<KeyValuePair<Vector2, StardewValley.Object>> entries = (from o in b.objects.Pairs
-                    where beachItems.Contains(o.Value.ParentSheetIndex)
+                    where Array.Exists(beachItems, element => element == o.Value.QualifiedItemId)
                     select o).ToList();
 
                 foreach (KeyValuePair<Vector2, StardewValley.Object> rem in entries)
@@ -498,26 +456,26 @@ namespace TwilightShards.LunarDisturbances
             //full moon processing
             if (CurrentPhase() == MoonPhase.FullMoon)
             {
-                Rectangle rectangle = new Rectangle(65, 11, 25, 12);
+                Rectangle rectangle = new(65, 11, 25, 12);
                 for (int index = 0; index < 8; ++index)
                 {
                     //get the item ID to spawn
-                    var parentSheetIndex = moonBeachItems.GetRandomItem(Dice);
+                    string parentSheetIndex = moonBeachItems.GetRandomItem(Dice);
                     if (Dice.NextDouble() <= .0001)
-                        parentSheetIndex = 392; //rare chance for a Nautlius Shell.
+                        parentSheetIndex = "(O)392"; //rare chance for a Nautlius Shell.
 
                     double emeraldChance = .2001;
                     if (IsSuperMoon)
                         emeraldChance += .10;
 
                     else if (Dice.NextDouble() > .0001 && Dice.NextDouble() <= emeraldChance)
-                        parentSheetIndex = 60;
+                        parentSheetIndex = "(O)60";
 
                     if (Dice.NextDouble() < ModConfig.BeachSpawnChance)
                     {
-                        Vector2 v = new Vector2(Game1.random.Next(rectangle.X, rectangle.Right), Game1.random.Next(rectangle.Y, rectangle.Bottom));
+                        Vector2 v = new(Game1.random.Next(rectangle.X, rectangle.Right), Game1.random.Next(rectangle.Y, rectangle.Bottom));
                         itemsChanged++;
-                        if (b.isTileLocationTotallyClearAndPlaceable(v))
+                        if (b.isTilePlaceable(v))
                             b.dropObject(new StardewValley.Object(parentSheetIndex, 1, false, -1, 0), v * Game1.tileSize, Game1.viewport, true, null);
                     }
                 }
@@ -527,12 +485,12 @@ namespace TwilightShards.LunarDisturbances
                     for (int j = 0; j < 20; ++j)
                     {
                         double driftWoodChance = .25;
-                        int parentSheetIndex = 388;
+                        string parentSheetIndex = "(O)388";
                         if (Dice.NextDouble() < driftWoodChance)
                         {
-                            Vector2 v = new Vector2(Game1.random.Next(rectangle.X, rectangle.Right), Game1.random.Next(rectangle.Y, rectangle.Bottom));
+                            Vector2 v = new(Game1.random.Next(rectangle.X, rectangle.Right), Game1.random.Next(rectangle.Y, rectangle.Bottom));
                             itemsChanged++;
-                            if (b.isTileLocationTotallyClearAndPlaceable(v))
+                            if (b.isTilePlaceable(v))
                                 b.dropObject(new StardewValley.Object(parentSheetIndex, 1, false, -1, 0), v * Game1.tileSize, Game1.viewport, true, null);
                         }
                     }
@@ -547,77 +505,49 @@ namespace TwilightShards.LunarDisturbances
 
         public string SimpleMoonPhase()
         {
-            return SDVMoon.DescribeMoonPhase(this.CurrentPhase());
+            return DescribeMoonPhase(this.CurrentPhase());
         }
 
         public static string DescribeMoonPhase(MoonPhase mp, ITranslationHelper Helper)
         {
-            switch (mp)
+            return mp switch
             {
-                case MoonPhase.ErrorPhase:
-                    return Helper.Get("moon-text.error");
-                case MoonPhase.FirstQuarter:
-                    return Helper.Get("moon-text.phase-firstqrt");
-                case MoonPhase.FullMoon:
-                    return Helper.Get("moon-text.phase-full");
-                case MoonPhase.NewMoon:
-                    return Helper.Get("moon-text.phase-new");
-                case MoonPhase.ThirdQuarter:
-                    return Helper.Get("moon-text.phase-thirdqrt");
-                case MoonPhase.WaningCrescent:
-                    return Helper.Get("moon-text.phase-waningcres");
-                case MoonPhase.WaningGibbeous:
-                    return Helper.Get("moon-text.phase-waninggibb");
-                case MoonPhase.WaxingCrescent:
-                    return Helper.Get("moon-text.phase-waxingcres");
-                case MoonPhase.WaxingGibbeous:
-                    return Helper.Get("moon-text.phase-waxinggibb");
-                case MoonPhase.BloodMoon:
-                    return Helper.Get("moon-text.phase-blood");
-                case MoonPhase.BlueMoon:
-                    return Helper.Get("moon-text.blue-moon");
-                case MoonPhase.HarvestMoon:
-                    return Helper.Get("moon-text.harvest-moon");
-                case MoonPhase.SpiritsMoon:
-                    return Helper.Get("moon-text.spirits-moon");
-                default:
-                    return Helper.Get("moon-text.error");
-            }
+                MoonPhase.ErrorPhase => (string)Helper.Get("moon-text.error"),
+                MoonPhase.FirstQuarter => (string)Helper.Get("moon-text.phase-firstqrt"),
+                MoonPhase.FullMoon => (string)Helper.Get("moon-text.phase-full"),
+                MoonPhase.NewMoon => (string)Helper.Get("moon-text.phase-new"),
+                MoonPhase.ThirdQuarter => (string)Helper.Get("moon-text.phase-thirdqrt"),
+                MoonPhase.WaningCrescent => (string)Helper.Get("moon-text.phase-waningcres"),
+                MoonPhase.WaningGibbeous => (string)Helper.Get("moon-text.phase-waninggibb"),
+                MoonPhase.WaxingCrescent => (string)Helper.Get("moon-text.phase-waxingcres"),
+                MoonPhase.WaxingGibbeous => (string)Helper.Get("moon-text.phase-waxinggibb"),
+                MoonPhase.BloodMoon => (string)Helper.Get("moon-text.phase-blood"),
+                MoonPhase.BlueMoon => (string)Helper.Get("moon-text.blue-moon"),
+                MoonPhase.HarvestMoon => (string)Helper.Get("moon-text.harvest-moon"),
+                MoonPhase.SpiritsMoon => (string)Helper.Get("moon-text.spirits-moon"),
+                _ => (string)Helper.Get("moon-text.error"),
+            };
         }
 
         public static string DescribeMoonPhase(MoonPhase mp)
         {
-            switch (mp)
+            return mp switch
             {
-                case MoonPhase.ErrorPhase:
-                    return "ErrorPhase";
-                case MoonPhase.FirstQuarter:
-                    return "FirstQuarter";
-                case MoonPhase.FullMoon:
-                    return "FullMoon";
-                case MoonPhase.NewMoon:
-                    return "NewMoon";
-                case MoonPhase.ThirdQuarter:
-                    return "ThirdQuarter";
-                case MoonPhase.WaningCrescent:
-                    return "WaningCrescent";
-                case MoonPhase.WaningGibbeous:
-                    return "WaningGibbous";
-                case MoonPhase.WaxingCrescent:
-                    return "WaxingCrescent";
-                case MoonPhase.WaxingGibbeous:
-                    return "WaxingGibbous";
-                case MoonPhase.BloodMoon:
-                    return "BloodMoon";
-                case MoonPhase.BlueMoon:
-                    return "BlueMoon";
-                case MoonPhase.HarvestMoon:
-                    return "HarvestMoon";
-                case MoonPhase.SpiritsMoon:
-                    return "SpiritsMoon";
-                default:
-                    return "ErrorMoon";
-            }
+                MoonPhase.ErrorPhase => "ErrorPhase",
+                MoonPhase.FirstQuarter => "FirstQuarter",
+                MoonPhase.FullMoon => "FullMoon",
+                MoonPhase.NewMoon => "NewMoon",
+                MoonPhase.ThirdQuarter => "ThirdQuarter",
+                MoonPhase.WaningCrescent => "WaningCrescent",
+                MoonPhase.WaningGibbeous => "WaningGibbous",
+                MoonPhase.WaxingCrescent => "WaxingCrescent",
+                MoonPhase.WaxingGibbeous => "WaxingGibbous",
+                MoonPhase.BloodMoon => "BloodMoon",
+                MoonPhase.BlueMoon => "BlueMoon",
+                MoonPhase.HarvestMoon => "HarvestMoon",
+                MoonPhase.SpiritsMoon => "SpiritsMoon",
+                _ => "ErrorMoon",
+            };
         }
 
         public string DescribeMoonPhase()
@@ -634,33 +564,19 @@ namespace TwilightShards.LunarDisturbances
         }
         public int GetMoonRiseTime()
         {
-            switch (this.CurrentPhase())
+            return CurrentPhase() switch
             {
-                case MoonPhase.BloodMoon:
-                case MoonPhase.HarvestMoon:
-                    return 0600;
-                case MoonPhase.FullMoon:
-                case MoonPhase.BlueMoon:
-                    return 2040;
-                case MoonPhase.WaningGibbeous:
-                    return 2200;
-                case MoonPhase.ThirdQuarter:
-                    return 2310;
-                case MoonPhase.WaningCrescent:                
-                    return 2430;
-                case MoonPhase.NewMoon:
-                case MoonPhase.SpiritsMoon:
-                    return 0600;
-                case MoonPhase.WaxingCrescent:
-                    return 1130;
-                case MoonPhase.FirstQuarter:
-                    return 1500;
-                case MoonPhase.WaxingGibbeous:
-                    return 1340;
-                case MoonPhase.ErrorPhase:
-                default:
-                    return 2700;
-            }
+                MoonPhase.BloodMoon or MoonPhase.HarvestMoon => 0600,
+                MoonPhase.FullMoon or MoonPhase.BlueMoon => 2040,
+                MoonPhase.WaningGibbeous => 2200,
+                MoonPhase.ThirdQuarter => 2310,
+                MoonPhase.WaningCrescent => 2430,
+                MoonPhase.NewMoon or MoonPhase.SpiritsMoon => 0600,
+                MoonPhase.WaxingCrescent => 1130,
+                MoonPhase.FirstQuarter => 1500,
+                MoonPhase.WaxingGibbeous => 1340,
+                _ => 2700,
+            };
         }
 
         public bool IsMoonUp(int time)
@@ -674,33 +590,19 @@ namespace TwilightShards.LunarDisturbances
         public int GetMoonSetTime()
         {
             //Blood Moons don't set. More's the pity, I guess..
-            switch (this.CurrentPhase())
+            return this.CurrentPhase() switch
             {
-                case MoonPhase.BloodMoon:
-                case MoonPhase.HarvestMoon:
-                case MoonPhase.SpiritsMoon:
-                    return 2700;
-                case MoonPhase.FullMoon:
-                case MoonPhase.BlueMoon:
-                    return 2830;
-                case MoonPhase.WaningGibbeous:
-                    return 1020;
-                case MoonPhase.ThirdQuarter:
-                    return 1420;
-                case MoonPhase.WaningCrescent:
-                    return 1800;
-                case MoonPhase.NewMoon:
-                    return 2020;
-                case MoonPhase.WaxingCrescent:
-                    return 2130;
-                case MoonPhase.FirstQuarter:
-                    return 2250;
-                case MoonPhase.WaxingGibbeous:
-                    return 2320;
-                case MoonPhase.ErrorPhase:
-                default:
-                    return 0700;
-            }
+                MoonPhase.BloodMoon or MoonPhase.HarvestMoon or MoonPhase.SpiritsMoon => 2700,
+                MoonPhase.FullMoon or MoonPhase.BlueMoon => 2830,
+                MoonPhase.WaningGibbeous => 1020,
+                MoonPhase.ThirdQuarter => 1420,
+                MoonPhase.WaningCrescent => 1800,
+                MoonPhase.NewMoon => 2020,
+                MoonPhase.WaxingCrescent => 2130,
+                MoonPhase.FirstQuarter => 2250,
+                MoonPhase.WaxingGibbeous => 2320,
+                _ => 0700,
+            };
         }    
 
         public bool CheckForGhostSpawn()

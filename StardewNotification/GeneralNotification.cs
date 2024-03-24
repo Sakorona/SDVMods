@@ -9,17 +9,23 @@ namespace StardewNotification
 {
     public class GeneralNotification
     {
-        public void DoNewDayNotifications(ITranslationHelper Trans)
+        public static void DoNewDayNotifications(ITranslationHelper Trans)
         {
             CheckForBirthday(Trans);
             CheckForFestival(Trans);
             CheckForMaxLuck(Trans);
-            CheckForQueenOfSauce(Trans);
+            CheckForTravelingMerchant(Trans);
             CheckForTVChannels(Trans);
             CheckForToolUpgrade(Trans);
-            CheckForTravelingMerchant(Trans);
             CheckForHayLevel(Trans);
             CheckForSpringOnions(Trans);
+        }
+
+        public static void DoBookSellerReminder(ITranslationHelper Trans)
+        {
+            if (!StardewNotification.Config.NotifyBookseller) return;
+            if (Utility.getDaysOfBooksellerThisSeason().Contains(Game1.dayOfMonth))
+                Util.ShowMessage(Trans.Get("bookseller"));
         }
 
         public static void CheckForSpringOnions(ITranslationHelper Trans)
@@ -64,6 +70,9 @@ namespace StardewNotification
                 case "Festival":
                     Util.ShowMessage(trans.Get("weather", new { weather = trans.Get("weather-festival", new { festivalName = GetFestivalName(trans) }) }));
                     break;
+                case "GreenRain":
+                    Util.ShowMessage(trans.Get("weather", new { weather = trans.Get("weather-greenrain") }));
+                    break;
                 case "Sun":
                 default:
                     Util.ShowMessage(trans.Get("weather", new { weather = trans.Get("weather-sunny") }));
@@ -97,42 +106,42 @@ namespace StardewNotification
         
         public static void DoBirthdayReminder(ITranslationHelper Trans)
         {
-            var character = Utility.getTodaysBirthdayNPC(Game1.currentSeason, Game1.dayOfMonth);
-            if (!(character is null) && Game1.player.friendshipData.Keys.Contains(character.Name) && Game1.player.friendshipData[character.Name].GiftsToday != 1)
+            var character = Utility.getTodaysBirthdayNPC();
+            if (character is not null && Game1.player.friendshipData.Keys.Contains(character.Name) && Game1.player.friendshipData[character.Name].GiftsToday != 1)
             {
                 Util.ShowMessage(Trans.Get("birthdayReminder", new { charName = character.displayName }));
             }
         }
 
-        private void CheckForBirthday(ITranslationHelper Trans)
+        private static void CheckForBirthday(ITranslationHelper Trans)
         {
             if (StardewNotification.Config.NotifyBirthdays)
             {
-                var character = Utility.getTodaysBirthdayNPC(Game1.currentSeason, Game1.dayOfMonth);
+                var character = Utility.getTodaysBirthdayNPC();
                 if (character is null) return;
                 Util.ShowMessage(Trans.Get("birthday", new { charName = character.displayName }));
             }
         }
 
-        private void CheckForTravelingMerchant(ITranslationHelper Trans)
+        private static void CheckForTravelingMerchant(ITranslationHelper Trans)
         {
             Forest f = Game1.getLocationFromName("Forest") as Forest;
-            if (!StardewNotification.Config.NotifyTravelingMerchant || !f.travelingMerchantDay)
-            {
-                return;
-            }
+            if (!StardewNotification.Config.NotifyTravelingMerchant) return;
 
-            Util.ShowMessage(Trans.Get("travelingMerchant"));
+            if (f.ShouldTravelingMerchantVisitToday())
+            {
+                Util.ShowMessage(Trans.Get("travelingMerchant"));
+            }
         }
 
-        private void CheckForToolUpgrade(ITranslationHelper Trans)
+        private static void CheckForToolUpgrade(ITranslationHelper Trans)
         {
             if (!StardewNotification.Config.NotifyToolUpgrade) return;
-            if (!(Game1.player.toolBeingUpgraded.Value is null) && Game1.player.daysLeftForToolUpgrade.Value <= 0)
-                Util.ShowMessage(Trans.Get("toolPickup", new { toolName = Game1.player.toolBeingUpgraded.Value.Name }));
+            if (Game1.player.toolBeingUpgraded.Value is not null && Game1.player.daysLeftForToolUpgrade.Value <= 0)
+                Util.ShowMessage(Trans.Get("toolPickup", new {toolName = Game1.player.toolBeingUpgraded.Value.DisplayName }));
         }
 
-        private void CheckForMaxLuck(ITranslationHelper Trans)
+        private static void CheckForMaxLuck(ITranslationHelper Trans)
         {
             if (StardewNotification.Config.NotifyMaxLuck && Game1.player.DailyLuck > 0.07)
                 Util.ShowMessage(Trans.Get("luckyDay"));
@@ -141,17 +150,15 @@ namespace StardewNotification
         }
 
 
-        private void CheckForQueenOfSauce(ITranslationHelper Trans)
-        {
-            if (!StardewNotification.Config.NotifyQueenOfSauce) return;
-            var dayName = Game1.shortDayNameFromDayOfSeason(Game1.dayOfMonth);
-            if (!dayName.Equals("Sun")) return;
-            Util.ShowMessage(Trans.Get("queenSauce"));
-        }
-
-        private void CheckForTVChannels(ITranslationHelper Trans)
+        private static void CheckForTVChannels(ITranslationHelper Trans)
         {
             if (!StardewNotification.Config.NotifyTVChannels) return;
+
+            if (Game1.IsGreenRainingHere()) { 
+                Util.ShowMessage(Trans.Get("noSignal"));
+                return;
+            }
+
             var dayName = Game1.shortDayNameFromDayOfSeason(Game1.dayOfMonth);
             switch(dayName)
             {
@@ -159,20 +166,26 @@ namespace StardewNotification
                 case "Thu":
                     Util.ShowMessage(Trans.Get("checkLiving"));
                     break;
+                case "Wed":
+                    Util.ShowMessage(Trans.Get("checkRerun"));
+                    break;
+                case "Sun":
+                    Util.ShowMessage(Trans.Get("queenSauce"));
+                    break;
                 default:
                     break;
             }
         }
 
 
-        private void CheckForFestival(ITranslationHelper Trans)
+        private static void CheckForFestival(ITranslationHelper Trans)
         {
-            if (!StardewNotification.Config.NotifyFestivals || !Utility.isFestivalDay(Game1.dayOfMonth, Game1.currentSeason)) return;
+            if (!StardewNotification.Config.NotifyFestivals || !Utility.isFestivalDay()) return;
             var festivalName = GetFestivalName(Trans);
             Util.ShowMessage(Trans.Get("fMsg", new { fest = festivalName }));
 
             if (!festivalName.Equals(Trans.Get("WinterStar"))) return;
-            Random r = new Random((int)(Game1.uniqueIDForThisGame / 2uL) ^ Game1.year ^ (int)Game1.player.UniqueMultiplayerID);
+            Random r = new((int)(Game1.uniqueIDForThisGame / 2uL) ^ Game1.year ^ (int)Game1.player.UniqueMultiplayerID);
             var santa = Utility.getRandomTownNPC(r).displayName;
 
             Util.ShowMessage(Trans.Get("SecretSantaReminder", new { charName = santa })); 

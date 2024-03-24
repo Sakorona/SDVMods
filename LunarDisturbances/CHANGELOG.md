@@ -1,4 +1,13 @@
 ## Changelog
+### 1.5.1
+- Update for issues with shops
+- Blue Moon less frequent now.
+
+### 1.5
+- Updated for SDV 1.6
+- giant crops now allows for modded giant crops to be affected.
+- Updated for new GMCM Api
+
 ### 1.4.1
 - Updated for SDV 1.5.5
 - No more blue and blood moons at once.

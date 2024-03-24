@@ -2,7 +2,6 @@
 using StardewModdingAPI.Utilities;
 using StardewValley;
 using System;
-using System.Linq;
 using System.Reflection;
 using Microsoft.Xna.Framework;
 using StardewModdingAPI.Events;
@@ -10,7 +9,6 @@ using StardewValley.Locations;
 using TwilightShards.Stardew.Common;
 using DynamicNightTime.Integrations;
 using HarmonyLib;
-using xTile.ObjectModel;
 
 namespace DynamicNightTime
 {
@@ -31,22 +29,14 @@ namespace DynamicNightTime
         public static ILunarDisturbancesAPI MoonAPI;
         public static bool ClimatesLoaded;
         public static IClimatesOfFerngillAPI ClimatesAPI;
-        private bool resetOnWakeup;
-        private bool isNightOut;
-        private bool firstDaybreakTick;
-        private int daybreakTickCount;
         private IDynamicNightAPI API;
 
         /// <summary>The mod entry point, called after the mod is first loaded.</summary>
         /// <param name="helper">Provides simplified APIs for writing mods.</param>
         public override void Entry(IModHelper helper)
         {
-            isNightOut = false;
-            daybreakTickCount = 11;
-            firstDaybreakTick = false;
             Logger = Monitor;
             NightConfig = Helper.ReadConfig<DynamicNightConfig>();
-            resetOnWakeup = false;
 
             //sanity check lat
             if (NightConfig.Latitude > 64)
@@ -85,69 +75,15 @@ namespace DynamicNightTime
             harmony.Patch(UpdateGameClock, postfix: postfixClock);
 
             helper.Events.GameLoop.GameLaunched += OnGameLaunched;
-            helper.Events.GameLoop.DayStarted += OnDayStarted;
-            helper.Events.GameLoop.ReturnedToTitle += OnReturnedToTitle;
-            helper.Events.GameLoop.TimeChanged += OnTimeChanged;
-            helper.Events.GameLoop.UpdateTicking += OnUpdateTicking;
            
             Helper.ConsoleCommands.Add("debug_cycleinfo", "Outputs the cycle information", OutputInformation);
             Helper.ConsoleCommands.Add("debug_outdoorlight", "Outputs the outdoor light information", OutputLight);
             Helper.ConsoleCommands.Add("debug_printplayingsong", "Print Playing Song", PrintPlayingSong);
         }
-
-        private void OnUpdateTicking(object sender, UpdateTickingEventArgs e)
-        {
-            if (!Context.IsWorldReady)
-                return;
-
-            if (Game1.currentLocation is null)
-                return;
-
-            if (Game1.isDarkOut() && Game1.currentSong.Name.Contains(Game1.currentSeason) && !Game1.currentSong.Name.Contains("ambient"))
-            {
-                if (Game1.getMusicTrackName(Game1.MusicContext.Default).StartsWith(Game1.currentSeason) && !Game1.getMusicTrackName(Game1.MusicContext.Default).Contains("ambient") && (!Game1.eventUp && Game1.isDarkOut()))
-                    Game1.changeMusicTrack("none", true, Game1.MusicContext.Default);
-                if (Game1.currentLocation != null && Game1.currentLocation.IsOutdoors && !Game1.isRaining && (!Game1.eventUp &&
-                    Game1.getMusicTrackName(Game1.MusicContext.Default) != null && Game1.getMusicTrackName(Game1.MusicContext.Default).Contains("day")) && Game1.isDarkOut())
-                    Game1.changeMusicTrack("none", true, Game1.MusicContext.Default);
-                Game1.currentLocation.checkForMusic(Game1.currentGameTime);
-            }
-
-            if (Game1.timeOfDay > GetSunriseTime() && !firstDaybreakTick && daybreakTickCount > 0)
-                daybreakTickCount--;
-
-            if (Game1.timeOfDay > GetSunriseTime() && !firstDaybreakTick && daybreakTickCount == 0)
-            {
-                if (Game1.currentSong.Name.Contains(Game1.currentSeason) && !Game1.currentSong.Name.Contains("ambient") && Game1.currentSong.IsStopped)
-                {
-                    Game1.currentSong.Resume();
-                }
-
-                else
-                {
-                    //check base flags
-                    if (!Game1.isRaining || !Game1.isLightning || !Game1.eventUp)
-                    {
-                        //check locations
-                        if ((Game1.currentLocation.IsOutdoors && Game1.currentLocation is not Desert || Game1.currentLocation is FarmHouse || Game1.currentLocation is AnimalHouse || Game1.currentLocation is Shed))
-                        {
-                            //check game config
-                            if (Game1.options.musicVolumeLevel > 0.025 && Game1.timeOfDay < 1200)
-                            {
-                                if (!Game1.IsPlayingMorningSong)
-                                    Game1.IsPlayingMorningSong = true;
-                            }
-
-                        }
-                    }
-                }
-                firstDaybreakTick = true;
-            }
-        }
         
         private void PrintPlayingSong(string arg1, string[] arg2)
         {
-            Console.WriteLine($"Playing song is {Game1.currentSong.Name}, stopped? {Game1.currentSong.IsStopped} playing {Game1.currentSong.IsPlaying}");
+            Console.WriteLine($"Playing song is {Game1.currentSong.Name}, stopped? {Game1.currentSong.IsStopped} playing? {Game1.currentSong.IsPlaying}");
         }
 
         /// <summary>Get an API that other mods can access. This is always called after <see cref="M:StardewModdingAPI.Mod.Entry(StardewModdingAPI.IModHelper)" />.</summary>
@@ -156,97 +92,6 @@ namespace DynamicNightTime
             return API ??= new DynamicNightAPI();
         }
 
-        /// <summary>Raised after the in-game clock time changes.</summary>
-        /// <param name="sender">The event sender.</param>
-        /// <param name="e">The event arguments.</param>
-        private void OnTimeChanged(object sender, TimeChangedEventArgs e)
-        {
-            //handle the game being bad at night->day :|
-            if (Game1.timeOfDay < GetSunriseTime())
-            {
-                Game1.currentLocation.checkForMusic(Game1.currentGameTime);
-                Game1.currentLocation.switchOutNightTiles();
-                isNightOut = true;
-            }
-
-            if (Game1.timeOfDay >= GetSunriseTime() && isNightOut)
-            {
-                SwitchOutDayTiles(Game1.currentLocation);
-                if (Game1.currentSong.Name.Contains(Game1.currentSeason) && !Game1.currentSong.Name.Contains("ambient") && Game1.currentSong.IsStopped)
-                    Game1.currentSong.Resume();
-
-                else { 
-                    if (!Game1.eventUp && (Game1.currentLocation.IsOutdoors || Game1.currentLocation is FarmHouse || Game1.currentLocation is AnimalHouse
-                                           || Game1.currentLocation is Shed && Game1.options.musicVolumeLevel > 0.025 && Game1.timeOfDay < 1200) && (Game1.currentSong.Name.Contains("ambient") || Game1.currentSong.Name.Contains("none")) || Game1.currentSong.Name.Contains(Game1.currentSeason))
-                    {
-
-                        if (Game1.isRaining || Game1.isLightning || (Game1.eventUp || Game1.dayOfMonth <= 0) || Game1.currentLocation.Name.Equals("Desert"))
-                            return;
-                        Game1.IsPlayingMorningSong= true;
-                    }
-                }
-                Helper.Reflection.GetMethod(Game1.currentLocation, "_updateAmbientLighting").Invoke();
-                Game1.currentLocation.map.Properties.TryGetValue("Light", out PropertyValue propertyValue2);
-                if (propertyValue2 != null && !Game1.currentLocation.ignoreLights.Value)
-                {
-                    string[] strArray = propertyValue2.ToString().Split(' ');
-                    for (int index = 0; index < strArray.Length; index += 3)
-                        Game1.currentLightSources.Add(new LightSource(Convert.ToInt32(strArray[index + 2]), new Vector2(Convert.ToInt32(strArray[index]) * 64 + 32, Convert.ToInt32(strArray[index + 1]) * 64 + 32), 1f, LightSource.LightContext.MapLight, 0L));                      
-                }
-                isNightOut = false;
-            }
-        }
-
-        private static void SwitchOutDayTiles(GameLocation loc)
-        {
-            try
-            {
-                if (Game1.timeOfDay < 1900 && (!Game1.isRaining || loc.Name.Equals((object)"SandyHouse")))
-                {
-                    loc.map.Properties.TryGetValue("DayTiles", out PropertyValue propertyValue3);
-                    if (propertyValue3 != null)
-                    {
-                        string[] strArray = propertyValue3.ToString().Trim().Split(' ');
-                        for (int index = 0; index < strArray.Length; index += 4)
-                        {
-                            if ((!strArray[index + 3].Equals("720") || !Game1.MasterPlayer.mailReceived.Contains("pamHouseUpgrade")) && loc.map.GetLayer(strArray[index]).Tiles[Convert.ToInt32(strArray[index + 1]), Convert.ToInt32(strArray[index + 2])] != null)
-                                loc.map.GetLayer(strArray[index]).Tiles[Convert.ToInt32(strArray[index + 1]), Convert.ToInt32(strArray[index + 2])].TileIndex = Convert.ToInt32(strArray[index + 3]);
-                        }
-                    }
-                }
-            }
-            catch (Exception)
-            {
-            }
-            if (loc is MineShaft ||loc is Woods)
-                return;
-            loc.addLightGlows();
-        }
-
-        /// <summary>Raised after the game returns to the title screen.</summary>
-        /// <param name="sender">The event sender.</param>
-        /// <param name="e">The event arguments.</param>
-        private void OnReturnedToTitle(object sender, ReturnedToTitleEventArgs e)
-        {
-            resetOnWakeup = false;
-        }
-
-        /// <summary>Raised after the game begins a new day (including when the player loads a save).</summary>
-        /// <param name="sender">The event sender.</param>
-        /// <param name="e">The event arguments.</param>
-        private void OnDayStarted(object sender, DayStartedEventArgs e)
-        {
-            if (Game1.isDarkOut() && !Game1.currentLocation.IsOutdoors && Game1.currentLocation is DecoratableLocation loc && !resetOnWakeup)
-            {
-                //we need to handle the spouse's room
-                if (loc is FarmHouse)
-                {
-                    if (Game1.timeOfDay < GetSunriseTime())
-                        Game1.currentLocation.switchOutNightTiles();
-                }
-            }
-            resetOnWakeup = false;
-        }
 
         /// <summary>Raised after the game is launched, right before the first update tick. This happens once per game session (unrelated to loading saves). All mods are loaded and initialised at this point, so this is a good time to set up mod integrations.</summary>
         /// <param name="sender">The event sender.</param>

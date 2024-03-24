@@ -10,14 +10,14 @@ namespace HappyFishJump
         public Vector2 startPosition;
         public Vector2 endPosition;
         protected float _age;
-        public StardewValley.Object _fishObject;
+        public Item _fishObject;
         protected bool _flipped;
         public Vector2 position;
         public float jumpHeight;
         public float angularVelocity;
         public float angle;
 
-        public JumpFish(StardewValley.Object fish, Vector2 start_position, Vector2 end_position)
+        public JumpFish(Item fish, Vector2 start_position, Vector2 end_position)
         {
             this.angularVelocity = (float)((double)Utility.RandomFloat(20f, 40f, (Random)null) * 3.14159274101257 / 180.0);
             this.startPosition = start_position;
@@ -35,14 +35,11 @@ namespace HappyFishJump
             if (HappyFishJump.ModConfig.SplashSound)
                 Game1.playSound("dropItemInWater");
 
-            if (!(Game1.currentLocation is null))
-            {
-                Game1.currentLocation.TemporarySprites.Add(new TemporaryAnimatedSprite(28, 100f, 2, 1, this.position + new Vector2(-0.5f, -0.5f) * 64f, false, false)
+            Game1.currentLocation?.TemporarySprites.Add(new TemporaryAnimatedSprite(28, 100f, 2, 1, this.position + new Vector2(-0.5f, -0.5f) * 64f, false, false)
                 {
                     delayBeforeAnimationStart = 0,
                     layerDepth = this.startPosition.Y / 10000f
                 });
-            }
         }
 
         public bool Update(float time)
@@ -71,7 +68,7 @@ namespace HappyFishJump
             }
             float num = 1f;
             Vector2 globalPosition = this.position + new Vector2(0.0f, (float)Math.Sin((double)this._age / (double)this.jumpTime * Math.PI) * -this.jumpHeight);
-            Vector2 origin = new Vector2(8f, 8f);
+            Vector2 origin = new(8f, 8f);
             b.Draw(Game1.objectSpriteSheet, Game1.GlobalToLocal(Game1.viewport, globalPosition), new Rectangle?(Game1.getSourceRectForStandardTileSheet(Game1.objectSpriteSheet, this._fishObject.ParentSheetIndex, 16, 16)), Color.White, angle, origin, 4f * num, effects, 1f);
             b.Draw(Game1.shadowTexture, Game1.GlobalToLocal(Game1.viewport, this.position), new Rectangle?(Game1.shadowTexture.Bounds), Color.White * 0.5f, 0.0f, new Vector2((float)(Game1.shadowTexture.Bounds.Width / 2), (float)(Game1.shadowTexture.Bounds.Height / 2)), 2f, effects, 1f);
         }

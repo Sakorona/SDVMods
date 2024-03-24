@@ -1,10 +1,22 @@
-﻿{
+{
+  /*
+   | This file is automatically updated by ModManifestBuilder
+   | when the project is compiled.
+   | 
+   | Changes made to this file may be overwritten.
+   | 
+   */
+  "$schema": "https://smapi.io/schemas/manifest.json",
+  "UniqueID": "KoihimeNakamura.HappyFishJump",
   "Name": "Happy Fish Jump",
   "Author": "Sakorona",
-  "Version": "1.1.16",
+  "Version": "1.1.19",
   "Description": "Fish will periodically jump while you're around the farm, and across the valley.",
-  "UniqueID": "KoihimeNakamura.HappyFishJump",
+  "MinimumApiVersion": "4.0",
   "EntryDll": "HappyFishJump.dll",
-  "MinimumApiVersion": "3.4.0",
-  "UpdateKeys": [ "Nexus:6516" ]
-} 
+  "UpdateKeys": [
+    "Nexus:6514",
+    "\"Nexus:6514\"",
+    "Nexus:6516"
+  ]
+}

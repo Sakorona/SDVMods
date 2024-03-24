@@ -1,4 +1,14 @@
-﻿#Ver 1.1.17
+﻿#Ver 1.1.20
+- Expanded the no jump list for a lot of stone nodes.
+
+#Ver 1.1.19
+- Seaweed now properly only jumps very rarely.
+
+#Ver 1.1.18
+- fixed debug message making it in
+- didn't properly respect multiple fish spawn.
+
+#Ver 1.1.17
 - Updated for SMAPI 4.0/SDV 1.6
 
 #Ver 1.1.16

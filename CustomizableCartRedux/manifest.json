@@ -1,10 +1,20 @@
-﻿{
-  "Name": "Customizable Cart Redux",
+{
+  /*
+   | This file is automatically updated by ModManifestBuilder
+   | when the project is compiled.
+   | 
+   | Changes made to this file may be overwritten.
+   | 
+   */
+  "$schema": "https://smapi.io/schemas/manifest.json",
+  "UniqueID": "KoihimeNakamura.ACH",
+  "Name": "Adjustable Cart Hours (former Customizable Cart Redux)",
   "Author": "Sakorona",
   "Version": "1.4.5-beta.1",
   "Description": "Allows you to alter the chances of the traveling cart appearing. Credit to Yyeahdude for the original idea.",
-  "UniqueID": "KoihimeNakamura.CCR",
-  "EntryDll": "CustomizableCartRedux.dll",
   "MinimumApiVersion": "3.0.0",
-  "UpdateKeys": [ "Nexus:1402", "Moddrop:664037" ]
+  "EntryDll": "AdjustableCartHours.dll",
+  "UpdateKeys": [
+    "Nexus:1402"
+  ]
 }

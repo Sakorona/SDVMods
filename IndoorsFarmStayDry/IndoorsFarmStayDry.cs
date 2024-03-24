@@ -36,7 +36,7 @@ namespace IndoorsFarmStayDry
                         if (o.Value.ParentSheetIndex == 621 || o.Value.ParentSheetIndex == 599 ||
                             o.Value.ParentSheetIndex == 645 || o.Value.ParentSheetIndex == 1113)
                         {
-                            o.Value.DayUpdate(l);
+                            o.Value.DayUpdate();
                         }
                     }
                 }

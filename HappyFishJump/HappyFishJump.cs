@@ -5,8 +5,11 @@ using StardewValley;
 using StardewValley.Buildings;
 using HarmonyLib;
 using Microsoft.Xna.Framework;
-using TwilightShards.Stardew.Common;
 using System.Linq;
+using StardewValley.GameData.Locations;
+using System;
+using StardewValley.Audio;
+using StardewValley.Tools;
 
 namespace HappyFishJump
 {
@@ -14,22 +17,22 @@ namespace HappyFishJump
     {
         public float JumpChance = .30f;
         public bool SplashSound = true;
-        public int NumberOfJumpingFish = 18;
-        public bool LegendariesJumpAfterCatch = true;
-        public float LegendaryJumpChance = .18f;
-        public bool LimitToCatchable = true;
+        public int NumberOfJumpingFish = 18;     
     }
 
     public class HappyFishJump : Mod
     {
         internal static FishConfig ModConfig;
         private List<JumpFish> _jumpingFish;
-        private Dictionary<Vector2, int> _validFishLocations;
+        private Dictionary<Vector2, string> _validFishLocations;
+        internal IMonitor Logger;
+        internal bool debug = false;
 
         public override void Entry(IModHelper helper)
         {
             _jumpingFish = new List<JumpFish>();
-            _validFishLocations = new Dictionary<Vector2, int>();
+            _validFishLocations = new Dictionary<Vector2, string>();
+            Logger = Monitor;
 
             var harmony = new Harmony("koihimenakamura.happyfishjump");
             harmony.PatchAll();
@@ -87,33 +90,27 @@ namespace HappyFishJump
             var GMCMapi = Helper.ModRegistry.GetApi<IGMCMApi>("spacechase0.GenericModConfigMenu");
             if (GMCMapi != null)
             {
-                GMCMapi.RegisterModConfig(ModManifest, () => ModConfig = new FishConfig(), () => Helper.WriteConfig(ModConfig));
-                GMCMapi.RegisterSimpleOption(ModManifest,"Splash Sound","Disable to stop the splash sound on jump", () => ModConfig.SplashSound, (bool val) => ModConfig.SplashSound = val);
-                GMCMapi.RegisterSimpleOption(ModManifest, "Legendaries Jump After Catch", "If enabled, legendaries will jump after you catch them.", () => ModConfig.LegendariesJumpAfterCatch, (bool val) => ModConfig.LegendariesJumpAfterCatch = val);
-                GMCMapi.RegisterClampedOption(ModManifest,"Jumping Fish","The number of jumping fish. Minimum 2. Note that large numbers may lag a computer.", () => ModConfig.NumberOfJumpingFish, (int val) => ModConfig.NumberOfJumpingFish = val,2,1000);
-                GMCMapi.RegisterSimpleOption(ModManifest,"Jump Chance","Controls the jump chance per pond every 10 minutes.", () => ModConfig.JumpChance,
-                    (float val) => ModConfig.JumpChance = val);
-                GMCMapi.RegisterSimpleOption(ModManifest, "Limit to Catchable Fish","Only fish that can be caught at this time will jump",() => ModConfig.LimitToCatchable, (bool val) => ModConfig.LimitToCatchable = val);
+                GMCMapi.Register(ModManifest, () => ModConfig = new FishConfig(), () => Helper.WriteConfig(ModConfig));
+                GMCMapi.AddBoolOption(ModManifest, () => ModConfig.SplashSound, (bool val) => ModConfig.SplashSound = val, () => "Splash Sound", () => "Disable to stop the splash sound on jump" );
+                GMCMapi.AddNumberOption(ModManifest,() => ModConfig.NumberOfJumpingFish, (int val) => ModConfig.NumberOfJumpingFish = val,() => "Jumping Fish", () => "The number of jumping fish. Minimum 2. Note that large numbers may lag a computer.", min:2, max:1000);
+                GMCMapi.AddNumberOption(ModManifest,() => ModConfig.JumpChance, (float val) => ModConfig.JumpChance = val, () => "Jump Chance", () => "Controls the jump chance per pond every 10 minutes.");
             }
         }
 
-#pragma warning disable IDE0060 // Remove unused parameter - it's not unused, for one thing. :V
-        public static void PlaySound(string cueName)
-#pragma warning restore IDE0060 // Remove unused parameter
+        public static bool PlaySound(string cueName, int? pitch=null)
         {
             if (ModConfig.SplashSound)
             {
-                Game1.playSound("dropItemInWater");
+                return Game1.sounds.PlayLocal(cueName, null, null, pitch, SoundContext.Default, out ICue cue);
             }
+            return false;
         }
-
-        
 
         private void GameLoop_TimeChanged(object sender, StardewModdingAPI.Events.TimeChangedEventArgs e)
         {
-            if (Game1.currentLocation != null && Game1.currentLocation is Farm f)
+            if (Game1.currentLocation is GameLocation Loc)
             {
-                foreach (var v in f.buildings)
+                foreach (var v in Loc.buildings)
                 {
                     if (v is FishPond fp)
                     {
@@ -129,91 +126,22 @@ namespace HappyFishJump
 
             if (Game1.currentLocation != null && Game1.currentLocation.IsOutdoors && _validFishLocations.Count >= ModConfig.NumberOfJumpingFish)
             {
-                //get fish
-                Dictionary<int, int> fishLocation = SDVUtilities.GetFishListing(Game1.currentLocation, Game1.timeOfDay,  ModConfig.LimitToCatchable);
-
-                if (fishLocation.Keys.Count <= 0)
-                    return;
-
-                //legendaries!
-                List<string> legendaryFishAdded = new();
-                if (ModConfig.LegendariesJumpAfterCatch) {
-                    switch (Game1.currentLocation.Name)
-                    {
-                        case "ExteriorMuseum":
-                            foreach(var v in Game1.objectInformation)
-                            {
-                                    if (v.Value.Split('/')[0] == "Pufferchick" && Game1.player.fishCaught.ContainsKey(v.Key))
-                                    {
-                                        legendaryFishAdded.Add(v.Key);
-                                        fishLocation.Add(v.Key, -1);
-                                    }
-                            }
-                            break;
-                        case "Mountain":
-                            if (Game1.currentSeason == "spring" && Game1.player.fishCaught.ContainsKey(163))
-                            {
-                                legendaryFishAdded.Add(163);
-                                fishLocation.Add(163, -1);
-                            }
-                            break;
-                        case "Beach":
-                            if (Game1.currentSeason == "summer" && Game1.player.fishCaught.ContainsKey(159))
-                            {
-                                legendaryFishAdded.Add(159);
-                                fishLocation.Add(159, -1);
-                            }
-                            break;
-                        case "Forest":
-                            if (Game1.currentSeason == "winter" && Game1.player.fishCaught.ContainsKey(775))
-                            {
-                                legendaryFishAdded.Add(775);
-                                fishLocation.Add(775, 0);
-                            }
-                            break;
-                        case "Town":
-                            if (Game1.currentSeason == "fall" && Game1.player.fishCaught.ContainsKey(160))
-                                fishLocation.Add(160, -1);
-                            break;
-                        case "Sewer":
-                            if (Game1.player.fishCaught.ContainsKey(682))
-                                fishLocation.Add(682, - 1);
-                            break;
-                    }
-                }
-
-                int[] fishIDs = fishLocation.Keys.ToArray();
                 Vector2[] validLocs = _validFishLocations.Keys.ToArray();
 
                 for (int i = 0; i < ModConfig.NumberOfJumpingFish; i++)
                 {
-                    if (Game1.random.NextDouble() > ModConfig.JumpChance)
-                        continue;
-
-                    int rndFish = Game1.random.Next(0, fishIDs.Length - 1);
-
-                    if (legendaryFishAdded.Contains(rndFish) && Game1.random.NextDouble() < ModConfig.LegendaryJumpChance)
-                    {
-                        int loopCheck = 0;
-                        do
-                        {
-                            rndFish = Game1.random.Next(0, fishIDs.Length - 1);
-                            i++;
-                            loopCheck++;
-                        } while (legendaryFishAdded.Contains(rndFish) && loopCheck < 12000);
-                    }
-
                     int rndLoc = Game1.random.Next(0, validLocs.Length - 1);
-                    if (fishLocation[fishIDs[rndFish]] == -1 ||
-                        fishLocation[fishIDs[rndFish]] == _validFishLocations[validLocs[rndLoc]] && rndFish != 0)
-                    {
-                        StardewValley.Object fish = new(fishIDs[rndFish],1, false, -1, 0);
-                        var startPosition = validLocs[rndLoc];
-                        var endPosition = new Vector2(startPosition.X + 1.5f, startPosition.Y + 1.5f);
-                        if (ValidFishForJumping(fish.ParentSheetIndex))
-                            this._jumpingFish.Add(new JumpFish(fish, startPosition * Game1.tileSize,
-                                endPosition * Game1.tileSize));
-                    }
+                    var startPosition = validLocs[rndLoc];
+                    Vector2 endPosition = new(startPosition.X + 1.5f, startPosition.Y + 1.5f);
+
+                    var clearWaterDistance = FishingRod.distanceToLand((int)(startPosition.X / 64f), (int)(startPosition.Y / 64f), Game1.currentLocation);
+                    var randFish = StardewValley.GameLocation.GetFishFromLocationData(Game1.currentLocation.Name, startPosition, clearWaterDistance, Game1.player, false, false);
+
+                    if (this.debug)
+                        this.Monitor.Log($"Log ID: {randFish.QualifiedItemId}, Display Name: {randFish.DisplayName}");
+
+                    if (ValidFishForJumping(randFish.QualifiedItemId))
+                        this._jumpingFish.Add(new JumpFish(randFish, startPosition * Game1.tileSize, endPosition * Game1.tileSize));
                 }
             }
         }
@@ -224,36 +152,48 @@ namespace HappyFishJump
             if (Game1.currentLocation.waterTiles is null)
                 return;
 
+            //iterate through array
             for (int j = 0; j < Game1.currentLocation.map.Layers[0].LayerWidth; j++)
             {
                 for (int k = 0; k < Game1.currentLocation.map.Layers[0].LayerHeight; k++)
                 {
-                    if (Game1.currentLocation.waterTiles[j, k])
+                    if (Game1.currentLocation.waterTiles.waterTiles[j,k].isWater)
                     {
                         if ((j + 2) >= Game1.currentLocation.map.Layers[0].LayerWidth ||
                             (k + 2) >= Game1.currentLocation.map.Layers[0].LayerHeight)
                             continue;
 
-                        if (Game1.currentLocation.waterTiles[j + 2, k + 2])
+                        if (Game1.currentLocation.waterTiles.waterTiles[j+2, k+2].isWater)
                         {
                             Vector2 pos = new(j, k);
-                            _validFishLocations.Add(pos, Game1.currentLocation.getFishingLocation(pos));
+                            bool validArea = Game1.currentLocation.TryGetFishAreaForTile(pos, out string fishID, out FishAreaData data);
+
+                            if (validArea)  _validFishLocations.Add(pos, data?.DisplayName);
                         }
                     }
                 }
             }
         }
-        
-        private static bool ValidFishForJumping(int index)
+
+        private bool ValidFishForJumping(string index)
         {
+            List<string> invalidFishJump = new() {"(O)172", "(O)153", "(O)169", "(O)170", "(O)167", "(O)168", "(O)158", "(O)171", "(O)152", 
+                "(O)2","(O)4","(O)6","(O)8","(O)10","(O)12","(O)14"};
+
+            if (this.debug)
+                Logger.Log($"Checking index {index}");
+
             if (Game1.random.NextDouble() < .00001)
+            {
+                Logger.Log("Random Jump Detected");
                 return true;
+            }
             else
-                return index switch
-                {
-                    372 or 718 or 719 or 721 or 152 or 153 or 157 or 723 => false,
-                    _ => true,
-                };
+            { 
+                if (index.StartsWith("(F)")) return false;
+                return !invalidFishJump.Contains(index);
+                
+            }
         }
     }
 }

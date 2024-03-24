@@ -1,0 +1,29 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <AssemblyName>LocalRadioBroadcast</AssemblyName>
+    <RootNamespace>LocalRadioBroadcast</RootNamespace>
+    <Version>1.0.0</Version>
+    <TargetFramework>net6.0</TargetFramework>
+    <EnableHarmony>true</EnableHarmony>
+    <Authors>Sakorona</Authors>
+    <UniqueId>KoihimeNakamura.LocalRadioBroadcast</UniqueId>
+    <Description>Thematic radio broadcasting on the press of a key.</Description>
+    <UpdateKeys></UpdateKeys>
+    <MinimumApiVersion>4.0</MinimumApiVersion>
+    <MinimumApiVersion_Behavior>Update</MinimumApiVersion_Behavior>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Leclair.Stardew.ModManifestBuilder" Version="2.1.0" />
+    <PackageReference Include="Pathoschild.Stardew.ModBuildConfig" Version="4.1.1" />
+    <PackageReference Include="XoshiroPRNG.Net" Version="1.6.0" />
+  </ItemGroup>
+
+
+  <Import Project="$(SolutionDir)\deploy-mod.targets" />
+
+</Project>
+
+
+

@@ -1,5 +1,11 @@
 ## Changelog
 
+### 1.4.6
+- Updated for SDV 1.6/SMAPI 4.0
+- Mod renamed to Adjustable Cart Hours
+- CCR no longer alters shop inventory, please see https://stardewvalleywiki.com/Modding:Shops
+- This is done to allow for maxmimum compatibility, and also because I don't have a lot of time to maintain a content patcher mod.
+
 ### 1.4.5
 - Patch for issue with items disappearing between repeats
 

@@ -1,5 +1,21 @@
-﻿1.8.11
+﻿1.8.15
+- TV channel notification properly controls queen of sauce and displays rerun notifs.
+- 1.6 notification added for new thing.
+
+1.8.14
+- bug fix for traveling cart
+- removed icon from notifications when it wasn't needed
+
+1.8.13
+- bug fix for 1.6 notification
+- *enabled* the toggle for display farm output
+- cleaned up some old debug messages
+
+1.8.12
 - updated for SDV 1.6/SMAPI 4.0
+- uses built in message generators for items to lessen the load
+- fixes toolName using the wrong name
+- Updated for new 1.6 notification in town
 
 1.8.10
 - festival weather now displays a better message for festivals next day

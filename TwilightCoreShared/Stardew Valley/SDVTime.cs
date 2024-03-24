@@ -17,7 +17,7 @@ namespace TwilightShards.Stardew.Common
 
     public class SDVTime
     {
-        public static bool IsNight => Game1.isDarkOut();
+        public static bool IsNight => Game1.isDarkOut(Game1.currentLocation);
         
         public static SDVTimePeriods CurrentTimePeriod => CurrentTime.TimePeriod;
 
@@ -32,16 +32,16 @@ namespace TwilightShards.Stardew.Common
                 if (this.ReturnIntTime() == 1200) { 
                     return SDVTimePeriods.Noon;
                 }
-                if (this.ReturnIntTime() > 1200 && this.ReturnIntTime() < Game1.getStartingToGetDarkTime())
+                if (this.ReturnIntTime() > 1200 && this.ReturnIntTime() < Game1.getStartingToGetDarkTime(Game1.currentLocation))
                 {
                     return SDVTimePeriods.Afternoon;
                 }
-                if (this.ReturnIntTime() >= Game1.getStartingToGetDarkTime() &&
-                    this.ReturnIntTime() < (Game1.getTrulyDarkTime() + 30))
+                if (this.ReturnIntTime() >= Game1.getStartingToGetDarkTime(Game1.currentLocation) &&
+                    this.ReturnIntTime() < (Game1.getTrulyDarkTime(Game1.currentLocation) + 30))
                 {
                     return SDVTimePeriods.Evening;
                 }
-                if (this.ReturnIntTime() >= (Game1.getTrulyDarkTime() + 30) &&
+                if (this.ReturnIntTime() >= (Game1.getTrulyDarkTime(Game1.currentLocation) + 30) &&
                     this.ReturnIntTime() < 2300)
                 {
                     return SDVTimePeriods.Night;
@@ -57,7 +57,7 @@ namespace TwilightShards.Stardew.Common
             }
         } 
 
-        public static SDVTime CurrentTime => new SDVTime(Game1.timeOfDay);
+        public static SDVTime CurrentTime => new(Game1.timeOfDay);
         public static int CurrentIntTime => new SDVTime(Game1.timeOfDay).ReturnIntTime();
 
         private const int MAXHOUR = 28;
@@ -103,14 +103,14 @@ namespace TwilightShards.Stardew.Common
         {
             hour = h;
             if (hour > MAXHOUR)
-                throw new ArgumentOutOfRangeException($"Invalid Time passed to the constructor. Hour value more than {MAXHOUR}");
+                throw new ArgumentOutOfRangeException(nameof(h), $"Invalid Time passed to the constructor. Hour value more than {MAXHOUR}");
             if (hour < 0)
-                throw new ArgumentOutOfRangeException("Invalid Time passed to the constructor. Hour value less than 0.");
+                throw new ArgumentOutOfRangeException(nameof(h), "Invalid Time passed to the constructor. Hour value less than 0.");
 
             minute = m;
 
             if (m >= MINPERHR)
-                throw new ArgumentOutOfRangeException("There are only 60 minutes in an hour.");
+                throw new ArgumentOutOfRangeException(nameof(m),"There are only 60 minutes in an hour.");
         }
 
         public static int ConvertTimeToMinutes(int intTime)
@@ -231,7 +231,7 @@ namespace TwilightShards.Stardew.Common
 
         public static int AddTimeToIntTime(int s1, int s2)
         {
-            SDVTime sTime = new SDVTime(s1);
+            SDVTime sTime = new(s1);
             sTime.AddTime(s2);
             return sTime.ReturnIntTime();
         }
@@ -239,14 +239,14 @@ namespace TwilightShards.Stardew.Common
         //operator functions
         public static SDVTime operator +(SDVTime s1, SDVTime s2)
         {
-            SDVTime ret = new SDVTime(s1);
+            SDVTime ret = new(s1);
             ret.AddTime(s2);
             return ret;
         }
 
         public static SDVTime operator -(SDVTime s1, SDVTime s2)
         {
-            SDVTime ret = new SDVTime(s1);
+            SDVTime ret = new(s1);
             ret.hour -= s2.hour;
             ret.minute -= s2.minute;
 
@@ -271,14 +271,14 @@ namespace TwilightShards.Stardew.Common
 
         public static SDVTime operator -(SDVTime s1, int time)
         {
-            SDVTime ret = new SDVTime(s1);
+            SDVTime ret = new(s1);
             ret.AddTime(time * -1);
             return ret;
         }
 
         public static SDVTime operator +(SDVTime s1, int time)
         {
-            SDVTime ret = new SDVTime(s1);
+            SDVTime ret = new(s1);
             ret.AddTime(time);
             return ret;
         }
@@ -435,10 +435,7 @@ namespace TwilightShards.Stardew.Common
 
         public override int GetHashCode()
         {
-            var hashCode = -1190848304;
-            hashCode = hashCode * -1521134295 + hour.GetHashCode();
-            hashCode = hashCode * -1521134295 + minute.GetHashCode();
-            return hashCode;
+            return HashCode.Combine(hour, minute);
         }
     }
 }

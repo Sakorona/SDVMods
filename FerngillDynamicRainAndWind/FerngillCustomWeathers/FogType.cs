@@ -11,6 +11,7 @@
         None = 0,
         Normal = 1,
         Blinding = 2,
-        Light = 3
+        Light = 3,
+        SilentHill= 4
     }
 }

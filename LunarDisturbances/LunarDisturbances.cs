@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using StardewModdingAPI;
-using TwilightShards.Common;
 using StardewValley;
 using StardewValley.Menus;
 using StardewModdingAPI.Events;
@@ -10,27 +9,37 @@ using Microsoft.Xna.Framework.Graphics;
 using StardewModdingAPI.Utilities;
 using StardewValley.Objects;
 using StardewValley.Locations;
+using Xoshiro.PRNG64;
 using SpaceCore.Events;
 using StardewValley.Monsters;
 using TwilightShards.Stardew.Common;
 using TwilightShards.LunarDisturbances.Integrations;
 using StardewValley.Events;
 using Netcode;
+using System.IO;
 
 namespace TwilightShards.LunarDisturbances
 {
-    public class LunarDisturbances : Mod, IAssetEditor
+    /// <summary>Sprites used to draw a letter.</summary>
+    public static class Letter
+    {
+        /// <summary>The sprite sheet containing the letter sprites.</summary>
+        public static Texture2D Sheet => Game1.content.Load<Texture2D>("LooseSprites\\letterBG");
+
+        /// <summary>The letter background (including edges and corners).</summary>
+        public static readonly Rectangle Sprite = new(0, 0, 320, 180);
+    }
+
+    public class LunarDisturbances : Mod
     {
         internal static SDVMoon OurMoon;
         private Random Dice;
-        internal static IContentHelper ContentManager;
         internal static ITranslationHelper Translation;
         private MoonConfig ModConfig;
         private HUDMessage queuedMsg;
-        public static Sprites.Icons OurIcons { get; set; }
         private List<string> BloodMoonTracker;
         private bool UseJsonAssetsApi = false;
-        private Color nightColor = new Color((int)byte.MaxValue, (int)byte.MaxValue, 0);
+        private Color nightColor = new(byte.MaxValue, byte.MaxValue, 0);
         private Integrations.IJsonAssetsApi JAAPi;
         internal int ResetTicker { get; set; }
         private int SecondCount;
@@ -38,42 +47,18 @@ namespace TwilightShards.LunarDisturbances
         internal static IMultiplayerHelper MPHandler;
         private ILunarDisturbancesAPI API;
 
-        public bool CanEdit<T>(IAssetInfo asset)
-        {
-            if (asset.AssetNameEquals("LooseSprites/Cursors"))
-            {
-                return true;
-            }
-
-            return false;
-        }
-
-        public void Edit<T>(IAssetData asset)
-        {
-            Texture2D customTexture = this.Helper.Content.Load<Texture2D>("assets/BlankPixel.png", ContentSource.ModFolder);
-            Texture2D bloodMoonTexture = this.Helper.Content.Load<Texture2D>("assets/DaytimeBloodMoon.png", ContentSource.ModFolder);
-
-            asset
-                .AsImage()
-                .PatchImage(customTexture, targetArea: new Rectangle(643, 833, 41, 45));
-            
-            if (OurMoon.CurrentPhase() == MoonPhase.BloodMoon)
-            {
-                asset.AsImage().PatchImage(bloodMoonTexture, targetArea: new Rectangle(342,440,7,7));
-            }
-        }
+        internal static Texture2D source2 = Game1.mouseCursors2;
+        private static Texture2D moonSource;
 
         /// <summary>The mod entry point, called after the mod is first loaded.</summary>
         /// <param name="helper">Provides simplified APIs for writing mods.</param>
         public override void Entry(IModHelper helper)
         {
-            Dice = new Xoshiro.PRNG64.XoShiRo256starstar();
+            Dice = new XoShiRo256starstar();
             Translation = Helper.Translation;
-            ModConfig = Helper.ReadConfig<MoonConfig>();          
+            ModConfig = Helper.ReadConfig<MoonConfig>();
             OurMoon = new SDVMoon(ModConfig, Dice, Helper.Translation, Monitor);
-            ContentManager = Helper.Content;
             MPHandler = Helper.Multiplayer;
-            OurIcons = new Sprites.Icons(Helper.Content);
             queuedMsg = null;
             BloodMoonTracker = new List<string>();
 
@@ -90,19 +75,27 @@ namespace TwilightShards.LunarDisturbances
             helper.Events.Player.Warped += OnWarped;
             helper.Events.GameLoop.ReturnedToTitle += OnReturnedToTitle;
             helper.Events.Multiplayer.ModMessageReceived += OnModMessageRecieved;
+            // helper.Events.Content.AssetRequested += OnAssetRequested;
+
+            //load sprites
+            MoonSource = helper.ModContent.Load<Texture2D>(Path.Combine("assets", "MoonPhases.png"));
 
             SpaceEvents.ChooseNightlyFarmEvent += SpaceEvents_ChooseNightlyFarmEvent;
 
             helper.ConsoleCommands.Add("force_bloodmoon", "Forces a bloodmoon", ForceBloodMoon)
                                   .Add("force_bloodmoonoff", "Turns bloodmoon off.", TurnBloodMoonOff)
                                   .Add("show_mooninfo", "Show moon info", ShowMoonInfo)
-								  .Add("force_eclipseOn", "Turns eclipse on.", OurMoon.TurnEclipseOn);
+                                  .Add("force_eclipseOn", "Turns eclipse on.", OurMoon.TurnEclipseOn);
         }
 
+        //private void OnAssetRequested(object sender, AssetRequestedEventArgs e)
+        //{
+        //    throw new NotImplementedException();
+        //}
 
         private void ShowMoonInfo(string arg1, string[] arg2)
         {
-            Monitor.Log($"Moon phase according to end of night: {OurMoon.GetLunarPhaseForDay(SDate.Now())}, with coords: { Sprites.Icons.GetNightMoonSprite(OurMoon.GetLunarPhaseForDay(SDate.Now()))}. According to normal phrasing: Phase is {OurMoon.DescribeMoonPhase()}, with rise {OurMoon.GetMoonRiseTime()} and set {OurMoon.GetMoonSetTime()}", LogLevel.Info);
+            Monitor.Log($"Moon phase according to end of night: {OurMoon.GetLunarPhaseForDay(SDate.Now())}, with coords: {GetNightMoonSprite(OurMoon.GetLunarPhaseForDay(SDate.Now()))}. According to normal phrasing: Phase is {OurMoon.DescribeMoonPhase()}, with rise {OurMoon.GetMoonRiseTime()} and set {OurMoon.GetMoonSetTime()}", LogLevel.Info);
         }
 
         private void SpaceEvents_ChooseNightlyFarmEvent(object sender, EventArgsChooseNightlyFarmEvent e)
@@ -132,8 +125,7 @@ namespace TwilightShards.LunarDisturbances
             {
                 OurMoon.MoonTracker = Helper.Data.ReadSaveData<LunarInfo>("moon-tracker");
 
-                if (OurMoon.MoonTracker is null)
-                    OurMoon.MoonTracker = new LunarInfo();
+                OurMoon.MoonTracker ??= new LunarInfo();
             }
         }
 
@@ -166,12 +158,12 @@ namespace TwilightShards.LunarDisturbances
                 if (OurMoon.CurrentPhase() == MoonPhase.NewMoon)
                     queuedMsg = new TCHUDMessage(Helper.Translation.Get("moon-text.newmoon_eff", new { cropsAffected = cropCount }), OurMoon.CurrentPhase());
                 if (OurMoon.CurrentPhase() == MoonPhase.FullMoon)
-                    queuedMsg = new TCHUDMessage(Helper.Translation.Get("moon-text.fullmoon_eff", new { cropsAffected = cropCount }),OurMoon.CurrentPhase());
+                    queuedMsg = new TCHUDMessage(Helper.Translation.Get("moon-text.fullmoon_eff", new { cropsAffected = cropCount }), OurMoon.CurrentPhase());
             }
 
             OurMoon.DayEnding();
         }
-        
+
         private void TurnBloodMoonOff(string arg1, string[] arg2)
         {
             Monitor.Log("Turning the blood moon off!");
@@ -187,7 +179,7 @@ namespace TwilightShards.LunarDisturbances
         /// <summary>Get an API that other mods can access. This is always called after <see cref="M:StardewModdingAPI.Mod.Entry(StardewModdingAPI.IModHelper)" />.</summary>
         public override object GetApi()
         {
-            return API ?? (API = new LunarDisturbancesAPI(OurMoon));
+            return API ??= new LunarDisturbancesAPI(OurMoon);
         }
 
         /// <summary>Raised once per second after the game state is updated.</summary>
@@ -199,7 +191,7 @@ namespace TwilightShards.LunarDisturbances
             {
                 if (Game1.game1.IsActive)
                     SecondCount++;
-                
+
                 if (SecondCount == 10)
                 {
                     SecondCount = 0;
@@ -231,7 +223,6 @@ namespace TwilightShards.LunarDisturbances
         {
             if (OurMoon.IsEclipse && ResetTicker > 0)
             {
-                Game1.globalOutdoorLighting = .5f;
                 Game1.ambientLight = nightColor;
                 Game1.currentLocation.switchOutNightTiles();
                 ResetTicker = 0;
@@ -246,8 +237,7 @@ namespace TwilightShards.LunarDisturbances
             if (!Context.IsMainPlayer)
                 return;
 
-            if (OurMoon.MoonTracker is null)
-                OurMoon.MoonTracker = new LunarInfo();
+            OurMoon.MoonTracker ??= new LunarInfo();
 
             this.Helper.Data.WriteSaveData("moon-tracker", OurMoon.MoonTracker);
 
@@ -256,12 +246,12 @@ namespace TwilightShards.LunarDisturbances
             {
                 for (int index = l.characters.Count - 1; index >= 0; --index)
                 {
-                    if (l.characters[index] is Monster && !(l is SlimeHutch))
+                    if (l.characters[index] is Monster && l is not SlimeHutch)
                         l.characters.RemoveAt(index);
                 }
             }
 
-            BloodMoonTracker.Clear();              
+            BloodMoonTracker.Clear();
         }
 
         /// <summary>Raised after a game menu is opened, closed, or replaced.</summary>
@@ -269,8 +259,8 @@ namespace TwilightShards.LunarDisturbances
         /// <param name="e">The event arguments.</param>
         private void OnMenuChanged(object sender, MenuChangedEventArgs e)
         {
-		    if (e.NewMenu is DialogueBox dBox && OurMoon.CurrentPhase() == MoonPhase.BloodMoon)
-			{
+            if (e.NewMenu is DialogueBox dBox && OurMoon.CurrentPhase() == MoonPhase.BloodMoon)
+            {
                 if (!(BloodMoonTracker.Contains(Game1.currentSpeaker.Name)))
                 {
                     Game1.player.changeFriendship(-60, Game1.currentSpeaker);
@@ -279,6 +269,11 @@ namespace TwilightShards.LunarDisturbances
 
                 if (!Game1.eventUp)
                 {
+
+                    dBox.dialogues.Clear();
+                    dBox.dialogues.Add(Helper.Translation.Get("moon-text.bloodmoon_villager_generic"));
+
+                    /*
                     var cDBU = Helper.Reflection.GetField<Stack<string>>(dBox, "characterDialoguesBrokenUp").GetValue();
                     cDBU.Clear();
                     Helper.Reflection.GetField<Stack<string>>(dBox, "characterDialoguesBrokenUp").SetValue(cDBU);
@@ -287,12 +282,13 @@ namespace TwilightShards.LunarDisturbances
                     diag.setCurrentDialogue(Helper.Translation.Get("moon-text.bloodmoon_villager_generic"));
                     Helper.Reflection.GetField<Dialogue>(dBox, "characterDialogue").SetValue(diag);
                     Helper.Reflection.GetMethod(dBox, "checkDialogue").Invoke(new[] { diag });
+                    */
                 }
-            }		
-			
+            }
+
             if (!UseJsonAssetsApi)
             {
-                if (e.NewMenu is ShopMenu menu && menu.portraitPerson != null)
+                if (e.NewMenu is ShopMenu menu && menu.portraitTexture != null)
                 {
                     float sellPrice, buyPrice;
                     switch (OurMoon.CurrentPhase())
@@ -314,13 +310,38 @@ namespace TwilightShards.LunarDisturbances
                             buyPrice = 1f;
                             break;
                     }
-                    Helper.Reflection.GetField<float>(menu, "sellPercentage").SetValue(Helper.Reflection.GetField<float>(menu, "sellPercentage").GetValue() * sellPrice);
-                    
-                    var itemPriceAndStock = Helper.Reflection.GetField<Dictionary<ISalable, int[]>>(menu, "itemPriceAndStock").GetValue();
-                    foreach (var kvp in itemPriceAndStock)
+                    //buyPrice debug
+                    buyPrice = 111111f;
+
+                    Console.WriteLine($"Is menu null? {menu}");
+                    Console.WriteLine($"Is menu.ShopData null? {menu.ShopData}");
+                    Console.WriteLine($"Is menu.ShopData.Items null? {menu.ShopData.Items}");
+
+                    //buy modifiers
+                    var ourModifier = new StardewValley.GameData.QuantityModifier
                     {
-                        kvp.Value[0] = (int)Math.Floor(kvp.Value[0] * buyPrice);
+                        Id = "knakamura.lunardisturbances",
+                        Amount = buyPrice,
+                        Modification = StardewValley.GameData.QuantityModifier.ModificationType.Multiply
+                    };
+                    menu.ShopData.PriceModifiers.Add( ourModifier );
+                    
+                    if (menu?.ShopData?.Items is not null && menu?.ShopData?.Items.Count > 0)
+                    {
+                        foreach (var v in menu?.ShopData?.Items)
+                        {   if (v is not null)
+                            {
+                                v.IgnoreShopPriceModifiers = false;
+                                v.PriceModifiers.Add(ourModifier);
+                            }
+                        }
                     }
+                    
+
+                    
+                    //sell modifiers
+                    Helper.Reflection.GetField<float>(menu, "sellPercentage").SetValue(Helper.Reflection.GetField<float>(menu, "sellPercentage").GetValue() * sellPrice);
+
                 }
             }
         }
@@ -330,12 +351,12 @@ namespace TwilightShards.LunarDisturbances
         /// <param name="e">The event arguments.</param>
         private void OnDayStarted(object sender, DayStartedEventArgs e)
         {
-            Helper.Content.InvalidateCache("LooseSprites/Cursors");
+            //Helper.Content.InvalidateCache("LooseSprites/Cursors");
             if (OurMoon.GetMoonRiseTime() <= 0600 || OurMoon.GetMoonRiseTime() >= 2600 && ModConfig.ShowMoonPhase)
             {
                 Game1.addHUDMessage(new TCHUDMessage(
                     Helper.Translation.Get("moon-text.moonriseBefore6",
-                        new {moonPhase = OurMoon.DescribeMoonPhase(), riseTime = OurMoon.GetMoonRiseDisplayTime()}),
+                        new { moonPhase = OurMoon.DescribeMoonPhase(), riseTime = OurMoon.GetMoonRiseDisplayTime() }),
                     OurMoon.CurrentPhase()));
             }
 
@@ -365,8 +386,6 @@ namespace TwilightShards.LunarDisturbances
                 OurMoon.IsEclipse = true;
                 var n = new HUDMessage(Helper.Translation.Get("moon-text.solareclipse"))
                 {
-                    color = Color.SeaGreen,
-                    fadeIn = true,
                     timeLeft = 4000,
                     noIcon = true
                 };
@@ -374,16 +393,16 @@ namespace TwilightShards.LunarDisturbances
                 MoonMessage message = GenerateLunarSync();
                 MPHandler.SendMessage<MoonMessage>(message, "MoonMessage", new[] { "KoihimeNakamura.LunarDisturbances" });
                 Monitor.Log("There's a solar eclipse today!", LogLevel.Info);
-                OurMoon.MoonTracker.IsEclipseTomorrow = false; 
+                OurMoon.MoonTracker.IsEclipseTomorrow = false;
             }
 
-            
+
             OurMoon.UpdateForBloodMoon();
             OurMoon.OnNewDay();
             OurMoon.HandleMoonAfterWake();
         }
 
-        MoonMessage GenerateLunarSync()
+        static MoonMessage GenerateLunarSync()
         {
             var m = new MoonMessage
             {
@@ -393,7 +412,7 @@ namespace TwilightShards.LunarDisturbances
             return m;
         }
 
-        void SetLunarSync(MoonMessage m)
+        static void SetLunarSync(MoonMessage m)
         {
             OurMoon.IsEclipse = m.isEclipse;
             OurMoon.MoonTracker = new LunarInfo(m.currentMoonTracker);
@@ -409,7 +428,7 @@ namespace TwilightShards.LunarDisturbances
             if (Game1.timeOfDay == OurMoon.GetMoonRiseTime() && Game1.timeOfDay > 0600 && ModConfig.ShowMoonPhase)
             {
                 Game1.addHUDMessage(new TCHUDMessage(
-                    Helper.Translation.Get("moon-text.moonrise", new {moonPhase = OurMoon.DescribeMoonPhase(), moonSet = OurMoon.GetMoonSetTime()}),
+                    Helper.Translation.Get("moon-text.moonrise", new { moonPhase = OurMoon.DescribeMoonPhase(), moonSet = OurMoon.GetMoonSetTime() }),
                     OurMoon.CurrentPhase()));
             }
 
@@ -418,7 +437,6 @@ namespace TwilightShards.LunarDisturbances
 
             if (OurMoon.IsEclipse)
             {
-                Game1.globalOutdoorLighting = .5f;
                 Game1.ambientLight = nightColor;
                 Game1.currentLocation.switchOutNightTiles();
                 ResetTicker = 1;
@@ -436,10 +454,10 @@ namespace TwilightShards.LunarDisturbances
                 if ((Game1.farmEvent == null && Game1.random.NextDouble() < (0.25 - Game1.player.team.AverageDailyLuck() / 2.0))
                     && Game1.spawnMonstersAtNight && Context.IsMainPlayer)
                 {
-		    
+
                     if (ModConfig.Verbose)
-			            Monitor.Log("Spawning a monster, or attempting to.", LogLevel.Debug);
-					
+                        Monitor.Log("Spawning a monster, or attempting to.", LogLevel.Debug);
+
                     if (Game1.random.NextDouble() < 0.25)
                     {
                         if (Game1.currentLocation.IsFarm)
@@ -471,7 +489,6 @@ namespace TwilightShards.LunarDisturbances
 
             if (OurMoon.IsEclipse)
             {
-                Game1.globalOutdoorLighting = .5f;
                 Game1.currentLocation.switchOutNightTiles();
                 Game1.ambientLight = nightColor;
 
@@ -505,7 +522,7 @@ namespace TwilightShards.LunarDisturbances
             }
 
             if (!Game1.wasRainingYesterday && !outro && Game1.activeClickableMenu is ShippingMenu currMenu && currMenu.currentPage == -1)
-            {          
+            {
                 float scale = Game1.pixelZoom * 1.25f;
 
                 if (Game1.viewport.Width < 1024)
@@ -521,7 +538,7 @@ namespace TwilightShards.LunarDisturbances
                     moonColor = Color.Blue;
                 }
 
-                Game1.spriteBatch.Draw(OurIcons.MoonSource, new Vector2(Game1.viewport.Width - 65 * Game1.pixelZoom, Game1.pixelZoom), Sprites.Icons.GetNightMoonSprite(OurMoon.GetLunarPhaseForDay(SDate.Now().AddDays(-1))), moonColor, 0.0f, Vector2.Zero, scale, SpriteEffects.None, 1f);
+                Game1.spriteBatch.Draw(MoonSource, new Vector2(Game1.viewport.Width - 65 * Game1.pixelZoom, Game1.pixelZoom), GetNightMoonSprite(OurMoon.GetLunarPhaseForDay(SDate.Now().AddDays(-1))), moonColor, 0.0f, Vector2.Zero, scale, SpriteEffects.None, 1f);
             }
         }
 
@@ -541,37 +558,37 @@ namespace TwilightShards.LunarDisturbances
             var api = Helper.ModRegistry.GetApi<Integrations.IGenericModConfigMenuAPI>("spacechase0.GenericModConfigMenu");
             if (api != null)
             {
-                api.RegisterModConfig(ModManifest, () => ModConfig = new MoonConfig(), () => Helper.WriteConfig(ModConfig));
-                api.RegisterClampedOption(ModManifest, "Blood Moon Chances", "The chance for a blood moon rising. There's a bad moon on the rise.", () => (float)ModConfig.BadMoonRising, (float val) => ModConfig.BadMoonRising = val, 0f, 1f);
-                api.RegisterSimpleOption(ModManifest, "Allow Eclipse", "This option controls if eclipses will happen", () => ModConfig.EclipseOn, (bool val) => ModConfig.EclipseOn = val);
-                api.RegisterSimpleOption(ModManifest, "Show Moon Phase", "Show the moon phase popups on moon rise and set", () => ModConfig.ShowMoonPhase, (bool val) => ModConfig.ShowMoonPhase = val);
-                api.RegisterSimpleOption(ModManifest, "Spawn Monsters", "This option controls if monsters spawn during eclipses on a wilderness farm. NOTE: They don't spawn if you've turned off monster spawns in game.", () => ModConfig.SpawnMonsters, (bool val) => ModConfig.SpawnMonsters = val);
-                api.RegisterSimpleOption(ModManifest, "Hazardous Moon Events", "This controls the moon events that can hinder the player, or spawn monsters. No monsters will spawn ( the blood moon won't even happen) while this is false. This also stops the crop de advancement on the new moon.", () => ModConfig.HazardousMoonEvents, (bool val) => ModConfig.HazardousMoonEvents = val);
-                api.RegisterSimpleOption(ModManifest, "Verbose Logging", "This controls if the mod is verbose when logging for debug purposes", () => ModConfig.Verbose, (bool val) => ModConfig.Verbose = val);
-                api.RegisterSimpleOption(ModManifest, "Use More Monthly Cycle", "When true, the mod uses a 25-day cycle.", () => ModConfig.UseMoreMonthlyCycle, (bool val) => ModConfig.UseMoreMonthlyCycle = val);
-                api.RegisterClampedOption(ModManifest, "Eclipse Chance", "The chance for an eclipse", () => (float)ModConfig.EclipseChance, (float val) => ModConfig.EclipseChance = val, 0f, 1f);
-                api.RegisterClampedOption(ModManifest, "Super Moon Chances", "The chance for a super moon", () => (float)ModConfig.SuperMoonChances, (float val) => ModConfig.SuperMoonChances = val, 0f, 1f);
-                api.RegisterClampedOption(ModManifest, "Harvest Moon Double Grow Chance", "The chance for a crop double growth on a harvest moon", () => (float)ModConfig.HarvestMoonDoubleGrowChance, (float val) => ModConfig.HarvestMoonDoubleGrowChance = val, 0f, 1f);
-                api.RegisterClampedOption(ModManifest, "Crop Growth Chance", "The chance for crops to grow on a full moon", () => (float)ModConfig.CropGrowthChance, (float val) => ModConfig.CropGrowthChance = val, 0f, 1f);
-                api.RegisterClampedOption(ModManifest, "Crop Halt Chance", "The chance for crops to not grow on a new moon", () => (float)ModConfig.CropHaltChance, (float val) => ModConfig.CropHaltChance = val, 0f, 1f);
-                api.RegisterClampedOption(ModManifest, "Beach Removal Chance", "The chance for items on the beach to be removed on a new moon", () => (float)ModConfig.BeachRemovalChance, (float val) => ModConfig.BeachRemovalChance = val, 0f, 1f);
-                api.RegisterClampedOption(ModManifest, "Beach Spawn Chance", "The chance for items on the beach to be spawned on a full moon", () => (float)ModConfig.BeachSpawnChance, (float val) => ModConfig.BeachSpawnChance = val, 0f, 1f);
-                api.RegisterClampedOption(ModManifest, "Ghost Spawn Chance", "The chance for ghosts to spawn on a full moon", () => (float)ModConfig.GhostSpawnChance, (float val) => ModConfig.GhostSpawnChance = val, 0f, 1f);
+                api.Register(ModManifest, () => ModConfig = new MoonConfig(), () => Helper.WriteConfig(ModConfig));
+                api.AddNumberOption(ModManifest, () => (float)ModConfig.BadMoonRising, (float val) => ModConfig.BadMoonRising = val, () => "Blood Moon Chances", () => "The chance for a blood moon rising. There's a bad moon on the rise.", 0f, 1f);
+                api.AddBoolOption(ModManifest, () => ModConfig.EclipseOn, (bool val) => ModConfig.EclipseOn = val, () => "Allow Eclipse",() => "This option controls if eclipses will happen");
+                api.AddBoolOption(ModManifest, () => ModConfig.ShowMoonPhase, (bool val) => ModConfig.ShowMoonPhase = val, () => "Show Moon Phase", () => "Show the moon phase popups on moon rise and set");
+                api.AddBoolOption(ModManifest, () => ModConfig.SpawnMonsters, (bool val) => ModConfig.SpawnMonsters = val, () => "Spawn Monsters", () => "This option controls if monsters spawn during eclipses on a wilderness farm. NOTE: They don't spawn if you've turned off monster spawns in game.");
+                api.AddBoolOption(ModManifest, () => ModConfig.HazardousMoonEvents, (bool val) => ModConfig.HazardousMoonEvents = val , () => "Hazardous Moon Events", () => "This controls the moon events that can hinder the player, or spawn monsters. No monsters will spawn ( the blood moon won't even happen) while this is false. This also stops the crops taking longer to grow after the new moon.");
+                api.AddBoolOption(ModManifest, () => ModConfig.Verbose, (bool val) => ModConfig.Verbose = val, () => "Verbose Logging", () => "This controls if the mod is verbose when logging for debug purposes");
+                api.AddBoolOption(ModManifest, () => ModConfig.UseMoreMonthlyCycle, (bool val) => ModConfig.UseMoreMonthlyCycle = val, () => "Use More Monthly Cycle", () => "When true, the mod uses a 25-day cycle.");
+                api.AddNumberOption(ModManifest, () => (float)ModConfig.EclipseChance, (float val) => ModConfig.EclipseChance = val, ()=> "Eclipse Chance", () => "The chance for an eclipse", 0f, 1f);
+                api.AddNumberOption(ModManifest, () => (float)ModConfig.SuperMoonChances, (float val) => ModConfig.SuperMoonChances = val, () => "Eclipse Chance", () => "The chance for an eclipse", 0f, 1f);
+                api.AddNumberOption(ModManifest, () => (float)ModConfig.HarvestMoonDoubleGrowChance, (float val) => ModConfig.HarvestMoonDoubleGrowChance = val, () => "Harvest Moon Double Grow Chance", () => "The chance for a crop double growth on a harvest moon", 0f, 1f);
+                api.AddNumberOption(ModManifest, () => (float)ModConfig.CropGrowthChance, (float val) => ModConfig.CropGrowthChance = val, () => "Crop Growth Chance", () => "The chance for crops to grow on a full moon", 0f, 1f);
+                api.AddNumberOption(ModManifest, () => (float)ModConfig.CropHaltChance, (float val) => ModConfig.CropHaltChance = val, () => "Crop Halt Chance", ()=> "The chance for crops to not grow on a new moon", 0f, 1f);
+                api.AddNumberOption(ModManifest, () => (float)ModConfig.BeachRemovalChance, (float val) => ModConfig.BeachRemovalChance = val, () => "Beach Removal Chance", () => "The chance for items on the beach to be removed on a new moon", 0f, 1f);
+                api.AddNumberOption(ModManifest, () => (float)ModConfig.BeachSpawnChance, (float val) => ModConfig.BeachSpawnChance = val, () => "Beach Spawn Chance", () => "The chance for items on the beach to be spawned on a full moon", 0f, 1f);
+                api.AddNumberOption(ModManifest, () => (float)ModConfig.GhostSpawnChance, (float val) => ModConfig.GhostSpawnChance = val, () => "Ghost Spawn Chance", () => "The chance for ghosts to spawn on a full moon", 0f, 1f);
             }
 
             var cpAPI = this.Helper.ModRegistry.GetApi<IContentPatcherAPI>("Pathoschild.ContentPatcher");
             if (cpAPI != null)
             {
                 cpAPI.RegisterToken(this.ModManifest, "MoonPhase", () => new[] { OurMoon.SimpleMoonPhase() });
-                cpAPI.RegisterToken(this.ModManifest, "MoonRise", () => new[] { OurMoon.GetMoonRiseTime().ToString() }); 
+                cpAPI.RegisterToken(this.ModManifest, "MoonRise", () => new[] { OurMoon.GetMoonRiseTime().ToString() });
                 cpAPI.RegisterToken(this.ModManifest, "MoonSet", () => new[] { OurMoon.GetMoonSetTime().ToString() });
-                cpAPI.RegisterToken(this.ModManifest, name:"IsEclipse", () => new[] {OurMoon.IsEclipse.ToString()});
+                cpAPI.RegisterToken(this.ModManifest, name: "IsEclipse", () => new[] { OurMoon.IsEclipse.ToString() });
             }
         }
-        
+
         private void JAAPi_AddedItemsToShop(object sender, EventArgs e)
         {
-            if (Game1.activeClickableMenu is ShopMenu menu && menu.portraitPerson != null)
+            if (Game1.activeClickableMenu is ShopMenu menu && menu.portraitTexture != null)
             {
                 float sellPrice, buyPrice;
                 switch (OurMoon.CurrentPhase())
@@ -602,5 +619,100 @@ namespace TwilightShards.LunarDisturbances
                 }
             }
         }
-    }
+
+
+        public static Rectangle GetNightMoonSprite(MoonPhase currPhase)
+        {
+            switch (currPhase)
+            {
+                case MoonPhase.BloodMoon:
+                    return BloodMoonIntensifies;
+                case MoonPhase.NewMoon:
+                    return NewMoon;
+                case MoonPhase.WaxingCrescent:
+                    return WaxingCrescent2;
+                case MoonPhase.FirstQuarter:
+                    return FirstQuarter;
+                case MoonPhase.WaxingGibbeous:
+                    return WaxingGibbeous;
+                case MoonPhase.FullMoon:
+                    return FullMoon;
+                case MoonPhase.WaningGibbeous:
+                    return WaningGibbeous;
+                case MoonPhase.ThirdQuarter:
+                    return ThirdQuarter;
+                case MoonPhase.WaningCrescent:
+                    return WaningCrescent2;
+                case MoonPhase.BlueMoon:
+                    return BlueMoon;
+                case MoonPhase.HarvestMoon:
+                    return HarvestMoon;
+                case MoonPhase.SpiritsMoon:
+                    return SpiritsEve;
+                default:
+                    break;
+            }
+            return NewMoon;
+        }
+
+        public static Rectangle GetMoonSprite(MoonPhase moon)
+        {
+            if (moon == MoonPhase.FirstQuarter)
+                return FirstQuarter;
+            if (moon == MoonPhase.FullMoon)
+                return FullMoon;
+            if (moon == MoonPhase.NewMoon)
+                return NewMoon;
+            if (moon == MoonPhase.ThirdQuarter)
+                return ThirdQuarter;
+            if (moon == MoonPhase.WaningCrescent)
+                return WaningCrescent1;
+            if (moon == MoonPhase.WaxingCrescent)
+                return WaxingCrescent1;
+            if (moon == MoonPhase.WaningGibbeous)
+                return WaningGibbeous;
+            if (moon == MoonPhase.WaxingGibbeous)
+                return WaxingGibbeous;
+            if (moon == MoonPhase.BlueMoon)
+                return BlueMoon;
+            if (moon == MoonPhase.HarvestMoon)
+                return HarvestMoon;
+            if (moon == MoonPhase.SpiritsMoon)
+                return SpiritsEve;
+
+            return NewMoon;
+        }
+
+        // These are the positions of each sprite on their sheet.
+        public static readonly Rectangle NewMoon = new(0, 0, 40, 40);
+        public static readonly Rectangle WaxingCrescent1 = new(40, 0, 40, 40);
+        public static readonly Rectangle WaxingCrescent2 = new(80, 0, 40, 40);
+        public static readonly Rectangle WaxingCrescent3 = new(120, 0, 40, 40);
+        public static readonly Rectangle FirstQuarter = new(160, 0, 40, 40);
+        public static readonly Rectangle WaxingGibbeous = new(200, 0, 40, 40);
+        public static readonly Rectangle FullMoon = new(240, 0, 40, 40);
+        public static readonly Rectangle BloodMoonIntensifies = new(280, 0, 40, 40);
+        public static readonly Rectangle WaningGibbeous = new(320, 0, 40, 40);
+        public static readonly Rectangle WaningGibbeous2 = new(360, 0, 40, 40);
+        public static readonly Rectangle ThirdQuarter = new(0, 40, 40, 40);
+        public static readonly Rectangle WaningCrescent1 = new(40, 40, 40, 40);
+        public static readonly Rectangle WaningCrescent2 = new(80, 40, 40, 40);
+        public static readonly Rectangle WaningCrescent3 = new(120, 40, 40, 40);
+        public static readonly Rectangle BloodMoon = new(160, 40, 40, 40);
+        public static readonly Rectangle BlueMoon = new(200, 40, 40, 40);
+        public static readonly Rectangle HarvestMoon = new(240, 40, 40, 40);
+        public static readonly Rectangle SpiritsEve = new(280, 40, 40, 40);
+    
+
+        public static Texture2D Pixel => LazyPixel.Value;
+
+        public static Texture2D MoonSource { get => moonSource; set => moonSource = value; }
+
+        private static readonly Lazy<Texture2D> LazyPixel = new(() =>
+        {
+            Texture2D pixel = new(Game1.graphics.GraphicsDevice, 1, 1);
+            pixel.SetData(new[] { Color.White });
+            return pixel;
+        });
+    }   
 }

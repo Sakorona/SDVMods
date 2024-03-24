@@ -49,7 +49,7 @@ namespace TwilightShards.TheStarsIncline
 
         public string GetCurrentSign()
         {
-            SDate currDate = new SDate(Game1.dayOfMonth, Game1.currentSeason, 1);
+            SDate currDate = new(Game1.dayOfMonth, Game1.currentSeason, 1);
 
             foreach (var v in Signs)
             {

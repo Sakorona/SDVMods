@@ -3,13 +3,19 @@
   <PropertyGroup>
     <AssemblyName>FerngillCustomWeathers</AssemblyName>
     <RootNamespace>FerngillCustomWeathers</RootNamespace>
-    <Version>2.0.0-beta.4</Version>
-    <TargetFramework>net5.0</TargetFramework>
+    <Version>2.1.0-beta.4</Version>
+    <TargetFramework>net6.0</TargetFramework>
     <EnableHarmony>false</EnableHarmony>
+    <Authors>Sakorona</Authors>
+    <UniqueId>KoihimeNakamura.FerngillCustomWeathers</UniqueId>
+    <Description>Adds custom weathers such as fogs and blizzards to Stardew Valley</Description>
+    <UpdateKeys>Nexus:6514</UpdateKeys>
+    <MinimumApiVersion>4.0</MinimumApiVersion>
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Pathoschild.Stardew.ModBuildConfig" Version="4.0.1" />
+    <PackageReference Include="Pathoschild.Stardew.ModBuildConfig" Version="4.1.1" />
+    <PackageReference Include="XoshiroPRNG.Net" Version="1.6.0" />
   </ItemGroup>
 
   <ItemGroup>

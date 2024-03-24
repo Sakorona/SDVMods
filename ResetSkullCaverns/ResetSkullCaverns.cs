@@ -16,7 +16,18 @@ namespace ResetSkullCaverns
         {
             Config = helper.ReadConfig<ResetCavernsConfig>();
 
+            Helper.Events.GameLoop.GameLaunched += GameLoop_GameLaunched;
             Helper.Events.GameLoop.DayEnding += GameLoop_DayEnding;
+        }
+
+        private void GameLoop_GameLaunched(object sender, StardewModdingAPI.Events.GameLaunchedEventArgs e)
+        {
+            var GMCMapi = Helper.ModRegistry.GetApi<IGMCMApi>("spacechase0.GenericModConfigMenu");
+            if (GMCMapi != null)
+            {
+                GMCMapi.Register(ModManifest, () => Config = new ResetCavernsConfig(), () => Helper.WriteConfig(Config));
+                GMCMapi.AddBoolOption(ModManifest, () => Config.ResetMinesToo, (bool val) => Config.ResetMinesToo = val, () => "Reset Mines Too", () => "Normally, it only resets coal deposits in the skull caverns, but this will let it reset mines too.");
+            }
         }
 
         private void GameLoop_DayEnding(object sender, StardewModdingAPI.Events.DayEndingEventArgs e)

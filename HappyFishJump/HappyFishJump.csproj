@@ -3,13 +3,19 @@
   <PropertyGroup>
     <AssemblyName>HappyFishJump</AssemblyName>
     <RootNamespace>HappyFishJump</RootNamespace>
-    <Version>1.1.16</Version>
+    <Version>1.1.19</Version>
     <TargetFramework>net6.0</TargetFramework>
     <EnableHarmony>true</EnableHarmony>
+    <Authors>Sakorona</Authors>
+    <UniqueId>KoihimeNakamura.HappyFishJump</UniqueId>
+    <Description>Fish will periodically jump while you're around the farm, and across the valley.</Description>
+    <UpdateKeys>Nexus:6514</UpdateKeys>
+    <MinimumApiVersion>4.0</MinimumApiVersion>
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Pathoschild.Stardew.ModBuildConfig" Version="4.0.1" />
+    <PackageReference Include="Leclair.Stardew.ModManifestBuilder" Version="2.1.0" />
+    <PackageReference Include="Pathoschild.Stardew.ModBuildConfig" Version="4.1.1" />
     <PackageReference Include="XoshiroPRNG.Net" Version="1.6.0" />
   </ItemGroup>
 

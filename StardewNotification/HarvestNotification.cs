@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Linq;
-using Microsoft.Xna.Framework;
 using StardewValley;
 using StardewModdingAPI;
 
@@ -20,6 +19,7 @@ namespace StardewNotification
 
         public void CheckHarvestsAroundFarm()
         {
+
             CheckSeasonalHarvests();
         }
 
@@ -32,16 +32,14 @@ namespace StardewNotification
         public void CheckFarmCaveHarvests(GameLocation farmcave)
         {
             if (!StardewNotification.Config.NotifyFarmCave) return;
+
             if (Game1.player.caveChoice.Value == MUSHROOM_CAVE)
             {
                 var numReadyForHarvest = farmcave.Objects.Values.Where(c => c.readyForHarvest.Value).Count();
 
                 if (numReadyForHarvest > 0)
                 {
-                    HUDMessage h = new HUDMessage(Trans.Get("CaveMushroom"), Color.OrangeRed, 3000, true)
-                    {
-                        whatType = 2
-                    };
+                    HUDMessage h = new(Trans.Get("CaveMushroom"), 2);
                     Game1.addHUDMessage(h);
                 }
             }
@@ -53,10 +51,7 @@ namespace StardewNotification
 
                 if (iCount > 1)
                 {
-                    HUDMessage h = new HUDMessage(Trans.Get("CaveFruit"), Color.OrangeRed, 3000, true)
-                    {
-                        whatType = 2
-                    };                    
+                    HUDMessage h = new(Trans.Get("CaveFruit"), 2);
                     Game1.addHUDMessage(h);
                 }            
             }
@@ -65,6 +60,7 @@ namespace StardewNotification
         public void CheckSeasonalHarvests()
         {
             if (!StardewNotification.Config.NotifySeasonalForage) return;
+
             string seasonal = null;
             var dayOfMonth = Game1.dayOfMonth;
             switch (Game1.currentSeason)
@@ -93,7 +89,7 @@ namespace StardewNotification
             //var counter = new Dictionary<string, Pair<StardewValley.TerrainFeatures.HoeDirt, int>>();
             foreach (var pair in greenhouse.terrainFeatures.Pairs)
             {
-                Console.Write($"Investigating {pair.Key} and {pair.Value.ToString()}");
+                //Console.Write($"Investigating {pair.Key} and {pair.Value.ToString()}");
                 if (pair.Value is StardewValley.TerrainFeatures.HoeDirt hoeDirt)
                 {
                     if (!hoeDirt.readyForHarvest()) continue;

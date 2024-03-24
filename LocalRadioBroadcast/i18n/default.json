@@ -1,0 +1,104 @@
+{
+  //Configuration Text
+  "gmcmEBACTitle": "Auto-broadcast at segments of the day changing",
+  "gmcmEBACDesc": "A broadcast will occur at noon, at early afternoon, at evening, at night, at late night.",
+  "gmcmABANTitle": "Auto-broadcast at night",
+  "gmcmABANDesc": "If selected, and the top option is not selected, it will only autobroadcast when it becomes night.",
+  "gmcmD2HTitle": "Use 24 Hour Time.",
+  "gmcmD2HDesc": "If selected, times will be given in 24hour time (i.e 0600-2600)",
+  "gmcmABTTitle": "Auto Broadcast Time",
+  "gmcmABTDesc": "This is the time the radio will autobroadcast once a day if configured. Defaults to 600 (where it will not auto broadcast.)",
+  "gmcmRTKTitle": "Radio Trigger Key",
+  "gmcmRTKDesc": "This configures the key used to manually trigger the key.",
+
+  //Names
+  "morning_djSatSunMon": "Kylie",
+  "morning_djTueWedThu": "Alina",
+  "morning_djFri": "Kalinos",
+  "morning_djRandomA": "Takion",
+  "morning_djRandomB": "Hamilton",
+
+  "afternoon_djSatSunMon": "Darini",
+  "afternoon_djTueWedThu": "Gregi",
+  "afternoon_djFri": "Tariona",
+  "afternoon_djRandomA": "Emily",
+  "afternoon_djRandomB": "Kimiko",
+
+  "night_djSatSunMon": "Ziggy",
+  "night_djTueWedThu": "Han",
+  "night_djFri": "Laiati",
+  "night_djRandomA": "Xiaoqiao",
+  "night_djRandomB": "Natalya",
+
+  "latenight_djWeekdays": "Nathan",
+  "latenight_djWeekends": "Kiachi",
+  "latenight_djUnlucky": "Mordred",
+
+  //RadioChatter
+  "morning_springBegin": "Hey, hey, hey! It's a new year, and this is {{name}} here with you to greet it! This is LPTX, the Wavebreak!",
+  "morning_spring1": "Another beautiful morning on the Gem Sea! You're listening to LPTX, broadcasting out of beautiful Point Drake on 91.9 MHz",
+  "morning_spring2": "*music ends*. That was {{songName}} by {{artist}}. This is DJ {{name}}. Next up, the weather. It is {{weather}}, {{temp}} this beautiful morning",
+  "morning_spring3": ".. live well. Buy Joja. Welcome back to LPTX, with DJ {{name}}. It's {{weather_outside}} outside, and it's time for a marathon of beautiful music. Next up is {{songName}} by {{artist}}",
+  "morning_spring3_noJoja": "..at Pierre's General Shop. Welcome back to LPTX, with DJ {{name}}. It's {{weather_outside}} outside, and it's time for a marathon of beautiful music. Next up is {{songName}} by {{artist}}",
+  "morning_spring3_aquarium": ".. at the Stardew Aquarium, where the sea comes to you! Welcome back to LPTX, with DJ {{name}}. It's {{weather_outside}} outside, and it's time for a marathon of beautiful music. Next up is {{songName}} by {{artist}}",
+
+  "noSignal": "Just static..",
+
+  //songs
+  "general_song1Title": "Does Fell Nice",
+  "general_song1Artist": "Izzy NaoHao",
+  "general_song1Genre": "K-Pop",
+  "general_song2Title": "A Rainbow of Love",
+  "general_song2Artist": "SIXTY-FORTY",
+  "general_song2Genre": "K-Pop",
+  "general_song3Title": "Railroad of Love",
+  "general_song3Artist": "TRAINMAIL from GRAMPLETON",
+  "general_song3Genre": "Pop",
+  "general_song4Title": "We Have Come",
+  "general_song4Artist": "Zeroth Class",
+  "general_song4Genre": "Rock",
+  "general_song5Title": "Order and Malcontents",
+  "general_song5Artist": "Laurel Coin",
+  "general_song5Genre": "EDM",
+  "general_song6Title": "The End of the One",
+  "general_Song6Artist": "Ken Nakumara",
+  "general_song6Genre": "Dance",
+
+  //afternoon
+  "afternoon_song1Title": "A Sunny Winter Day",
+  "afternoon_song1Artist": "Rin Shima",
+  "afternoon_song1Genre": "Easy Listening",
+  "afternoon_song2Title": "Next to Spring",
+  "afternoon_song2Artist": "Rin Shima",
+  "afternoon_song2Genre": "Easy Listening",
+  "afternoon_song3Title": "Summer's Gentle Night",
+  "afternoon_song3Artist": "Rin Shima",
+  "afternoon_song3Genre": "Easy Listening",
+  "afternoon_song4Title": "Gentle Dawn",
+  "afternoon_song4Artist": "An Shouji",
+  "afternoon_song4Genre": "Pop",
+  "afternoon_song5Title": "At This Place",
+  "afternoon_song5Artist": "Nadeshiko Kagamihara",
+  "afternoon_song5Genre": "Pop",
+  "afternoon_song6Title": "Key of the Twilight",
+  "afternoon_song6Artist": "Chiaki Ishikawa",
+  "afternoon_song6Genre": "Pop"
+
+  //evening
+
+
+  //morning
+
+
+  //late-night
+
+
+
+  //weather tokens
+
+
+  //festival awareness
+
+
+}
+
