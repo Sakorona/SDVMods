@@ -1,0 +1,129 @@
+﻿{
+  // Notification messages
+  "travelingMerchant": "De Reizende Handelaar is gearriveerd",
+  "queenSauce": "De Sauskoninging uitzending vandaag!",
+  "checkLiving": "Leven van het Land uitzending vandaag!",
+  "noSignal": "Er is geen TV signaal vandaag...",
+  "checkRerun": "De Sauskoninging uitzending (herhaling) vandaag!",
+  "luckyDay": "Geluksdag!",
+  "unluckyDay": "Pechdag!",
+
+  // Festivals
+  "fMsg": "{{fest}} Vandaag!",
+  "festival": "Festival",
+  "EggFestival": "Het Eierfestival",
+  "FlowerDance": "De Bloemendans",
+  "Luau": "De Luau",
+  "MoonlightJellies": "De Dans van de Maanlichtkwallen",
+  "ValleyFair": "De Stardew Valley jaarmarkt",
+  "SpiritsEve": "De Geestenavond",
+  "IceFestival": "Het IJsfeest",
+  "WinterStar": "Het feest van de Winterster",
+  "NightMarket": "De Nachtmarkt",
+  "TroutDerby": "De Forelderby",
+  "DesertFestival": "Het Woestijnfestival",
+  "SquidFest": "Het Inktvisfesetival",
+  "SecretSantaReminder": "{{charName}} is je getrokken lootje",
+
+  "Salmonberry": "Zalmbes seizoen",
+  "Seashells": "Schelpen op het strand",
+  "Blackberry": "Bramenseizoen",
+
+  // Weathers
+  "weather-rain": "regen",
+  "weather-sunny": "zon",
+  "weather-tstorm": "onweer",
+  "weather-snow": "sneeuw",
+  "weather-wind": "wind",
+  "weather-festival": "zon voor {{festivalName}}",
+  "weather-wedding": "een trouwerij",
+  "weather-greenrain": "groene regen",
+
+
+  // Locations
+  "CaveMushroom": "De paddenstoelen in de grot zijn klaar om geplukt te worden",
+  "CaveFruit": "Het fruit in de grot is klaar om geplukt te worden",
+
+  "birthday": "{{charName}}'s verjaardag!",
+  "weather": "Morgen is er {{weather}} voorspeld.",
+  "weatherGingerIsland": "Voor Ginger Eiland is er {{weather}} voorspeld",
+  "bookseller": "De boekverkoper is in het dorp!",
+  "birthdayReminder": "Vergeet niet om {{charName}} een verjaardagscadeau te geven!",
+  "toolPickup": "{{toolName}} is klaar om opgehaald te worden.",
+  "springOnion": "{{count}} lente-uien groeien in het bos.",
+  "readyHarvest": "{{cropName}} klaar om geoogst te worden.",
+  "greenhouse_crops": "Gewassen in de kas zijn klaar om geoogst te worden.",
+  "autoGrabber": "De automatische grijper heeft dingen opgepakt",
+  "hayMessage": "Er zit {{hayAmt}} stukken hooi in de silo('s).",
+  "noHayMessage": "Er zit geen hooi in de silo('s).",
+  "FishPond": "Er zijn visvijvers met spullen.",
+  "festivalReminder": "Het festival eindigt over 2 uur, om {{time}}",
+
+  //GMCM fields
+  "gmcmNotDurTitle": "Duur van de melding",
+  "gmcmNotDurDesc": "De tijdsduur dat de melding getoond wordt. 7000 ticks is 10 minuten. Deze waarde is instelbaar tussen 0 en 14000 ticks.",
+  "gmcmNotifTimeTitle": "Duur van de melding",
+  "gmcmNotifTimeDesc": "De tijd waarop de meldingen voor het begin van de dag verschijnen. We raden je aan dit op 6 uur 's ochtends te laten staan. Instelbaar tussen 6 uur 's ochtends en 2 uur 's middags.",
+  "gmcmNotifOnBirthTitle": "Verjaardagsmelding",
+  "gmcmNotifOnBirthDesc": "Zet dit aan om een melding te krijgen van verjaardagen",
+  "gmcmNotifOnBirthRemindTitle": "Verjaardagsherinneringen",
+  "gmcmNotifOnBirthRemindDesc": "Zet dit aan om een melding te krijgen om een een cadeau te geven",
+  "gmcmNotifOnBirthRemindTimeTitle": "Duur van de verjaardagsherinneringen",
+  "gmcmNotifOnBirthRemindTimeDesc": "De tijd waarom de verjaardagsherinneringen getoond wordt. Instelbaar tussen 6 uur 's ochtends en 7 uur 's avonds. (de meeste NPC's zullen na dit punt niet meer beschikbaar zijn). Waarden die eindigen op 60-99 werken niet in het spel.",
+  "gmcmNotifOnFestivalTitle": "Festival melding",
+  "gmcmNotifOnFestivalDesc": "Zet dit aan om een melding te krijgen van festivals vandaag",
+  "gmcmNotifOnHUNBTitle": "Verberg onbekende NPC verjaardagen",
+  "gmcmNotifOnHUNBDesc": "Als je dit aanzet zul je geen verjaardagen zien van NPC's die je nog niet ontmoet hebt",
+  "gmcmNotifGingerWeatherTitle": "Toon het weer op Ginger Island",
+  "gmcmNotifGingerWeatherDesc": "Besturing voor de weergave voor het weer op Ginger Island (als je het hebt bereikt)",
+  "gmcmNotifOnFestReminTitle": "Festival herinnering",
+  "gmcmNotifOnFestReminDesc": "Herinnering 2 uur voor sluiting van het festival. (Niet van toepassing bij de Dans van de Maanlichtkwallen of Geestenavond)",
+  "gmcmNotifOnMerchantTitle": "Reizende Handelaarmelding",
+  "gmcmNotifOnMerchantDesc": "Zet dit aan om een melding te krijgen dat de Reizende Handelaar er is",
+
+  "gmcmNotifyBooksellerTitle": "Boekverkoper melding",
+  "gmcmNotifyBooksellerDesc": "Zet dit aan om een melding te krijgen dat de Boekverkoper er is",
+
+  "gmcmNotifOnToolTitle": "Gereedschapsmelding",
+  "gmcmNotifOnToolDesc": "Zet dit aan om een melding te krijgen dat je gereedschap klaar is om opgehaald te worden.",
+
+  "gmcmNotifOnGLuckTitle": "Maximaal geluk melding",
+  "gmcmNotifOnGLucklDesc": "Zet dit aan om een melding te krijgen dat je vandaag maximaal geluk zult hebben.",
+
+  "gmcmNotifOnBLuckTitle": "Minimaal geluk melding",
+  "gmcmNotifOnBLucklDesc": "Zet dit aan om een melding te krijgen dat je vandaag een pechdag zult hebben.",
+
+  "gmcmNotifShowHayCountTitle": "Hooi voorraad",
+  "gmcmNotifShowHayCountDesc": "Zet dit aan om een melding te krijgen wat de hooivoorraad is.",
+  "gmcmNotifEmptyHayTitle": "Geen hooi op voorraad",
+  "gmcmNotifEmptyHayDesc": "Zet dit aan om een melding te krijgen dat je geen hooi meer hebt. Dit moet je aanzetten om een melding te krijgen dat je hooi op is.",
+
+  "gmcmNotifWeatNDTitle": "Het weerbericht van morgen",
+  "gmcmNotifWeatNDDesc": "Zet dit aan om een melding te krijgen wat het weer morgen gaat zijn",
+  "gmcmRemindTimeForNWDTitle": "Weerbericht herinnering",
+  "gmcmRemindTimeForNWDDesc": "Het tijdstip waarom de herinnering van het weerbericht zal verschijnen. Instelbaar tussen 9 uur 's ochtends en 2 uur 's nachts",
+
+  "gmcmNotifTVChanTitle": "Melding over TV kanalen",
+  "gmcmNotifTVChanDesc": "Zet dit aan om een melding te krijgen over wat er op TV is vandaag.",
+  "gmcmNotifSpringOnionTitle": "Lente-uien melding",
+  "gmcmNotifSpringOnionDesc": "Zet dit aan om een melding te krijgen met hoeveel lente-uien er zijn te vinden vandaag.",
+
+  "gmcmNotifFarmCaveTitle": "Boerderij grot melding",
+  "gmcmNotifFarmCaveDesc": "Zet dit aan om een melding te krijgen dat er in de grot iets gegroeid is (fruit/paddenstoelen).",
+  "gmcmNotifGreenCropTitle": "Kas gewassen melding",
+  "gmcmNotifGreenCropDesc": "Zet dit aan om een melding te krijgen dat er in de kas iets geoogst kan worden.",
+
+  "gmcmNotifFarmProdTitle": "Productie boerderij",
+  "gmcmNotifFarmProdDesc": "Schakel dit in om meldingen te krijgen dat er een machine buiten iets geproduceerd heeft.",
+
+  "gmcmNotifShedProdTitle": "Melding schuur productie",
+  "gmcmNotifShedProdDesc": "Schakel dit in om meldingen te krijgen dat er een machine in een schuur iets geproduceerd heeft.",
+  "gmcmNotifGreenProdTitle": "Melding kas productie",
+  "gmcmNotifGreenProdDesc": "Schakel dit in om meldingen te krijgen dat er een machine in de kas iets geproduceerd heeft.",
+
+  "gmcmNotifCellarProdTitle": "Melding kelder productie",
+  "gmcmNotifCellarProdDesc": "Schakel dit in om meldingen te krijgen dat er een machine in de kelder iets geproduceerd heeft.",
+  "gmcmNotifBarnProdTitle": "Melding stal productie",
+  "gmcmNotifBarnProdDesc": "Schakel dit in om meldingen te krijgen dat er een machine in een schuur iets geproduceerd heeft."
+}
+
