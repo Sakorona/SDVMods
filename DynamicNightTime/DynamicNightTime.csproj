@@ -3,7 +3,7 @@
 	<PropertyGroup>
 		<AssemblyName>DynamicNightTime</AssemblyName>
 		<RootNamespace>DynamicNightTime</RootNamespace>
-		<Version>1.3.13</Version>
+		<Version>1.3.16-beta</Version>
 		<TargetFramework>net6.0</TargetFramework>
     <Authors>Sakorona</Authors>
     <Description>Sets the night time dynamically.</Description>

@@ -24,6 +24,12 @@ namespace StardewNotification
         public static void DoBookSellerReminder(ITranslationHelper Trans)
         {
             if (!StardewNotification.Config.NotifyBookseller) return;
+            
+            if (StardewNotification.StartInGingerIslandLoaded && !Game1.player.hasOrWillReceiveMail("willyBoatFixed"))
+                return;
+
+            //!(Game1.player.locationsVisited.Contains("IslandSouth") || 
+
             if (Utility.getDaysOfBooksellerThisSeason().Contains(Game1.dayOfMonth))
                 Util.ShowMessage(Trans.Get("bookseller"));
         }
@@ -31,6 +37,9 @@ namespace StardewNotification
         public static void CheckForSpringOnions(ITranslationHelper Trans)
         {
             if (!StardewNotification.Config.ShowSpringOnionCount)
+                return;
+
+            if (StardewNotification.StartInGingerIslandLoaded && !Game1.player.hasOrWillReceiveMail("willyBoatFixed"))
                 return;
 
             //they really only grow in the forest, thankfully.
@@ -50,7 +59,17 @@ namespace StardewNotification
 
         public static void DoWeatherReminder(ITranslationHelper trans)
         {
-            switch (Game1.weatherForTomorrow)
+            //check for force days.
+            string weather = Game1.netWorldState.Value.GetWeatherForLocation("Default").WeatherForTomorrow;
+            var Tomorrow = WorldDate.ForDaysPlayed(++WorldDate.Now().TotalDays);
+            //Console.WriteLine($"Tommorow is {Tomorrow.DayOfMonth} {Tomorrow.Season} {Tomorrow.Year}");
+            weather = Game1.getWeatherModificationsForDate(Tomorrow, weather);
+
+            //mod integration
+            //if (StardewNotification.FallOnDay28Loaded && Game1.dayOfMonth == 27 && Game1.season == Season.Fall)
+            //    weather = "Snow";
+
+            switch (weather)
             {
                 case "Rain":
                     Util.ShowMessage(trans.Get("weather", new { weather = trans.Get("weather-rain") }));
@@ -119,15 +138,24 @@ namespace StardewNotification
             {
                 var character = Utility.getTodaysBirthdayNPC();
                 if (character is null) return;
+
+                if ((Game1.player.friendshipData.TryGetValue(character.Name, out var friendship) == false || friendship is null) && StardewNotification.Config.HideUnknownNPCBirthday == true)
+                    return; 
+                
                 Util.ShowMessage(Trans.Get("birthday", new { charName = character.displayName }));
             }
         }
 
         private static void CheckForTravelingMerchant(ITranslationHelper Trans)
         {
+            if (StardewNotification.StartInGingerIslandLoaded && !Game1.player.hasOrWillReceiveMail("willyBoatFixed"))
+                return;
+
+
             Forest f = Game1.getLocationFromName("Forest") as Forest;
             if (!StardewNotification.Config.NotifyTravelingMerchant) return;
 
+            
             if (f.ShouldTravelingMerchantVisitToday())
             {
                 Util.ShowMessage(Trans.Get("travelingMerchant"));
@@ -153,6 +181,9 @@ namespace StardewNotification
         private static void CheckForTVChannels(ITranslationHelper Trans)
         {
             if (!StardewNotification.Config.NotifyTVChannels) return;
+
+            if (StardewNotification.StartInGingerIslandLoaded && !Game1.player.hasOrWillReceiveMail("willyBoatFixed"))
+                return;
 
             if (Game1.IsGreenRainingHere()) { 
                 Util.ShowMessage(Trans.Get("noSignal"));
@@ -180,7 +211,10 @@ namespace StardewNotification
 
         private static void CheckForFestival(ITranslationHelper Trans)
         {
-            if (!StardewNotification.Config.NotifyFestivals || !Utility.isFestivalDay()) return;
+            if (StardewNotification.StartInGingerIslandLoaded && !Game1.player.hasOrWillReceiveMail("willyBoatFixed"))
+                return;
+
+            if (!StardewNotification.Config.NotifyFestivals || !Utility.isFestivalDay() || !Utility.IsPassiveFestivalDay()) return;
             var festivalName = GetFestivalName(Trans);
             Util.ShowMessage(Trans.Get("fMsg", new { fest = festivalName }));
 
@@ -199,10 +233,12 @@ namespace StardewNotification
             {
                 case "spring":
                     if (day == 13) return Trans.Get("EggFestival");
+                    if (day == 15 || day == 16 || day == 17) return Trans.Get("DesertFestival");
                     if (day == 24) return Trans.Get("FlowerDance");
                     break;
                 case "summer":
                     if (day == 11) return Trans.Get("Luau");
+                    if (day == 20 || day == 21) return Trans.Get("TroutDerby");
                     if (day == 28) return Trans.Get("MoonlightJellies");
                     break;
                 case "fall":
@@ -211,15 +247,57 @@ namespace StardewNotification
                     break;
                 case "winter":
                     if (day == 8) return Trans.Get("IceFestival");
-                    if (day == 14) return Trans.Get("NightFestival");
-                    if (day == 15) return Trans.Get("NightFestival");
-                    if (day == 16) return Trans.Get("NightFestival");
+                    if (day == 12 || day == 13) return Trans.Get("SquidFest");
+                    if (day == 14 || day == 15 || day == 16) return Trans.Get("NightFestival");
                     if (day == 25) return Trans.Get("WinterStar");
                     break;
                 default:
                     break;
             }
             return Trans.Get("festival");
+        }
+
+        internal static void DoGingerIslandWeatherReminder(ITranslationHelper trans)
+        {
+            if (!(Game1.player.locationsVisited.Contains("IslandSouth")))
+                return;
+
+            //check for force days.
+            string weather = Game1.netWorldState.Value.GetWeatherForLocation("Island").WeatherForTomorrow;
+            //weather = Game1.getWeatherModificationsForDate(WorldDate.ForDaysPlayed(WorldDate.Now().TotalDays++), weather);
+
+            //mod integration
+            if (StardewNotification.FallOnDay28Loaded && Game1.dayOfMonth == 27 && Game1.season == Season.Fall)
+                weather = "Snow";
+
+            switch (weather)
+            {
+                case "Rain":
+                    Util.ShowMessage(trans.Get("weatherGingerIsland", new { weather = trans.Get("weather-rain") }));
+                    break;
+                case "Wind":
+                    Util.ShowMessage(trans.Get("weatherGingerIsland", new { weather = trans.Get("weather-wind") }));
+                    break;
+                case "Storm":
+                    Util.ShowMessage(trans.Get("weatherGingerIsland", new { weather = trans.Get("weather-tstorm") }));
+                    break;
+                case "Snow":
+                    Util.ShowMessage(trans.Get("weatherGingerIsland", new { weather = trans.Get("weather-snow") }));
+                    break;
+                case "Wedding":
+                    Util.ShowMessage(trans.Get("weatherGingerIsland", new { weather = trans.Get("weather-wedding") }));
+                    break;
+                case "Festival":
+                    Util.ShowMessage(trans.Get("weatherGingerIsland", new { weather = trans.Get("weather-festival", new { festivalName = GetFestivalName(trans) }) }));
+                    break;
+                case "GreenRain":
+                    Util.ShowMessage(trans.Get("weatherGingerIsland", new { weather = trans.Get("weather-greenrain") }));
+                    break;
+                case "Sun":
+                default:
+                    Util.ShowMessage(trans.Get("weatherGingerIsland", new { weather = trans.Get("weather-sunny") }));
+                    break;
+            }
         }
     }
 }

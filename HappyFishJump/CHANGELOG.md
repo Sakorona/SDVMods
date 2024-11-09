@@ -1,22 +1,30 @@
-﻿#Ver 1.1.20
-- Expanded the no jump list for a lot of stone nodes.
+﻿# Ver 1.1.22
+- More revisment of the exclusion list
 
-#Ver 1.1.19
+# Ver 1.1.21
+- Secret Notes and Journal Scraps no longer jump, as well.
+- Various things from Ginger Island added to the exclusion list.
+
+# Ver 1.1.20
+- Fixed a bug that caused the wrong texture in jumping fish.
+- CP items marked as junk or trash will no longer jump normally.
+
+# Ver 1.1.19
 - Seaweed now properly only jumps very rarely.
 
-#Ver 1.1.18
+# Ver 1.1.18
 - fixed debug message making it in
 - didn't properly respect multiple fish spawn.
 
-#Ver 1.1.17
+# Ver 1.1.17
 - Updated for SMAPI 4.0/SDV 1.6
 
-#Ver 1.1.16
+# Ver 1.1.16
 - fixes bug with with fish jumping when not catchable
 - adds in farm support
 - A little surprise may occur now and then..
 
-#Ver 1.1.14
+# Ver 1.1.14
 - Fixes bug with entries being accidentally added twice
 
 # Ver 1.1.13

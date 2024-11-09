@@ -23,12 +23,10 @@ namespace DynamicNightTime
 
     public class DynamicNightTime : Mod
     {
-        public static DynamicNightConfig NightConfig;
-        public static IMonitor Logger;
-        public static bool LunarDisturbancesLoaded;
-        public static ILunarDisturbancesAPI MoonAPI;
-        public static bool ClimatesLoaded;
-        public static IClimatesOfFerngillAPI ClimatesAPI;
+        internal static DynamicNightConfig NightConfig;
+        internal static IMonitor Logger;
+        internal static bool LunarDisturbancesLoaded;
+        internal static ILunarDisturbancesAPI MoonAPI;
         private IDynamicNightAPI API;
 
         /// <summary>The mod entry point, called after the mod is first loaded.</summary>
@@ -103,12 +101,6 @@ namespace DynamicNightTime
 
             if (MoonAPI != null)
                 LunarDisturbancesLoaded = true;
-/*
-            ClimatesAPI = SDVUtilities.GetModApi<IClimatesOfFerngillAPI>(Monitor, Helper, "KoihimeNakamura.ClimatesOfFerngill", "1.5.0-beta15", "Climates of Ferngill");
-
-            if (ClimatesAPI != null)
-                ClimatesLoaded = true;
-*/
 
             //GMCM interaction
             var GMCMapi = Helper.ModRegistry.GetApi<IGenericModConfigMenuApi>("spacechase0.GenericModConfigMenu");

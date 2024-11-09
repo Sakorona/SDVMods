@@ -1,4 +1,20 @@
-﻿1.8.15
+﻿1.8.19
+- bug fix of weather
+
+1.8.18
+- integration with Start in Ginger Island
+- added option for Ginger Island Weather
+
+1.8.17
+- integration check fixed
+- festival reminder added
+
+1.8.16
+- new passive festivals added
+- fixes error in not catching forced weather days
+- integration check with snow on fall 28 mod
+
+1.8.15
 - TV channel notification properly controls queen of sauce and displays rerun notifs.
 - 1.6 notification added for new thing.
 

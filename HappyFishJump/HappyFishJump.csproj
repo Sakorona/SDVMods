@@ -3,13 +3,13 @@
   <PropertyGroup>
     <AssemblyName>HappyFishJump</AssemblyName>
     <RootNamespace>HappyFishJump</RootNamespace>
-    <Version>1.1.19</Version>
+    <Version>1.1.23-beta</Version>
     <TargetFramework>net6.0</TargetFramework>
     <EnableHarmony>true</EnableHarmony>
     <Authors>Sakorona</Authors>
     <UniqueId>KoihimeNakamura.HappyFishJump</UniqueId>
     <Description>Fish will periodically jump while you're around the farm, and across the valley.</Description>
-    <UpdateKeys>Nexus:6514</UpdateKeys>
+    <UpdateKeys>Nexus:6516</UpdateKeys>
     <MinimumApiVersion>4.0</MinimumApiVersion>
   </PropertyGroup>
 

@@ -9,7 +9,6 @@ using Microsoft.Xna.Framework.Graphics;
 using StardewModdingAPI.Utilities;
 using StardewValley.Objects;
 using StardewValley.Locations;
-using Xoshiro.PRNG64;
 using SpaceCore.Events;
 using StardewValley.Monsters;
 using TwilightShards.Stardew.Common;
@@ -17,6 +16,9 @@ using TwilightShards.LunarDisturbances.Integrations;
 using StardewValley.Events;
 using Netcode;
 using System.IO;
+using System.Linq;
+using HarmonyLib;
+using System.Reflection;
 
 namespace TwilightShards.LunarDisturbances
 {
@@ -33,14 +35,13 @@ namespace TwilightShards.LunarDisturbances
     public class LunarDisturbances : Mod
     {
         internal static SDVMoon OurMoon;
-        private Random Dice;
         internal static ITranslationHelper Translation;
         private MoonConfig ModConfig;
         private HUDMessage queuedMsg;
         private List<string> BloodMoonTracker;
         private bool UseJsonAssetsApi = false;
         private Color nightColor = new(byte.MaxValue, byte.MaxValue, 0);
-        private Integrations.IJsonAssetsApi JAAPi;
+        private IJsonAssetsApi JAAPi;
         internal int ResetTicker { get; set; }
         private int SecondCount;
         private bool HasGottenSync = false;
@@ -54,13 +55,15 @@ namespace TwilightShards.LunarDisturbances
         /// <param name="helper">Provides simplified APIs for writing mods.</param>
         public override void Entry(IModHelper helper)
         {
-            Dice = new XoShiRo256starstar();
             Translation = Helper.Translation;
             ModConfig = Helper.ReadConfig<MoonConfig>();
-            OurMoon = new SDVMoon(ModConfig, Dice, Helper.Translation, Monitor);
+            OurMoon = new SDVMoon(ModConfig, Helper.Translation, Monitor);
             MPHandler = Helper.Multiplayer;
             queuedMsg = null;
             BloodMoonTracker = new List<string>();
+
+            var harmony = new Harmony(this.ModManifest.UniqueID);
+            harmony.PatchAll(Assembly.GetExecutingAssembly());
 
             helper.Events.GameLoop.GameLaunched += OnGameLaunched;
             helper.Events.GameLoop.OneSecondUpdateTicked += OnOneSecondUpdateTicked;
@@ -104,17 +107,17 @@ namespace TwilightShards.LunarDisturbances
                    (e.NightEvent == null || (e.NightEvent is SoundInTheNightEvent &&
                    Helper.Reflection.GetField<NetInt>(e.NightEvent, "behavior").GetValue().Value == 2)))
             {
-                if (Dice.NextDouble() < 0.025 && !Game1.currentSeason.Equals("winter"))
+                if (Game1.random.NextDouble() < 0.025 && !Game1.currentSeason.Equals("winter"))
                     e.NightEvent = new FairyEvent();
-                else if (Dice.NextDouble() < 0.025)
+                else if (Game1.random.NextDouble() < 0.025)
                     e.NightEvent = new WitchEvent();
-                else if (Dice.NextDouble() < 0.025)
+                else if (Game1.random.NextDouble() < 0.025)
                     e.NightEvent = new WitchEvent();
-                else if (Dice.NextDouble() < 0.025)
+                else if (Game1.random.NextDouble() < 0.025)
                     e.NightEvent = new SoundInTheNightEvent(1);
-                else if (Dice.NextDouble() < 0.025)
+                else if (Game1.random.NextDouble() < 0.025)
                     e.NightEvent = new SoundInTheNightEvent(0);
-                else if (Dice.NextDouble() < 0.025)
+                else if (Game1.random.NextDouble() < 0.025)
                     e.NightEvent = new SoundInTheNightEvent(3);
             }
         }
@@ -257,11 +260,12 @@ namespace TwilightShards.LunarDisturbances
         /// <summary>Raised after a game menu is opened, closed, or replaced.</summary>
         /// <param name="sender">The event sender.</param>
         /// <param name="e">The event arguments.</param>
+        [EventPriority(EventPriority.Low - 20)]
         private void OnMenuChanged(object sender, MenuChangedEventArgs e)
         {
             if (e.NewMenu is DialogueBox dBox && OurMoon.CurrentPhase() == MoonPhase.BloodMoon)
             {
-                if (!(BloodMoonTracker.Contains(Game1.currentSpeaker.Name)))
+                if (!BloodMoonTracker.Contains(Game1.currentSpeaker.Name))
                 {
                     Game1.player.changeFriendship(-60, Game1.currentSpeaker);
                     BloodMoonTracker.Add(Game1.currentSpeaker.Name);
@@ -310,38 +314,22 @@ namespace TwilightShards.LunarDisturbances
                             buyPrice = 1f;
                             break;
                     }
-                    //buyPrice debug
-                    buyPrice = 111111f;
-
-                    Console.WriteLine($"Is menu null? {menu}");
-                    Console.WriteLine($"Is menu.ShopData null? {menu.ShopData}");
-                    Console.WriteLine($"Is menu.ShopData.Items null? {menu.ShopData.Items}");
 
                     //buy modifiers
-                    var ourModifier = new StardewValley.GameData.QuantityModifier
-                    {
-                        Id = "knakamura.lunardisturbances",
-                        Amount = buyPrice,
-                        Modification = StardewValley.GameData.QuantityModifier.ModificationType.Multiply
-                    };
-                    menu.ShopData.PriceModifiers.Add( ourModifier );
-                    
-                    if (menu?.ShopData?.Items is not null && menu?.ShopData?.Items.Count > 0)
-                    {
-                        foreach (var v in menu?.ShopData?.Items)
-                        {   if (v is not null)
-                            {
-                                v.IgnoreShopPriceModifiers = false;
-                                v.PriceModifiers.Add(ourModifier);
-                            }
-                        }
-                    }
-                    
+                    foreach (var kvp in menu.itemPriceAndStock.ToList())
+                        menu.itemPriceAndStock[kvp.Key] = new(
+                            price: (int)Math.Round(kvp.Value.Price * buyPrice),
+                            stock: kvp.Value.Stock,
+                            tradeItem: kvp.Value.TradeItem,
+                            tradeItemCount: kvp.Value.TradeItemCount,
+                            stockMode: kvp.Value.LimitedStockMode,
+                            syncedKey: kvp.Value.SyncedKey,
+                            itemToSyncStack: kvp.Value.ItemToSyncStack,
+                            stackDrawType: kvp.Value.StackDrawType
+                        );
 
-                    
                     //sell modifiers
                     Helper.Reflection.GetField<float>(menu, "sellPercentage").SetValue(Helper.Reflection.GetField<float>(menu, "sellPercentage").GetValue() * sellPrice);
-
                 }
             }
         }
@@ -400,6 +388,9 @@ namespace TwilightShards.LunarDisturbances
             OurMoon.UpdateForBloodMoon();
             OurMoon.OnNewDay();
             OurMoon.HandleMoonAfterWake();
+
+            //handle updates to fishing
+            
         }
 
         static MoonMessage GenerateLunarSync()
@@ -451,7 +442,7 @@ namespace TwilightShards.LunarDisturbances
                     }
                 }
 
-                if ((Game1.farmEvent == null && Game1.random.NextDouble() < (0.25 - Game1.player.team.AverageDailyLuck() / 2.0))
+                if (Game1.farmEvent == null && Game1.random.NextDouble() < (0.25 - Game1.player.team.AverageDailyLuck() / 2.0)
                     && Game1.spawnMonstersAtNight && Context.IsMainPlayer)
                 {
 
@@ -482,7 +473,7 @@ namespace TwilightShards.LunarDisturbances
         /// <param name="e">The event arguments.</param>
         private void OnWarped(object sender, WarpedEventArgs e)
         {
-            if (!(e.IsLocalPlayer))
+            if (!e.IsLocalPlayer)
             {
                 return;
             }
@@ -610,13 +601,12 @@ namespace TwilightShards.LunarDisturbances
                         buyPrice = 1f;
                         break;
                 }
-                Helper.Reflection.GetField<float>(menu, "sellPercentage").SetValue(Helper.Reflection.GetField<float>(menu, "sellPercentage").GetValue() * sellPrice);
 
-                var itemPriceAndStock = Helper.Reflection.GetField<Dictionary<ISalable, int[]>>(menu, "itemPriceAndStock").GetValue();
-                foreach (var kvp in itemPriceAndStock)
-                {
-                    kvp.Value[0] = (int)Math.Floor(kvp.Value[0] * buyPrice);
-                }
+                var sellPercentage = Helper.Reflection.GetField<float>(menu, "sellPercentage");
+                sellPercentage.SetValue(sellPercentage.GetValue() * sellPrice);
+
+                foreach ((ISalable item, ItemStockInformation stock) in menu.itemPriceAndStock)
+                    menu.itemPriceAndStock[item] = stock with { Price = (int)Math.Round(stock.Price * buyPrice) };
             }
         }
 

@@ -1,4 +1,11 @@
 ## Changelog
+## 1.5.3
+- I swear this is actually fixed now. (JSON Assets)
+- Typo in dialogue fixed
+
+## 1.5.2
+- JSON Assets API updated
+
 ### 1.5.1
 - Update for issues with shops
 - Blue Moon less frequent now.

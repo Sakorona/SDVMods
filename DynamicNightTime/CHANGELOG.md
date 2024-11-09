@@ -1,5 +1,12 @@
 ## Changelog
 
+### 1.3.15
+- Fixes integration issue causing DNT to not work properly.
+
+### 1.3.14
+- Removes Climates integration
+- Fixes an issue with sunrise calculations.
+
 ### 1.3.13
 - fixes some remanent code issues
 

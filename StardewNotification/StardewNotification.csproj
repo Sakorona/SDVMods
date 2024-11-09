@@ -3,7 +3,7 @@
   <PropertyGroup>
     <AssemblyName>StardewNotification</AssemblyName>
     <RootNamespace>StardewNotification</RootNamespace>
-    <Version>1.8.15</Version>
+    <Version>1.8.19</Version>
     <Authors>monopandora, maintained by Sakorona</Authors>
     <Description>Daily Notification mod for Stardew Valley</Description>
     <MinimumApiVersion>4.0</MinimumApiVersion>
@@ -16,7 +16,11 @@
   <ItemGroup>
     <PackageReference Include="Leclair.Stardew.ModManifestBuilder" Version="2.1.0" />
     <PackageReference Include="Pathoschild.Stardew.ModBuildConfig" Version="4.1.1" />
+    <SMAPIDependency Include="mistyspring.GingerIslandStart" Version="1.1.0" Required="false" />
+    <SMAPIDependency Include="Omegasis.Fall28SnowDay" Version="1.9.0" Required="false" />
   </ItemGroup>
+
+  <Import Project="..\TwilightCoreShared\TwilightCoreShared.projitems" Label="Shared" />
 
 
   <Import Project="$(SolutionDir)\deploy-mod.targets" />

@@ -16,7 +16,6 @@ namespace TwilightShards.LunarDisturbances
     public class SDVMoon
     {
         //encapsulated members
-        private readonly Random Dice;
         private readonly MoonConfig ModConfig;
         private readonly ITranslationHelper Translations;
 
@@ -41,9 +40,8 @@ namespace TwilightShards.LunarDisturbances
         internal readonly string[] beachItems = new string[] { "(O)393", "(O)397", "(O)392", "(O)394" };
         internal readonly string[] moonBeachItems = new string[] { "(O)393", "(O)394", "(O)560", "(O)586", "(O)587", "(O)589", "(O)397" };
 
-        public SDVMoon(MoonConfig config, Random rng, ITranslationHelper Trans, IMonitor Logger)
+        public SDVMoon(MoonConfig config, ITranslationHelper Trans, IMonitor Logger)
         {
-            Dice = rng;
             ModConfig = config;
             Monitor = Logger;
             IsBloodMoon = false;
@@ -77,7 +75,7 @@ namespace TwilightShards.LunarDisturbances
                 Game1.addHUDMessage(new TCHUDMessage(Translations.Get("moon-text.spiritmoon"), MoonPhase.SpiritsMoon));
             }
 
-            if (Dice.NextDouble() < ModConfig.SuperMoonChances)
+            if (Game1.random.NextDouble() < ModConfig.SuperMoonChances)
             {
                 IsSuperMoon = true;
                 Game1.addHUDMessage(new TCHUDMessage(Translations.Get("moon-text.supermoon"), CurrentPhase()));
@@ -205,7 +203,7 @@ namespace TwilightShards.LunarDisturbances
                     
             if (validEclipsePhase && validEclipseDate)
             {
-                if (Dice.NextDouble() < (ModConfig.EclipseChance + EclipseMods))
+                if (Game1.random.NextDouble() < (ModConfig.EclipseChance + EclipseMods))
                 {
                     return true;
                 }
@@ -234,7 +232,7 @@ namespace TwilightShards.LunarDisturbances
 
         public void UpdateForBloodMoon()
         {
-            if (CurrentPhase() == MoonPhase.FullMoon && Dice.NextDouble() <= ModConfig.BadMoonRising && !Game1.isFestival() && !Game1.weddingToday && ModConfig.HazardousMoonEvents && !IsBlueMoon)
+            if (CurrentPhase() == MoonPhase.FullMoon && Game1.random.NextDouble() <= ModConfig.BadMoonRising && !Game1.isFestival() && !Game1.weddingToday && ModConfig.HazardousMoonEvents && !IsBlueMoon)
             {
                 IsBloodMoon = true;
                 DoBloodMoonAlert();
@@ -305,13 +303,13 @@ namespace TwilightShards.LunarDisturbances
                     if (IsSuperMoon)
                         diceRoll *= 2;
 
-                    if (TF.Value is HoeDirt curr && curr.crop != null && Dice.NextDouble() < diceRoll)
+                    if (TF.Value is HoeDirt curr && curr.crop != null && Game1.random.NextDouble() < diceRoll)
                     {
                         if (ModConfig.Verbose)
                             Logger.Log($"Advancing crop at {TF.Key}", LogLevel.Trace);
                         SDVUtilities.AdvanceArbitrarySteps(f, curr, TF.Key);   
 
-                        if (Dice.NextDouble() < ModConfig.HarvestMoonDoubleGrowChance)
+                        if (Game1.random.NextDouble() < ModConfig.HarvestMoonDoubleGrowChance)
                         {
                             if (ModConfig.Verbose)
                                 Logger.Log($"Advancing crop at {TF.Key} for harvest moon", LogLevel.Trace);
@@ -334,7 +332,7 @@ namespace TwilightShards.LunarDisturbances
 
                     if (TF.Value is HoeDirt current && current.crop != null)
                     {
-                        if (Dice.NextDouble() < diceRoll)
+                        if (Game1.random.NextDouble() < diceRoll)
                         {
                             SDVUtilities.DeAdvanceCrop(f, current, TF.Key, 1, Logger);
                             current.state.Value = 0;
@@ -426,7 +424,7 @@ namespace TwilightShards.LunarDisturbances
             Beach b = Game1.getLocationFromName("Beach") as Beach;
             int itemsChanged = 0;
 
-            if (Dice.NextDouble() < .20)
+            if (Game1.random.NextDouble() < .20)
                 return;
 
             //new moon processing
@@ -442,7 +440,7 @@ namespace TwilightShards.LunarDisturbances
                     if (IsSuperMoon)
                         diceRoll *= 2;
 
-                    if (Dice.NextDouble() < diceRoll)
+                    if (Game1.random.NextDouble() < diceRoll)
                     {
                         itemsChanged++;
                         b.objects.Remove(rem.Key);
@@ -460,18 +458,18 @@ namespace TwilightShards.LunarDisturbances
                 for (int index = 0; index < 8; ++index)
                 {
                     //get the item ID to spawn
-                    string parentSheetIndex = moonBeachItems.GetRandomItem(Dice);
-                    if (Dice.NextDouble() <= .0001)
+                    string parentSheetIndex = moonBeachItems.GetRandomItem(Game1.random);
+                    if (Game1.random.NextDouble() <= .0001)
                         parentSheetIndex = "(O)392"; //rare chance for a Nautlius Shell.
 
                     double emeraldChance = .2001;
                     if (IsSuperMoon)
                         emeraldChance += .10;
 
-                    else if (Dice.NextDouble() > .0001 && Dice.NextDouble() <= emeraldChance)
+                    else if (Game1.random.NextDouble() > .0001 && Game1.random.NextDouble() <= emeraldChance)
                         parentSheetIndex = "(O)60";
 
-                    if (Dice.NextDouble() < ModConfig.BeachSpawnChance)
+                    if (Game1.random.NextDouble() < ModConfig.BeachSpawnChance)
                     {
                         Vector2 v = new(Game1.random.Next(rectangle.X, rectangle.Right), Game1.random.Next(rectangle.Y, rectangle.Bottom));
                         itemsChanged++;
@@ -486,7 +484,7 @@ namespace TwilightShards.LunarDisturbances
                     {
                         double driftWoodChance = .25;
                         string parentSheetIndex = "(O)388";
-                        if (Dice.NextDouble() < driftWoodChance)
+                        if (Game1.random.NextDouble() < driftWoodChance)
                         {
                             Vector2 v = new(Game1.random.Next(rectangle.X, rectangle.Right), Game1.random.Next(rectangle.Y, rectangle.Bottom));
                             itemsChanged++;
@@ -607,7 +605,7 @@ namespace TwilightShards.LunarDisturbances
 
         public bool CheckForGhostSpawn()
         {
-			if (CurrentPhase() is MoonPhase.FullMoon && Dice.NextDouble() < ModConfig.GhostSpawnChance && ModConfig.HazardousMoonEvents)
+			if (CurrentPhase() is MoonPhase.FullMoon && Game1.random.NextDouble() < ModConfig.GhostSpawnChance && ModConfig.HazardousMoonEvents)
 			{
 				return true;
 			}

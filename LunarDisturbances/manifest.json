@@ -10,7 +10,7 @@
   "UniqueID": "KoihimeNakamura.LunarDisturbances",
   "Name": "LunarDisturbances",
   "Author": "Sakorona",
-  "Version": "1.5.1",
+  "Version": "1.5.3",
   "Description": "Adds a moon to more than just one day, and adds events based on it, including eclipses",
   "MinimumApiVersion": "4.0",
   "EntryDll": "LunarDisturbances.dll",

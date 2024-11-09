@@ -7,9 +7,10 @@ using HarmonyLib;
 using Microsoft.Xna.Framework;
 using System.Linq;
 using StardewValley.GameData.Locations;
-using System;
+
 using StardewValley.Audio;
 using StardewValley.Tools;
+using StardewValley.GameData.Objects;
 
 namespace HappyFishJump
 {
@@ -101,7 +102,9 @@ namespace HappyFishJump
         {
             if (ModConfig.SplashSound)
             {
+#pragma warning disable IDE0059 // Unnecessary assignment of a value
                 return Game1.sounds.PlayLocal(cueName, null, null, pitch, SoundContext.Default, out ICue cue);
+#pragma warning restore IDE0059 // Unnecessary assignment of a value
             }
             return false;
         }
@@ -166,7 +169,9 @@ namespace HappyFishJump
                         if (Game1.currentLocation.waterTiles.waterTiles[j+2, k+2].isWater)
                         {
                             Vector2 pos = new(j, k);
+#pragma warning disable IDE0059 // Unnecessary assignment of a value
                             bool validArea = Game1.currentLocation.TryGetFishAreaForTile(pos, out string fishID, out FishAreaData data);
+#pragma warning restore IDE0059 // Unnecessary assignment of a value
 
                             if (validArea)  _validFishLocations.Add(pos, data?.DisplayName);
                         }
@@ -177,8 +182,7 @@ namespace HappyFishJump
 
         private bool ValidFishForJumping(string index)
         {
-            List<string> invalidFishJump = new() {"(O)172", "(O)153", "(O)169", "(O)170", "(O)167", "(O)168", "(O)158", "(O)171", "(O)152", 
-                "(O)2","(O)4","(O)6","(O)8","(O)10","(O)12","(O)14"};
+            List<string> invalidFishJump = new() {"(O)172", "(O)153", "(O)169", "(O)170", "(O)167", "(O)168", "(O)158", "(O)171", "(O)152", "(O)79", "(O)842", "(O)825", "(O)822", "(O)", "(O)890" };
 
             if (this.debug)
                 Logger.Log($"Checking index {index}");
@@ -191,6 +195,14 @@ namespace HappyFishJump
             else
             { 
                 if (index.StartsWith("(F)")) return false;
+
+                //handle CP items.
+                if (Game1.objectData.TryGetValue(index, out ObjectData data))
+                {
+                    if (data.Category == StardewValley.Object.junkCategory || data.ContextTags.Contains("trash_item") || data.ContextTags.Contains("fish_nonfish"))
+                        return false;
+                }
+                Logger.Log($"The index of this is {index} and it is in invalidFishJump: {invalidFishJump.Contains(index)}");
                 return !invalidFishJump.Contains(index);
                 
             }

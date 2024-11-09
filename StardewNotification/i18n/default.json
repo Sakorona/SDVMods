@@ -20,6 +20,9 @@
   "IceFestival": "Festival of Ice",
   "WinterStar": "Feast of the Winter Star",
   "NightMarket": "Night Market",
+  "TroutDerby": "Trout Derby",
+  "DesertFestival": "Desert Festival",
+  "SquidFest": "SquidFest",
   "SecretSantaReminder": "{{charName}} is your secret santa",
 
   "Salmonberry": "Salmonberry season",
@@ -42,7 +45,8 @@
   "CaveFruit": "Cave Fruits ready for harvest",
 
   "birthday": "{{charName}}'s birthday!",
-  "weather": "Tommorow's weather is {{weather}}.",
+  "weather": "Tomorrow's weather is {{weather}}.",
+  "weatherGingerIsland": "Tomorrow's weather on Ginger Island is {{weather}}",
   "bookseller": "The bookseller is in town!",
   "birthdayReminder": "Don't forget to give {{charName}} a birthday gift today!",
   "toolPickup": "{{toolName}} is ready for pickup",
@@ -53,6 +57,7 @@
   "hayMessage": "Silos report {{hayAmt}} pieces of hay",
   "noHayMessage": "No hay in the silos.",
   "FishPond": "Fish Ponds ready for harvest.",
+  "festivalReminder": "Today's festival ends in 2 hours, at {{time}}",
 
   //GMCM fields
   "gmcmNotDurTitle": "Notification Duration",
@@ -67,6 +72,13 @@
   "gmcmNotifOnBirthRemindTimeDesc": "The time the birthday reminder notification will appear. Clamped between 9am and 7pm. (most NPCs will not be available after this point). Note that values ending in 60-99 will not work in game.",
   "gmcmNotifOnFestivalTitle": "Festival Notifications",
   "gmcmNotifOnFestivalDesc": "Turn this on to be told it's a festival today",
+  "gmcmNotifOnHUNBTitle": "Hide Unknown NPC Birhdays",
+  "gmcmNotifOnHUNBDesc": "When enabled, if you haven't met them, you won't get any birthday notificaitons.",
+  "gmcmNotifGingerWeatherTitle": "Display Ginger Island Weather",
+  "gmcmNotifGingerWeatherDesc": "Controls the weather display for Ginger Island (if you've reached it)",
+
+  "gmcmNotifOnFestReminTitle": "Festival Reminders",
+  "gmcmNotifOnFestReminDesc": "Reminded 2 hours to closing of the festival. (Will not trigger for Dance of the Moonlit Jellies, or Spirit Eve)",
   "gmcmNotifOnMerchantTitle": "Traveling Merchant Notifications",
   "gmcmNotifOnMerchantDesc": "Turn this on to be told if the traveling merchant has arrived",
 

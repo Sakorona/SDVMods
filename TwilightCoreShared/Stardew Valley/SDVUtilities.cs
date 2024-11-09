@@ -1,20 +1,47 @@
 ﻿using Microsoft.Xna.Framework;
 using StardewValley;
 using System;
-using System.Linq;
-using System.Collections.Generic;
-using TwilightShards.Common;
 using StardewModdingAPI;
 using StardewValley.Monsters;
 using StardewValley.TerrainFeatures;
-using System.Xml.Linq;
 using xTile.Dimensions;
 using StardewValley.GameData.Crops;
+using System.Collections.Generic;
 
 namespace TwilightShards.Stardew.Common
 {
     public static class SDVUtilities
     {
+        public static WorldDate GetTommorrow()
+        {
+            if (Game1.dayOfMonth == 28 && Game1.season != Season.Winter)
+            {
+                return new WorldDate(Game1.year, (Season)((int)Game1.season + 1), 1);
+            }
+            else if (Game1.dayOfMonth == 28 && Game1.season == Season.Winter)
+            {
+                return new WorldDate(Game1.year + 1, Season.Spring, 1);
+            }
+            else
+            {
+                return new WorldDate(Game1.year, Game1.season, Game1.dayOfMonth + 1);
+            }
+
+        }
+
+        public static int GetFestivalEndTime()
+        {
+            if (Game1.weatherIcon == 1)
+            {
+                return Convert.ToInt32(ArgUtility.SplitBySpaceAndGet(Game1.temporaryContent.Load<Dictionary<string, string>>("Data\\Festivals\\" + Game1.currentSeason + Game1.dayOfMonth)["conditions"].Split('/')[1], 1));
+            }
+
+            if (Utility.IsPassiveFestivalDay())
+                return 2600;
+
+            return -1;
+        }
+
         public static string PrintStringArray(string[] array)
         {
             string s = "";

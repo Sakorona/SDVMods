@@ -9,13 +9,7 @@ namespace DynamicNightTime.Patches
     {
         public static void Postfix()
         {
-            //moon mod compatiblity - do not run DNT in Moon Areas.
-            if (Game1.currentLocation.Name.Contains("Moon"))
-                return;
-
-            SDVTime sunriseSTime = DynamicNightTime.GetSunrise();
-            //sunriseSTime.AddTime(-10);
-            int sunriseTime = sunriseSTime.ReturnIntTime();
+            int sunriseTime = 600;
             SDVTime sunsetT = DynamicNightTime.GetSunset();
             sunsetT.AddTime(-20);
             
@@ -39,11 +33,9 @@ namespace DynamicNightTime.Patches
                 moonLight = DynamicNightTime.GetLunarLightDifference();
             }
 
-            var weather = DynamicNightTime.ClimatesAPI?.GetCurrentWeatherName() ?? "error";
+            bool shouldDarken = Game1.IsRainingHere(Game1.currentLocation);
 
-            bool shouldDarken = Game1.IsRainingHere(Game1.currentLocation) || ((DynamicNightTime.ClimatesLoaded && weather.Contains("overcast")));
-
-            if (Game1.timeOfDay >= sunriseTime && Game1.timeOfDay <= Game1.getStartingToGetDarkTime(Game1.currentLocation))
+            if (Game1.timeOfDay <= Game1.getStartingToGetDarkTime(Game1.currentLocation))
             {
                 if (shouldDarken)
                 {
@@ -62,7 +54,7 @@ namespace DynamicNightTime.Patches
                         var newSunrise = DynamicNightTime.NightConfig.MoreOrangeSunrise ? new Color(13,72,147) : new Color(9,49,100);
 
                         float minEff = SDVTime.MinutesBetweenTwoIntTimes(Game1.timeOfDay, sunriseTime) + (float)Math.Min(10.0, Game1.gameTimeInterval / 700);
-                        float percentage = (minEff / SDVTime.MinutesBetweenTwoIntTimes(sunriseTime, solarNoon));
+                        float percentage = minEff / SDVTime.MinutesBetweenTwoIntTimes(sunriseTime, solarNoon);
 
                         float tgtColorR = newSunrise.R - 0;
                         float tgtColorG = newSunrise.G - 5;
@@ -78,7 +70,7 @@ namespace DynamicNightTime.Patches
                     if (Game1.timeOfDay > solarNoon)
                     {
                         float minEff = SDVTime.MinutesBetweenTwoIntTimes(Game1.timeOfDay, solarNoon) + (float)Math.Min(10.0, Game1.gameTimeInterval / 700);
-                        float percentage = (minEff / SDVTime.MinutesBetweenTwoIntTimes(sunriseTime, solarNoon));
+                        float percentage = (minEff / SDVTime.MinutesBetweenTwoIntTimes(600, solarNoon));
                         Color destColor = new(0, (byte)(5 + (93 * percentage)), (byte)(1 + (192 * percentage)));
                         Game1.outdoorLight = destColor;
                     }

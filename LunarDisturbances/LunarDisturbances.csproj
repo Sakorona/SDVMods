@@ -3,8 +3,9 @@
   <PropertyGroup>
     <AssemblyName>LunarDisturbances</AssemblyName>
     <RootNamespace>LunarDisturbances</RootNamespace>
-    <Version>1.5.1</Version>
+    <Version>1.5.3</Version>
     <Authors>Sakorona</Authors>
+    <EnableHarmony>True</EnableHarmony>
     <Description>Adds a moon to more than just one day, and adds events based on it, including eclipses</Description>
     <MinimumApiVersion>4.0</MinimumApiVersion>
     <MinimumApi_Behavior>Update</MinimumApi_Behavior>
@@ -24,6 +25,6 @@
 
 
    <Import Project="..\TwilightCoreShared\TwilightCoreShared.projitems" Label="Shared" />
-  <Import Project="$(SolutionDir)\deploy-mod.targets" />
+   <Import Project="$(SolutionDir)\deploy-mod.targets" />
 
 </Project>

@@ -30,19 +30,29 @@
   "night_djRandomA": "Xiaoqiao",
   "night_djRandomB": "Natalya",
 
+  "festival_djA": "Dalia",
+  "festival_djB": "Kalia",
+  "festival_djC": "Ralia",
+
   "latenight_djWeekdays": "Nathan",
   "latenight_djWeekends": "Kiachi",
   "latenight_djUnlucky": "Mordred",
+  "latenight_djLucky": "Arturia",
 
   //RadioChatter
   "morning_springBegin": "Hey, hey, hey! It's a new year, and this is {{name}} here with you to greet it! This is LPTX, the Wavebreak!",
-  "morning_spring1": "Another beautiful morning on the Gem Sea! You're listening to LPTX, broadcasting out of beautiful Point Drake on 91.9 MHz",
+  "morning_spring1": "Another beautiful morning on the Gem Sea! You're listening to LPTX, broadcasting out of beautiful Point Drake on 91.9 MHz. It's {{time}}, and let's start a new block of sound with {{artist}}, singing their hit {{songName}}",
   "morning_spring2": "*music ends*. That was {{songName}} by {{artist}}. This is DJ {{name}}. Next up, the weather. It is {{weather}}, {{temp}} this beautiful morning",
   "morning_spring3": ".. live well. Buy Joja. Welcome back to LPTX, with DJ {{name}}. It's {{weather_outside}} outside, and it's time for a marathon of beautiful music. Next up is {{songName}} by {{artist}}",
   "morning_spring3_noJoja": "..at Pierre's General Shop. Welcome back to LPTX, with DJ {{name}}. It's {{weather_outside}} outside, and it's time for a marathon of beautiful music. Next up is {{songName}} by {{artist}}",
   "morning_spring3_aquarium": ".. at the Stardew Aquarium, where the sea comes to you! Welcome back to LPTX, with DJ {{name}}. It's {{weather_outside}} outside, and it's time for a marathon of beautiful music. Next up is {{songName}} by {{artist}}",
+  //TODO add 3 more here.
+  //TODO add 6 for afternoon (Reserve 3 for ads)
+  //TODO add 6 for evening (Reserve 3 for ads)
+  //TODO add 6 for latenight. (Reserve 3 for ads)
 
   "noSignal": "Just static..",
+  "noSignal_doll": "You hear creepy whispers.. and static.",
 
   //songs
   "general_song1Title": "Does Fell Nice",
@@ -64,6 +74,19 @@
   "general_Song6Artist": "Ken Nakumara",
   "general_song6Genre": "Dance",
 
+  "afterBandFormation_PopTitle": "A Farm of Flowers",
+  "afterBandFormation_CountryTitle": "A City of Dreams",
+  "afterBandFormation_NoiseTitle": "Mining The Night Away",
+  "afterBandFormation_DanceTitle": "A Train In the Sea",
+  "afterBandFormation_PopArtist": "The Pelicans",
+  "afterBandFormation_PopGenre": "Pop",
+  "afterBandFormation_CountryArtist": "The Alfalfas",
+  "afterBandFormation_CountryGenre": "Honky-tonky Country",
+  "afterBandFormation_NoiseArtist": "Goblin Destroyer",
+  "afterBandFormation_NoiseGenre": "Experimental Noise Rock",
+  "afterBandFormation_DanceArtist": "Xenon Chip 3.0",
+  "afterBandFormation_DanceGenre": "Hi-Energy Dance",
+
   //afternoon
   "afternoon_song1Title": "A Sunny Winter Day",
   "afternoon_song1Artist": "Rin Shima",
@@ -82,17 +105,33 @@
   "afternoon_song5Genre": "Pop",
   "afternoon_song6Title": "Key of the Twilight",
   "afternoon_song6Artist": "Chiaki Ishikawa",
-  "afternoon_song6Genre": "Pop"
+  "afternoon_song6Genre": "Pop",
 
   //evening
-
+  //TODO add 6 songs here
 
   //morning
-
+  //TODO add 6 songs here
 
   //late-night
-
-
+  "latenight_song1Title": "A Sunny Winter Day",
+  "latenight_song1Artist": "Rin Shima",
+  "latenight_song1Genre": "Easy Listening",
+  "latenight_song2Title": "Old Star",
+  "latenight_song2Artist": "Evergreen Multimedia Solutions",
+  "latenight_song2Genre": "Pop",
+  "latenight_song3Title": "Night-Sailing",
+  "latenight_song3Artist": "Evergreen Multimedia Solutions",
+  "latenight_song3Genre": "Pop",
+  "latenight_song4Title": "When the City Sleeps",
+  "latenight_song4Artist": "Evergreen Multimedia Solutions",
+  "latenight_song4Genre": "Pop",
+  "latenight_song5Title": "On My Level",
+  "latenight_song5Artist": "Izzy NooHao",
+  "latenight_song5Genre": "KPop"
+  //TODO add song 6
+  //TODO add cursed songs 1-2
+  //TODO add lucky songs 1-2
 
   //weather tokens
 

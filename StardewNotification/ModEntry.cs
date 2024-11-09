@@ -1,6 +1,7 @@
 ﻿using StardewModdingAPI;
 using StardewModdingAPI.Events;
 using StardewValley;
+using TwilightShards.Stardew.Common;
 
 namespace StardewNotification
 {
@@ -11,6 +12,12 @@ namespace StardewNotification
     {
         private HarvestNotification harvestableNotification;
         private GeneralNotification generalNotification;
+        internal static bool FallOnDay28Loaded = false;
+        internal static bool StartInGingerIslandLoaded = false;
+
+        private bool IsFestivalDay = false;
+        private int FestivalDayReminder = 0;
+
         private ProductionNotification productionNotification;
         public static SNConfiguration Config { get; set; }
 
@@ -31,6 +38,12 @@ namespace StardewNotification
 
         private void OnGameLaunched(object sender, GameLaunchedEventArgs e)
         {
+            if (Helper.ModRegistry.IsLoaded("Omegasis.Fall28SnowDay"))
+                FallOnDay28Loaded = true;
+
+            if (Helper.ModRegistry.IsLoaded("mistyspring.GingerIslandStart"))
+                StartInGingerIslandLoaded = true;
+
             var api = Helper.ModRegistry.GetApi<Integrations.IGenericModConfigMenuApi>("spacechase0.GenericModConfigMenu");
             if (api != null)
             {
@@ -42,7 +55,8 @@ namespace StardewNotification
                 api.AddBoolOption(ModManifest, () => Config.NotifyBirthdayReminder, (bool val) => Config.NotifyBirthdayReminder = val, () => Helper.Translation.Get("gmcmNotifOnBirthRemindTitle"), () => Helper.Translation.Get("gmcmNotifOnBirthRemindDesc"));
                 api.AddNumberOption(ModManifest, () => Config.BirthdayReminderTime, (int val) => Config.BirthdayReminderTime = val, () => Helper.Translation.Get("gmcmNotifOnBirthRemindTimeTitle"), () => Helper.Translation.Get("gmcmNotifOnBirthRemindTimeDesc"), 900, 1900,10);                
                 api.AddBoolOption(ModManifest, () => Config.NotifyFestivals, (bool val) => Config.NotifyFestivals = val, () => Helper.Translation.Get("gmcmNotifOnFestivalTitle"), () => Helper.Translation.Get("gmcmNotifOnFestivalDesc"));
-
+                api.AddBoolOption(ModManifest, () => Config.NotifyFestivalReminders, (bool val) => Config.NotifyFestivalReminders = val, () => Helper.Translation.Get("gmcmNotifOnFestReminTitle"), () => Helper.Translation.Get("gmcmNotifOnFestReminDesc"));
+                api.AddBoolOption(ModManifest, () => Config.HideUnknownNPCBirthday, (bool val) => Config.HideUnknownNPCBirthday = val, () => Helper.Translation.Get("gmcmNotifOnHUNBTitle"), () => Helper.Translation.Get("gmcmNotifOnHUNBDesc"));
                 api.AddBoolOption(ModManifest, () => Config.NotifyTravelingMerchant, (bool val) => Config.NotifyTravelingMerchant = val, () => Helper.Translation.Get("gmcmNotifOnMerchantTitle"), () => Helper.Translation.Get("gmcmNotifOnMerchantDesc"));
                 api.AddBoolOption(ModManifest, () => Config.NotifyToolUpgrade, (bool val) => Config.NotifyToolUpgrade = val, () => Helper.Translation.Get("gmcmNotifOnToolTitle"), () => Helper.Translation.Get("gmcmNotifOnToolDesc"));
                 api.AddBoolOption(ModManifest, () => Config.NotifyMaxLuck, (bool val) => Config.NotifyMaxLuck = val, () => Helper.Translation.Get("gmcmNotifOnGLuckTitle"), () => Helper.Translation.Get("gmcmNotifOnGLuckDesc"));
@@ -50,6 +64,7 @@ namespace StardewNotification
 
                 api.AddBoolOption(ModManifest, () => Config.NotifyHay, (bool val) => Config.NotifyHay = val, () => Helper.Translation.Get("gmcmNotifShowHayCountTitle"), () => Helper.Translation.Get("gmcmNotifShowHayCountDesc"));
                 api.AddBoolOption(ModManifest, () => Config.ShowEmptyhay, (bool val) => Config.ShowEmptyhay = val, () => Helper.Translation.Get("gmcmNotifEmptyHayTitle"), () => Helper.Translation.Get("gmcmNotifEmptyHayDesc"));
+                api.AddBoolOption(ModManifest, () => Config.IncludeGingerIsland, (bool val) => Config.IncludeGingerIsland = val, () => Helper.Translation.Get("gmcmNotifGingerWeatherTitle"), () => Helper.Translation.Get("gmcmNotifGingerWeatherDesc"));
 
                 api.AddBoolOption(ModManifest, () => Config.ShowWeatherNextDay, (bool val) => Config.ShowWeatherNextDay = val, () => Helper.Translation.Get("gmcmNotifWeatNDTitle"), () => Helper.Translation.Get("gmcmNotifWeatNDDesc"));
                 api.AddNumberOption(ModManifest, () => Config.WeatherNextDayTime, (int val) => Config.WeatherNextDayTime = val, () => Helper.Translation.Get("gmcmRemindTimeForNWDTitle"), () => Helper.Translation.Get("gmcmRemindTimeForNWDDesc"), 900, 2600, 10);
@@ -86,7 +101,18 @@ namespace StardewNotification
                 GeneralNotification.DoBirthdayReminder(Helper.Translation);
 
             if (Config.ShowWeatherNextDay && e.NewTime == Config.WeatherNextDayTime)
+            {
                 GeneralNotification.DoWeatherReminder(Helper.Translation);
+                if (Config.IncludeGingerIsland)
+                    GeneralNotification.DoGingerIslandWeatherReminder(Helper.Translation);
+            }
+
+
+            if (Config.NotifyFestivalReminders && e.NewTime == FestivalDayReminder && IsFestivalDay)
+            {
+                if (!(Game1.dayOfMonth == 27 && Game1.season == Season.Fall) && !(Game1.dayOfMonth == 28 && Game1.season == Season.Summer))
+                    Util.ShowMessage(Helper.Translation.Get("festivalReminder", new { time = FestivalDayReminder+200 }));
+            }
         }
 
         /// <summary>Raised after a player warps to a new location.</summary>
@@ -106,6 +132,9 @@ namespace StardewNotification
         /// <param name="e">The event arguments.</param>
         private void OnDayStarted(object sender, DayStartedEventArgs e)
         {
+            IsFestivalDay = false;
+            FestivalDayReminder = 0;
+
             if (Game1.currentSeason.Equals("Spring") && Game1.dayOfMonth == 0 && Game1.year == 1)
                 return;
 
@@ -115,6 +144,13 @@ namespace StardewNotification
                 harvestableNotification.CheckHarvestsAroundFarm();
                 GeneralNotification.DoBookSellerReminder(Helper.Translation);
             }          
+
+            //calculate if today is a festival day
+            if (Utility.isFestivalDay() || Utility.IsPassiveFestivalDay())
+            {
+                var endFestTime = SDVUtilities.GetFestivalEndTime();
+                FestivalDayReminder = endFestTime - 200;
+            }
         }
     }
 }
